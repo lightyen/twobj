@@ -1,2 +1,2 @@
 // eslint-disable-next-line spaced-comment
-/// <reference types="twobj/types/tw-prop" />
+/// <reference types="@emotion/react/types/css-prop" />

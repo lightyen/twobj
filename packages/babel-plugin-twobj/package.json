@@ -27,6 +27,7 @@
 		"@types/babel__core": "^7.1.19"
 	},
 	"files": [
+		"types",
 		"plugin.*",
 		"README.md"
 	]
