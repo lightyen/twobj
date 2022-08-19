@@ -1,0 +1,17 @@
+{
+  "presets": [
+    ["@babel/preset-env"],
+    ["@babel/preset-typescript"],
+    ["@babel/preset-react", { "runtime": "automatic" }],
+    ["@linaria"]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    ["twobj", { "debug": true }]
+  ],
+  "env": {
+    "development": {
+      "plugins": ["react-refresh/babel"]
+    }
+  }
+}

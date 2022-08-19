@@ -1,0 +1,22 @@
+{
+	"name": "twobj",
+	"version": "0.0.1",
+	"types": "./types/index.d.ts",
+	"exports": {
+		".": {
+			"require": "./index.cjs",
+			"import": "./index.mjs"
+		}
+	},
+	"scripts": {
+		"compile": "del ./index.* && rollup -c",
+		"types": "del ./types/** !./types/tw-prop.d.ts && tsc --project tsconfig.types.json --declaration --emitDeclarationOnly --outDir types",
+		"format": "prettier --config ../../.prettierrc.yml --write {src,types}/**/*.ts",
+		"build": "npm run compile && npm run types && npm run format"
+	},
+	"files": [
+		"index.cjs",
+		"index.mjs",
+		"README.md"
+	]
+}

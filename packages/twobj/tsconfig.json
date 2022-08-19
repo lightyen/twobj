@@ -1,0 +1,14 @@
+{
+  "include": ["src/**/*.ts", "types/**/*.d.ts"],
+  "compilerOptions": {
+    "types": ["@types/node", "@types/jest", "tailwind-types"],
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "es2021"
+  }
+}

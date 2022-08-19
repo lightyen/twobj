@@ -1,0 +1,348 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parser arbitrary variant 1`] = `
+Object {
+  "emptyGroup": Array [],
+  "emptyVariants": Array [],
+  "items": Array [
+    Object {
+      "important": false,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          7,
+          12,
+        ],
+        "type": "ClassName",
+        "value": "black",
+      },
+      "value": "black",
+      "variants": Array [
+        Object {
+          "range": Array [
+            0,
+            6,
+          ],
+          "selector": Object {
+            "range": Array [
+              5,
+              5,
+            ],
+            "type": "CssSelector",
+            "value": "",
+          },
+          "type": "ArbitraryVariant",
+          "value": "tab-[]",
+        },
+      ],
+    },
+  ],
+  "notClosed": Array [],
+}
+`;
+
+exports[`parser util spread 1`] = `
+Object {
+  "emptyGroup": Array [
+    Object {
+      "closed": true,
+      "expressions": Array [],
+      "important": false,
+      "range": Array [
+        144,
+        146,
+      ],
+      "type": "Group",
+    },
+  ],
+  "emptyVariants": Array [
+    Object {
+      "range": Array [
+        256,
+        262,
+      ],
+      "type": "VariantSpan",
+      "variant": Object {
+        "id": Object {
+          "range": Array [
+            256,
+            261,
+          ],
+          "type": "Identifier",
+          "value": "hover",
+        },
+        "range": Array [
+          256,
+          262,
+        ],
+        "type": "SimpleVariant",
+      },
+    },
+  ],
+  "items": Array [
+    Object {
+      "important": false,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          0,
+          11,
+        ],
+        "type": "ClassName",
+        "value": "bg-gray-500",
+      },
+      "value": "bg-gray-500",
+      "variants": Array [],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          21,
+          29,
+        ],
+        "type": "ClassName",
+        "value": "border-4",
+      },
+      "value": "border-4",
+      "variants": Array [
+        Object {
+          "range": Array [
+            14,
+            19,
+          ],
+          "type": "SimpleVariant",
+          "value": "hover",
+        },
+      ],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          30,
+          45,
+        ],
+        "type": "ClassName",
+        "value": "border-blue-500",
+      },
+      "value": "border-blue-500",
+      "variants": Array [
+        Object {
+          "range": Array [
+            14,
+            19,
+          ],
+          "type": "SimpleVariant",
+          "value": "hover",
+        },
+      ],
+    },
+    Object {
+      "important": true,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          94,
+          106,
+        ],
+        "type": "ClassName",
+        "value": "text-red-700",
+      },
+      "value": "text-red-700",
+      "variants": Array [
+        Object {
+          "range": Array [
+            50,
+            90,
+          ],
+          "selector": Object {
+            "range": Array [
+              50,
+              90,
+            ],
+            "type": "CssSelector",
+            "value": "
+			.group:hover,
+			// .group:focus]
+		",
+          },
+          "type": "ArbitrarySelector",
+          "value": "
+			.group:hover,
+			// .group:focus]
+		",
+        },
+      ],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          149,
+          158,
+        ],
+        "type": "ClassName",
+        "value": "custom/30",
+      },
+      "value": "custom/30",
+      "variants": Array [],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "important": false,
+        "range": Array [
+          159,
+          177,
+        ],
+        "type": "ClassName",
+        "value": "text-yellow-600/80",
+      },
+      "value": "text-yellow-600/80",
+      "variants": Array [],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "closed": true,
+        "e": Object {
+          "closed": true,
+          "opacity": Object {
+            "range": Array [
+              191,
+              193,
+            ],
+            "type": "Identifier",
+            "value": ".3",
+          },
+          "range": Array [
+            190,
+            194,
+          ],
+          "type": "WithOpacity",
+        },
+        "expr": undefined,
+        "important": false,
+        "prefix": Object {
+          "range": Array [
+            178,
+            189,
+          ],
+          "type": "Identifier",
+          "value": "bg-gray-500",
+        },
+        "range": Array [
+          178,
+          194,
+        ],
+        "type": "ArbitraryClassname",
+      },
+      "value": "bg-gray-500/[.3]",
+      "variants": Array [],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "closed": true,
+        "e": undefined,
+        "expr": Object {
+          "range": Array [
+            201,
+            220,
+          ],
+          "type": "CssExpression",
+          "value": "url(http://example)",
+        },
+        "important": false,
+        "prefix": Object {
+          "range": Array [
+            197,
+            200,
+          ],
+          "type": "Identifier",
+          "value": "bg-",
+        },
+        "range": Array [
+          197,
+          221,
+        ],
+        "type": "ArbitraryClassname",
+      },
+      "value": "bg-[url(http://example)]",
+      "variants": Array [],
+    },
+    Object {
+      "important": false,
+      "target": Object {
+        "closed": true,
+        "e": Object {
+          "closed": true,
+          "opacity": Object {
+            "range": Array [
+              249,
+              251,
+            ],
+            "type": "Identifier",
+            "value": ".2",
+          },
+          "range": Array [
+            248,
+            252,
+          ],
+          "type": "WithOpacity",
+        },
+        "expr": Object {
+          "range": Array [
+            230,
+            246,
+          ],
+          "type": "CssExpression",
+          "value": "rgba(3 3 3 / .8)",
+        },
+        "important": false,
+        "prefix": Object {
+          "range": Array [
+            224,
+            229,
+          ],
+          "type": "Identifier",
+          "value": "text-",
+        },
+        "range": Array [
+          224,
+          252,
+        ],
+        "type": "ArbitraryClassname",
+      },
+      "value": "text-[rgba(3 3 3 / .8)]/[.2]",
+      "variants": Array [],
+    },
+  ],
+  "notClosed": Array [
+    Object {
+      "closed": false,
+      "expressions": Array [
+        Object {
+          "important": false,
+          "range": Array [
+            265,
+            271,
+          ],
+          "type": "ClassName",
+          "value": "q-test",
+        },
+      ],
+      "important": false,
+      "range": Array [
+        263,
+        271,
+      ],
+      "type": "Group",
+    },
+  ],
+}
+`;

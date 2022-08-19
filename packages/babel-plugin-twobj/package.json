@@ -1,0 +1,33 @@
+{
+	"name": "babel-plugin-twobj",
+	"version": "0.0.1",
+	"types": "./types/plugin.d.mts",
+	"exports": {
+		".": {
+			"require": "./plugin.cjs",
+			"import": "./plugin.mjs"
+		},
+		"./require": {
+			"require": "./plugin.cjs",
+			"types": "./types/plugin.d.cts"
+		}
+	},
+	"scripts": {
+		"compile": "del ./index.* && rollup -c",
+		"types": "del ./types && tsc --project tsconfig.types.json --declaration --emitDeclarationOnly --outDir types",
+		"format": "prettier --config ../../.prettierrc.yml --write {src,types}/**/*.ts",
+		"build": "npm run compile && npm run types && npm run format"
+	},
+	"peerDependencies": {
+		"twobj": "../twobj"
+	},
+	"devDependencies": {
+		"twobj": "../twobj",
+		"@babel/types": "^7.18.10",
+		"@types/babel__core": "^7.1.19"
+	},
+	"files": [
+		"plugin.*",
+		"README.md"
+	]
+}

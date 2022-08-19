@@ -1,0 +1,19 @@
+{
+  "include": ["src/**/*.ts", "src/plugin.mts", "src/plugin.cts"],
+  "exclude": ["src/**/__tests__/*"],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "types",
+    "types": ["@types/node"],
+    "strict": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "es2021"
+  }
+}
