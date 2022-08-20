@@ -1,3 +1,4 @@
 node_modules
 /core
 /index.*
+/parser/index.*
