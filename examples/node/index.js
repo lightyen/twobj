@@ -18,16 +18,19 @@ const ctx = createContext(
 						color: theme("colors.primary"),
 					},
 				})
+				matchUtilities(
+					{
+						custom(value) {
+							return { "--helloworld": value }
+						},
+					},
+					{ type: "color", values: theme("colors") },
+				)
 			},
 		],
 	}),
 )
 
-console.log(ctx.theme("spacing"))
-console.log(ctx.theme("spacing.2"))
-console.log(ctx.theme("fontSize.xl"))
-console.log(ctx.theme("colors.red.500/0.1"))
-console.log(ctx.theme("colors.primary.DEFAULT/0.2"))
-console.log(ctx.theme("colors.primary/0.3"))
-console.log(ctx.theme("colors.primary"))
+
 console.log(JSON.stringify(ctx.css("test"), null, 2))
+console.log(JSON.stringify(ctx.css("custom-[red]/10"), null, 2))

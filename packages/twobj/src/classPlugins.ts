@@ -2,7 +2,7 @@ import { parseAnimations } from "./parser"
 import type { MatchUtilitiesOption, UnnamedPlugin } from "./plugin"
 import { plugin } from "./plugin"
 import { CSSProperties, CSSValue, Template } from "./types"
-import { flattenColorPalette, isCSSValue, normalizeScreens } from "./util"
+import { isCSSValue, normalizeScreens } from "./util"
 import { formatBoxShadowValues, withAlphaValue } from "./values"
 
 type ClassPlugins = {
@@ -41,11 +41,11 @@ function createUtilityPlugin(
 function createColorPlugin(
 	pluginName: string,
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
-	getColors: (theme: Tailwind.ResolvedConfigJS["theme"]) => Tailwind.Palette,
+	getValues: (theme: Tailwind.ResolvedConfigJS["theme"]) => Tailwind.Palette,
 ) {
 	return createUtilityPlugin(pluginName, mappings, theme => ({
 		type: "color",
-		values: flattenColorPalette(getColors(theme)),
+		values: getValues(theme),
 	}))
 }
 
@@ -65,11 +65,11 @@ export const classPlugins: ClassPlugins = {
 	accentColor: createColorPlugin("accentColor", [["accent", "accentColor"]], theme => theme.accentColor),
 	stroke: createUtilityPlugin("stroke", [["stroke", "stroke"]], theme => ({
 		type: ["color", "url"],
-		values: flattenColorPalette(theme.stroke),
+		values: theme.stroke,
 	})),
 	fill: createUtilityPlugin("fill", [["fill", "fill"]], theme => ({
 		type: ["color", "url"],
-		values: flattenColorPalette(theme.fill),
+		values: theme.fill,
 	})),
 	borderColor: createUtilityPlugin(
 		"borderColor",
@@ -85,16 +85,16 @@ export const classPlugins: ClassPlugins = {
 		theme => ({
 			type: "color",
 			filterDefault: true,
-			values: flattenColorPalette(theme.borderColor),
+			values: theme.borderColor,
 		}),
 	),
 	outlineColor: createUtilityPlugin("outlineColor", [["outline", "outlineColor"]], theme => ({
 		type: "color",
-		values: flattenColorPalette(theme.outlineColor),
+		values: theme.outlineColor,
 	})),
 	textDecorationColor: createUtilityPlugin("textDecorationColor", [["decoration", "textDecorationColor"]], theme => ({
 		type: "color",
-		values: flattenColorPalette(theme.textDecorationColor),
+		values: theme.textDecorationColor,
 	})),
 	divideColor: createUtilityPlugin(
 		"divideColor",
@@ -111,7 +111,7 @@ export const classPlugins: ClassPlugins = {
 		theme => ({
 			type: "color",
 			filterDefault: true,
-			values: flattenColorPalette(theme.divideColor),
+			values: theme.divideColor,
 		}),
 	),
 	placeholderColor: createColorPlugin(
@@ -717,7 +717,7 @@ export const classPlugins: ClassPlugins = {
 	ringColor: createUtilityPlugin("ringColor", [["ring", "--tw-ring-color"]], theme => ({
 		type: "color",
 		filterDefault: true,
-		values: flattenColorPalette(theme.ringColor),
+		values: theme.ringColor,
 	})),
 	ringOffsetWidth: createUtilityPlugin("ringOffsetWidth", [["ring-offset", "--tw-ring-offset-width"]], theme => ({
 		type: "length",
@@ -725,7 +725,7 @@ export const classPlugins: ClassPlugins = {
 	})),
 	ringOffsetColor: createUtilityPlugin("ringOffsetColor", [["ring-offset", "--tw-ring-offset-color"]], theme => ({
 		type: "color",
-		values: flattenColorPalette(theme.ringOffsetColor),
+		values: theme.ringOffsetColor,
 	})),
 	divideWidth: plugin("divideWidth", ({ addUtilities, matchUtilities, theme }) => {
 		addUtilities({
@@ -819,7 +819,7 @@ export const classPlugins: ClassPlugins = {
 			},
 			{
 				type: "color",
-				values: flattenColorPalette(theme.gradientColorStops),
+				values: theme.gradientColorStops,
 			},
 		)
 	}),

@@ -5,7 +5,16 @@ import { camelCase } from "./parser"
 import type { CorePluginOptions, UserPlugin, UserPluginOptions } from "./plugin"
 import { preflight } from "./preflight"
 import { CSSProperties, CSSValue, LookupSpec, PostModifier, StaticSpec, VariantSpec } from "./types"
-import { applyCamelCase, applyImportant, applyModifier, isCSSValue, merge, reverseSign, toArray } from "./util"
+import {
+	applyCamelCase,
+	applyImportant,
+	applyModifier,
+	flattenColorPalette,
+	isCSSValue,
+	merge,
+	reverseSign,
+	toArray,
+} from "./util"
 import { representAny, representTypes, ValueType } from "./values"
 import { variantPlugins } from "./variantPlugins"
 
@@ -467,7 +476,10 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				continue
 			}
 
-			const isNotAny = (t: ValueType | "any"): t is ValueType => t !== "any"
+			// if types has 'color', always flatten the values
+			if (types.some(t => t === "color")) {
+				values = flattenColorPalette(values)
+			}
 
 			represent = (input, node, getText, config, negative) => {
 				if (negative && !supportsNegativeValues) return undefined
@@ -477,7 +489,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 					getText,
 					values,
 					negative,
-					types: types.filter(isNotAny),
+					types: types.filter((t): t is ValueType => t !== "any"),
 					filterDefault,
 					get ambiguous() {
 						return Array.isArray(utilityMap.get(key))
