@@ -1,6 +1,14 @@
 {
 	"name": "babel-plugin-twobj",
 	"version": "0.0.1",
+	"homepage": "https://github.com/lightyen/babel-plugin-twobj",
+	"author": {
+		"name": "lightyen",
+		"url": "https://github.com/lightyen"
+	},
+	"repository": {
+		"directory": "https://github.com/lightyen/twobj/tree/main/packages/babel-plugin-twobj"
+	},
 	"types": "./types/plugin.d.mts",
 	"exports": {
 		".": {
@@ -19,7 +27,7 @@
 		"build": "npm run compile && npm run types && npm run format"
 	},
 	"peerDependencies": {
-		"twobj": "../twobj"
+		"twobj": "^0.0.2"
 	},
 	"devDependencies": {
 		"twobj": "../twobj",

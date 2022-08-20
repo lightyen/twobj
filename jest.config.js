@@ -3,8 +3,4 @@ module.exports = {
 		"^.+\\.(t|j)s?$": "@swc/jest",
 	},
 	testMatch: ["**/?(*.)+(spec|test).[jt]s"],
-	modulePathIgnorePatterns: [],
-	moduleNameMapper: {
-		"^~/(.*)": "<rootDir>/src/$1",
-	},
 }

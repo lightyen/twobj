@@ -26,7 +26,8 @@ importers:
       prettier: ^2.7.1
       rollup: ^2.77.2
       rollup-plugin-terser: ^7.0.2
-      tailwind-types: 3.2.0
+      tailwind-types: ^3.2.0
+      ts-jest: ^28.0.8
       typescript: ^4.7.4
     devDependencies:
       '@babel/core': 7.18.10
@@ -52,7 +53,14 @@ importers:
       rollup: 2.78.1
       rollup-plugin-terser: 7.0.2_rollup@2.78.1
       tailwind-types: 3.2.0_postcss@8.4.16
+      ts-jest: 28.0.8_m5noci3hdgjcbp5i3skppiufvq
       typescript: 4.7.4
+
+  examples/node:
+    specifiers:
+      twobj: ../../packages/twobj
+    dependencies:
+      twobj: link:../../packages/twobj
 
   examples/react-emotion:
     specifiers:
@@ -4950,6 +4958,13 @@ packages:
       node-releases: 2.0.6
       update-browserslist-db: 1.0.5_browserslist@4.21.3
 
+  /bs-logger/0.2.6:
+    resolution: {integrity: sha512-pd8DCoxmbgc7hyPKOvxtqNcjYoOsABPQdcCUjGp3d42VR2CX1ORhk2A87oqqu5R1kk+76nsxZupkmyd+MVtCog==}
+    engines: {node: '>= 6'}
+    dependencies:
+      fast-json-stable-stringify: 2.1.0
+    dev: true
+
   /bser/2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
     dependencies:
@@ -7894,6 +7909,10 @@ packages:
       semver: 6.3.0
     dev: true
 
+  /make-error/1.3.6:
+    resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
+    dev: true
+
   /makeerror/1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
     dependencies:
@@ -9823,6 +9842,40 @@ packages:
     dependencies:
       tslib: 2.4.0
     dev: false
+
+  /ts-jest/28.0.8_m5noci3hdgjcbp5i3skppiufvq:
+    resolution: {integrity: sha512-5FaG0lXmRPzApix8oFG8RKjAz4ehtm8yMKOTy5HX3fY6W8kmvOrmcY0hKDElW52FJov+clhUbrKAqofnj4mXTg==}
+    engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
+    hasBin: true
+    peerDependencies:
+      '@babel/core': '>=7.0.0-beta.0 <8'
+      '@jest/types': ^28.0.0
+      babel-jest: ^28.0.0
+      esbuild: '*'
+      jest: ^28.0.0
+      typescript: '>=4.3'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@jest/types':
+        optional: true
+      babel-jest:
+        optional: true
+      esbuild:
+        optional: true
+    dependencies:
+      '@babel/core': 7.18.10
+      bs-logger: 0.2.6
+      fast-json-stable-stringify: 2.1.0
+      jest: 28.1.3_@types+node@18.7.6
+      jest-util: 28.1.3
+      json5: 2.2.1
+      lodash.memoize: 4.1.2
+      make-error: 1.3.6
+      semver: 7.3.7
+      typescript: 4.7.4
+      yargs-parser: 21.1.1
+    dev: true
 
   /ts-paths-resolve-plugin/5.8.0_xnp4kzegbjokq62cajex2ovgkm:
     resolution: {integrity: sha512-YQSJr2ckrDUVRbT5Q/TM38Tcme4X4u7UI9FjlzrT8ACIXUetitMX2oIJlVtKNUsKgKBMoti5zqoax0fZmrP3og==}

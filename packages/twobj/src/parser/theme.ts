@@ -1,8 +1,9 @@
+import * as css from "./css"
 import { NodeType, ThemePathNode } from "./nodes"
 import { parse_theme, parse_theme_val } from "./parse_theme"
 import { dlv } from "./util"
 
-export function resolveThemeFunc(config: Tailwind.ResolvedConfigJS, value: string): string {
+export function renderThemeFunc(config: Tailwind.ResolvedConfigJS, value: string): string {
 	let start = 0
 	let ret = ""
 
@@ -17,6 +18,24 @@ export function resolveThemeFunc(config: Tailwind.ResolvedConfigJS, value: strin
 		ret += value.slice(start)
 	}
 	return ret.trim()
+}
+
+export function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, defaultValue?: unknown): unknown {
+	const node = parse_theme_val({ text: value })
+	let target = resolvePath(config.theme, node.path, true)
+	if (target) {
+		return resolveThemeValue({ value: target })
+	}
+
+	let opacityValue: string | undefined
+	const ret = tryOpacityValue(node.path)
+	if (ret.opacityValue) {
+		opacityValue = ret.opacityValue
+		node.path = ret.path
+	}
+
+	target = resolvePath(config.theme, node.path, true)
+	return target !== undefined ? resolveThemeValue({ value: target, opacityValue }) : defaultValue ?? ""
 }
 
 // for completions
@@ -134,7 +153,10 @@ export function resolvePath(obj: unknown, path: Array<string | ThemePathNode>, u
 }
 
 export function renderThemeValue({ value, opacityValue }: { value?: unknown; opacityValue?: string } = {}) {
-	if (value == null) return `[${value}]`
+	if (value == null) {
+		return `[${value}]`
+	}
+
 	if (typeof value === "object") {
 		if (Array.isArray(value)) {
 			if (value.every(v => typeof v === "string")) {
@@ -150,56 +172,62 @@ export function renderThemeValue({ value, opacityValue }: { value?: unknown; opa
 			"}\n"
 		)
 	}
+
 	if (typeof value === "function") {
-		value = String(value({ opacityValue: opacityValue ?? "1" }))
+		const result = value({ opacityValue: opacityValue ?? "1" })
+		if (typeof result === "string") {
+			return result
+		}
+		return String(value)
 	}
-	if (opacityValue && typeof value === "string") {
-		let replaced = false
-		const result = value.replace("<alpha-value>", _ => {
-			replaced = true
-			return opacityValue
-		})
-		if (replaced) return result
-		else {
-			const match =
-				/(\w+)\(\s*([\d.]+(?:%|deg|rad|grad|turn)?\s*,?\s*)([\d.]+(?:%|deg|rad|grad|turn)?\s*,?\s*)([\d.]+(?:%|deg|rad|grad|turn)?)/.exec(
-					value,
-				)
-			if (match == null) {
-				const rgb = parseHexColor(value)
-				if (rgb == null) return value
-				const r = (rgb >> 16) & 0xff
-				const g = (rgb >> 8) & 0xff
-				const b = rgb & 0xff
-				return `rgb(${r} ${g} ${b} / ${opacityValue})`
+
+	if (typeof value === "string") {
+		if (value.includes("<alpha-value>")) {
+			return value.replace("<alpha-value>", _ => {
+				return opacityValue ?? "1"
+			})
+		}
+
+		if (opacityValue) {
+			const color = css.parseColor(value)
+			if (color && css.isOpacityFunction(color.fn)) {
+				const { fn, params } = color
+				return fn + "(" + params.slice(0, 3).join(" ") + " / " + opacityValue + ")"
 			}
-			const [, fn, a, b, c] = match
-			return `${fn}(${a.replaceAll(" ", "")} ${b.replaceAll(" ", "")} ${c.replaceAll(" ", "")}${
-				(a.indexOf(",") === -1 ? " / " : ", ") + opacityValue
-			})`
 		}
 	}
+
 	return String(value)
 }
 
-function parseHexColor(value: string): number | null {
-	const result = /(?:^#?([A-Fa-f0-9]{6})(?:[A-Fa-f0-9]{2})?$)|(?:^#?([A-Fa-f0-9]{3})[A-Fa-f0-9]?$)/.exec(value)
-	if (result !== null) {
-		if (result[1]) {
-			const v = parseInt(result[1], 16)
-			return Number.isNaN(v) ? null : v
-		} else if (result[2]) {
-			const v = parseInt(result[2], 16)
-			if (!Number.isNaN(v)) {
-				let r = v & 0xf00
-				let g = v & 0xf0
-				let b = v & 0xf
-				r = (r << 12) | (r << 8)
-				g = (g << 8) | (g << 4)
-				b = (b << 4) | b
-				return r | g | b
+export function resolveThemeValue({ value, opacityValue }: { value?: unknown; opacityValue?: string } = {}): unknown {
+	if (value == null || typeof value === "object") {
+		return value
+	}
+
+	if (typeof value === "function") {
+		const result = value({ opacityValue: opacityValue ?? "1" })
+		if (typeof result === "string") {
+			return result
+		}
+		return value
+	}
+
+	if (typeof value === "string") {
+		if (value.includes("<alpha-value>")) {
+			return value.replace("<alpha-value>", _ => {
+				return opacityValue ?? "1"
+			})
+		}
+
+		if (opacityValue) {
+			const color = css.parseColor(value)
+			if (color && css.isOpacityFunction(color.fn)) {
+				const { fn, params } = color
+				return fn + "(" + params.slice(0, 3).join(" ") + " / " + opacityValue + ")"
 			}
 		}
 	}
-	return null
+
+	return value
 }

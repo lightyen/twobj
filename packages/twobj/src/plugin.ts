@@ -4,7 +4,7 @@ import type { ValueType } from "./values"
 export interface CorePluginOptions extends PluginOptions {
 	config: Tailwind.ResolvedConfigJS
 	theme: Tailwind.ResolvedConfigJS["theme"]
-	getTheme(path: string, defaultValue?: unknown): unknown
+	resolveTheme(path: string, defaultValue?: unknown): unknown
 }
 
 /** backwards compatibility */

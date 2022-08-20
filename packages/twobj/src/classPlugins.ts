@@ -602,9 +602,9 @@ export const classPlugins: ClassPlugins = {
 			},
 		)
 	}),
-	transitionProperty: plugin("transitionProperty", ({ matchUtilities, getTheme, theme }) => {
-		const defaultTimingFunction = getTheme("transitionTimingFunction.DEFAULT") as string
-		const defaultDuration = getTheme("transitionDuration.DEFAULT") as string
+	transitionProperty: plugin("transitionProperty", ({ matchUtilities, resolveTheme, theme }) => {
+		const defaultTimingFunction = resolveTheme("transitionTimingFunction.DEFAULT") as string
+		const defaultDuration = resolveTheme("transitionDuration.DEFAULT") as string
 		matchUtilities(
 			{
 				transition(value): CSSProperties {
@@ -682,12 +682,15 @@ export const classPlugins: ClassPlugins = {
 		],
 		theme => theme.boxShadowColor,
 	),
-	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, theme, getTheme, config }) => {
-		const ringColorDefault = withAlphaValue(getTheme("ringColor.DEFAULT", "rgb(147 197 253)") as CSSValue, "0.5")
+	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, theme, resolveTheme, config }) => {
+		const ringColorDefault = withAlphaValue(
+			resolveTheme("ringColor.DEFAULT", "rgb(147 197 253)") as CSSValue,
+			"0.5",
+		)
 		addDefaults("ring-width", {
 			"--tw-ring-inset": "var(--tw-noop,/**/ /**/)",
-			"--tw-ring-offset-width": (getTheme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
-			"--tw-ring-offset-color": (getTheme("ringOffsetColor.DEFAULT", "#fff") as CSSValue).toString(),
+			"--tw-ring-offset-width": (resolveTheme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
+			"--tw-ring-offset-color": (resolveTheme("ringOffsetColor.DEFAULT", "#fff") as CSSValue).toString(),
 			"--tw-ring-color": ringColorDefault.toString(),
 			"--tw-ring-offset-shadow": "0 0 #0000",
 			"--tw-ring-shadow": "0 0 #0000",
@@ -838,8 +841,8 @@ export const classPlugins: ClassPlugins = {
 			},
 		})
 	}),
-	container: plugin("container", ({ addComponents, theme, getTheme }) => {
-		const screens = normalizeScreens(getTheme("container.screens", theme.screens))
+	container: plugin("container", ({ addComponents, theme, resolveTheme }) => {
+		const screens = normalizeScreens(resolveTheme("container.screens", theme.screens))
 		const container = theme.container
 		const center = container.center ?? false
 		const padding = (container.padding as Record<string, string> | string | undefined) ?? {}

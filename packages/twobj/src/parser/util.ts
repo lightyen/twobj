@@ -123,11 +123,13 @@ export function findRightBracket({
 	start = 0,
 	end = text.length,
 	brackets = [40, 41],
+	comments = true,
 }: {
 	text: string
 	start?: number
 	end?: number
 	brackets?: [number, number]
+	comments?: boolean
 }): number | undefined {
 	let stack = 0
 	const [lbrac, rbrac] = brackets
@@ -165,19 +167,21 @@ export function findRightBracket({
 			}
 		}
 
-		if (url < 3 && comment === 0) {
-			if (string === 0) {
-				if (char === 47 && text.charCodeAt(i + 1) === 47) {
-					comment = 1
-				} else if (char === 47 && text.charCodeAt(i + 1) === 42) {
-					comment = 2
+		if (comments) {
+			if (url < 3 && comment === 0) {
+				if (string === 0) {
+					if (char === 47 && text.charCodeAt(i + 1) === 47) {
+						comment = 1
+					} else if (char === 47 && text.charCodeAt(i + 1) === 42) {
+						comment = 2
+					}
 				}
+			} else if (comment === 1 && char === 10) {
+				comment = 0
+			} else if (comment === 2 && char === 42 && text.charCodeAt(i + 1) === 47) {
+				comment = 0
+				i += 1
 			}
-		} else if (comment === 1 && char === 10) {
-			comment = 0
-		} else if (comment === 2 && char === 42 && text.charCodeAt(i + 1) === 47) {
-			comment = 0
-			i += 1
 		}
 
 		if (string === 0) {

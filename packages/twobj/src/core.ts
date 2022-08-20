@@ -39,7 +39,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		...options,
 		config,
 		theme: config.theme,
-		getTheme,
+		resolveTheme,
 	}
 
 	const features = new Set<string>()
@@ -61,7 +61,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			return []
 		},
 		config: legacyConfig,
-		theme: getTheme,
+		theme: resolveTheme,
 		corePlugins(feature: keyof Tailwind.CorePluginFeatures): boolean {
 			return features.has(feature)
 		},
@@ -85,7 +85,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		}
 	}
 
-	resolveTheme(globalStyles)
+	resolveGlobalTheme(globalStyles)
 
 	return {
 		globalStyles,
@@ -95,7 +95,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		css,
 		features,
 		config: legacyConfig,
-		theme: getTheme,
+		theme: resolveTheme,
+		renderThemeFunc,
 		prefix(value: string) {
 			return value.startsWith(config.prefix) ? value.slice(config.prefix.length) : value
 		},
@@ -108,9 +109,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		matchUtilities,
 		matchComponents: matchUtilities,
 		matchVariant,
-		resolveThemeFunc(value: string) {
-			return parser.resolveThemeFunc(config, value)
-		},
 		getClassList(): string[] {
 			return Array.from(utilityMap.entries()).flatMap(([key, specs]) => {
 				specs = toArray(specs)
@@ -149,16 +147,26 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		},
 	}
 
-	function resolveTheme(g: CSSProperties): void {
+	// accpet: 'colors.primary/<alpha-value>'
+	function resolveTheme(value: string, defaultValue?: unknown) {
+		return parser.resolveTheme(config, value, defaultValue)
+	}
+
+	// accpet: 'theme(colors.borderColor.500, <default-value>)
+	function renderThemeFunc(value: string) {
+		return parser.renderThemeFunc(config, value)
+	}
+
+	function resolveGlobalTheme(g: CSSProperties): void {
 		if (typeof g !== "object") return
 		Object.entries(g).map(([key, child]) => {
 			if (typeof child !== "object") {
 				if (typeof child === "string") {
-					g[key] = parser.resolveThemeFunc(config, child)
+					g[key] = parser.renderThemeFunc(config, child)
 				}
 				return
 			}
-			resolveTheme(child)
+			resolveGlobalTheme(child)
 		})
 	}
 
@@ -169,18 +177,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			useDefault: false,
 		})
 		return parser.resolvePath(config, nodes) ?? defaultValue
-	}
-
-	function getTheme(path: string, defaultValue?: unknown) {
-		if (!path) {
-			return config.theme
-		}
-		const { path: nodes } = parser.parseThemeValue({
-			config,
-			text: path,
-			useDefault: false,
-		})
-		return parser.resolvePath(config.theme, nodes) ?? defaultValue
 	}
 
 	function addUtilitySpec(key: string, core: StaticSpec | LookupSpec) {

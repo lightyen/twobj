@@ -1,6 +1,14 @@
 {
 	"name": "twobj",
-	"version": "0.0.2",
+	"version": "0.0.3",
+	"homepage": "https://github.com/lightyen/twobj",
+	"author": {
+		"name": "lightyen",
+		"url": "https://github.com/lightyen"
+	},
+	"repository": {
+		"directory": "https://github.com/lightyen/twobj/tree/main/packages/twobj"
+	},
 	"types": "./types/index.d.ts",
 	"exports": {
 		".": {

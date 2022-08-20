@@ -9,7 +9,8 @@ export declare function createContext(config: Tailwind.ResolvedConfigJS): {
     css: (value: string) => CSSProperties;
     features: Set<string>;
     config: (path: string, defaultValue?: unknown) => unknown;
-    theme: (path: string, defaultValue?: unknown) => unknown;
+    theme: (value: string, defaultValue?: unknown) => unknown;
+    renderThemeFunc: (value: string) => string;
     prefix(value: string): string;
     expandAtRules: (style?: CSSProperties | undefined) => CSSProperties;
     addBase: (bases: CSSProperties | CSSProperties[]) => void;
@@ -35,6 +36,5 @@ export declare function createContext(config: Tailwind.ResolvedConfigJS): {
         values?: Record<string, string>;
         postModifier?: PostModifier;
     }) => void;
-    resolveThemeFunc(value: string): string;
     getClassList(): string[];
 };

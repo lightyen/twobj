@@ -63,7 +63,7 @@ function lookupValues(
 				result.valueTag = tag
 				result.value = node.expr.value.slice(tagRegexp.lastIndex)
 			}
-			result.value = parser.resolveThemeFunc(config, result.value)
+			result.value = parser.renderThemeFunc(config, result.value)
 		} else {
 			result.key = input
 		}
@@ -508,14 +508,14 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 		handleValue(value) {
 			const params = parser.splitCssParams(value)
 			if (
-				!params.every(p => {
+				params.some(p => {
 					if (typeof p === "string") {
-						return false
+						return true
 					}
 					if (p.fn !== "url") {
-						return false
+						return true
 					}
-					return p.params.every(v => typeof v === "string")
+					return p.params.some(v => typeof v !== "string")
 				})
 			) {
 				return undefined

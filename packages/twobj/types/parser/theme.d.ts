@@ -1,6 +1,7 @@
 /// <reference types="tailwind-types" />
 import { ThemePathNode } from "./nodes"
-export declare function resolveThemeFunc(config: Tailwind.ResolvedConfigJS, value: string): string
+export declare function renderThemeFunc(config: Tailwind.ResolvedConfigJS, value: string): string
+export declare function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, defaultValue?: unknown): unknown
 export declare function parseThemeValue({
 	config,
 	useDefault,
@@ -41,3 +42,4 @@ export declare function renderThemePath(
 ): string
 export declare function resolvePath(obj: unknown, path: Array<string | ThemePathNode>, useDefault?: boolean): unknown
 export declare function renderThemeValue({ value, opacityValue }?: { value?: unknown; opacityValue?: string }): string
+export declare function resolveThemeValue({ value, opacityValue }?: { value?: unknown; opacityValue?: string }): unknown

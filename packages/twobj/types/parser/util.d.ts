@@ -24,11 +24,13 @@ export declare function findRightBracket({
 	start,
 	end,
 	brackets,
+	comments,
 }: {
 	text: string
 	start?: number
 	end?: number
 	brackets?: [number, number]
+	comments?: boolean
 }): number | undefined
 export declare function isSpace(char: number): boolean
 export declare function dlv(cur: any, paths: string[]): any
