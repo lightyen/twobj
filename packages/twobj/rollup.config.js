@@ -3,6 +3,19 @@ import commonjs from "@rollup/plugin-commonjs"
 import nodeResolve from "@rollup/plugin-node-resolve"
 import { terser } from "rollup-plugin-terser"
 
+const plugins = [
+	babel({
+		babelrc: false,
+		babelHelpers: "bundled",
+		presets: [["@babel/preset-env", { modules: false }], "@babel/preset-typescript"],
+		extensions: [".js", ".ts"],
+		exclude: "node_modules/**",
+	}),
+	nodeResolve({ extensions: [".ts"] }),
+	commonjs(),
+	terser(),
+]
+
 /** @type {import("rollup").InputOptions[]} */
 const configs = [
 	{
@@ -13,19 +26,7 @@ const configs = [
 				format: "cjs",
 			},
 		],
-		plugins: [
-			babel({
-				babelrc: false,
-				babelHelpers: "bundled",
-				sourceType: "unambiguous",
-				presets: [["@babel/preset-env", { modules: false }], "@babel/preset-typescript"],
-				extensions: [".js", ".ts"],
-				exclude: "node_modules/**",
-			}),
-			nodeResolve({ extensions: [".ts"] }),
-			commonjs(),
-			terser(),
-		],
+		plugins,
 	},
 	{
 		input: "src/index.ts",
@@ -35,18 +36,27 @@ const configs = [
 				format: "esm",
 			},
 		],
-		plugins: [
-			babel({
-				babelrc: false,
-				babelHelpers: "bundled",
-				presets: [["@babel/preset-env", { modules: false }], "@babel/preset-typescript"],
-				extensions: [".js", ".ts"],
-				exclude: "node_modules/**",
-			}),
-			nodeResolve({ extensions: [".ts"] }),
-			commonjs(),
-			terser(),
+		plugins,
+	},
+	{
+		input: "src/parser/index.ts",
+		output: [
+			{
+				file: "parser/index.cjs",
+				format: "cjs",
+			},
 		],
+		plugins,
+	},
+	{
+		input: "src/parser/index.ts",
+		output: [
+			{
+				file: "parser/index.mjs",
+				format: "esm",
+			},
+		],
+		plugins,
 	},
 ]
 export default configs

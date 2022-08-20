@@ -99,7 +99,7 @@ export function splitCssParams(value: string): Param[] {
 	for (let match = regexp.exec(value); match != null; match = regexp.exec(value)) {
 		const [, fn, word] = match
 		if (fn) {
-			const rb = findRightBracket({ text: value, start: regexp.lastIndex - 1, comments: false })
+			const rb = findRightBracket({ text: value, start: regexp.lastIndex - 1, comments: fn !== "url" })
 			if (rb == undefined) {
 				return result
 			}
