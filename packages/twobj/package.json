@@ -1,6 +1,6 @@
 {
 	"name": "twobj",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"homepage": "https://github.com/lightyen/twobj",
 	"author": {
 		"name": "lightyen",
@@ -29,6 +29,6 @@
 		"parser",
 		"index.cjs",
 		"index.mjs",
-    "*.d.ts"
+		"*.d.ts"
 	]
 }
