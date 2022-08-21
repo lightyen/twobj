@@ -22,7 +22,7 @@
 		"build": "npm run compile && npm run types && npm run format"
 	},
 	"peerDependencies": {
-		"twobj": "^0.0.4"
+		"twobj": "^0.0.5"
 	},
 	"devDependencies": {
 		"twobj": "../twobj",
