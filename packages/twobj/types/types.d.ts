@@ -22,9 +22,12 @@ export interface LookupSpec {
     represent(restInput: string, node: parser.Classname | parser.ArbitraryClassname, getText: (node: parser.BaseNode) => string, config: Tailwind.ResolvedConfigJS, negative: boolean): CSSProperties | undefined;
     supportsNegativeValues: boolean;
     filterDefault: boolean;
+    isColor?: boolean;
+    pluginName?: string;
 }
 export interface StaticSpec {
     type: "static";
     css: CSSProperties;
     supportsNegativeValues: false;
+    pluginName?: string;
 }

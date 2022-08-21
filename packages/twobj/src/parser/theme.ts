@@ -20,6 +20,12 @@ export function renderThemeFunc(config: Tailwind.ResolvedConfigJS, value: string
 	return ret.trim()
 }
 
+export function renderTheme(config: Tailwind.ResolvedConfigJS, value: string): string {
+	const node = parse_theme_val({ text: value })
+	const result = theme(config, node.path)
+	return result.value !== undefined ? renderThemeValue(result) : ""
+}
+
 export function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, defaultValue?: unknown): unknown {
 	const node = parse_theme_val({ text: value })
 	let target = resolvePath(config.theme, node.path, true)

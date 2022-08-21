@@ -1,6 +1,7 @@
 /// <reference types="tailwind-types" />
 import { ThemePathNode } from "./nodes"
 export declare function renderThemeFunc(config: Tailwind.ResolvedConfigJS, value: string): string
+export declare function renderTheme(config: Tailwind.ResolvedConfigJS, value: string): string
 export declare function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, defaultValue?: unknown): unknown
 export declare function parseThemeValue({
 	config,

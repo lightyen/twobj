@@ -24,12 +24,13 @@
 	},
 	"scripts": {
 		"compile": "del ./index.* ./parser/index.* && rollup -c",
-		"types": "del ./types/** !./types/tw-prop.d.ts !./types/emotion.d.ts && tsc --project tsconfig.types.json --declaration --emitDeclarationOnly --outDir types",
+		"types": "del ./types/** && tsc --project tsconfig.types.json --declaration --emitDeclarationOnly --outDir types",
 		"format": "prettier --config ../../.prettierrc.yml --write {src,types}/**/*.ts",
 		"build": "npm run compile && npm run types && npm run format"
 	},
 	"files": [
 		"types",
+		"parser",
 		"index.cjs",
 		"index.mjs",
 		"README.md"

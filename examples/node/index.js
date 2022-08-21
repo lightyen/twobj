@@ -31,6 +31,6 @@ const ctx = createContext(
 	}),
 )
 
-
+console.log(JSON.stringify(Array.from(ctx.getColorClass().keys()), null, 2))
 console.log(JSON.stringify(ctx.css("test"), null, 2))
-console.log(JSON.stringify(ctx.css("custom-[red]/10"), null, 2))
+console.log(JSON.stringify(ctx.css("accent-black"), null, 2))

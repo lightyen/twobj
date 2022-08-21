@@ -268,19 +268,4 @@ export default {
 		800: "#9f1239",
 		900: "#881337",
 	},
-	get lightBlue() {
-		return this.sky
-	},
-	get warmGray() {
-		return this.stone
-	},
-	get trueGray() {
-		return this.neutral
-	},
-	get coolGray() {
-		return this.gray
-	},
-	get blueGray() {
-		return this.slate
-	},
-} as Tailwind.DefaultPalette
+}

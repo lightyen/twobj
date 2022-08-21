@@ -34,10 +34,13 @@ export interface LookupSpec {
 	): CSSProperties | undefined
 	supportsNegativeValues: boolean
 	filterDefault: boolean
+	isColor?: boolean
+	pluginName?: string
 }
 
 export interface StaticSpec {
 	type: "static"
 	css: CSSProperties
 	supportsNegativeValues: false
+	pluginName?: string
 }

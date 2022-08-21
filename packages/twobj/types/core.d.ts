@@ -1,16 +1,22 @@
 /// <reference types="tailwind-types" />
 import { CSSProperties, CSSValue, LookupSpec, PostModifier, StaticSpec, VariantSpec } from "./types";
 import { ValueType } from "./values";
+export declare const colorProps: Set<string>;
 export declare function createContext(config: Tailwind.ResolvedConfigJS): {
     globalStyles: Record<string, CSSProperties>;
     utilities: Map<string, LookupSpec | StaticSpec | (LookupSpec | StaticSpec)[]>;
     variants: Map<string, VariantSpec>;
     arbitraryVariants: Map<string, (value: string) => VariantSpec>;
     css: (value: string) => CSSProperties;
+    getPluginName: (value: string) => string | undefined;
     features: Set<string>;
     config: (path: string, defaultValue?: unknown) => unknown;
     theme: (value: string, defaultValue?: unknown) => unknown;
+    renderTheme: (value: string) => string;
     renderThemeFunc: (value: string) => string;
+    getClassList: () => string[];
+    getColorClass: () => Map<string, string[]>;
+    getThemeValueCompletion: (position: number, value: string) => Record<string, string>;
     prefix(value: string): string;
     expandAtRules: (style?: CSSProperties | undefined) => CSSProperties;
     addBase: (bases: CSSProperties | CSSProperties[]) => void;
@@ -36,5 +42,4 @@ export declare function createContext(config: Tailwind.ResolvedConfigJS): {
         values?: Record<string, string>;
         postModifier?: PostModifier;
     }) => void;
-    getClassList(): string[];
 };

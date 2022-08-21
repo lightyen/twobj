@@ -1,7 +1,6 @@
 import * as parsel from "parsel-js"
 import { classPlugins } from "./classPlugins"
 import * as parser from "./parser"
-import { camelCase } from "./parser"
 import type { CorePluginOptions, UserPlugin, UserPluginOptions } from "./plugin"
 import { preflight } from "./preflight"
 import { CSSProperties, CSSValue, LookupSpec, PostModifier, StaticSpec, VariantSpec } from "./types"
@@ -17,6 +16,30 @@ import {
 } from "./util"
 import { representAny, representTypes, ValueType } from "./values"
 import { variantPlugins } from "./variantPlugins"
+
+export const colorProps = new Set<string>([
+	"color",
+	"outline-color",
+	"border-color",
+	"border-top-color",
+	"border-right-color",
+	"border-bottom-color",
+	"border-left-color",
+	"background-color",
+	"text-decoration-color",
+	"accent-color",
+	"caret-color",
+	"fill",
+	"stroke",
+	"stop-color",
+	"column-rule-color",
+	"--tw-ring-color",
+	"--tw-ring-offset-color",
+	"--tw-gradient-from",
+	"--tw-gradient-to",
+	"--tw-gradient-stops",
+	"--tw-shadow-color",
+])
 
 export function createContext(config: Tailwind.ResolvedConfigJS) {
 	const separator = config.separator || ":"
@@ -52,10 +75,12 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	}
 
 	const features = new Set<string>()
+	let currentPluginName = ""
 
 	for (const [, plugin] of Object.entries(classPlugins)) {
-		plugin(apiContext)
+		currentPluginName = plugin.name
 		features.add(plugin.name)
+		plugin(apiContext)
 	}
 	for (const [, plugin] of Object.entries(variantPlugins)) {
 		plugin(apiContext)
@@ -102,10 +127,15 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		variants: variantMap,
 		arbitraryVariants: arbitraryVariantMap,
 		css,
+		getPluginName,
 		features,
 		config: legacyConfig,
 		theme: resolveTheme,
+		renderTheme,
 		renderThemeFunc,
+		getClassList,
+		getColorClass,
+		getThemeValueCompletion,
 		prefix(value: string) {
 			return value.startsWith(config.prefix) ? value.slice(config.prefix.length) : value
 		},
@@ -118,52 +148,21 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		matchUtilities,
 		matchComponents: matchUtilities,
 		matchVariant,
-		getClassList(): string[] {
-			return Array.from(utilityMap.entries()).flatMap(([key, specs]) => {
-				specs = toArray(specs)
-				return specs.flatMap(spec => {
-					if (spec.type === "static") {
-						return [key]
-					}
+	}
 
-					const values = Object.keys(spec.values)
-					const results = values
-						.map(value => {
-							if (value === "DEFAULT") {
-								if (spec.filterDefault) return null
-								return key
-							}
-							return key + "-" + value
-						})
-						.filter((v): v is string => typeof v === "string")
-					if (spec.supportsNegativeValues) {
-						return results.concat(
-							values
-								.filter(val => reverseSign(String(spec.values[val])) != undefined)
-								.map(value => {
-									if (value === "DEFAULT") {
-										if (spec.filterDefault) return null
-										return key
-									}
-									return "-" + key + "-" + value
-								})
-								.filter((v): v is string => typeof v === "string"),
-						)
-					}
-					return results
-				})
-			})
-		},
+	// accpet: 'theme(borderColor.500, <default-value>)
+	function renderThemeFunc(value: string): string {
+		return parser.renderThemeFunc(config, value)
+	}
+
+	// accpet: 'borderColor.500'
+	function renderTheme(value: string): string {
+		return parser.renderTheme(config, value)
 	}
 
 	// accpet: 'colors.primary/<alpha-value>'
-	function resolveTheme(value: string, defaultValue?: unknown) {
+	function resolveTheme(value: string, defaultValue?: unknown): unknown {
 		return parser.resolveTheme(config, value, defaultValue)
-	}
-
-	// accpet: 'theme(colors.borderColor.500, <default-value>)
-	function renderThemeFunc(value: string) {
-		return parser.renderThemeFunc(config, value)
 	}
 
 	function resolveGlobalTheme(g: CSSProperties): void {
@@ -179,7 +178,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		})
 	}
 
-	function legacyConfig(path: string, defaultValue?: unknown) {
+	function legacyConfig(path: string, defaultValue?: unknown): unknown {
 		const { path: nodes } = parser.parseThemeValue({
 			config,
 			text: path,
@@ -188,7 +187,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		return parser.resolvePath(config, nodes) ?? defaultValue
 	}
 
-	function addUtilitySpec(key: string, core: StaticSpec | LookupSpec) {
+	function addUtilitySpec(key: string, core: StaticSpec | LookupSpec): void {
 		const obj = utilityMap.get(key)
 		if (obj == null) {
 			utilityMap.set(key, core)
@@ -201,13 +200,15 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		utilityMap.set(key, [obj, core])
 	}
 
-	function addBase(bases: CSSProperties | CSSProperties[]) {
+	function addBase(bases: CSSProperties | CSSProperties[]): void {
 		bases = toArray(bases).map(applyCamelCase).map(expandAtRules)
 		merge(globalStyles, ...bases)
 	}
 
-	function addDefaults(pluginName: string, properties: Record<string, string | string[]>) {
-		properties = Object.fromEntries(Object.entries(properties).map(([key, value]) => [camelCase(key), value]))
+	function addDefaults(pluginName: string, properties: Record<string, string | string[]>): void {
+		properties = Object.fromEntries(
+			Object.entries(properties).map(([key, value]) => [parser.camelCase(key), value]),
+		)
 		for (let i = 0; i < defaults.length; i++) {
 			merge(defaults[i], properties)
 		}
@@ -219,7 +220,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		options: {
 			postModifier?: PostModifier
 		} = {},
-	) {
+	): void {
 		if (variantMap.has(variantName)) throw Error(`variant '${variantName} is duplicated.'`)
 		variantDesc = toArray(variantDesc)
 		variantDesc = variantDesc.map(v => v.replace(/:merge\((.*?)\)/g, "$1"))
@@ -232,7 +233,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			values?: Record<string, string>
 			postModifier?: PostModifier
 		} = {},
-	) {
+	): void {
 		for (const key in variants) {
 			for (const [k, v] of Object.entries(options.values ?? {})) {
 				addVariant(`${key}-${k}`, variants[key](v), { postModifier: options.postModifier })
@@ -271,7 +272,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		return value.endsWith(separator) ? value.slice(0, -separator.length) : value
 	}
 
-	function addUtilities(utilities: CSSProperties | CSSProperties[]) {
+	function addUtilities(utilities: CSSProperties | CSSProperties[]): void {
 		utilities = toArray(utilities).map(applyCamelCase)
 		const keyStylePairs = getKeyStylePairs(utilities)
 		for (const [key, css] of keyStylePairs) {
@@ -279,6 +280,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				type: "static",
 				css: expandAtRules(css),
 				supportsNegativeValues: false,
+				pluginName: currentPluginName,
 			})
 		}
 		return
@@ -472,13 +474,16 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 					represent,
 					supportsNegativeValues,
 					filterDefault,
+					pluginName: currentPluginName,
 				})
 				continue
 			}
 
 			// if types has 'color', always flatten the values
+			let isColor = false
 			if (types.some(t => t === "color")) {
 				values = flattenColorPalette(values)
+				isColor = true
 			}
 
 			represent = (input, node, getText, config, negative) => {
@@ -507,6 +512,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				represent,
 				supportsNegativeValues,
 				filterDefault,
+				isColor,
+				pluginName: currentPluginName,
 			})
 		}
 	}
@@ -524,6 +531,112 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 
 	///
 
+	function getClassList() {
+		return Array.from(utilityMap.entries()).flatMap(([key, specs]) => {
+			specs = toArray(specs)
+			return specs.flatMap(spec => {
+				if (spec.type === "static") {
+					return [key]
+				}
+
+				const values = Object.keys(spec.values)
+				const results = values
+					.map(value => {
+						if (value === "DEFAULT") {
+							if (spec.filterDefault) return null
+							return key
+						}
+						return key + "-" + value
+					})
+					.filter((v): v is string => typeof v === "string")
+				if (spec.supportsNegativeValues) {
+					return results.concat(
+						values
+							.filter(val => reverseSign(String(spec.values[val])) != undefined)
+							.map(value => {
+								if (value === "DEFAULT") {
+									if (spec.filterDefault) return null
+									return key
+								}
+								return "-" + key + "-" + value
+							})
+							.filter((v): v is string => typeof v === "string"),
+					)
+				}
+				return results
+			})
+		})
+	}
+
+	function getThemeValueCompletion(position: number, value: string) {
+		const ret: Record<string, string> = {}
+		return ret
+	}
+
+	function getColorClass() {
+		// <color>, currentColor, transparent, accent-color:auto
+		const collection = new Map<string, string[]>()
+
+		for (const entry of utilityMap.entries()) {
+			const key = entry[0]
+			let specs = entry[1]
+			specs = toArray(specs)
+			for (const s of specs) {
+				if (s.type === "lookup" && s.isColor) {
+					for (const [k, value] of Object.entries(s.values)) {
+						if (typeof value === "string") {
+							collection.set(key + "-" + k, [value])
+						}
+					}
+				} else if (s.type === "static") {
+					const colors = extractColors(s.css)
+					if (colors.length > 0) {
+						collection.set(key, colors)
+					}
+				}
+			}
+		}
+
+		return collection
+
+		function extractColors(style: CSSProperties): string[] {
+			const colors: string[] = []
+			for (const [prop, value] of Object.entries(style)) {
+				if (isCSSValue(value)) {
+					if (typeof value === "string") {
+						const color = parser.parseColor(value)
+						if (color && parser.isOpacityFunction(color.fn)) {
+							colors.push(value)
+						} else if (colorProps.has(prop)) {
+							colors.push(value)
+						}
+					}
+				} else {
+					colors.push(...extractColors(value))
+				}
+			}
+			return colors
+		}
+	}
+
+	/** Find the core plugin name. */
+	function getPluginName(value: string): string | undefined {
+		const program = parser.parse(value)
+		if (program.expressions.length !== 1) {
+			return undefined
+		}
+
+		const node = program.expressions[0]
+		if (node.type !== parser.NodeType.ClassName && node.type !== parser.NodeType.ArbitraryClassname) {
+			return undefined
+		}
+
+		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
+		const [, pluginName] = classname(node, getText)
+		return pluginName
+	}
+
+	/** Transfrom tailwind declarations to css object. */
 	function css(value: string): CSSProperties {
 		const rootStyle: CSSProperties = {}
 		const rootFn: VariantSpec = (css = {}) => css
@@ -588,7 +701,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			}
 			case parser.NodeType.ClassName:
 			case parser.NodeType.ArbitraryClassname: {
-				let css = classname(node, getText)
+				let [css] = classname(node, getText)
 				if (css != undefined) {
 					if (important || node.important) {
 						css = applyImportant(css)
@@ -603,7 +716,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 					const prop = node.decl.value.slice(0, i).trim()
 					const value = node.decl.value.slice(i + 1).trim()
 					if (prop && value) {
-						let css: CSSProperties = { [camelCase(prop)]: value }
+						let css: CSSProperties = { [parser.camelCase(prop)]: value }
 						if (css != undefined && (important || node.important)) css = applyImportant(css)
 						merge(root, variantCtx(css))
 					}
@@ -616,19 +729,22 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	function classname(
 		node: parser.Classname | parser.ArbitraryClassname,
 		getText: (node: parser.BaseNode) => string,
-	): CSSProperties | undefined {
+	): [css?: CSSProperties, pluginName?: string] {
 		const value = node.type === parser.NodeType.ClassName ? getText(node) : getText(node.prefix)
 		const { spec, negative, restInput } = parseInput(value)
-		if (!spec) return undefined
-
-		for (const c of toArray(spec)) {
-			if (c.type === "lookup") {
-				const result = c.represent(restInput, node, getText, config, negative)
-				if (result) return result
-			} else {
-				return c.css
+		if (spec) {
+			for (const c of toArray(spec)) {
+				if (c.type === "lookup") {
+					const css = c.represent(restInput, node, getText, config, negative)
+					if (css) {
+						return [css, c.pluginName]
+					}
+				} else {
+					return [c.css, c.pluginName]
+				}
 			}
 		}
+		return []
 	}
 
 	function parseInput(input: string) {
