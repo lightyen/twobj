@@ -31,7 +31,7 @@
 	},
 	"files": [
 		"types",
-		"plugin.*",
+		"index.*",
 		"*.d.ts"
 	]
 }
