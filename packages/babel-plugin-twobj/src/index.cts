@@ -37,7 +37,7 @@ function getLibName(): LibName {
 
 function babelPlugin(
 	babel: typeof import("babel__core"),
-	options: import("./options.js").PluginOptions,
+	options: import("./options").PluginOptions,
 ): import("babel__core").PluginObj {
 	const config = readConfig(options)
 	if (options.debug) console.log("commonjs result:", typeof config === "object")

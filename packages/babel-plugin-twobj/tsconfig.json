@@ -1,6 +1,6 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["src/**/*.ts", "src/plugin.mts", "src/plugin.cts"],
+	"include": ["src/**/*.ts"],
 	"compilerOptions": {
 		"noImplicitAny": true
 	}

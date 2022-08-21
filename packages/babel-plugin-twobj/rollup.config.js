@@ -6,10 +6,10 @@ import nodeResolve from "@rollup/plugin-node-resolve"
 const configs = [
 	{
 		external: ["twobj"],
-		input: "src/plugin.cts",
+		input: "src/index.cts",
 		output: [
 			{
-				file: "plugin.cjs",
+				file: "index.cjs",
 				format: "cjs",
 				exports: "named",
 			},
@@ -29,10 +29,10 @@ const configs = [
 	},
 	{
 		external: ["twobj"],
-		input: "src/plugin.mts",
+		input: "src/index.mts",
 		output: [
 			{
-				file: "plugin.mjs",
+				file: "index.mjs",
 				format: "esm",
 			},
 		],
@@ -46,7 +46,6 @@ const configs = [
 			}),
 			nodeResolve({ extensions: [".ts", ".mts"] }),
 			commonjs(),
-			// terser(),
 		],
 	},
 ]

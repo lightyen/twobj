@@ -9,30 +9,26 @@
 	"repository": {
 		"directory": "https://github.com/lightyen/twobj/tree/main/packages/twobj"
 	},
-	"types": "./types/index.d.ts",
 	"exports": {
 		".": {
 			"require": "./index.cjs",
-			"import": "./index.mjs",
-			"types": "./types/index.d.ts"
+			"import": "./index.mjs"
 		},
 		"./parser": {
 			"require": "./parser/index.cjs",
-			"import": "./parser/index.mjs",
-			"types": "./types/parser/index.d.ts"
+			"import": "./parser/index.mjs"
 		}
 	},
 	"scripts": {
 		"compile": "del ./index.* ./parser/index.* && rollup -c",
-		"types": "del ./types/** && tsc --project tsconfig.types.json --declaration --emitDeclarationOnly --outDir types",
-		"format": "prettier --config ../../.prettierrc.yml --write {src,types}/**/*.ts",
+		"types": "del *.d.ts **/*.d.ts && tsc --project tsconfig.types.json",
+		"format": "prettier --config ../../.prettierrc.yml --write **/*.ts",
 		"build": "npm run compile && npm run types && npm run format"
 	},
 	"files": [
-		"types",
 		"parser",
 		"index.cjs",
 		"index.mjs",
-		"README.md"
+    "*.d.ts"
 	]
 }

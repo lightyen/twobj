@@ -1,4 +1,4 @@
 node_modules
-/core
-/index.*
-/parser/index.*
+/index.*js
+/parser/index.*js
+**/*.d.ts

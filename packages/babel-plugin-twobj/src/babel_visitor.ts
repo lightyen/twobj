@@ -37,7 +37,7 @@ export function createVisitor({
 	lib,
 }: {
 	babel: typeof import("babel__core")
-	options: import("../options.js").PluginOptions
+	options: import("./options").PluginOptions
 	config: unknown
 	moduleType: "esm" | "cjs"
 	lib: LibName

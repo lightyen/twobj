@@ -9,17 +9,16 @@
 	"repository": {
 		"directory": "https://github.com/lightyen/twobj/tree/main/packages/babel-plugin-twobj"
 	},
-	"types": "./types/plugin.d.mts",
 	"exports": {
 		".": {
-			"require": "./plugin.cjs",
-			"import": "./plugin.mjs"
+			"require": "./index.cjs",
+			"import": "./index.mjs"
 		}
 	},
 	"scripts": {
 		"compile": "del ./index.* && rollup -c",
-		"types": "del ./types  !./types/tw-prop.d.ts !./types/emotion.d.ts && tsc --project tsconfig.types.json --declaration --emitDeclarationOnly --outDir types",
-		"format": "prettier --config ../../.prettierrc.yml --write {src,types}/**/*.ts",
+		"types": "del *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/tw-prop.d.ts && tsc --project tsconfig.types.json",
+		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
 		"build": "npm run compile && npm run types && npm run format"
 	},
 	"peerDependencies": {
@@ -33,6 +32,6 @@
 	"files": [
 		"types",
 		"plugin.*",
-		"README.md"
+		"*.d.ts"
 	]
 }

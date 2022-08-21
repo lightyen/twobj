@@ -179,12 +179,9 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	}
 
 	function legacyConfig(path: string, defaultValue?: unknown): unknown {
-		const { path: nodes } = parser.parseThemeValue({
-			config,
-			text: path,
-			useDefault: false,
-		})
-		return parser.resolvePath(config, nodes) ?? defaultValue
+		const node = parser.parse_theme_val({ text: path })
+		const target = parser.resolvePath(config, node.path, true)
+		return target === undefined ? defaultValue : target
 	}
 
 	function addUtilitySpec(key: string, core: StaticSpec | LookupSpec): void {
@@ -568,9 +565,52 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		})
 	}
 
-	function getThemeValueCompletion(position: number, value: string) {
-		const ret: Record<string, string> = {}
-		return ret
+	function getThemeValueCompletion({
+		position,
+		text,
+		start = 0,
+		end = text.length,
+	}: {
+		position: number
+		text: string
+		start?: number
+		end?: number
+	}): {
+		range: parser.Range
+		candidates: Array<[string, string]>
+	} {
+		const node = parser.parse_theme_val({ text, start, end })
+		const result = parser.resolvePath(config.theme, node.path, true)
+
+		if (result === undefined) {
+			const ret = parser.tryOpacityValue(node.path)
+			if (ret.opacityValue) {
+				node.path = ret.path
+			}
+		}
+
+		if (node.path.length === 0) {
+			return {
+				range: node.range,
+				candidates: format(config.theme),
+			}
+		}
+
+		const i = node.path.findIndex(p => position >= p.range[0] && position <= p.range[1])
+		const obj = parser.resolvePath(config.theme, node.path.slice(0, i))
+		return {
+			range: node.path[i].range,
+			candidates: format(obj),
+		}
+
+		function format(obj: unknown): Array<[string, string]> {
+			if (typeof obj !== "object") {
+				return []
+			}
+			return Object.entries(Object.assign({}, obj)).map(([key, value]) => {
+				return [key, parser.renderThemeValue({ value })]
+			})
+		}
 	}
 
 	function getColorClass() {

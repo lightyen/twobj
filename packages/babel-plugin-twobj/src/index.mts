@@ -39,7 +39,7 @@ async function getLibName(): Promise<LibName> {
 
 export default async function babelPlugin(
 	babel: typeof import("babel__core"),
-	options: import("./options.js").PluginOptions,
+	options: import("./options").PluginOptions,
 ): Promise<import("babel__core").PluginObj> {
 	const config = await readConfig(options)
 	if (options.debug) console.log("esmodule result:", typeof config === "object")
