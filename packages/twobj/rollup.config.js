@@ -59,20 +59,21 @@ const configs = [
 		plugins,
 	},
 	{
-		input: "src/config/index.ts",
+		input: "src/config/defaultConfig.ts",
 		output: [
 			{
-				file: "config/index.cjs",
+				file: "config/defaultConfig.cjs",
 				format: "cjs",
+				exports: "auto",
 			},
 		],
 		plugins,
 	},
 	{
-		input: "src/config/index.ts",
+		input: "src/config/defaultConfig.ts",
 		output: [
 			{
-				file: "config/index.mjs",
+				file: "config/defaultConfig.mjs",
 				format: "esm",
 			},
 		],

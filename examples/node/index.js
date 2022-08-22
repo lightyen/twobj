@@ -1,5 +1,5 @@
 import { createContext, resolveConfig } from "twobj"
-import { defaultConfig } from "twobj/config"
+import defaultConfig from "twobj/config/defaultConfig"
 
 const ctx = createContext(
 	resolveConfig({
