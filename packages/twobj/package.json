@@ -27,6 +27,7 @@
 	},
 	"files": [
 		"parser",
+    "config",
 		"index.cjs",
 		"index.mjs",
 		"*.d.ts"

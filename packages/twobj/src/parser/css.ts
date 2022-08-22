@@ -101,6 +101,7 @@ export function splitCssParams(value: string): Param[] {
 		if (fn) {
 			const rb = findRightBracket({ text: value, start: regexp.lastIndex - 1, comments: fn !== "url" })
 			if (rb == undefined) {
+				result.push({ fn, params: splitCssParams(value.slice(regexp.lastIndex, value.length)) })
 				return result
 			}
 			result.push({ fn, params: splitCssParams(value.slice(regexp.lastIndex, rb)) })

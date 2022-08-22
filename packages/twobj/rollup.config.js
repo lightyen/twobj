@@ -58,5 +58,25 @@ const configs = [
 		],
 		plugins,
 	},
+	{
+		input: "src/config/index.ts",
+		output: [
+			{
+				file: "config/index.cjs",
+				format: "cjs",
+			},
+		],
+		plugins,
+	},
+	{
+		input: "src/config/index.ts",
+		output: [
+			{
+				file: "config/index.mjs",
+				format: "esm",
+			},
+		],
+		plugins,
+	},
 ]
 export default configs
