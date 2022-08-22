@@ -22,7 +22,7 @@
 	"scripts": {
 		"compile": "del ./index.* ./parser/index.* && rollup -c",
 		"types": "del *.d.ts **/*.d.ts && tsc --project tsconfig.types.json",
-		"format": "prettier --config ../../.prettierrc.yml --write **/*.ts",
+		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
 		"build": "npm run compile && npm run types && npm run format"
 	},
 	"files": [
