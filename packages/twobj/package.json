@@ -1,6 +1,6 @@
 {
 	"name": "twobj",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"homepage": "https://github.com/lightyen/twobj",
 	"author": {
 		"name": "lightyen",
@@ -24,7 +24,7 @@
 		}
 	},
 	"scripts": {
-		"compile": "del ./index.* ./parser/index.* && rollup -c",
+		"compile": "del ./index.* ./parser ./config && rollup -c",
 		"types": "del *.d.ts **/*.d.ts && tsc --project tsconfig.types.json",
 		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
 		"build": "npm run compile && npm run types && npm run format"

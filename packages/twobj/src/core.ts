@@ -220,6 +220,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	): void {
 		if (variantMap.has(variantName)) throw Error(`variant '${variantName} is duplicated.'`)
 		variantDesc = toArray(variantDesc)
+		if (variantDesc.some(value => typeof value !== "string"))
+			throw Error(`variant description type should be string or string[].`)
 		variantDesc = variantDesc.map(v => v.replace(/:merge\((.*?)\)/g, "$1"))
 		variantMap.set(variantName, createVariantSpec(variantDesc, options.postModifier))
 	}
@@ -614,7 +616,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	}
 
 	function getColorClass() {
-		// <color>, currentColor, transparent, accent-color:auto
 		const collection = new Map<string, string[]>()
 
 		for (const entry of utilityMap.entries()) {
@@ -624,9 +625,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			for (const s of specs) {
 				if (s.type === "lookup" && s.isColor) {
 					for (const [k, value] of Object.entries(s.values)) {
-						if (typeof value === "string") {
-							collection.set(key + "-" + k, [value])
-						}
+						collection.set(key + "-" + k, [toColorValue(value)])
 					}
 				} else if (s.type === "static") {
 					const colors = extractColors(s.css)
@@ -638,6 +637,16 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		}
 
 		return collection
+
+		function toColorValue(value: unknown): string {
+			if (typeof value === "string") {
+				return value.replace("<alpha-value>", "1")
+			}
+			if (typeof value === "function") {
+				return String(value({ opacityValue: "1" }))
+			}
+			return String(value)
+		}
 
 		function extractColors(style: CSSProperties): string[] {
 			const colors: string[] = []

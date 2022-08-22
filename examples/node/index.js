@@ -1,38 +1,63 @@
 import { createContext, resolveConfig } from "twobj"
-import defaultConfig from "twobj/config/defaultConfig"
 
 const ctx = createContext(
 	resolveConfig({
+		lightMode: "media",
 		theme: {
 			extend: {
+				tabSize: {
+					px: "1px",
+				},
 				colors: {
-					primary: {
-						DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+					bar: "rgb(var(--color) / <alpha-value>)",
+					qoo: function () {
+						return "rgb(var(--color))"
+					},
+					"foo-5": "#056660",
+					"foo-5/10": "#051060",
+					"foo-5/10/10%": "#651025",
+					space: {
+						"1/1": "#051025",
 					},
 				},
 			},
 		},
+		experimental: { matchVariant: true },
 		plugins: [
-			({ addUtilities, matchUtilities, theme }) => {
-				addUtilities({
-					".test": {
-						color: theme("colors.primary"),
+			function ({ matchUtilities, matchComponents, matchVariant, theme, e }) {
+				matchUtilities({
+					tab(value) {
+						return {
+							tabSize: value,
+						}
 					},
 				})
-				matchUtilities(
+				matchComponents(
 					{
-						custom(value) {
-							return { "--helloworld": value }
+						test(value) {
+							return {
+								"&.test": {
+									backgroundColor: value,
+								},
+							}
 						},
 					},
-					{ type: "color", values: theme("colors") },
+					{ values: theme("colors.cyan") },
 				)
+				matchVariant({
+					tab(value) {
+						if (value == null) return "& > *"
+						return `&.${e(value ?? "")} > *`
+					},
+				})
+				matchVariant({
+					screen(value) {
+						return `@media (min-width: ${value ?? "0px"})`
+					},
+				})
 			},
 		],
 	}),
 )
 
-console.log(JSON.stringify(Array.from(ctx.getColorClass().keys()), null, 2))
-console.log(JSON.stringify(ctx.css("test"), null, 2))
-
-console.log(defaultConfig)
+console.log(ctx.getColorClass().get("to-qoo"))

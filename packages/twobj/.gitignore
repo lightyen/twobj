@@ -1,5 +1,5 @@
 node_modules
 /index.*js
-/parser/index.*js
-/config/index.*js
+/parser
+/config
 **/*.d.ts
