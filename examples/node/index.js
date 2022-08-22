@@ -1,4 +1,5 @@
 import { createContext, resolveConfig } from "twobj"
+import { defaultConfig } from "twobj/config"
 
 const ctx = createContext(
 	resolveConfig({
@@ -33,3 +34,5 @@ const ctx = createContext(
 
 console.log(JSON.stringify(Array.from(ctx.getColorClass().keys()), null, 2))
 console.log(JSON.stringify(ctx.css("test"), null, 2))
+
+console.log(defaultConfig)

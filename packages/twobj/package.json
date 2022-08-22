@@ -1,6 +1,6 @@
 {
 	"name": "twobj",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"homepage": "https://github.com/lightyen/twobj",
 	"author": {
 		"name": "lightyen",
@@ -17,6 +17,10 @@
 		"./parser": {
 			"require": "./parser/index.cjs",
 			"import": "./parser/index.mjs"
+		},
+		"./config": {
+			"require": "./config/index.cjs",
+			"import": "./config/index.mjs"
 		}
 	},
 	"scripts": {
@@ -27,7 +31,7 @@
 	},
 	"files": [
 		"parser",
-    "config",
+		"config",
 		"index.cjs",
 		"index.mjs",
 		"*.d.ts"
