@@ -1854,7 +1854,6 @@ export const classPlugins: ClassPlugins = {
 			".outline-dashed": { outlineStyle: "dashed" },
 			".outline-dotted": { outlineStyle: "dotted" },
 			".outline-double": { outlineStyle: "double" },
-			".outline-hidden": { outlineStyle: "hidden" },
 		})
 	}),
 	overflow: plugin("overflow", ({ addUtilities }) => {
