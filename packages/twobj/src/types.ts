@@ -15,11 +15,11 @@ export interface Template {
 }
 
 export interface VariantSpec {
-	(css: CSSProperties | undefined): CSSProperties
+	(css?: CSSProperties): CSSProperties
 }
 
 export interface PostModifier {
-	(css: PlainCSSProperties | undefined): PlainCSSProperties
+	(css?: PlainCSSProperties): PlainCSSProperties
 }
 
 export interface LookupSpec {

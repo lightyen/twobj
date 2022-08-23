@@ -17,8 +17,7 @@ export function parseColor(css: string): Color | undefined {
 	return parseCssFunc(css)
 }
 
-export function formatColor(color: Color | undefined) {
-	if (!color) return undefined
+export function formatColor(color: Color) {
 	const { fn, params } = color
 	if (params.length < 4) {
 		return fn + "(" + params.join(" ") + ")"
