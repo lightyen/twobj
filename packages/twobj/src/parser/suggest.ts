@@ -130,6 +130,13 @@ export function suggest({
 				)
 			}
 
+			if (
+				nodes.NodeType.ArbitraryProperty === node.type ||
+				nodes.NodeType.ArbitraryClassname === node.type
+			) {
+				return { target: node, variants: ctx.variants }
+			}
+
 			if (nodes.NodeType.ClassName === node.type) {
 				return { target: node, variants: ctx.variants }
 			}
