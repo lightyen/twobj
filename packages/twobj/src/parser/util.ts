@@ -1,5 +1,3 @@
-import * as nodes from "./nodes"
-
 export function kebab(value: string) {
 	return value.replace(/\B[A-Z][a-z]*/g, s => "-" + s.toLowerCase())
 }
@@ -7,48 +5,6 @@ export function kebab(value: string) {
 export function camelCase(value: string) {
 	if (value.startsWith("--")) return value
 	return value.replace(/-[a-z]/g, x => x[1].toUpperCase())
-}
-
-interface SimpleVariantToken extends nodes.TokenString {
-	type: nodes.NodeType.SimpleVariant
-}
-
-interface ArbitrarySelectorToken extends nodes.TokenString {
-	type: nodes.NodeType.ArbitrarySelector
-	selector: nodes.CssSelector
-}
-
-interface ArbitraryVariantToken extends nodes.TokenString {
-	type: nodes.NodeType.ArbitraryVariant
-	selector: nodes.CssSelector
-}
-
-export function getVariant(
-	variant: nodes.Variant,
-	sep: string,
-): SimpleVariantToken | ArbitrarySelectorToken | ArbitraryVariantToken {
-	switch (variant.type) {
-		case nodes.NodeType.ArbitrarySelector:
-			return {
-				type: nodes.NodeType.ArbitrarySelector,
-				range: variant.selector.range,
-				value: variant.selector.value,
-				selector: variant.selector,
-			}
-		case nodes.NodeType.ArbitraryVariant:
-			return {
-				type: nodes.NodeType.ArbitraryVariant,
-				range: [variant.range[0], variant.range[1] - sep.length],
-				value: variant.prefix.value + "[" + variant.selector.value + "]",
-				selector: variant.selector,
-			}
-		default:
-			return {
-				type: nodes.NodeType.SimpleVariant,
-				range: variant.id.range,
-				value: variant.id.value,
-			}
-	}
 }
 
 /** NOTE: respect quoted string */

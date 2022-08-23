@@ -134,8 +134,9 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		renderTheme,
 		renderThemeFunc,
 		getClassList,
-		getColorClass,
+		getColorClasses,
 		getThemeValueCompletion,
+		cssVariant,
 		prefix(value: string) {
 			return value.startsWith(config.prefix) ? value.slice(config.prefix.length) : value
 		},
@@ -254,9 +255,16 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				if (rb == undefined) {
 					return (css = {}) => ({ [desc]: css })
 				}
-				const scope = desc.slice(0, reg.lastIndex - 1).trim()
+				const scope = desc
+					.slice(0, reg.lastIndex - 1)
+					.trim()
+					.replace(/\s{2,}/g, " ")
 				const restDesc = desc.slice(reg.lastIndex, rb).trim()
-				return (css = {}) => ({ [scope]: createVariantSpec([restDesc])(css) })
+				if (scope) {
+					return (css = {}) => ({ [scope]: createVariantSpec([restDesc])(css) })
+				} else {
+					return (css = {}) => createVariantSpec([restDesc])(css)
+				}
 			}
 		})
 		return (css = {}) => {
@@ -265,10 +273,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			}
 			return Object.assign({}, ...fns.map(fn => fn(css)))
 		}
-	}
-
-	function trimRightSeparator(value: string) {
-		return value.endsWith(separator) ? value.slice(0, -separator.length) : value
 	}
 
 	function addUtilities(utilities: CSSProperties | CSSProperties[]): void {
@@ -420,7 +424,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 
 			if (key.startsWith(AT_SCREEN)) {
 				const input = key.slice(AT_SCREEN.length)
-				const fn = compose(expandAtRules, variantMap.get(input))
+				const fn = compose(variantMap.get(input), expandAtRules)
 				merge(target, fn(value))
 				continue
 			}
@@ -519,7 +523,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 
 	function compose(...variants: (VariantSpec | undefined)[]): VariantSpec {
 		let ret: VariantSpec = (css = {}) => css
-		for (const f of variants) {
+		for (const f of variants.reverse()) {
 			if (f) {
 				const g = ret
 				ret = (css = {}) => f(g(css))
@@ -615,7 +619,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		}
 	}
 
-	function getColorClass() {
+	function getColorClasses() {
 		const collection = new Map<string, string[]>()
 
 		for (const entry of utilityMap.entries()) {
@@ -708,34 +712,23 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			case parser.NodeType.VariantSpan: {
 				switch (node.variant.type) {
 					case parser.NodeType.SimpleVariant: {
-						const input = getText(node.variant)
-						const variant = variantMap.get(trimRightSeparator(input))
+						const variant = simpleVariant(node.variant)
 						if (node.child) {
-							process(node.child, root, compose(variant, variantCtx), getText, important)
+							process(node.child, root, compose(variantCtx, variant), getText, important)
 						}
 						break
 					}
 					case parser.NodeType.ArbitraryVariant: {
-						let variant: VariantSpec = (css = {}) => css
-						const prefix = getText(node.variant.prefix)
-						if (prefix.endsWith("-")) {
-							const key = prefix.slice(0, -1)
-							const spec = arbitraryVariantMap.get(key)
-							if (spec) {
-								const input = getText(node.variant.selector)
-								variant = spec(input)
-							}
-						}
+						const variant = arbitraryVariant(node.variant)
 						if (node.child) {
-							process(node.child, root, compose(variant, variantCtx), getText, important)
+							process(node.child, root, compose(variantCtx, variant), getText, important)
 						}
 						break
 					}
 					case parser.NodeType.ArbitrarySelector: {
-						const input = getText(node.variant.selector)
-						const variant: VariantSpec = (css = {}) => ({ [input]: css })
+						const variant = arbitrarySelector(node.variant)
 						if (node.child) {
-							process(node.child, root, compose(variant, variantCtx), getText, important)
+							process(node.child, root, compose(variantCtx, variant), getText, important)
 						}
 						break
 					}
@@ -773,6 +766,33 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				break
 			}
 		}
+	}
+
+	function simpleVariant(node: parser.SimpleVariant) {
+		return variantMap.get(node.id.value)
+	}
+
+	function arbitraryVariant(node: parser.ArbitraryVariant) {
+		let variant: VariantSpec | undefined
+		const prefix = node.prefix.value
+		if (prefix.endsWith("-")) {
+			const key = prefix.slice(0, -1)
+			const spec = arbitraryVariantMap.get(key)
+			if (spec) {
+				const input = node.selector.value
+				variant = spec(input)
+			}
+		}
+		return variant
+	}
+
+	function arbitrarySelector(node: parser.ArbitrarySelector) {
+		const value = node.selector.value.trim().replace(/\s{2,}/g, " ")
+		if (value) {
+			const variant: VariantSpec = (css = {}) => ({ [value]: css })
+			return variant
+		}
+		return undefined
 	}
 
 	function classname(
@@ -831,5 +851,48 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		}
 
 		return result
+	}
+
+	function cssVariant(...variants: Array<parser.Variant | string>) {
+		return compose(
+			...variants.map(value => {
+				if (typeof value === "string") {
+					const variant = variantMap.get(value)
+					if (variant) {
+						return variant
+					}
+
+					const program = parser.parse(value + separator)
+					if (program.expressions.length !== 1) {
+						return undefined
+					}
+
+					const node = program.expressions[0]
+					if (
+						node.type !== parser.NodeType.VariantSpan ||
+						node.variant.type === parser.NodeType.SimpleVariant
+					) {
+						return undefined
+					}
+
+					if (node.variant.type === parser.NodeType.ArbitrarySelector) {
+						return arbitrarySelector(node.variant)
+					}
+
+					return arbitraryVariant(node.variant)
+				}
+
+				const node = value
+				if (node.type === parser.NodeType.SimpleVariant) {
+					return variantMap.get(node.id.value)
+				}
+
+				if (node.type === parser.NodeType.ArbitrarySelector) {
+					return arbitrarySelector(node)
+				}
+
+				return arbitraryVariant(node)
+			}),
+		)
 	}
 }

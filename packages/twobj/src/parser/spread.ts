@@ -1,17 +1,16 @@
 import * as nodes from "./nodes"
 import * as parser from "./parse_regexp"
-import { getVariant } from "./util"
 
 export type SpreadDescription = {
 	target: nodes.Classname | nodes.ArbitraryClassname | nodes.ArbitraryProperty
 	value: string
-	variants: ReturnType<typeof getVariant>[]
+	variants: nodes.Variant[]
 	important: boolean
 }
 
 export function spread(text: string, { separator = ":" }: { separator?: string } = {}) {
 	interface Context {
-		variants: ReturnType<typeof getVariant>[]
+		variants: nodes.Variant[]
 		important: boolean
 	}
 
@@ -29,7 +28,7 @@ export function spread(text: string, { separator = ":" }: { separator?: string }
 				return
 			}
 			const variants = ctx.variants.slice()
-			variants.push(getVariant(node.variant, separator))
+			variants.push(node.variant)
 			walk(node.child, { ...ctx, variants })
 		} else if (nodes.NodeType.Group === node.type) {
 			if (!node.closed) {

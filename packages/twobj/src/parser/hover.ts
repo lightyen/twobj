@@ -1,19 +1,20 @@
 import * as nodes from "./nodes"
 import * as parser from "./parse_regexp"
-import { getVariant } from "./util"
 
-interface HoverResult {
-	target:
-		| nodes.SimpleVariant
-		| nodes.ArbitrarySelector
-		| nodes.ArbitraryVariant
-		| nodes.Classname
-		| nodes.ArbitraryClassname
-		| nodes.ArbitraryProperty
+interface HoverResultVariant {
+	type: "variant"
+	target: nodes.Variant
+}
+
+interface HoverResultClassName {
+	type: "classname"
+	target: nodes.Classname | nodes.ArbitraryClassname | nodes.ArbitraryProperty
 	value: string
-	variants: string[]
+	variants: nodes.Variant[]
 	important: boolean
 }
+
+type HoverResult = HoverResultVariant | HoverResultClassName
 
 export function hover({
 	position,
@@ -23,10 +24,10 @@ export function hover({
 	position: number
 	text: string
 	separator?: string
-}): HoverResult | undefined {
+}): HoverResultClassName | HoverResultVariant | undefined {
 	interface Context {
 		important: boolean
-		variants: string[]
+		variants: nodes.Variant[]
 	}
 
 	const inRange = (node: nodes.Node) => position >= node.range[0] && position < node.range[1]
@@ -37,14 +38,12 @@ export function hover({
 				const variants = ctx.variants.slice()
 				if (inRange(node.variant)) {
 					return {
+						type: "variant",
 						target: node.variant,
-						value: getVariant(node.variant, separator).value,
-						important: false,
-						variants,
 					}
 				}
 				if (!node.child) return undefined
-				variants.push(getVariant(node.variant, separator).value)
+				variants.push(node.variant)
 				return travel(node.child, { ...ctx, variants })
 			}
 
@@ -57,6 +56,7 @@ export function hover({
 
 			if (nodes.NodeType.ClassName === node.type) {
 				return {
+					type: "classname",
 					target: node,
 					value: text.slice(node.range[0], node.range[1]),
 					important: ctx.important || node.important,
@@ -66,6 +66,7 @@ export function hover({
 
 			if (nodes.NodeType.ArbitraryProperty === node.type) {
 				return {
+					type: "classname",
 					target: node,
 					value: text.slice(node.decl.range[0], node.decl.range[1]),
 					important: ctx.important || node.important,
@@ -75,6 +76,7 @@ export function hover({
 
 			if (nodes.NodeType.ArbitraryClassname === node.type) {
 				return {
+					type: "classname",
 					target: node,
 					value: text.slice(node.range[0], node.range[1]),
 					important: ctx.important || node.important,

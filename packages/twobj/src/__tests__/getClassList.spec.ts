@@ -8315,7 +8315,6 @@ const source = [
 	"outline-dashed",
 	"outline-dotted",
 	"outline-double",
-	"outline-hidden",
 	"outline-0",
 	"outline-1",
 	"outline-2",
