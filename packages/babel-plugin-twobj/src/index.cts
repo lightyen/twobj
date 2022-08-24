@@ -25,7 +25,7 @@ function isModule(id: string) {
 	}
 }
 
-function getLibName(): ThirdPartyName {
+function findThirdParty(): ThirdPartyName | undefined {
 	// emotion
 	if (isModule("@emotion/react")) {
 		return "emotion"
@@ -45,7 +45,7 @@ function getLibName(): ThirdPartyName {
 		return "linaria"
 	}
 
-	return "default"
+	return undefined
 }
 
 function babelPlugin(
@@ -54,8 +54,7 @@ function babelPlugin(
 ): import("babel__core").PluginObj {
 	const config = readConfig(options)
 	if (options.debug) console.log("commonjs result:", typeof config === "object")
-	const thirdParty = options.thirdParty ?? "auto"
-
+	const thirdParty = options.thirdParty
 	return {
 		name: "tw",
 		visitor: createVisitor({
@@ -63,7 +62,7 @@ function babelPlugin(
 			options,
 			config,
 			moduleType: "cjs",
-			thirdParty: thirdParty === "auto" ? getLibName() : thirdParty,
+			thirdParty: thirdParty === "auto" ? findThirdParty() : thirdParty,
 		}),
 	}
 }

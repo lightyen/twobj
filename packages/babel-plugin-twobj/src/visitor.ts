@@ -1,7 +1,7 @@
 import type { NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import { createContext, resolveConfig } from "twobj"
-import type { State, ImportLibrary, ThirdPartyName } from "./types"
+import type { State, ImportLibrary, ThirdPartyName, PluginState } from "./types"
 import {
 	isObject,
 	buildArrayExpression,
@@ -25,7 +25,7 @@ export function createVisitor({
 	options: import("./options").PluginOptions
 	config: unknown
 	moduleType: "esm" | "cjs"
-	thirdParty: ThirdPartyName
+	thirdParty: ThirdPartyName | undefined
 }): Visitor<import("@babel/core").PluginPass> {
 	const t = babel.types
 	const resolved = resolveConfig(config as Parameters<typeof resolveConfig>[0])
@@ -116,15 +116,13 @@ export function createVisitor({
 
 	const lookup = new Set([packageName])
 
-	switch (thirdParty) {
-		case "emotion":
-			plugins.emotion.lookup.forEach(v => lookup.add(v))
-			break
+	if (thirdParty) {
+		plugins[thirdParty].lookup.forEach(v => lookup.add(v))
 	}
 
 	return {
 		Program(program) {
-			const state: State = { file: this.file, imports: [], styled: { imported: false, localName: "styled" } }
+			const state: State = { file: this.file, imports: [] }
 			program.get("body").forEach(path => {
 				if (!path.isImportDeclaration()) return
 				const lib = getImportLibrary(t, lookup, path)
@@ -137,11 +135,11 @@ export function createVisitor({
 				program.unshiftContainer("body", declaration)
 			}
 
-			switch (thirdParty) {
-				case "emotion": {
-					program.traverse<State>(plugins.emotion({ t, buildStyle, addImportDeclaration }), state)
-					break
-				}
+			if (thirdParty) {
+				program.traverse<State & PluginState>(
+					plugins[thirdParty]({ t, buildStyle, addImportDeclaration }),
+					Object.assign({}, state, { styled: { imported: false, localName: "styled" } }),
+				)
 			}
 
 			// transfrom tw template tag

@@ -12,6 +12,9 @@ export interface State {
 	file: BabelFile
 	imports: Array<ImportLibrary>
 	globalInserted?: boolean
+}
+
+export interface PluginState {
 	styled: {
 		localName: string
 		imported: boolean
@@ -23,8 +26,8 @@ export interface Plugin {
 		t: typeof babel
 		buildStyle: (input: string) => babel.ObjectExpression
 		addImportDeclaration: (declaration: babel.ImportDeclaration) => void
-	}): Visitor<State>
+	}): Visitor<State & PluginState>
 	lookup: string[]
 }
 
-export type ThirdPartyName = "emotion" | "linaria" | "default"
+export type ThirdPartyName = "emotion" | "linaria"

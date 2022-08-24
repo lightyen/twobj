@@ -27,7 +27,7 @@ async function isModule(id: string) {
 	}
 }
 
-async function getLibName(): Promise<ThirdPartyName> {
+async function findThirdParty(): Promise<ThirdPartyName | undefined> {
 	// emotion
 	if (await isModule("@emotion/react")) {
 		return "emotion"
@@ -47,7 +47,7 @@ async function getLibName(): Promise<ThirdPartyName> {
 		return "linaria"
 	}
 
-	return "default"
+	return undefined
 }
 
 export default async function babelPlugin(
@@ -56,8 +56,7 @@ export default async function babelPlugin(
 ): Promise<import("babel__core").PluginObj> {
 	const config = await readConfig(options)
 	if (options.debug) console.log("esmodule result:", typeof config === "object")
-	const thirdParty = options.thirdParty ?? "auto"
-
+	const thirdParty = options.thirdParty
 	return {
 		name: "tw",
 		visitor: createVisitor({
@@ -65,7 +64,7 @@ export default async function babelPlugin(
 			options,
 			config,
 			moduleType: "esm",
-			thirdParty: thirdParty === "auto" ? await getLibName() : thirdParty,
+			thirdParty: thirdParty === "auto" ? await findThirdParty() : thirdParty,
 		}),
 	}
 }
