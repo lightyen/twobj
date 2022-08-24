@@ -1,0 +1,9 @@
+{
+  "ext.settings.enabled": "啟用",
+  "ext.settings.colorDecorators": "啟用顏色提示高亮。",
+  "ext.settings.references": "啟用文件資料參考提示。",
+  "ext.settings.diagnostics": "診斷重複屬性或者空值。",
+  "ext.settings.diagnostics.enabled": "啟用診斷。",
+  "ext.settings.logging.level": "擴充套件的日誌層級，預設為 'info'",
+  "ext.debug-outout.version": "版本"
+}

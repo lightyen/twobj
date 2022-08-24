@@ -1,0 +1,21 @@
+.vscode
+webpack.config.*
+**/*.ts
+.gitignore
+.prettierrc.yml
+.editorconfig
+.eslintignore
+webpack.tsconfig.json
+**/tsconfig.json
+**/tsconfig.base.json
+contributing.md
+tests/**
+references
+.github/**
+examples
+media/icon.svg
+media/icon.xcf
+# node_modules
+src/**/*
+.browserslistrc
+statistics.html

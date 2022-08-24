@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "lib": ["ESNext"],
+    "types": ["node", "vscode", "webpack-env", "tailwind-types", "@types/node", "@types/jest"],
+    "rootDir": "..",
+    "paths": {
+      "~/*": ["./*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.json", "../package.json", "../package.nls*.json"]
+}

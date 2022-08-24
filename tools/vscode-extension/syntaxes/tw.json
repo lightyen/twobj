@@ -1,0 +1,147 @@
+{
+  "name": "tw",
+  "scopeName": "source.tw",
+  "patterns": [{ "include": "#line-comment" }, { "include": "#block-comment" }, { "include": "#expression" }],
+  "repository": {
+    "expression": {
+      "patterns": [
+        { "include": "#arbitrary-variant-or-property" },
+        { "include": "#variant" },
+        { "include": "#short-css" },
+        { "include": "#arbitrary-classname" },
+        { "include": "#arbitrary-opacity" },
+        { "include": "#group" },
+        { "include": "#classname" }
+      ]
+    },
+    "line-comment": {
+      "match": "(//).*",
+      "captures": {
+        "0": { "name": "comment.line.double-slash.tw" },
+        "1": { "name": "punctuation.definition.comment.tw" }
+      }
+    },
+    "block-comment": {
+      "begin": "(/\\*)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.comment.begin.tw" }
+      },
+      "end": "(\\*/)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.comment.end.tw" }
+      },
+      "contentName": "comment.block.tw"
+    },
+    "variant": {
+      "match": "[\\w-]+:",
+      "captures": {
+        "0": { "name": "entity.other.inherited-class.variant.tw" }
+      }
+    },
+    "arbitrary-variant-or-property": {
+      "begin": "(?<!/)(!?)\\[",
+      "end": "(?<=\\]:)|(?<=\\])(!?)(?<!:)",
+      "beginCaptures": {
+        "1": { "name": "support.function.important-bang.before.tw" }
+      },
+      "endCaptures": {
+        "1": { "name": "support.function.important-bang.after.tw" }
+      },
+      "patterns": [
+        {
+          "end": "\\]:",
+          "patterns": [{ "include": "source.css.scss.tw" }]
+        },
+        {
+          "end": "\\]!?(?<!:)",
+          "patterns": [
+            {
+              "begin": "(?<![-a-z])(?=[-a-z])",
+              "end": "$|(?![-a-z])",
+              "patterns": [{ "include": "source.css#property-names" }]
+            },
+            {
+              "begin": "(:)\\s*(?!(\\s*{))",
+              "beginCaptures": {
+                "1": { "name": "punctuation.separator.key-value.scss" }
+              },
+              "end": "\\s*(?=}|\\)|\\])",
+              "patterns": [{ "include": "#track-list" }, { "include": "source.css.scss.tw#property_values" }]
+            }
+          ]
+        }
+      ]
+    },
+    "classname": {
+      "match": "(!?)(?:(?!\\/\\/|\\/\\*)[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/])*[\\w\\-\\./]+(!?)(?<!/)",
+      "captures": {
+        "0": { "name": "support.constant.classname.tw" },
+        "1": { "name": "support.function.important-bang.before.tw" },
+        "2": { "name": "support.function.important-bang.after.tw" }
+      }
+    },
+    "arbitrary-classname": {
+      "begin": "(!?)((?:(?:(?!\\/\\/)-?[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/-])+-)+)\\[",
+      "end": "\\](?:(\\/\\d+)|\\/\\[(\\s*\\d*\\.?\\d*\\s*)\\])?(!?)",
+      "beginCaptures": {
+        "1": { "name": "support.function.important-bang.before.tw" },
+        "2": { "name": "support.type.arbitrary-style.prop.tw" }
+      },
+      "endCaptures": {
+        "1": { "name": "support.constant.classname.tw" },
+        "2": { "patterns": [{ "include": "source.css.scss.tw#property_values" }] },
+        "3": { "name": "support.function.important-bang.after.tw" }
+      },
+      "patterns": [
+        {
+          "end": "\\]!?",
+          "patterns": [{ "include": "#track-list" }, { "include": "source.css.scss.tw#property_values" }]
+        }
+      ]
+    },
+    "arbitrary-opacity": {
+      "begin": "(!?)((?:(?:(?!\\/\\/)-?[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/-])+-)*(?:(?!\\/\\/)[\\w\\/])+)(/\\[)",
+      "end": "(\\])(!?)",
+      "beginCaptures": {
+        "1": { "name": "support.function.important-bang.before.tw" },
+        "2": { "name": "support.type.arbitrary-style.prop.tw" }
+      },
+      "endCaptures": {
+        "2": { "name": "support.function.important-bang.after.tw" }
+      },
+      "patterns": [{ "include": "source.css.scss.tw#property_values" }]
+    },
+    "short-css": {
+      "contentName": "entity.name.variable.css-value.tw",
+      "begin": "(!?)((?:-{1,2})?(?:\\w+-)*\\w+)(\\[)",
+      "end": "(\\])(!?)",
+      "beginCaptures": {
+        "1": { "name": "support.function.important-bang.short-css.tw" },
+        "2": { "name": "support.type.short-css.prop.tw" }
+      },
+      "endCaptures": {
+        "2": { "name": "support.function.important-bang.short-css.tw" }
+      },
+      "patterns": [{ "include": "#track-list" }, { "include": "source.css.scss.tw#property_values" }]
+    },
+    "group": {
+      "begin": "(!?)(\\()",
+      "end": "(\\))(!?)",
+      "beginCaptures": {
+        "1": { "name": "support.function.important-bang.before.tw" },
+        "2": { "name": "punctuation.paren.open" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.paren.close" },
+        "2": { "name": "support.function.important-bang.after.tw" }
+      },
+      "patterns": [{ "include": "#expression" }]
+    },
+    "track-list": {
+      "contentName": "string.property-value.css",
+      "begin": "\\[",
+      "end": "\\]",
+      "patterns": [{ "include": "#track-list" }]
+    }
+  }
+}

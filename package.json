@@ -7,8 +7,7 @@
 		"test:vm": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"build-core": "cd packages/twobj && npm run build",
 		"build-babel-plugin": "cd packages/babel-plugin-twobj && npm run build",
-		"build": "npm run build-core && npm run build-babel-plugin",
-		"prepare": "npm run build"
+		"build": "npm run build-core && npm run build-babel-plugin"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.18.10",
@@ -23,8 +22,8 @@
 		"@types/jest": "^28.1.6",
 		"@types/node": "^18.6.3",
 		"@types/react": "^18.0.17",
-		"@typescript-eslint/eslint-plugin": "^5.32.0",
-		"@typescript-eslint/parser": "^5.32.0",
+		"@typescript-eslint/eslint-plugin": "5.33.0",
+		"@typescript-eslint/parser": "5.33.0",
 		"del-cli": "^5.0.0",
 		"eslint": "^8.21.0",
 		"jest": "^28.1.3",

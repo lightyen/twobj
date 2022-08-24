@@ -1,0 +1,60 @@
+{
+  "name": "source.template.tw",
+  "scopeName": "source.template.tw",
+  "injectionSelector": "L:source -comment -string",
+  "patterns": [
+    {
+      "begin": "\\s*(tw)(?:(?:(?:\\.[\\w$]+)*|(\\([^\\)]*\\))))*(`)",
+      "end": "`",
+      "contentName": "meta.embedded.tw",
+      "beginCaptures": {
+        "1": { "name": "entity.name.function.tagged-template" },
+        "2": {
+          "patterns": [
+            { "include": "source.ts#comment" },
+            { "include": "source.ts#string" },
+            { "include": "source.ts#expression" }
+          ]
+        }
+      },
+      "patterns": [
+        {
+          "end": "`",
+          "patterns": [
+            { "include": "#line-comment-end-backtick" },
+            { "include": "#block-comment-end-backtick" },
+            { "include": "source.tw" }
+          ]
+        }
+      ]
+    },
+    {
+      "begin": "\\s*(theme)(`)",
+      "end": "`",
+      "contentName": "meta.embedded.tw",
+      "beginCaptures": {
+        "1": { "name": "entity.name.function.tagged-template" }
+      }
+    }
+  ],
+  "repository": {
+    "line-comment-end-backtick": {
+      "match": "(//)[^`]*",
+      "captures": {
+        "0": { "name": "comment.line.double-slash.tw" },
+        "1": { "name": "punctuation.definition.comment.tw" }
+      }
+    },
+    "block-comment-end-backtick": {
+      "begin": "(/\\*)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.comment.begin.tw" }
+      },
+      "end": "(\\*/)|`",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.comment.end.tw" }
+      },
+      "contentName": "comment.block.tw"
+    }
+  }
+}
