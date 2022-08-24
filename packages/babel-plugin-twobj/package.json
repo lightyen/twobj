@@ -17,7 +17,7 @@
 	},
 	"scripts": {
 		"compile": "del ./index.* && rollup -c",
-		"types": "del *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/tw-prop.d.ts && tsc --project tsconfig.types.json",
+		"types": "del *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/*.d.ts && tsc --project tsconfig.types.json",
 		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
 		"build": "npm run compile && npm run types && npm run format"
 	},
