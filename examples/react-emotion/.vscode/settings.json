@@ -1,8 +1,4 @@
 {
-  "tailwindcss.diagnostics": {
-    "enabled": false,
-    "emptyChecking": true
-  },
   "editor.formatOnSave": true,
   "editor.snippetSuggestions": "none",
   "javascript.suggestionActions.enabled": false,

@@ -273,10 +273,10 @@ function parseExpression({
 						prefix,
 						expr,
 						important: exclamationLeft,
-						range: [start, regexp.lastIndex],
+						range: [start, end],
 						closed: false,
 					}
-					return { expr: node, lastIndex: regexp.lastIndex }
+					return { expr: node, lastIndex: end }
 				}
 
 				if (slash) {
@@ -288,23 +288,15 @@ function parseExpression({
 						prefix,
 						expr: undefined,
 						important: exclamationLeft,
-						range: [start, regexp.lastIndex],
+						range: [start, end],
 						closed: false,
 					}
-					return { expr: node, lastIndex: regexp.lastIndex }
+					return { expr: node, lastIndex: end }
 				}
 
 				// color[
-				throw "not support"
-				// const shortcss: nodes.ShortCss = {
-				// 	type: nodes.NodeType.ShortCss,
-				// 	prefix,
-				// 	expr,
-				// 	important: exclamationLeft,
-				// 	range: [start, regexp.lastIndex],
-				// 	closed: false,
-				// }
-				// return { expr: shortcss, lastIndex: regexp.lastIndex }
+				// throw "shortcss not support"
+				return { expr: undefined, lastIndex: end }
 			}
 
 			// Does it end with separator?
@@ -377,18 +369,8 @@ function parseExpression({
 
 			// shortcss
 			if (!slash && !hyphen) {
-				throw "not support"
-				// const exclamationRight = text.charCodeAt(regexp.lastIndex) === 33
-				// if (exclamationRight) regexp.lastIndex += 1
-				// const shortcss: nodes.ShortCss = {
-				// 	type: nodes.NodeType.ShortCss,
-				// 	prefix,
-				// 	expr,
-				// 	important: exclamationLeft || exclamationRight,
-				// 	range: [start, exclamationRight ? regexp.lastIndex - 1 : regexp.lastIndex],
-				// 	closed: true,
-				// }
-				// return { expr: shortcss, lastIndex: regexp.lastIndex }
+				// throw "shortcss not support"
+				return { expr: undefined, lastIndex: regexp.lastIndex }
 			}
 
 			let e: nodes.WithOpacity | nodes.EndOpacity | undefined
