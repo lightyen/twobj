@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import Module from "module"
 import path from "path"
-import { createVisitor, LibName } from "./babel_visitor"
+import { createVisitor } from "./visitor"
 import type { PluginOptions } from "./options"
+import type { ThirdPartyName } from "./types"
 
 function readConfig({ configPath, debug }: PluginOptions): unknown {
 	const defaultConfigPath = path.resolve("./tailwind.config.js")
@@ -24,14 +25,26 @@ function isModule(id: string) {
 	}
 }
 
-function getLibName(): LibName {
-	if (isModule("@emotion/babel-plugin")) {
-		return "emotion"
-	} else if (isModule("@emotion/css")) {
-		return "emotion"
-	} else if (isModule("@emotion/react")) {
+function getLibName(): ThirdPartyName {
+	// emotion
+	if (isModule("@emotion/react")) {
 		return "emotion"
 	}
+	if (isModule("@emotion/css")) {
+		return "emotion"
+	}
+	if (isModule("@emotion/babel-plugin")) {
+		return "emotion"
+	}
+
+	// linaria
+	if (isModule("@linaria/core")) {
+		return "linaria"
+	}
+	if (isModule("@linaria/react")) {
+		return "linaria"
+	}
+
 	return "default"
 }
 
@@ -41,11 +54,17 @@ function babelPlugin(
 ): import("babel__core").PluginObj {
 	const config = readConfig(options)
 	if (options.debug) console.log("commonjs result:", typeof config === "object")
-	const lib = options.lib ?? "auto"
+	const thirdParty = options.thirdParty ?? "auto"
 
 	return {
 		name: "tw",
-		visitor: createVisitor({ babel, options, config, moduleType: "cjs", lib: lib === "auto" ? getLibName() : lib }),
+		visitor: createVisitor({
+			babel,
+			options,
+			config,
+			moduleType: "cjs",
+			thirdParty: thirdParty === "auto" ? getLibName() : thirdParty,
+		}),
 	}
 }
 

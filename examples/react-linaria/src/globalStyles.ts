@@ -4,8 +4,6 @@ import { globalStyles } from "twobj"
 import CascadiaCode from "./assets/fonts/CascadiaCode.ttf"
 import CascadiaCodeItalic from "./assets/fonts/CascadiaCodeItalic.ttf"
 
-const custom = css``
-
 css`
 	:global() {
 		@font-face {

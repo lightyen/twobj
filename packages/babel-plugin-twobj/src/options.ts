@@ -1,7 +1,7 @@
-import type { LibName } from "./babel_visitor"
+import type { ThirdPartyName } from "./types"
 
 export interface PluginOptions {
 	configPath?: string
 	debug?: boolean
-	lib?: LibName | "auto"
+	thirdParty?: ThirdPartyName | "auto"
 }

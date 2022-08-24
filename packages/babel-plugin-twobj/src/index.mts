@@ -2,8 +2,9 @@
 import { createRequire, Module } from "node:module"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
-import { createVisitor, LibName } from "./babel_visitor"
+import { createVisitor } from "./visitor"
 import type { PluginOptions } from "./options"
+import type { ThirdPartyName } from "./types"
 
 async function readConfig({ configPath, debug }: PluginOptions): Promise<unknown> {
 	const defaultConfigPath = path.resolve("./tailwind.config.js")
@@ -26,14 +27,26 @@ async function isModule(id: string) {
 	}
 }
 
-async function getLibName(): Promise<LibName> {
-	if (await isModule("@emotion/babel-plugin")) {
-		return "emotion"
-	} else if (await isModule("@emotion/css")) {
-		return "emotion"
-	} else if (await isModule("@emotion/react")) {
+async function getLibName(): Promise<ThirdPartyName> {
+	// emotion
+	if (await isModule("@emotion/react")) {
 		return "emotion"
 	}
+	if (await isModule("@emotion/css")) {
+		return "emotion"
+	}
+	if (await isModule("@emotion/babel-plugin")) {
+		return "emotion"
+	}
+
+	// linaria
+	if (await isModule("@linaria/core")) {
+		return "linaria"
+	}
+	if (await isModule("@linaria/react")) {
+		return "linaria"
+	}
+
 	return "default"
 }
 
@@ -43,7 +56,7 @@ export default async function babelPlugin(
 ): Promise<import("babel__core").PluginObj> {
 	const config = await readConfig(options)
 	if (options.debug) console.log("esmodule result:", typeof config === "object")
-	const lib = options.lib ?? "auto"
+	const thirdParty = options.thirdParty ?? "auto"
 
 	return {
 		name: "tw",
@@ -52,7 +65,7 @@ export default async function babelPlugin(
 			options,
 			config,
 			moduleType: "esm",
-			lib: lib === "auto" ? await getLibName() : lib,
+			thirdParty: thirdParty === "auto" ? await getLibName() : thirdParty,
 		}),
 	}
 }
