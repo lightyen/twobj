@@ -138,7 +138,7 @@ export function createVisitor({
 			if (thirdParty) {
 				program.traverse<State & PluginState>(
 					plugins[thirdParty]({ t, buildStyle, addImportDeclaration }),
-					Object.assign({}, state, { styled: { imported: false, localName: "styled" } }),
+					Object.assign(state, { styled: { imported: false, localName: "styled" } }),
 				)
 			}
 

@@ -10,7 +10,7 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 	)
 
 	return {
-		// <div tw="bg-black" /> ==> <div css={{...}} />
+		/** <div tw="bg-black" /> ==> <div css={{...}} /> */
 		JSXOpeningElement(path, state) {
 			const attrs = path.get("attributes")
 			let twIndex = -1
@@ -69,8 +69,10 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 				}
 			}
 		},
-		// tw.any`` ==> styled.any({...})
-		// tw(<any>)`` ==> styled(<any>)({...})
+		/**
+		 * tw.any`` ==> styled.any({...})
+		 * tw(<any>)`` ==> styled(<any>)({...})
+		 */
 		TaggedTemplateExpression(path, state) {
 			if (state.imports.length === 0) return
 			let skip = false
@@ -109,7 +111,12 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 					} else if (tag.isMemberExpression()) {
 						const object = tag.get("object")
 						const property = tag.get("property")
-						if (object.isIdentifier() && property.isIdentifier() && object.node.name === localName && importedName === "tw") {
+						if (
+							object.isIdentifier() &&
+							property.isIdentifier() &&
+							object.node.name === localName &&
+							importedName === "tw"
+						) {
 							const quasi = getFirstQuasi(path)
 							if (quasi) {
 								if (!state.styled.imported) {
@@ -124,7 +131,10 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 
 								const value = quasi.node.value.cooked ?? quasi.node.value.raw
 								const expr = t.callExpression(
-									t.memberExpression(t.identifier(state.styled.localName), t.identifier(property.node.name)),
+									t.memberExpression(
+										t.identifier(state.styled.localName),
+										t.identifier(property.node.name),
+									),
 									[buildStyle(value)],
 								)
 								path.replaceWith(expr)
@@ -140,28 +150,53 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 				path.skip()
 			}
 		},
-		// tw('div')(props => ({ width: props.width })) ==> styled('div')(props => ({ width: props.width }))
+		/**
+		 * tw('div')(props => ({ width: props.width })) ==> styled('div')(props => ({ width: props.width }))
+		 * tw.div(props => ({ width: props.width })) ==> styled.div(props => ({ width: props.width }))
+		 */
 		CallExpression(path, state) {
 			if (state.imports.length === 0) return
 			let skip = false
 			for (const { variables } of state.imports) {
 				for (const { localName, importedName } of variables) {
 					let callee = path.get("callee")
-					if (!callee.isCallExpression()) continue
-					callee = callee.get("callee")
-					if (callee.isIdentifier() && callee.node.name === localName && importedName === "tw") {
-						if (!state.styled.imported) {
-									state.styled.imported = true
-									const imported = getStyledDefaultName(state)
-									if (!imported) {
-										addImportDeclaration(styled)
-									} else {
-										state.styled.localName = imported.defaultName
-									}
+
+					if (callee.isCallExpression()) {
+						callee = callee.get("callee")
+						if (callee.isIdentifier() && callee.node.name === localName && importedName === "tw") {
+							if (!state.styled.imported) {
+								state.styled.imported = true
+								const imported = getStyledDefaultName(state)
+								if (!imported) {
+									addImportDeclaration(styled)
+								} else {
+									state.styled.localName = imported.defaultName
 								}
-						callee.replaceWith(t.identifier("styled"))
-						skip = true
-						break
+							}
+							callee.replaceWith(t.identifier(state.styled.localName))
+							skip = true
+							break
+						}
+					} else if (callee.isMemberExpression()) {
+						const object = callee.get("object")
+						const property = callee.get("property")
+						if (
+							object.isIdentifier() &&
+							property.isIdentifier() &&
+							object.node.name === localName &&
+							importedName === "tw"
+						) {
+							if (!state.styled.imported) {
+								state.styled.imported = true
+								const imported = getStyledDefaultName(state)
+								if (!imported) {
+									addImportDeclaration(styled)
+								} else {
+									state.styled.localName = imported.defaultName
+								}
+							}
+							object.replaceWith(t.identifier(state.styled.localName))
+						}
 					}
 				}
 			}
@@ -169,7 +204,7 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 			if (skip) {
 				path.skip()
 			}
-		}
+		},
 	}
 
 	function getStyledDefaultName({ imports }: State): { defaultName: string } | undefined {

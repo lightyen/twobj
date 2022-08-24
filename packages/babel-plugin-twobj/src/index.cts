@@ -54,7 +54,7 @@ function babelPlugin(
 ): import("babel__core").PluginObj {
 	const config = readConfig(options)
 	if (options.debug) console.log("commonjs result:", typeof config === "object")
-	const thirdParty = options.thirdParty
+	const thirdParty = options.thirdParty ?? "auto"
 	return {
 		name: "tw",
 		visitor: createVisitor({

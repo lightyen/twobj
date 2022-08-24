@@ -56,7 +56,7 @@ export default async function babelPlugin(
 ): Promise<import("babel__core").PluginObj> {
 	const config = await readConfig(options)
 	if (options.debug) console.log("esmodule result:", typeof config === "object")
-	const thirdParty = options.thirdParty
+	const thirdParty = options.thirdParty ?? "auto"
 	return {
 		name: "tw",
 		visitor: createVisitor({
