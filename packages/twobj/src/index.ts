@@ -1,6 +1,7 @@
 export { resolveConfig } from "./config/resolveConfig"
 export { createContext } from "./core"
-export type { CSSProperties } from "./types"
+export type { CSSProperties, CSSValue } from "./types"
+export type { ValueType } from "./values"
 import type { CSSProperties } from "./types"
 
 // Fake

@@ -54,6 +54,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	const utilityMap = new Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>()
 	const variantMap = new Map<string, VariantSpec>()
 	const arbitraryVariantMap = new Map<string, (value: string) => VariantSpec>()
+	const arbitraryUtilityMap = new Map<string, Set<ValueType | "any">>()
+
 	const options = {
 		addBase,
 		addDefaults,
@@ -126,6 +128,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		utilities: utilityMap,
 		variants: variantMap,
 		arbitraryVariants: arbitraryVariantMap,
+		arbitraryUtilities: arbitraryUtilityMap,
 		css,
 		getPluginName,
 		features,
@@ -138,7 +141,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		getThemeValueCompletion,
 		cssVariant,
 		prefix(value: string) {
-			return value.startsWith(config.prefix) ? value.slice(config.prefix.length) : value
+			return value.slice(config.prefix.length)
 		},
 		expandAtRules,
 		addBase,
@@ -479,6 +482,12 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 					filterDefault,
 					pluginName: currentPluginName,
 				})
+				const valueTypes = arbitraryUtilityMap.get(key)
+				if (valueTypes) {
+					valueTypes.add("any")
+				} else {
+					arbitraryUtilityMap.set(key, new Set(["any"]))
+				}
 				continue
 			}
 
@@ -489,6 +498,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				isColor = true
 			}
 
+			const noAnyTypes = types.filter((t): t is ValueType => t !== "any")
 			represent = (input, node, getText, config, negative) => {
 				if (negative && !supportsNegativeValues) return undefined
 				return representTypes({
@@ -497,7 +507,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 					getText,
 					values,
 					negative,
-					types: types.filter((t): t is ValueType => t !== "any"),
+					types: noAnyTypes,
 					filterDefault,
 					get ambiguous() {
 						return Array.isArray(utilityMap.get(key))
@@ -518,6 +528,14 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 				isColor,
 				pluginName: currentPluginName,
 			})
+			const valueTypes = arbitraryUtilityMap.get(key)
+			if (valueTypes) {
+				noAnyTypes.forEach(type => {
+					valueTypes.add(type)
+				})
+			} else {
+				arbitraryUtilityMap.set(key, new Set(noAnyTypes))
+			}
 		}
 	}
 
