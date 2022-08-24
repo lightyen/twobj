@@ -77,13 +77,15 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	}
 
 	const features = new Set<string>()
-	let currentPluginName = ""
+	let currentPluginName: string | undefined
 
 	for (const [, plugin] of Object.entries(classPlugins)) {
 		currentPluginName = plugin.name
 		features.add(plugin.name)
 		plugin(apiContext)
+		currentPluginName = undefined
 	}
+
 	for (const [, plugin] of Object.entries(variantPlugins)) {
 		plugin(apiContext)
 	}
