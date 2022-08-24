@@ -58,7 +58,7 @@ importers:
 
   examples/node:
     specifiers:
-      twobj: ../../packages/twobj
+      twobj: '*'
     dependencies:
       twobj: link:../../packages/twobj
 
@@ -81,7 +81,7 @@ importers:
       '@typescript-eslint/parser': 5.33.0
       '@vitejs/plugin-react': 2.0.0
       axios: 0.27.2
-      babel-plugin-twobj: ../../packages/babel-plugin-twobj
+      babel-plugin-twobj: '*'
       esbuild: 0.14.51
       eslint: 8.20.0
       eslint-plugin-react: 7.30.1
@@ -97,7 +97,7 @@ importers:
       redux-saga: 1.1.3
       rollup: 2.77.2
       tailwind-types: 3.2.0
-      twobj: ../../packages/twobj
+      twobj: '*'
       typescript: 4.7.4
       vite: 3.0.3
       vite-plugin-eslint: 1.7.0
@@ -174,7 +174,7 @@ importers:
       autoprefixer: ^10.4.8
       axios: 0.27.2
       babel-loader: 8.2.5
-      babel-plugin-twobj: ../../packages/babel-plugin-twobj
+      babel-plugin-twobj: '*'
       cross-env: 7.0.3
       css-loader: 6.7.1
       css-minimizer-webpack-plugin: 4.0.0
@@ -205,7 +205,7 @@ importers:
       tiny-glob: 0.2.9
       ts-paths-resolve-plugin: 5.8.0
       tslib: ^2.4.0
-      twobj: ../../packages/twobj
+      twobj: '*'
       typescript: 4.7.4
       webpack: 5.74.0
       webpack-bundle-analyzer: 4.5.0
@@ -338,7 +338,7 @@ importers:
       terser-webpack-plugin: 5.3.5
       ts-paths-resolve-plugin: 5.8.0
       tslib: 2.4.0
-      twobj: 0.0.14
+      twobj: 0.0.15
       typescript: 4.7.4
       typescript-paths: 1.4.0
       vsce: 2.10.2

@@ -2,6 +2,6 @@
 	"name": "demo",
 	"type": "module",
 	"dependencies": {
-		"twobj": "../../packages/twobj"
+		"twobj": "*"
 	}
 }
