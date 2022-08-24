@@ -1,9 +1,9 @@
-declare module "twobj" {
-	import { CSSObject, PropsOf, Theme } from "@emotion/react"
-	import { Interpolation } from "@emotion/serialize"
-	import { StyledComponent, StyledOptions } from "@emotion/styled"
-	import { FilteringStyledOptions } from "@emotion/styled/types/base"
+import { CSSObject, PropsOf, Theme } from "@emotion/react"
+import { Interpolation } from "@emotion/serialize"
+import { StyledComponent, StyledOptions } from "@emotion/styled"
+import { FilteringStyledOptions } from "@emotion/styled/types/base"
 
+declare module "twobj" {
 	/**
 	 * @typeparam ComponentProps  Props which will be included when withComponent is called
 	 * @typeparam SpecificComponentProps  Props which will *not* be included when withComponent is called
@@ -156,7 +156,6 @@ declare module "twobj" {
 		): CreateStyledComponent<{ theme?: Theme; as?: React.ElementType }, JSX.IntrinsicElements[Tag]>
 	}
 
-	/** twin.macro */
 	export type StyledTags = {
 		[Tag in keyof JSX.IntrinsicElements]: CreateStyledComponent<
 			{
