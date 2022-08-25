@@ -91,7 +91,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 
 	for (const [, plugin] of Object.entries(classPlugins)) {
 		currentPluginName = plugin.name
-		features.add(plugin.name)
+		features.add(currentPluginName)
 		plugin(apiContext)
 		currentPluginName = undefined
 	}
@@ -123,14 +123,23 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 			plugin = (plugin as Tailwind.PluginFunctionWithOption)()
 		}
 		if (typeof plugin === "function") {
+			const pluginName = plugin.name
 			const userPlugin = plugin as unknown as UserPlugin
-			userPlugin(userContext)
-		} else {
-			if (plugin.handler) {
-				const userPlugin = plugin.handler as unknown as UserPlugin
-				userPlugin(userContext)
+			if (typeof pluginName === "string" && pluginName) {
+				currentPluginName = plugin.name
+				features.add(currentPluginName)
 			}
+			userPlugin(userContext)
+		} else if (plugin.handler) {
+			const pluginName = plugin["name"]
+			if (typeof pluginName === "string" && pluginName) {
+				currentPluginName = pluginName
+				features.add(currentPluginName)
+			}
+			const userPlugin = plugin.handler as unknown as UserPlugin
+			userPlugin(userContext)
 		}
+		currentPluginName = undefined
 	}
 
 	resolveGlobalTheme(globalStyles)
