@@ -4,4 +4,4 @@
 
 ## Demo
 
-- [codesandbox](https://codesandbox.io/s/tailwind-and-css-in-js-twobj-25t7gj)
+- [CodeSandbox](https://codesandbox.io/s/tailwind-and-css-in-js-twobj-6txkjh)
