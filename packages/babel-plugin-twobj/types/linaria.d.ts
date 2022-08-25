@@ -1,3 +1,4 @@
+import {} from "react"
 declare module "twobj" {
 	import type { CSSProperties } from "twobj"
 	export const globalStyles: Record<string, CSSProperties>
