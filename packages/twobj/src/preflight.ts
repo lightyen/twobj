@@ -1,11 +1,11 @@
 export const preflight = {
-	"*,\n::before,\n::after": {
+	"*,::before,::after": {
 		boxSizing: "border-box",
 		borderWidth: "0",
 		borderStyle: "solid",
 		borderColor: "theme('borderColor.DEFAULT', currentColor)",
 	},
-	"::before,\n::after": { "--tw-content": "''" },
+	"::before,::after": { "--tw-content": "''" },
 	html: {
 		lineHeight: "1.5",
 		WebkitTextSizeAdjust: "100%",
@@ -16,15 +16,15 @@ export const preflight = {
 	body: { margin: "0", lineHeight: "inherit" },
 	hr: { height: "0", color: "inherit", borderTopWidth: "1px" },
 	"abbr:where([title])": { textDecoration: "underline dotted" },
-	"h1,\nh2,\nh3,\nh4,\nh5,\nh6": { fontSize: "inherit", fontWeight: "inherit" },
+	"h1,h2,h3,h4,h5,h6": { fontSize: "inherit", fontWeight: "inherit" },
 	a: { color: "inherit", textDecoration: "inherit" },
-	"b,\nstrong": { fontWeight: "bolder" },
-	"code,\nkbd,\nsamp,\npre": {
+	"b,strong": { fontWeight: "bolder" },
+	"code,kbd,samp,pre": {
 		fontFamily: `theme('fontFamily.mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)`,
 		fontSize: "1em",
 	},
 	small: { fontSize: "80%" },
-	"sub,\nsup": {
+	"sub,sup": {
 		fontSize: "75%",
 		lineHeight: "0",
 		position: "relative",
@@ -37,7 +37,7 @@ export const preflight = {
 		borderColor: "inherit",
 		borderCollapse: "collapse",
 	},
-	"button,\ninput,\noptgroup,\nselect,\ntextarea": {
+	"button,input,optgroup,select,textarea": {
 		fontFamily: "inherit",
 		fontSize: "100%",
 		fontWeight: "inherit",
@@ -46,8 +46,8 @@ export const preflight = {
 		margin: "0",
 		padding: "0",
 	},
-	"button,\nselect": { textTransform: "none" },
-	"button,\n[type='button'],\n[type='reset'],\n[type='submit']": {
+	"button,select": { textTransform: "none" },
+	"button,[type='button'],[type='reset'],[type='submit']": {
 		WebkitAppearance: "button",
 		backgroundColor: "transparent",
 		backgroundImage: "none",
@@ -55,19 +55,20 @@ export const preflight = {
 	":-moz-focusring": { outline: "auto" },
 	":-moz-ui-invalid": { boxShadow: "none" },
 	progress: { verticalAlign: "baseline" },
-	"::-webkit-inner-spin-button,\n::-webkit-outer-spin-button": { height: "auto" },
+	"::-webkit-inner-spin-button,::-webkit-outer-spin-button": { height: "auto" },
 	"[type='search']": { WebkitAppearance: "textfield", outlineOffset: "-2px" },
 	"::-webkit-search-decoration": { WebkitAppearance: "none" },
 	"::-webkit-file-upload-button": { WebkitAppearance: "button", font: "inherit" },
 	summary: { display: "list-item" },
-	"blockquote,\ndl,\ndd,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\nhr,\nfigure,\np,\npre": { margin: "0" },
+	"blockquote,dl,dd,h1,h2,h3,h4,h5,h6,hr,figure,p,pre": { margin: "0" },
 	fieldset: { margin: "0", padding: "0" },
 	legend: { padding: "0" },
-	"ol,\nul,\nmenu": { listStyle: "none", margin: "0", padding: "0" },
+	"ol,ul,menu": { listStyle: "none", margin: "0", padding: "0" },
 	textarea: { resize: "vertical" },
-	"input::placeholder,\ntextarea::placeholder": { opacity: "1", color: "theme('colors.gray.400', #9ca3af)" },
-	'button,\n[role="button"]': { cursor: "pointer" },
+	"input::placeholder,textarea::placeholder": { opacity: "1", color: "theme('colors.gray.400', #9ca3af)" },
+	'button,[role="button"]': { cursor: "pointer" },
 	":disabled": { cursor: "default" },
-	"img,\nsvg,\nvideo,\ncanvas,\naudio,\niframe,\nembed,\nobject": { display: "block", verticalAlign: "middle" },
-	"img,\nvideo": { maxWidth: "100%", height: "auto" },
+	"img,svg,video,canvas,audio,iframe,embed,object": { display: "block", verticalAlign: "middle" },
+	"img,video": { maxWidth: "100%", height: "auto" },
+	"[hidden]": { display: "none" },
 }
