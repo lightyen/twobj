@@ -115,9 +115,9 @@ declare module "twobj" {
 		 * This function accepts a React component or tag ('div', 'a' etc).
 		 *
 		 * @example tw(MyComponent)`w-full`
-		 * @example tw(MyComponent)(myComponentProps => ({ width: myComponentProps.width })
+		 * @example tw(MyComponent)(myComponentProps => ({ width: myComponentProps.width }))
 		 * @example tw('div')`w-full`
-		 * @example tw('div')<Props>(props => ({ width: props.width })
+		 * @example tw('div')<Props>(props => ({ width: props.width }))
 		 */
 		<C extends React.ComponentType<React.ComponentProps<C>>>(
 			component: C,
@@ -133,9 +133,9 @@ declare module "twobj" {
 		 * This function accepts a React component or tag ('div', 'a' etc).
 		 *
 		 * @example tw(MyComponent)`w-full`
-		 * @example tw(MyComponent)(myComponentProps => ({ width: myComponentProps.width })
+		 * @example tw(MyComponent)(myComponentProps => ({ width: myComponentProps.width }))
 		 * @example tw('div')`w-full`
-		 * @example tw('div')<Props>(props => ({ width: props.width })
+		 * @example tw('div')<Props>(props => ({ width: props.width }))
 		 */
 		<
 			Tag extends keyof JSX.IntrinsicElements,
@@ -153,9 +153,9 @@ declare module "twobj" {
 		 * This function accepts a React component or tag ('div', 'a' etc).
 		 *
 		 * @example tw(MyComponent)`w-full`
-		 * @example tw(MyComponent)(myComponentProps => ({ width: myComponentProps.width })
+		 * @example tw(MyComponent)(myComponentProps => ({ width: myComponentProps.width }))
 		 * @example tw('div')`w-full`
-		 * @example tw('div')<Props>(props => ({ width: props.width })
+		 * @example tw('div')<Props>(props => ({ width: props.width }))
 		 */
 		<Tag extends keyof JSX.IntrinsicElements>(
 			tag: Tag,
