@@ -6,7 +6,7 @@ import { LocaleType, supports } from "./store/i18n/languages"
 export function Main() {
 	return (
 		<div
-			tw="flex flex-col items-center justify-center h-screen h-screen to-pink-400"
+			tw="flex flex-col items-center justify-center h-screen to-pink-400"
 			css={[tw`bg-gradient-to-b from-blue-900 to-blue-400 content-around`]}
 		>
 			<Dropdown />

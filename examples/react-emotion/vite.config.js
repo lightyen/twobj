@@ -5,6 +5,7 @@ import { defineConfig } from "vite"
 import eslint from "vite-plugin-eslint"
 import svg from "vite-plugin-svgr"
 import tsConfigPaths from "vite-plugin-tsconfig-paths"
+import tailwindConfig from "./tailwind.config"
 
 export default defineConfig(({}) => ({
 	plugins: [
@@ -15,7 +16,7 @@ export default defineConfig(({}) => ({
 		react({
 			jsxImportSource: "@emotion/react",
 			babel: {
-				plugins: [["twobj"], "@emotion"],
+				plugins: [["twobj", { tailwindConfig }], "@emotion"],
 			},
 		}),
 	],

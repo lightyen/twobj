@@ -16,10 +16,6 @@ export default {
 	],
 	theme: {
 		extend: {
-			colors: {
-				electric: "#db00ff",
-				ribbon: "#0047ff",
-			},
 			fontFamily: {
 				sans: [
 					"Cascadia Code",
