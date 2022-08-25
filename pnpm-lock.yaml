@@ -116,7 +116,7 @@ importers:
       redux: 4.2.0
       redux-saga: 1.2.1
       tailwind-types: 3.2.0_postcss@8.4.16
-      twobj: link:../../packages/twobj
+      twobj: 0.0.17
     devDependencies:
       '@rollup/plugin-yaml': 3.1.0_rollup@2.78.1
       '@swc/core': 1.2.242
@@ -284,11 +284,11 @@ importers:
 
   packages/babel-plugin-twobj:
     specifiers:
-      '@babel/types': ^7.18.10
+      '@babel/types': ^7.18.13
       '@types/babel__core': ^7.1.19
       twobj: ../twobj
     devDependencies:
-      '@babel/types': 7.18.10
+      '@babel/types': 7.18.13
       '@types/babel__core': 7.1.19
       twobj: link:../twobj
 
@@ -390,7 +390,7 @@ importers:
       terser-webpack-plugin: 5.3.5_bpjadnijjckcby5d74x5vwfi4y
       ts-paths-resolve-plugin: 5.8.0_xnp4kzegbjokq62cajex2ovgkm
       tslib: 2.4.0
-      twobj: link:../../packages/twobj
+      twobj: 0.0.17
       typescript: 4.7.4
       typescript-paths: 1.4.0_typescript@4.7.4
       vsce: 2.10.2
@@ -11782,6 +11782,9 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
+
+  /twobj/0.0.17:
+    resolution: {integrity: sha512-Jba/XfH37FFZO6yjlnw/5uXnAxul4pPuQgHFrRVsYOJolca4hWA9fmYOvOjcjgDRzhpz7Ep2Ei/66p05Q7+B7w==}
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}

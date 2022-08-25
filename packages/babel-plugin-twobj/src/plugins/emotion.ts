@@ -58,7 +58,7 @@ export const emotion: Plugin = function ({ t, buildStyle, addImportDeclaration }
 							} else {
 								expression.replaceWith(t.arrayExpression([...elements.map(e => e.node), objExpr]))
 							}
-						} else if (expression.isObjectExpression()) {
+						} else if (expression.isExpression()) {
 							if (twIndex < cssIndex) {
 								expression.replaceWith(t.arrayExpression([objExpr, expression.node]))
 							} else {
