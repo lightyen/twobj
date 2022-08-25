@@ -1,22 +1,6 @@
 import * as parser from "./parser"
-import type { CSSProperties, CSSValue, Template } from "./types"
+import type { CSSProperties, CSSValue, Template, ValueType } from "./types"
 import { opacityToFloat, reverseSign, toArray } from "./util"
-
-export type ValueType =
-	| "number"
-	| "percentage"
-	| "length"
-	| "angle"
-	| "url"
-	| "color"
-	| "position" // backgroundPosition
-	| "image" // backgroundImage
-	| "line-width" // borderWidth
-	| "absolute-size" // fontSize
-	| "relative-size" // fontSize
-	| "shadow" // boxShadow
-	| "generic-name" // fontFamily
-	| "family-name" // fontFamily
 
 interface LookupResult {
 	key?: string

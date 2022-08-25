@@ -60,4 +60,4 @@ const ctx = createContext(
 	}),
 )
 
-console.log(ctx.getColorClass().get("to-qoo"))
+console.log(ctx.getColorClasses().get("to-qoo"))

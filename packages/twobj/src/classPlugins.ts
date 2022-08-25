@@ -1,6 +1,6 @@
 import { parseAnimations } from "./parser"
-import type { MatchUtilitiesOption, UnnamedPlugin } from "./plugin"
 import { plugin } from "./plugin"
+import type { MatchUtilitiesOption, UnnamedPlugin } from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
 import { isCSSValue, normalizeScreens } from "./util"
 import { formatBoxShadowValues, withAlphaValue } from "./values"

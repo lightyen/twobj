@@ -1,5 +1,5 @@
-import type { UnnamedPlugin } from "./plugin"
 import { plugin } from "./plugin"
+import type { UnnamedPlugin } from "./types"
 import { normalizeScreens } from "./util"
 
 type VariantPlugins = {

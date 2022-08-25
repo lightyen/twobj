@@ -1,9 +1,19 @@
 import * as parsel from "parsel-js"
 import { classPlugins } from "./classPlugins"
 import * as parser from "./parser"
-import type { CorePluginOptions, UserPlugin, UserPluginOptions } from "./plugin"
 import { preflight } from "./preflight"
-import { CSSProperties, CSSValue, LookupSpec, PostModifier, StaticSpec, VariantSpec } from "./types"
+import type {
+	CorePluginOptions,
+	CSSProperties,
+	CSSValue,
+	LookupSpec,
+	PostModifier,
+	StaticSpec,
+	UserPlugin,
+	UserPluginOptions,
+	ValueType,
+	VariantSpec,
+} from "./types"
 import {
 	applyCamelCase,
 	applyImportant,
@@ -14,7 +24,7 @@ import {
 	reverseSign,
 	toArray,
 } from "./util"
-import { representAny, representTypes, ValueType } from "./values"
+import { representAny, representTypes } from "./values"
 import { variantPlugins } from "./variantPlugins"
 
 export const colorProps = new Set<string>([
