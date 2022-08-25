@@ -110,7 +110,7 @@ importers:
       '@reduxjs/toolkit': 1.8.5_kkwg4cbsojnjnupd3btipussee
       '@tanstack/react-query': 4.2.1_biqbaboplfbrettd7655fr4n2y
       axios: 0.27.2
-      babel-plugin-twobj: link:../../packages/babel-plugin-twobj
+      babel-plugin-twobj: 0.0.11_twobj@0.0.17
       react-intl: 6.0.8_qtbnez4q7bzoc4eqybg3efzzxe
       react-redux: 8.0.2_ps4ywwwjjeajezffxxirqk36qa
       redux: 4.2.0
@@ -5692,6 +5692,14 @@ packages:
 
   /babel-plugin-transform-react-remove-prop-types/0.4.24:
     resolution: {integrity: sha512-eqj0hVcJUR57/Ug2zE1Yswsw4LhuqqHhD+8v120T1cl3kjg76QwtyBrdIk4WVwK+lAhBJVYCd/v+4nc4y+8JsA==}
+    dev: false
+
+  /babel-plugin-twobj/0.0.11_twobj@0.0.17:
+    resolution: {integrity: sha512-k0ly05TCN3CoU3ZPUEAdqdqu2IGiO11D53jx9rO3LndOCu4gvgiB+8oos64ZWGXj6grsYY8/hflPi53GYIzPMQ==}
+    peerDependencies:
+      twobj: '*'
+    dependencies:
+      twobj: 0.0.17
     dev: false
 
   /babel-preset-current-node-syntax/1.0.1_@babel+core@7.18.13:

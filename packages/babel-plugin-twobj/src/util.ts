@@ -9,12 +9,15 @@ export function getFirstQuasi(
 	path: NodePath<babel.TaggedTemplateExpression>,
 ): NodePath<babel.TemplateElement> | undefined {
 	const quasi = path.get("quasi")
-	const quasis = quasi.get("quasis")
 	const expressions = quasi.get("expressions")
 	if (expressions.length > 0) {
 		throw expressions[0].buildCodeFrameError("twobj: only allow plain text in template string.")
 	}
-	return quasis.at(0)
+	const quasis = quasi.get("quasis")
+	if (quasis.length > 0) {
+		return quasis[0]
+	}
+	return undefined
 }
 
 export function buildPrimitive(t: typeof babel, value: unknown) {
