@@ -11,7 +11,7 @@ async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unk
 		return tailwindConfig
 	}
 
-	let configPath = ""
+	let configPath: string | undefined
 	if (typeof tailwindConfig === "string") {
 		configPath = tailwindConfig
 	}
@@ -66,7 +66,7 @@ export default async function babelPlugin(
 	let config
 	try {
 		config = await readConfig(options)
-	} catch {
+	} catch (error) {
 		config = {}
 	}
 	const thirdParty = options.thirdParty ?? "auto"

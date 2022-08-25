@@ -10,7 +10,7 @@ function readConfig({ tailwindConfig, debug }: PluginOptions): unknown {
 		return tailwindConfig
 	}
 
-	let configPath = ""
+	let configPath: string | undefined
 	if (typeof tailwindConfig === "string") {
 		configPath = tailwindConfig
 	}
