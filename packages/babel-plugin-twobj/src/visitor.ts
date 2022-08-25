@@ -1,16 +1,16 @@
 import type { NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import { createContext, resolveConfig } from "twobj"
-import type { State, ImportLibrary, ThirdPartyName, PluginState } from "./types"
+import * as plugins from "./plugins"
+import type { ImportLibrary, PluginState, State, ThirdPartyName } from "./types"
 import {
-	isObject,
 	buildArrayExpression,
 	buildObjectExpression,
 	buildPrimitive,
 	buildStyleObjectExpression,
 	getFirstQuasi,
+	isObject,
 } from "./util"
-import * as plugins from "./plugins"
 
 export const packageName = "twobj"
 
@@ -192,16 +192,27 @@ function getImportLibrary(
 		libName: node.source.value,
 		variables: [],
 	}
-	for (let i = 0; i < node.specifiers.length; i++) {
-		const s = node.specifiers[i]
-		if (s.type === "ImportSpecifier" && s.importKind === "value" && t.isIdentifier(s.imported)) {
-			lib.variables.push({
-				localName: s.local.name,
-				importedName: s.imported.name,
-			})
-		} else if (s.type === "ImportDefaultSpecifier") {
-			lib.defaultName = s.local.name
+
+	const specifiers = path.get("specifiers")
+
+	for (let i = 0; i < specifiers.length; i++) {
+		const spec = specifiers[i]
+		if (spec.isImportSpecifier()) {
+			const local = spec.get("local")
+			const imported = spec.get("imported")
+			if (local.isIdentifier() && imported.isIdentifier()) {
+				lib.variables.push({
+					localName: local.node.name,
+					importedName: imported.node.name,
+				})
+			}
+		} else if (spec.isImportDefaultSpecifier()) {
+			const local = spec.get("local")
+			if (local.isIdentifier()) {
+				lib.defaultName = local.node.name
+			}
 		}
 	}
+
 	return lib
 }
