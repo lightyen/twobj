@@ -392,7 +392,7 @@ importers:
       terser-webpack-plugin: 5.3.5_bpjadnijjckcby5d74x5vwfi4y
       ts-paths-resolve-plugin: 5.8.0_xnp4kzegbjokq62cajex2ovgkm
       tslib: 2.4.0
-      twobj: link:../../packages/twobj
+      twobj: 0.0.15
       typescript: 4.7.4
       typescript-paths: 1.4.0_typescript@4.7.4
       vsce: 2.10.2
@@ -11332,6 +11332,10 @@ packages:
   /tunnel/0.0.6:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
+    dev: true
+
+  /twobj/0.0.15:
+    resolution: {integrity: sha512-+rh0lBIloAhv1tkQeyXA+3DpzzDbNjbkPex41lbUrdWGgTNyIfklHfRGTCBbXbXgQhnOtqNpcEX5FmPtOg66Pw==}
     dev: true
 
   /type-check/0.4.0:
