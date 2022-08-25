@@ -5,7 +5,16 @@ import { createVisitor } from "./visitor"
 import type { PluginOptions } from "./options"
 import type { ThirdPartyName } from "./types"
 
-function readConfig({ configPath, debug }: PluginOptions): unknown {
+function readConfig({ tailwindConfig, debug }: PluginOptions): unknown {
+	if (typeof tailwindConfig === "object" && tailwindConfig !== null) {
+		return tailwindConfig
+	}
+
+	let configPath = ""
+	if (typeof tailwindConfig === "string") {
+		configPath = tailwindConfig
+	}
+
 	const defaultConfigPath = path.resolve("./tailwind.config.js")
 	const fsPath = configPath ?? defaultConfigPath
 	if (debug) {
@@ -52,8 +61,12 @@ function babelPlugin(
 	babel: typeof import("babel__core"),
 	options: import("./options").PluginOptions,
 ): import("babel__core").PluginObj {
-	const config = readConfig(options)
-	if (options.debug) console.log("commonjs result:", typeof config === "object")
+	let config
+	try {
+		config = readConfig(options)
+	} catch {
+		config = {}
+	}
 	const thirdParty = options.thirdParty ?? "auto"
 	return {
 		name: "tw",

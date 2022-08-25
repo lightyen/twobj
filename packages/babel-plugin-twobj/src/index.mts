@@ -6,7 +6,16 @@ import { createVisitor } from "./visitor"
 import type { PluginOptions } from "./options"
 import type { ThirdPartyName } from "./types"
 
-async function readConfig({ configPath, debug }: PluginOptions): Promise<unknown> {
+async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unknown> {
+	if (typeof tailwindConfig === "object" && tailwindConfig !== null) {
+		return tailwindConfig
+	}
+
+	let configPath = ""
+	if (typeof tailwindConfig === "string") {
+		configPath = tailwindConfig
+	}
+
 	const defaultConfigPath = path.resolve("./tailwind.config.js")
 	const fileURL = pathToFileURL(configPath ?? defaultConfigPath).toString()
 	if (debug) {
@@ -54,8 +63,12 @@ export default async function babelPlugin(
 	babel: typeof import("babel__core"),
 	options: import("./options").PluginOptions,
 ): Promise<import("babel__core").PluginObj> {
-	const config = await readConfig(options)
-	if (options.debug) console.log("esmodule result:", typeof config === "object")
+	let config
+	try {
+		config = await readConfig(options)
+	} catch {
+		config = {}
+	}
 	const thirdParty = options.thirdParty ?? "auto"
 	return {
 		name: "tw",

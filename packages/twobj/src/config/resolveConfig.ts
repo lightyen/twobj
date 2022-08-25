@@ -15,7 +15,8 @@ function getAllConfigs(config: Tailwind.ConfigJS): Tailwind.ConfigJS[] {
 	return [config, ...presets]
 }
 
-export function resolveConfig(...configs: Tailwind.ConfigJS[]) {
+export function resolveConfig(...args: Array<Tailwind.ConfigJS | null | undefined>) {
+	let configs = args.filter((c): c is Tailwind.ConfigJS => Boolean(c))
 	if (configs.length === 0) {
 		configs = [defaultConfig]
 	}

@@ -1,7 +1,7 @@
 import type { ThirdPartyName } from "./types"
 
 export interface PluginOptions {
-	configPath?: string
+	tailwindConfig?: unknown
 	debug?: boolean
 	thirdParty?: ThirdPartyName | "auto"
 }
