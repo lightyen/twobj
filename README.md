@@ -8,7 +8,7 @@ Convert tailwind declarations to a style object
 
 ## Differ from tailwindcss
 
-- Not support [vender prefix](https://tailwindcss.com/docs/browser-support#vendor-prefixes)
+- Not support custom prefix
 - Not support [important everything](https://tailwindcss.com/docs/configuration#important)
 - Not support [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
 - Not support custom separator
@@ -42,4 +42,4 @@ Convert tailwind declarations to a style object
 	tw`[.group:active &]:bg-black`
 	```
 
-- Tailwind plugin system (if the plugin not depends on postcss)
+- Support tailwind plugin system (if the plugin not depends on postcss)
