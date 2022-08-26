@@ -1,6 +1,6 @@
 import { findRightBracket, matchValue, splitAtTopLevelOnly } from "./util"
 
-interface Color {
+export interface Color {
 	fn: string
 	params: string[]
 }
@@ -17,13 +17,6 @@ export function parseColor(css: string): Color | undefined {
 	return parseCssFunc(css)
 }
 
-export function formatColor(color: Color) {
-	const { fn, params } = color
-	if (params.length < 4) {
-		return fn + "(" + params.join(" ") + ")"
-	}
-	return fn + "(" + params.slice(0, 3).join(" ") + params[3] + ")"
-}
 
 function parseCssFunc(cssValue: string): Color | undefined {
 	const params = splitCssParams(cssValue)
@@ -88,6 +81,15 @@ export type Param = ParamObject | string
 interface ParamObject {
 	fn: string
 	params: Param[]
+}
+
+export function isParamColor(param: Param | undefined): param is Color {
+	if (param && typeof param !== "string") {
+		if (param.params.every(p => typeof p === "string")) {
+			return true
+		}
+	}
+	return false
 }
 
 export function splitCssParams(value: string): Param[] {

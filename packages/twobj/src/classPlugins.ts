@@ -1,4 +1,4 @@
-import { parseAnimations } from "./parser"
+import * as parser from "./parser"
 import { plugin } from "./plugin"
 import type { MatchUtilitiesOption, UnnamedPlugin } from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
@@ -641,26 +641,62 @@ export const classPlugins: ClassPlugins = {
 			"--tw-ring-inset": emptyCssValue,
 			"--tw-ring-offset-shadow": "0 0 #0000",
 			"--tw-ring-shadow": "0 0 #0000",
-			"--tw-shadow": "0 0 #0000",
-			"--tw-shadow-colored": "0 0 #0000",
 		})
+
+		function formatColor(color: parser.Color) {
+			const { fn, params } = color
+			return fn + "(" + params.join(" ") + ")"
+		}
 
 		matchUtilities(
 			{
-				shadow(value) {
-					if (typeof value === "number") {
+				shadow(value): CSSProperties {
+					if (typeof value !== "string") {
 						return {
-							"--tw-shadow": "none",
-							"--tw-shadow-colored": "none",
 							boxShadow:
 								"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
 						}
 					}
+
+					// NOTE: DEFAULT shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)
+
+					const _color: parser.Param[] = []
+					let index = 0
+
+					const shadowColored = formatBoxShadowValues(value)
+						.map(val => {
+							if (typeof val === "string") {
+								return val
+							}
+							const { color, value } = val
+							if (color) {
+								_color.push(color)
+								return value.replace(
+									"--tw-shadow-default-color",
+									"--tw-shadow-default-color-" + index++,
+								)
+							}
+							return value
+						})
+						.join(", ")
+
+					_color.reduce((current, color, index) => {
+						if (parser.isParamColor(color)) {
+							current["--tw-shadow-default-color-" + index] = formatColor(color)
+						}
+						return current
+					}, {})
+
 					return {
-						"--tw-shadow": value === "none" ? "0 0 #0000" : value,
-						"--tw-shadow-colored": value === "none" ? "0 0 #0000" : formatBoxShadowValues(value),
-						boxShadow:
-							"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+						..._color.reduce((current, color, index) => {
+							if (parser.isParamColor(color)) {
+								current["--tw-shadow-default-color-" + index] = formatColor(color)
+							}
+							return current
+						}, {}),
+						"--tw-shadow-colored": shadowColored,
+						"--tw-shadow": value === "none" ? "0 0 #0000" : "var(--tw-shadow-colored)",
+						boxShadow: `var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)`,
 					}
 				},
 			},
@@ -669,19 +705,11 @@ export const classPlugins: ClassPlugins = {
 
 		return
 	}),
-	boxShadowColor: createColorPlugin(
-		"boxShadowColor",
-		[
-			[
-				"shadow",
-				value => ({
-					"--tw-shadow-color": value,
-					"--tw-shadow": "var(--tw-shadow-colored)",
-				}),
-			],
-		],
-		theme => theme.boxShadowColor,
-	),
+	boxShadowColor: createUtilityPlugin("boxShadowColor", [["shadow", "--tw-shadow-color"]], theme => ({
+		type: "color",
+		filterDefault: true, // 'shadow' already exists
+		values: theme.boxShadowColor,
+	})),
 	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, theme, resolveTheme, config }) => {
 		const ringColorDefault = withAlphaValue(
 			resolveTheme("ringColor.DEFAULT", "rgb(147 197 253)") as CSSValue,
@@ -694,8 +722,6 @@ export const classPlugins: ClassPlugins = {
 			"--tw-ring-color": ringColorDefault.toString(),
 			"--tw-ring-offset-shadow": "0 0 #0000",
 			"--tw-ring-shadow": "0 0 #0000",
-			"--tw-shadow": "0 0 #0000",
-			"--tw-shadow-colored": "0 0 #0000",
 		})
 		addUtilities({
 			".ring-inset": { "--tw-ring-inset": "inset" },
@@ -908,7 +934,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				animate(value) {
-					const names = parseAnimations(typeof value === "string" ? value : "")
+					const names = parser.parseAnimations(typeof value === "string" ? value : "")
 					return {
 						...Object.assign({}, ...names.map(name => keyframes[name]).filter(Boolean)),
 						animation: value,

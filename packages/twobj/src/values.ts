@@ -510,7 +510,7 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 })()
 
 const shadow: ValueTypeSpec<string | number | null | undefined> & {
-	formatBoxShadow(shadow: string): string | undefined
+	formatBoxShadow(shadow: string): { color: parser.Param | undefined; value: string } | undefined
 } = (function () {
 	const keywords = ["inset", "inherit", "initial", "revert", "revert-layer", "unset"]
 	return {
@@ -528,7 +528,7 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 			}
 			return value
 		},
-		formatBoxShadow(shadow: string): string | undefined {
+		formatBoxShadow(shadow: string) {
 			const params = parser.splitCssParams(shadow)
 
 			if (params.length === 0) {
@@ -540,7 +540,7 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 			let y = ""
 			let blur = ""
 			let spread = ""
-			let color = ""
+			let color: parser.Param | undefined
 
 			for (const part of params) {
 				if (typeof part === "string") {
@@ -564,13 +564,19 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 				}
 
 				if (!color) {
-					color = "color"
+					color = part
 				} else {
 					// error
 					return undefined
 				}
 			}
-			return [keyword, x, y, blur, spread, "var(--tw-shadow-color)"].filter(Boolean).join(" ")
+
+			return {
+				color,
+				value: [keyword, x, y, blur, spread, "var(--tw-shadow-color, var(--tw-shadow-default-color))"]
+					.filter(Boolean)
+					.join(" "),
+			}
 		},
 	}
 
@@ -619,15 +625,15 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 	}
 })()
 
-export function formatBoxShadowValues(values: string): string {
-	return parser
-		.splitAtTopLevelOnly(values)
-		.map(value => {
-			const ans = shadow.formatBoxShadow(value)
-			if (!ans) return value
-			return ans
-		})
-		.join(", ")
+/**
+ * @returns <...params> var(--tw-shadow-color, var(--tw-shadow-default-color))
+ */
+export function formatBoxShadowValues(values: string) {
+	return parser.splitAtTopLevelOnly(values).map(value => {
+		const ans = shadow.formatBoxShadow(value)
+		if (!ans) return value
+		return ans
+	})
 }
 
 const position: ValueTypeSpec<string | number | null | undefined> = (function () {
