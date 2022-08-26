@@ -23,13 +23,13 @@ Convert tailwind declarations to a style object
 	```js
 	tw`sm:(text-gray-800 bg-blue-50)`
 	tw`
-		flex
-		lg:(
-			justify-center
-			hover:(
-				bg-gray-100
-			)
-		)
+	  flex
+	  lg:(
+	    justify-center
+	    hover:(
+	      bg-gray-100
+	    )
+	  )
 	`
 	```
 
