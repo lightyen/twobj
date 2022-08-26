@@ -3,10 +3,11 @@
   "displayName": "Twobj IntelliSense",
   "markdownDescription": "",
   "preview": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "lightyen",
   "license": "MIT",
   "private": true,
+  "homepage": "https://github.com/lightyen/twobj/tree/main/tools/vscode-extension",
   "repository": {
     "type": "git",
     "url": "https://github.com/lightyen/twobj.git"
@@ -86,7 +87,7 @@
     "terser-webpack-plugin": "5.3.5",
     "ts-paths-resolve-plugin": "5.8.0",
     "tslib": "2.4.0",
-    "twobj": "0.0.17",
+    "twobj": "0.0.19",
     "typescript": "4.7.4",
     "typescript-paths": "1.4.0",
     "vsce": "2.10.2",
@@ -144,7 +145,7 @@
       }
     ],
     "configuration": {
-      "title": "Tailwind Tw IntelliSense",
+      "title": "Twobj IntelliSense",
       "properties": {
         "twobj.colorDecorators": {
           "markdownDescription": "%ext.settings.colorDecorators%",

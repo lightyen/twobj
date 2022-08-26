@@ -7,11 +7,10 @@ export interface Reference {
 }
 
 export function getReferenceLinks(keyword: string) {
-	const value = keyword.replace(":", "")
-	const originUrl = references[value]
+	const originUrl = references[keyword]
 	const links: Reference[] = []
-	const last = /[\w-.]+$/
 	if (typeof originUrl === "string") {
+		const last = /[\w-.]+$/
 		const match = originUrl.match(last)
 		links.push({ name: match?.[0] || "", url: originUrl })
 	}
@@ -31,7 +30,6 @@ export function getName(keyword: string): string | undefined {
 }
 
 export function getDescription(keyword: string): string | undefined {
-	keyword = keyword.replace(":", "")
 	const originUrl = references[keyword]
 	const url = originUrl
 	if (url) {

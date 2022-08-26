@@ -10,7 +10,6 @@ import { defaultLogger as console } from "~/common/logger"
 import postcssJs from "postcss-js"
 
 export type ColorDesc = {
-	canRender?: boolean
 	color?: string
 	backgroundColor?: string
 	borderColor?: string
@@ -148,10 +147,10 @@ export function createTwContext(config: Tailwind.ResolvedConfigJS) {
 	}
 
 	function replaceSelectorAndComment(node: AtRule | Rule | Root, tabSize = 4) {
-		if ((node.type === "rule" || node.type === "atrule") && node.nodes.length === 0) {
+		if ((node.type === "rule" || node.type === "atrule") && node.nodes.every(n => n.type === "decl")) {
 			const raws = node.raws
 			raws.indent = "".padStart(tabSize)
-			node.append(postcss.comment({ text: "..." }))
+			node.prepend(postcss.comment({ text: "..." }))
 			return
 		}
 		node.each(node => {

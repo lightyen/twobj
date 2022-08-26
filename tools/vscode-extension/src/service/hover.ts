@@ -51,15 +51,13 @@ export default async function hover(
 					if (selection.target.type === parser.NodeType.SimpleVariant) {
 						const variant = selection.target.id.value
 						if (options.references) {
-							const desc =
-								state.tw.screens.indexOf(variant) === -1
-									? getDescription(variant)
-									: getDescription("screens")
-							if (typeof desc === "string") {
-								header.appendMarkdown(desc ? desc + "\n" : "twin.marco" + "\n")
+							const isScreens = state.tw.screens.indexOf(variant) === -1
+							const desc = isScreens ? getDescription(variant) : getDescription("screens")
+							if (typeof desc === "string" && desc) {
+								header.appendMarkdown(desc + "\n")
 							}
 
-							const links = getReferenceLinks(variant)
+							const links = isScreens ? getReferenceLinks(variant) : getReferenceLinks("screens")
 
 							if (links.length > 0) {
 								header.appendMarkdown("\n")
@@ -70,11 +68,9 @@ export default async function hover(
 						header.appendMarkdown("**arbitrary variant**")
 					}
 
-					let code = state.tw.renderVariant(selection.target, tabSize)
-					code = beautify(code)
+					const code = beautify(state.tw.renderVariant(selection.target, tabSize))
 					const codes = new vscode.MarkdownString()
 					if (code) codes.appendCodeblock(code, "scss")
-
 					if (!header.value && !codes.value) return undefined
 					return {
 						range,
@@ -150,6 +146,8 @@ export default async function hover(
 			indent_char: " ",
 			indent_size: tabSize,
 			selector_separator_newline: false,
+			space_around_combinator: true,
+			space_around_selector_separator: true,
 		})
 	}
 }
