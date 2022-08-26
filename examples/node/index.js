@@ -22,7 +22,6 @@ const ctx = createContext(
 				},
 			},
 		},
-		experimental: { matchVariant: true },
 		plugins: [
 			function ({ matchUtilities, matchComponents, matchVariant, theme, e }) {
 				matchUtilities({
