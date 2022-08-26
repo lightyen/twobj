@@ -1,6 +1,6 @@
 # twobj
 
-Convert tailwind declarations to style object.
+Convert tailwind declarations to a style object
 
 ## How to use
 
