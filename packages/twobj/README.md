@@ -1,8 +1,8 @@
 # twobj
 
-[Experimental] Transform tailwind declarations to css object
+Convert tailwind declarations to style object.
 
-## Examples
+## How to use
 
 ```ts
 import { createContext, resolveConfig } from "twobj"
@@ -19,4 +19,18 @@ output => {
     }
   }
 }
+```
+
+## Plugin feature
+
+Tailwind plugin is acceptable.
+
+```ts
+resolveConfig({
+  plugins: [
+    function ({ addUtilities, matchUtilities, ... }) {
+
+    }
+  ]
+})
 ```

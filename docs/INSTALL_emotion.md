@@ -8,7 +8,7 @@ pnpm add twobj babel-plugin-twobj
 
 ```json
 {
-	"plugins": ["@emotion", "twobj"],
+  "plugins": ["@emotion", "twobj"],
 }
 ```
 
