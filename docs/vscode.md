@@ -1,6 +1,6 @@
 # vscode intellisense
 
-Download the extension: https://github.com/lightyen/twobj/releases/download/vscode-extension-0.0.1/twobj-intellisense-0.0.1.vsix
+Download the extension: https://github.com/lightyen/twobj/releases/download/vscode-extension-0.0.2/twobj-intellisense-0.0.2.vsix
 
 And Install:
 
