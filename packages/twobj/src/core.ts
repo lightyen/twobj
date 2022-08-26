@@ -118,24 +118,23 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		},
 	}
 
-	for (let plugin of config.plugins) {
+	for (let i = 0; i < config.plugins.length; i++) {
+		let plugin = config.plugins[i]
 		if (typeof plugin === "function" && plugin.__isOptionsFunction) {
 			plugin = (plugin as Tailwind.PluginFunctionWithOption)()
 		}
+		const pluginName = plugin["name"]
+		if (typeof pluginName === "string" && pluginName) {
+			currentPluginName = pluginName
+			features.add(currentPluginName)
+		} else {
+			currentPluginName = `plugin${i}`
+			features.add(currentPluginName)
+		}
 		if (typeof plugin === "function") {
-			const pluginName = plugin.name
 			const userPlugin = plugin as unknown as UserPlugin
-			if (typeof pluginName === "string" && pluginName) {
-				currentPluginName = plugin.name
-				features.add(currentPluginName)
-			}
 			userPlugin(userContext)
 		} else if (plugin.handler) {
-			const pluginName = plugin["name"]
-			if (typeof pluginName === "string" && pluginName) {
-				currentPluginName = pluginName
-				features.add(currentPluginName)
-			}
 			const userPlugin = plugin.handler as unknown as UserPlugin
 			userPlugin(userContext)
 		}
