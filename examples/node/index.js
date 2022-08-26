@@ -2,7 +2,6 @@ import { createContext, resolveConfig } from "twobj"
 
 const ctx = createContext(
 	resolveConfig({
-		lightMode: "media",
 		theme: {
 			extend: {
 				tabSize: {
@@ -59,4 +58,4 @@ const ctx = createContext(
 	}),
 )
 
-console.log(ctx.getColorClasses().get("to-qoo"))
+console.log(ctx.getColorClasses())
