@@ -713,7 +713,7 @@ export const classPlugins: ClassPlugins = {
 			"0.5",
 		)
 		addDefaults("ring-width", {
-			"--tw-ring-inset": "var(--tw-noop,/**/ /**/)",
+			"--tw-ring-inset": emptyCssValue,
 			"--tw-ring-offset-width": (resolveTheme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
 			"--tw-ring-offset-color": (resolveTheme("ringOffsetColor.DEFAULT", "#fff") as CSSValue).toString(),
 			"--tw-ring-color": ringColorDefault.toString(),
