@@ -564,7 +564,7 @@ export const classPlugins: ClassPlugins = {
 	})),
 	content: createUtilityPlugin(
 		"content",
-		[["content", value => ({ content: "var(--tw-content)", "--tw-content": value })]],
+		[["content", value => ({ content: value })]],
 		theme => ({
 			values: theme.content,
 		}),
