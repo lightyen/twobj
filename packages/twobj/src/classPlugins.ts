@@ -50,12 +50,12 @@ function createColorPlugin(
 }
 
 const cssTransformValue = [
-	"translate(var(--tw-translate-x), var(--tw-translate-y))",
-	"rotate(var(--tw-rotate))",
-	"skewX(var(--tw-skew-x))",
-	"skewY(var(--tw-skew-y))",
-	"scaleX(var(--tw-scale-x))",
-	"scaleY(var(--tw-scale-y))",
+	"var(--tw-transfrom-translate, var(--tw-transfrom-translate-default))",
+	"rotate(var(--tw-rotate, 0))",
+	"skewX(var(--tw-skew-x, 0))",
+	"skewY(var(--tw-skew-y, 0))",
+	"scaleX(var(--tw-scale-x, 1))",
+	"scaleY(var(--tw-scale-y, 1))",
 ].join(" ")
 
 export const classPlugins: ClassPlugins = {
@@ -223,22 +223,19 @@ export const classPlugins: ClassPlugins = {
 	flexBasis: createUtilityPlugin("flexBasis", [["basis", "flexBasis"]], theme => ({ values: theme.flexBasis })),
 	transform: plugin("transform", ({ addDefaults, addUtilities }) => {
 		addDefaults("transform", {
-			"--tw-translate-x": "0",
-			"--tw-translate-y": "0",
-			"--tw-rotate": "0",
-			"--tw-skew-x": "0",
-			"--tw-skew-y": "0",
-			"--tw-scale-x": "1",
-			"--tw-scale-y": "1",
+			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		})
 		addUtilities({
-			".transform": { transform: cssTransformValue },
-			".transform-cpu": { transform: cssTransformValue },
+			".transform": {
+				transform: cssTransformValue,
+			},
+			".transform-cpu": {
+				"--tw-transfrom-translate": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
+				transform: cssTransformValue,
+			},
 			".transform-gpu": {
-				transform: cssTransformValue.replace(
-					"translate(var(--tw-translate-x), var(--tw-translate-y))",
-					"translate3d(var(--tw-translate-x), var(--tw-translate-y), 0)",
-				),
+				"--tw-transfrom-translate": "translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), 0)",
+				transform: cssTransformValue,
 			},
 			".transform-none": { transform: "none" },
 		})
@@ -251,14 +248,14 @@ export const classPlugins: ClassPlugins = {
 			{
 				"translate-x"(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-translate-x": value,
+						transform: cssTransformValue,
 					}
 				},
 				"translate-y"(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-translate-y": value,
+						transform: cssTransformValue,
 					}
 				},
 			},
@@ -270,8 +267,8 @@ export const classPlugins: ClassPlugins = {
 			{
 				rotate(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-rotate": value,
+						transform: cssTransformValue,
 					}
 				},
 			},
@@ -283,14 +280,14 @@ export const classPlugins: ClassPlugins = {
 			{
 				"skew-x"(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-skew-x": value,
+						transform: cssTransformValue,
 					}
 				},
 				"skew-y"(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-skew-y": value,
+						transform: cssTransformValue,
 					}
 				},
 			},
@@ -302,21 +299,21 @@ export const classPlugins: ClassPlugins = {
 			{
 				scale(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-scale-x": value,
 						"--tw-scale-y": value,
+						transform: cssTransformValue,
 					}
 				},
 				"scale-x"(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-scale-x": value,
+						transform: cssTransformValue,
 					}
 				},
 				"scale-y"(value) {
 					return {
-						transform: cssTransformValue,
 						"--tw-scale-y": value,
+						transform: cssTransformValue,
 					}
 				},
 			},

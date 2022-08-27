@@ -80,7 +80,7 @@ importers:
       '@typescript-eslint/parser': 5.35.1
       '@vitejs/plugin-react': 2.0.1
       axios: 0.27.2
-      babel-plugin-twobj: 0.0.11
+      babel-plugin-twobj: 0.0.13
       esbuild: 0.15.5
       eslint: 8.22.0
       eslint-plugin-react: 7.31.0
@@ -96,7 +96,7 @@ importers:
       redux-saga: 1.2.1
       rollup: 2.78.1
       tailwind-types: 3.2.0
-      twobj: 0.0.17
+      twobj: ../../packages/twobj
       typescript: 4.7.4
       vite: 3.0.9
       vite-plugin-eslint: 1.8.1
@@ -110,13 +110,13 @@ importers:
       '@reduxjs/toolkit': 1.8.5_kkwg4cbsojnjnupd3btipussee
       '@tanstack/react-query': 4.2.1_biqbaboplfbrettd7655fr4n2y
       axios: 0.27.2
-      babel-plugin-twobj: 0.0.11_twobj@0.0.17
+      babel-plugin-twobj: link:../../packages/babel-plugin-twobj
       react-intl: 6.0.8_qtbnez4q7bzoc4eqybg3efzzxe
       react-redux: 8.0.2_ps4ywwwjjeajezffxxirqk36qa
       redux: 4.2.0
       redux-saga: 1.2.1
       tailwind-types: 3.2.0_postcss@8.4.16
-      twobj: 0.0.17
+      twobj: link:../../packages/twobj
     devDependencies:
       '@rollup/plugin-yaml': 3.1.0_rollup@2.78.1
       '@swc/core': 1.2.242
@@ -5692,14 +5692,6 @@ packages:
 
   /babel-plugin-transform-react-remove-prop-types/0.4.24:
     resolution: {integrity: sha512-eqj0hVcJUR57/Ug2zE1Yswsw4LhuqqHhD+8v120T1cl3kjg76QwtyBrdIk4WVwK+lAhBJVYCd/v+4nc4y+8JsA==}
-    dev: false
-
-  /babel-plugin-twobj/0.0.11_twobj@0.0.17:
-    resolution: {integrity: sha512-k0ly05TCN3CoU3ZPUEAdqdqu2IGiO11D53jx9rO3LndOCu4gvgiB+8oos64ZWGXj6grsYY8/hflPi53GYIzPMQ==}
-    peerDependencies:
-      twobj: '*'
-    dependencies:
-      twobj: 0.0.17
     dev: false
 
   /babel-preset-current-node-syntax/1.0.1_@babel+core@7.18.13:
@@ -11790,10 +11782,6 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
-
-  /twobj/0.0.17:
-    resolution: {integrity: sha512-Jba/XfH37FFZO6yjlnw/5uXnAxul4pPuQgHFrRVsYOJolca4hWA9fmYOvOjcjgDRzhpz7Ep2Ei/66p05Q7+B7w==}
-    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
