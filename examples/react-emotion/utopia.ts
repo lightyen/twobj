@@ -1,9 +1,8 @@
 // https://utopia.fyi/type/calculator/?c=480,14,1.125,1300,16,1.125,10,3,&s=0.75%7C0.5%7C0.25,1.5%7C2%7C3%7C4%7C6,s-l
 
-/** @return {Tailwind.Plugin} */
-export default function utopia(config, rootFontSize = 16) {
-	const fontSize = {}
-	function variableName(minValue, maxValue) {
+export default function utopia(config: Array<[string, number, number, number]>, rootFontSize = 16): Tailwind.Plugin {
+	const fontSize: Record<string, Tailwind.FontSizeValue> = {}
+	function variableName(minValue: number, maxValue: number) {
 		return `--step-${minValue}〰️${maxValue}`.replace(/\./g, "_")
 	}
 	for (const [key, minValue, maxValue, lineHeight] of config) {
@@ -24,11 +23,11 @@ export default function utopia(config, rootFontSize = 16) {
 				generateVariable(minValue, maxValue)
 			})
 			return
-			function generateVariable(minValue, maxValue) {
+			function generateVariable(minValue: number, maxValue: number) {
 				const style = {}
 				style[variableName(minValue, maxValue)] = `clamp(${getStep(minValue, maxValue)})`
 				addBase({ ":root": style })
-				function getStep(minFontSize, maxFontSize) {
+				function getStep(minFontSize: number, maxFontSize: number) {
 					const m = minFontSize / rootFontSize
 					const n = maxFontSize / rootFontSize
 					const a = (maxFontSize - minFontSize) / (maxWidth - minWidth)
@@ -40,8 +39,10 @@ export default function utopia(config, rootFontSize = 16) {
 	}
 }
 
-export function fontSize([mobileBaseSize, desktopBaseSize] = [14, 16]) {
-	const ret = [[mobileBaseSize, desktopBaseSize, 1.5]]
+export function fontSize(
+	[mobileBaseSize, desktopBaseSize]: [number, number] = [14, 16],
+): Array<[string, number, number, number]> {
+	const ret: Array<[number, number, number]> = [[mobileBaseSize, desktopBaseSize, 1.5]]
 	for (let i = 1; i <= 5; i++) {
 		let [a, b] = ret[2 * (i - 1)]
 		a += 2 ** i
@@ -59,7 +60,7 @@ export function fontSize([mobileBaseSize, desktopBaseSize] = [14, 16]) {
 	return labels.map((label, i) => [label, ...ret[i]])
 }
 
-function lineHeight(fontSize, desktopMinSize, desktopBaseSize) {
+function lineHeight(fontSize: number, desktopMinSize: number, desktopBaseSize: number) {
 	const h = 1.5 - (0.03 * (fontSize - desktopMinSize)) / (desktopBaseSize - desktopMinSize)
 	if (h < 1) return 1
 	return h
