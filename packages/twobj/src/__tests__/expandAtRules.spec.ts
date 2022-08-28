@@ -1,4 +1,4 @@
-import context from "./defaultContext"
+import { context } from "./defaultContext"
 
 it("expandAtRules", () => {
 	expect(context.expandAtRules({ "@apply text-white bg-black": { borderColor: "black" } })).toEqual({

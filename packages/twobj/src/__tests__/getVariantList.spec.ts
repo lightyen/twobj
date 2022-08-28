@@ -1,4 +1,4 @@
-import context from "./defaultContext"
+import { context } from "./defaultContext"
 
 const source = [
 	"sm",

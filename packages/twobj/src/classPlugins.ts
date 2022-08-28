@@ -562,9 +562,13 @@ export const classPlugins: ClassPlugins = {
 	willChange: createUtilityPlugin("willChange", [["will-change", "willChange"]], theme => ({
 		values: theme.willChange,
 	})),
-	content: createUtilityPlugin("content", [["content", value => ({ content: value })]], theme => ({
-		values: theme.content,
-	})),
+	content: createUtilityPlugin(
+		"content",
+		[["content", value => ({ content: "var(--tw-content)", "--tw-content": value })]],
+		theme => ({
+			values: theme.content,
+		}),
+	),
 
 	fontSize: plugin("fontSize", ({ matchUtilities, theme }) => {
 		const values = Object.fromEntries(
