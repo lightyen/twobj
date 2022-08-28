@@ -728,7 +728,15 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 	}
 
 	/** Transfrom tailwind declarations to css object. */
-	function css(value: string): CSSProperties {
+	function css(strings: string): CSSProperties
+	function css(strings: TemplateStringsArray): CSSProperties
+	function css(strings: string | TemplateStringsArray): CSSProperties {
+		let value = ""
+		if (typeof strings !== "string") {
+			value = strings[0] as string
+		} else {
+			value = strings
+		}
 		const rootStyle: CSSProperties = {}
 		const rootFn: VariantSpec = (css = {}) => css
 		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
