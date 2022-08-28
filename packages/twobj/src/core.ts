@@ -3,6 +3,7 @@ import { classPlugins } from "./classPlugins"
 import * as parser from "./parser"
 import { preflight } from "./preflight"
 import type {
+	Context,
 	CorePluginOptions,
 	CSSProperties,
 	CSSValue,
@@ -51,8 +52,9 @@ export const colorProps = new Set<string>([
 	"--tw-shadow-color",
 ])
 
-export function createContext(config: Tailwind.ResolvedConfigJS) {
+export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	const separator = config.separator || ":"
+	config.prefix = ""
 	parser.setSeparator(separator)
 
 	const globalStyles: Record<string, CSSProperties> = Object.assign(preflight, {
@@ -113,8 +115,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		corePlugins(feature: keyof Tailwind.CorePluginFeatures): boolean {
 			return features.has(feature)
 		},
-		prefix(value: string) {
-			return value.startsWith(config.prefix) ? value.slice(config.prefix.length) : value
+		prefix(value) {
+			return value
 		},
 	}
 
@@ -160,10 +162,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		getColorClasses,
 		getThemeValueCompletion,
 		cssVariant,
-		prefix(value: string) {
-			return value.slice(config.prefix.length)
-		},
-		expandAtRules,
 		addBase,
 		addDefaults,
 		addUtilities,
@@ -174,17 +172,14 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		matchVariant,
 	}
 
-	// accpet: 'theme(borderColor.500, <default-value>)
 	function renderThemeFunc(value: string): string {
 		return parser.renderThemeFunc(config, value)
 	}
 
-	// accpet: 'borderColor.500'
 	function renderTheme(value: string): string {
 		return parser.renderTheme(config, value)
 	}
 
-	// accpet: 'colors.primary/<alpha-value>'
 	function resolveTheme(value: string, defaultValue?: unknown): unknown {
 		return parser.resolveTheme(config, value, defaultValue)
 	}
@@ -570,8 +565,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		return ret
 	}
 
-	///
-
 	function getClassList() {
 		return Array.from(utilityMap.entries()).flatMap(([key, specs]) => {
 			specs = toArray(specs)
@@ -710,7 +703,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		}
 	}
 
-	/** Find the core plugin name. */
 	function getPluginName(value: string): string | undefined {
 		const program = parser.parse(value)
 		if (program.expressions.length !== 1) {
@@ -727,7 +719,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS) {
 		return pluginName
 	}
 
-	/** Transfrom tailwind declarations to css object. */
 	function css(strings: string): CSSProperties
 	function css(strings: TemplateStringsArray): CSSProperties
 	function css(strings: string | TemplateStringsArray): CSSProperties {
