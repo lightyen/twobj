@@ -11,20 +11,20 @@
 	},
 	"exports": {
 		".": {
-			"require": "./index.cjs",
+			"require": "./index.js",
 			"import": "./index.mjs"
 		},
 		"./parser": {
-			"require": "./parser/index.cjs",
+			"require": "./parser/index.js",
 			"import": "./parser/index.mjs"
 		},
 		"./config/defaultConfig": {
-			"require": "./config/defaultConfig.cjs",
+			"require": "./config/defaultConfig.js",
 			"import": "./config/defaultConfig.mjs"
 		}
 	},
 	"scripts": {
-		"compile": "del ./index.* ./parser ./config && rollup -c",
+		"compile": "del ./index.* ./parser ./config && tsup",
 		"types": "del *.d.ts **/*.d.ts && tsc --project tsconfig.types.json",
 		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
 		"build": "npm run compile && npm run types && npm run format"
@@ -32,8 +32,13 @@
 	"files": [
 		"parser",
 		"config",
-		"index.cjs",
+		"index.js",
 		"index.mjs",
 		"*.d.ts"
-	]
+	],
+	"devDependencies": {
+		"@types/cssesc": "^3.0.0",
+		"cssesc": "^3.0.0",
+		"parsel-js": "^1.0.2"
+	}
 }

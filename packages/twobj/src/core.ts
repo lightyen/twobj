@@ -1,6 +1,6 @@
-import * as parsel from "parsel-js"
 import { classPlugins } from "./classPlugins"
 import * as parser from "./parser"
+import { escapeCss, findClasses } from "./postcss"
 import { preflight } from "./preflight"
 import type {
 	Context,
@@ -104,8 +104,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 
 	const userContext: UserPluginOptions = {
 		...options,
-		e(classname) {
-			return classname
+		e(value) {
+			return escapeCss(value)
 		},
 		variants(corePlugin) {
 			return []
@@ -307,72 +307,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		return
 	}
 
-	function findClasses(selector: string) {
-		interface OtherNode {
-			type: string
-			list?: Node[]
-			subtree?: Node
-			left?: Node
-			right?: Node
-		}
-
-		interface ClassNode {
-			type: "class"
-			content: string
-			name: string
-			pos: [number, number]
-		}
-
-		type Node = ClassNode & OtherNode
-
-		const classes = new Map<string, ClassNode>()
-
-		parser.splitAtTopLevelOnly(selector).forEach(s => walk(parsel.parse(s)))
-
-		return classes
-
-		function isObject(node: Node | undefined): node is Node {
-			return typeof node === "object" && node !== null
-		}
-
-		function walk(node: Node) {
-			if (!isObject(node)) {
-				return
-			}
-
-			if (callback(node) === false) {
-				return
-			}
-
-			if (Array.isArray(node.list)) {
-				node.list.forEach(walk)
-				return
-			}
-
-			if (isObject(node.subtree)) {
-				walk(node.subtree)
-				return
-			}
-
-			if (isObject(node.left)) {
-				walk(node.left)
-			}
-
-			if (isObject(node.right)) {
-				walk(node.right)
-			}
-		}
-
-		function callback(node: Node): boolean | void {
-			if (node.type === "class") {
-				if (!classes.has(node.name)) {
-					classes.set(node.name, node)
-				}
-				return false
-			}
-		}
-	}
-
 	function getKeyStylePairs(styles: CSSProperties[]): Map<string, CSSProperties> {
 		const ret = new Map<string, CSSProperties>()
 		const result = styles.flatMap(s => traverse(s)).filter((v): v is [string, CSSProperties] => v != undefined)
@@ -403,8 +337,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 					}
 				} else {
 					const value = css[selector]
-					for (const [key] of selectors) {
-						const rest = selector.replace(new RegExp(`[.]${key}(?!-)\\b`, "g"), "&")
+					for (const [key, rest] of selectors) {
 						if (rest !== "&") {
 							ret.push([key, { [rest]: value }])
 						} else if (!isCSSValue(value)) {

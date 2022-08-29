@@ -69,10 +69,7 @@ export interface CorePluginOptions extends PluginOptions {
 
 /** backwards compatibility */
 export interface UserPluginOptions extends PluginOptions {
-	/**
-	 * Do nothing
-	 * @deprecated
-	 */
+	/** escape css */
 	e(classname: string): string
 	/**
 	 * Do nothing

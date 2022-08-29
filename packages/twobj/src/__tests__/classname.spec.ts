@@ -12,35 +12,4 @@ it("content", async () => {
 		"--tw-content": '"ABC"',
 		content: "var(--tw-content)",
 	})
-
-	expect(tw`before:bg-black`).toEqual({
-		"&::before": {
-			backgroundColor: "#000",
-			content: "var(--tw-content)",
-		},
-	})
-
-	expect(tw`before:(content-none bg-black)`).toEqual({
-		"&::before": {
-			"--tw-content": "none",
-			backgroundColor: "#000",
-			content: "var(--tw-content)",
-		},
-	})
-
-	expect(tw`before:(content-['ABC'] bg-black)`).toEqual({
-		"&::before": {
-			"--tw-content": "'ABC'",
-			backgroundColor: "#000",
-			content: "var(--tw-content)",
-		},
-	})
-
-	expect(tw`before:(content-['ABC'] bg-black content-none)`).toEqual({
-		"&::before": {
-			"--tw-content": "none",
-			backgroundColor: "#000",
-			content: "var(--tw-content)",
-		},
-	})
 })
