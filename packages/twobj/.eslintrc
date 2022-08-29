@@ -10,7 +10,7 @@
 	"parserOptions": {
 		"project": "./tsconfig.json"
 	},
-	"ignorePatterns": ["rollup.config.js", "jest.config.js"],
+	"ignorePatterns": ["jest.config.js"],
 	"rules": {
 		"spaced-comment": ["error", "always", { "markers": ["/"] }],
 		"no-var": "error",

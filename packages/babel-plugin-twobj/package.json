@@ -1,6 +1,6 @@
 {
 	"name": "babel-plugin-twobj",
-	"version": "0.0.13",
+	"version": "0.0.14",
 	"homepage": "https://github.com/lightyen/babel-plugin-twobj",
 	"author": {
 		"name": "lightyen",
@@ -11,12 +11,12 @@
 	},
 	"exports": {
 		".": {
-			"require": "./index.cjs",
+			"require": "./index.js",
 			"import": "./index.mjs"
 		}
 	},
 	"scripts": {
-		"compile": "del ./index.* && rollup -c",
+		"compile": "del ./index.* && tsup",
 		"types": "del *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/*.d.ts && tsc --project tsconfig.types.json",
 		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
 		"build": "npm run compile && npm run types && npm run format"
