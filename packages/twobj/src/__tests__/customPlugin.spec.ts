@@ -1,5 +1,6 @@
 import { resolveConfig } from "../config/resolveConfig"
 import { createContext } from "../core"
+import { createTw } from "./context"
 
 test("addUtilities with object", () => {
 	const ctx = createContext(
@@ -21,16 +22,17 @@ test("addUtilities with object", () => {
 			],
 		}),
 	)
+	const tw = createTw(ctx)
 
-	expect(ctx.css`custom-object-fill`).toEqual({
+	expect(tw`custom-object-fill`).toEqual({
 		objectFit: "fill",
 	})
 
-	expect(ctx.css`custom-object-contain`).toEqual({
+	expect(tw`custom-object-contain`).toEqual({
 		objectFit: "contain",
 	})
 
-	expect(ctx.css`custom-object-cover`).toEqual({
+	expect(tw`custom-object-cover`).toEqual({
 		objectFit: "cover",
 	})
 })
@@ -57,16 +59,17 @@ test("addUtilities with array", () => {
 			],
 		}),
 	)
+	const tw = createTw(ctx)
 
-	expect(ctx.css`custom-object-fill`).toEqual({
+	expect(tw`custom-object-fill`).toEqual({
 		objectFit: "fill",
 	})
 
-	expect(ctx.css`custom-object-contain`).toEqual({
+	expect(tw`custom-object-contain`).toEqual({
 		objectFit: "contain",
 	})
 
-	expect(ctx.css`custom-object-cover`).toEqual({
+	expect(tw`custom-object-cover`).toEqual({
 		objectFit: "cover",
 	})
 })
@@ -91,8 +94,9 @@ test("addComponents", () => {
 			],
 		}),
 	)
+	const tw = createTw(ctx)
 
-	expect(ctx.css`btn-blue`).toEqual({
+	expect(tw`btn-blue`).toEqual({
 		backgroundColor: "blue",
 		color: "white",
 		padding: ".5rem 1rem",
@@ -132,8 +136,9 @@ test("addComponents with media queries", () => {
 			],
 		}),
 	)
+	const tw = createTw(ctx)
 
-	expect(ctx.css`custom-container`).toEqual({
+	expect(tw`custom-container`).toEqual({
 		width: "100%",
 		"@media (min-width: 100px)": {
 			maxWidth: "100px",
@@ -178,8 +183,9 @@ test("addComponents with nested rules", () => {
 			],
 		}),
 	)
+	const tw = createTw(ctx)
 
-	expect(ctx.css`btn-blue`).toEqual({
+	expect(tw`btn-blue`).toEqual({
 		backgroundColor: "blue",
 		color: "white",
 		padding: ".5rem 1rem",
@@ -215,8 +221,9 @@ test("escaped selectors", () => {
 			],
 		}),
 	)
+	const tw = createTw(ctx)
 
-	expect(ctx.css`custom-top-1/4`).toEqual({
+	expect(tw`custom-top-1/4`).toEqual({
 		top: "25%",
 	})
 })

@@ -1,4 +1,4 @@
-import { context } from "./defaultContext"
+import { context } from "./context"
 
 const source = [
 	"sm",
@@ -120,7 +120,7 @@ const source = [
 	"landscape",
 ]
 
-it("variantList", () => {
+test("variantList", () => {
 	const variantListSet = new Set<string>(context.variants.keys())
 	const originSet = new Set<string>(source)
 

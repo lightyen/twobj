@@ -1,6 +1,6 @@
-import { tw } from "./defaultContext"
+import { tw } from "./context"
 
-it("content", async () => {
+test("content", async () => {
 	expect(tw`content`).toEqual({})
 
 	expect(tw`content-none`).toEqual({

@@ -1,6 +1,51 @@
-import { tw } from "./defaultContext"
+import { tw } from "./context"
 
-it("before and after", async () => {
+test("hover", () => {
+	expect(tw`hover:bg-black`).toEqual({
+		"@media (hover: hover) and (pointer: fine)": {
+			"&:hover": {
+				backgroundColor: "#000",
+			},
+		},
+	})
+})
+
+test("marker", () => {
+	expect(tw`marker:bg-black`).toEqual({
+		"& *::marker": {
+			backgroundColor: "#000",
+		},
+		"&::marker": {
+			backgroundColor: "#000",
+		},
+	})
+})
+
+test("open", () => {
+	expect(tw`open:bg-black`).toEqual({
+		"&[open]": {
+			backgroundColor: "#000",
+		},
+	})
+})
+
+test("first-of-type", () => {
+	expect(tw`first-of-type:bg-black`).toEqual({
+		"&:first-of-type": {
+			backgroundColor: "#000",
+		},
+	})
+})
+
+test("indeterminate", () => {
+	expect(tw`indeterminate:bg-black`).toEqual({
+		"&:indeterminate": {
+			backgroundColor: "#000",
+		},
+	})
+})
+
+test("before and after", () => {
 	expect(tw`before:bg-black`).toEqual({
 		"&::before": {
 			backgroundColor: "#000",

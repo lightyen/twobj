@@ -1,4 +1,4 @@
-import { context } from "./defaultContext"
+import { context } from "./context"
 
 const features = [
 	"container",
@@ -167,6 +167,6 @@ const features = [
 	"content",
 ]
 
-it("features", () => {
+test("features", () => {
 	expect(features.sort()).toEqual(Array.from(context.features).sort())
 })

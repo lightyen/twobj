@@ -15,3 +15,15 @@ export function tw(classname: string | TemplateStringsArray, ctx = context) {
 	}
 	return ctx.css(value)
 }
+
+export function createTw(ctx: Context) {
+	return function tw(classname: string | TemplateStringsArray) {
+		let value = ""
+		if (typeof classname !== "string") {
+			value = classname[0] as string
+		} else {
+			value = classname
+		}
+		return ctx.css(value)
+	}
+}

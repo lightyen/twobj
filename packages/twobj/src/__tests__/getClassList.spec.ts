@@ -1,4 +1,4 @@
-import { context } from "./defaultContext"
+import { context } from "./context"
 
 const source = [
 	"container",
@@ -9162,7 +9162,7 @@ const source = [
 	"content-none",
 ]
 
-it("classList", () => {
+test("classList", () => {
 	const classListSet = new Set<string>(context.getClassList())
 	const originSet = new Set<string>(source)
 
