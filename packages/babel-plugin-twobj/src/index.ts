@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import Module from "module"
 import path from "path"
-import { createVisitor } from "./visitor"
 import type { PluginOptions } from "./options"
-import type { ThirdPartyName } from "./types"
+import * as plugins from "./plugins"
+import { ThirdParty } from "./types"
+import { createVisitor } from "./visitor"
 
 function readConfig({ tailwindConfig, debug }: PluginOptions): unknown {
 	if (typeof tailwindConfig === "object" && tailwindConfig !== null) {
@@ -34,26 +35,27 @@ function isModule(id: string) {
 	}
 }
 
-function findThirdParty(): ThirdPartyName | undefined {
-	// emotion
-	if (isModule("@emotion/react")) {
-		return "emotion"
+function findThirdParty(): ThirdParty | undefined {
+	for (const {
+		id,
+		manifest: { cssProp, styled, className },
+	} of Object.values(plugins)) {
+		const payload: ThirdParty = {
+			name: id,
+		}
+		if (cssProp && isModule(cssProp)) {
+			payload.cssProp = cssProp
+		}
+		if (styled && isModule(styled)) {
+			payload.cssProp = styled
+		}
+		if (className && isModule(className)) {
+			payload.cssProp = className
+		}
+		if (payload.cssProp || payload.styled || payload.className) {
+			return payload
+		}
 	}
-	if (isModule("@emotion/css")) {
-		return "emotion"
-	}
-	if (isModule("@emotion/babel-plugin")) {
-		return "emotion"
-	}
-
-	// linaria
-	if (isModule("@linaria/core")) {
-		return "linaria"
-	}
-	if (isModule("@linaria/react")) {
-		return "linaria"
-	}
-
 	return undefined
 }
 

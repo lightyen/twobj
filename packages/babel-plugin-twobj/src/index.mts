@@ -2,9 +2,10 @@
 import { createRequire, Module } from "node:module"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
-import { createVisitor } from "./visitor"
 import type { PluginOptions } from "./options"
-import type { ThirdPartyName } from "./types"
+import * as plugins from "./plugins"
+import { ThirdParty } from "./types"
+import { createVisitor } from "./visitor"
 
 async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unknown> {
 	if (typeof tailwindConfig === "object" && tailwindConfig !== null) {
@@ -36,26 +37,35 @@ async function isModule(id: string) {
 	}
 }
 
-async function findThirdParty(): Promise<ThirdPartyName | undefined> {
-	// emotion
-	if (await isModule("@emotion/react")) {
-		return "emotion"
+async function findThirdParty(): Promise<ThirdParty | undefined> {
+	for (const {
+		id,
+		manifest: { cssProp, styled, className },
+	} of Object.values(plugins)) {
+		const payload: ThirdParty = {
+			name: id,
+		}
+		await Promise.all([
+			(async () => {
+				if (cssProp && (await isModule(cssProp))) {
+					payload.cssProp = cssProp
+				}
+			})(),
+			(async () => {
+				if (styled && (await isModule(styled))) {
+					payload.cssProp = styled
+				}
+			})(),
+			(async () => {
+				if (className && (await isModule(className))) {
+					payload.cssProp = className
+				}
+			})(),
+		])
+		if (payload.cssProp || payload.styled || payload.className) {
+			return payload
+		}
 	}
-	if (await isModule("@emotion/css")) {
-		return "emotion"
-	}
-	if (await isModule("@emotion/babel-plugin")) {
-		return "emotion"
-	}
-
-	// linaria
-	if (await isModule("@linaria/core")) {
-		return "linaria"
-	}
-	if (await isModule("@linaria/react")) {
-		return "linaria"
-	}
-
 	return undefined
 }
 

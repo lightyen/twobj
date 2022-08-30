@@ -21,13 +21,27 @@ export interface PluginState {
 	}
 }
 
+export type ThirdPartyName = "emotion" | "linaria"
+
+export interface ThirdParty {
+	name: ThirdPartyName // ex: emotion
+	cssProp?: string // ex: @emotion/babel-plugin
+	styled?: string // ex: @emotion/styled
+	className?: string // ex: @emotion/css
+}
+
 export interface Plugin {
 	(options: {
+		thirdParty: ThirdParty
 		t: typeof babel
 		buildStyle: (input: string) => babel.ObjectExpression
 		addImportDeclaration: (declaration: babel.ImportDeclaration) => void
 	}): Visitor<State & PluginState>
+	id: ThirdPartyName
 	lookup: string[]
+	manifest: {
+		cssProp?: string
+		styled?: string
+		className?: string
+	}
 }
-
-export type ThirdPartyName = "emotion" | "linaria"

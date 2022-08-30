@@ -2,7 +2,7 @@ import type { NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import { createContext, resolveConfig } from "twobj"
 import * as plugins from "./plugins"
-import type { ImportLibrary, PluginState, State, ThirdPartyName } from "./types"
+import type { ThirdParty, ImportLibrary, PluginState, State } from "./types"
 import {
 	buildArrayExpression,
 	buildObjectExpression,
@@ -25,7 +25,7 @@ export function createVisitor({
 	options: import("./options").PluginOptions
 	config: unknown
 	moduleType: "esm" | "cjs"
-	thirdParty: ThirdPartyName | undefined
+	thirdParty: ThirdParty | undefined
 }): Visitor<import("@babel/core").PluginPass> {
 	const t = babel.types
 	const resolved = resolveConfig(config as Parameters<typeof resolveConfig>[0])
@@ -117,7 +117,7 @@ export function createVisitor({
 	const lookup = new Set([packageName])
 
 	if (thirdParty) {
-		plugins[thirdParty].lookup.forEach(v => lookup.add(v))
+		plugins[thirdParty.name].lookup.forEach(v => lookup.add(v))
 	}
 
 	return {
@@ -137,7 +137,7 @@ export function createVisitor({
 
 			if (thirdParty) {
 				program.traverse<State & PluginState>(
-					plugins[thirdParty]({ t, buildStyle, addImportDeclaration }),
+					plugins[thirdParty.name]({ thirdParty, t, buildStyle, addImportDeclaration }),
 					Object.assign(state, { styled: { imported: false, localName: "styled" } }),
 				)
 			}
