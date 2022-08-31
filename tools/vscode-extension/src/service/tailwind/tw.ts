@@ -92,7 +92,6 @@ export function createTwContext(config: Tailwind.ResolvedConfigJS) {
 		["placeholder"],
 		restVariants,
 	]
-	const variables = new Set<string>()
 	const classnames = context.getClassList()
 
 	const arbitrary: Record<string, Partial<Record<twobj.ValueType | "any", string[]>>> = {}
@@ -124,14 +123,12 @@ export function createTwContext(config: Tailwind.ResolvedConfigJS) {
 		tailwindConfig: config,
 		variants,
 		classnames,
-		variables,
 		screens,
 		isVariant,
 		renderVariant,
 		renderVariantScope,
 		renderClassname,
 		renderDecls,
-		escape,
 		getPluginName(classname: string) {
 			return context.getPluginName(trimPrefix(classname))
 		},
@@ -389,9 +386,6 @@ export function createTwContext(config: Tailwind.ResolvedConfigJS) {
 				values.push(value)
 			} else {
 				decls.set(prop, [value])
-			}
-			if (variable) {
-				variables.add(prop)
 			}
 		})
 

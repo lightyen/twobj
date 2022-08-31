@@ -215,37 +215,19 @@ export function createTailwindLoader() {
 			return cssPropsCompletionList
 		}
 
-		cssPropsCompletionList = cssDataManager
-			.getProperties()
-			.map<ICompletionItem>(entry => ({
-				label: entry.name,
-				sortText: "~~~~" + entry.name,
-				kind: vscode.CompletionItemKind.Field,
-				command: {
-					title: "Suggest",
-					command: "editor.action.triggerSuggest",
-				},
-				data: {
-					type: "cssProp",
-					entry,
-				},
-			}))
-			.concat(
-				Array.from(tw.variables).map(label => {
-					const item: ICompletionItem = {
-						label,
-						data: { type: "cssProp" },
-						sortText: "~~~~~" + label,
-						kind: vscode.CompletionItemKind.Field,
-						command: {
-							title: "Suggest",
-							command: "editor.action.triggerSuggest",
-						},
-						detail: "variable",
-					}
-					return item
-				}),
-			)
+		cssPropsCompletionList = cssDataManager.getProperties().map<ICompletionItem>(entry => ({
+			label: entry.name,
+			sortText: "~~~~" + entry.name,
+			kind: vscode.CompletionItemKind.Field,
+			command: {
+				title: "Suggest",
+				command: "editor.action.triggerSuggest",
+			},
+			data: {
+				type: "cssProp",
+				entry,
+			},
+		}))
 
 		return cssPropsCompletionList
 	}
