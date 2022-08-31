@@ -233,6 +233,15 @@
         "twobj.documentColors": {
           "type": "boolean",
           "default": false
+        },
+        "twobj.importLabels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "twobj"
+          ]
         }
       }
     },

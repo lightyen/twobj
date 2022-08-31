@@ -46,6 +46,8 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 	const activated = new EventEmitter()
 	const activatedEvent = new vscode.EventEmitter<void>()
 
+	context.typescriptExtractor.importLabels = options.importLabels
+
 	return {
 		get configPath() {
 			return configPath ?? URI.parse("defaultConfig")
@@ -140,6 +142,7 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 	/** Update user settings.(no need to reload.) */
 	function updateSettings(setting: Partial<Settings>) {
 		options = { ...options, ...setting }
+		context.typescriptExtractor.importLabels = options.importLabels
 	}
 
 	async function onCompletion(document: TextDocument, position: vscode.Position) {

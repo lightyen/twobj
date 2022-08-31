@@ -75,6 +75,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		hoverColorHint: "none",
 		otherLanguages: [],
 		minimumContrastRatio: 0,
+		importLabels: [],
 	}) as Settings
 
 	const pnpContext = findPnpApi(workspaceFolder.fsPath)
@@ -309,6 +310,20 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 					needToUpdate = true
 					needToDiagnostics = true
 					console.info(`diagnostics = ${JSON.stringify(settings.diagnostics)}`)
+				}
+
+				const labelsBefore = new Set(settings.importLabels)
+				const labelsAfter = new Set(extSettings.importLabels)
+				if (
+					labelsBefore.size !== labelsAfter.size ||
+					!Array.from(labelsAfter).every(k => labelsBefore.has(k)) ||
+					!Array.from(labelsBefore).every(k => labelsAfter.has(k))
+				) {
+					settings.importLabels = extSettings.importLabels
+					needToUpdate = true
+					needToRerenderColors = true
+					needToDiagnostics = true
+					console.info(`importLabels = ${settings.importLabels.join(", ")}`)
 				}
 
 				if (needToUpdate) {

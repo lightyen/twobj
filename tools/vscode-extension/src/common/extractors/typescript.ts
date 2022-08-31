@@ -1,8 +1,6 @@
 import ts from "typescript"
 import type { ExtractedToken, ExtractedTokenKind, Extractor } from "./types"
 
-const twLabel = "twobj"
-
 interface Features {
 	twTemplate: Set<string>
 	themeTemplate: Set<string>
@@ -245,50 +243,52 @@ function findAllNode(
 		.flat()
 }
 
-function checkImportTw(source: ts.SourceFile): Features {
+function checkImportTw(source: ts.SourceFile, importLabels: string[]): Features {
 	const twTemplate = new Set<string>()
 	const themeTemplate = new Set<string>()
 
 	source.forEachChild(node => {
 		if (ts.isImportDeclaration(node)) {
 			const token = find(source, node, ts.isStringLiteral)
-			if (token?.text === twLabel) {
-				const clause = find(source, node, ts.isImportClause)
-				if (clause?.namedBindings) {
-					const namedImports = find(source, clause, ts.isNamedImports)
-					if (namedImports) {
-						namedImports.forEachChild(node => {
-							if (ts.isImportSpecifier(node)) {
-								if (node.getFirstToken(source)?.getText(source) === "tw") {
-									const count = node.getChildCount(source)
-									if (count === 1) {
-										const identifier = node.getFirstToken(source)?.getText(source)
-										if (identifier && !twTemplate.has(identifier)) {
-											twTemplate.add(identifier)
-										}
-									} else if (count === 3) {
-										const identifier = node.getLastToken(source)?.getText(source)
-										if (identifier && !twTemplate.has(identifier)) {
-											twTemplate.add(identifier)
-										}
+			if (token?.text == null || !importLabels.includes(token.text)) {
+				return
+			}
+
+			const clause = find(source, node, ts.isImportClause)
+			if (clause?.namedBindings) {
+				const namedImports = find(source, clause, ts.isNamedImports)
+				if (namedImports) {
+					namedImports.forEachChild(node => {
+						if (ts.isImportSpecifier(node)) {
+							if (node.getFirstToken(source)?.getText(source) === "tw") {
+								const count = node.getChildCount(source)
+								if (count === 1) {
+									const identifier = node.getFirstToken(source)?.getText(source)
+									if (identifier && !twTemplate.has(identifier)) {
+										twTemplate.add(identifier)
 									}
-								} else if (node.getFirstToken(source)?.getText(source) === "theme") {
-									const count = node.getChildCount(source)
-									if (count === 1) {
-										const identifier = node.getFirstToken(source)?.getText(source)
-										if (identifier && !themeTemplate.has(identifier)) {
-											themeTemplate.add(identifier)
-										}
-									} else if (count === 3) {
-										const identifier = node.getLastToken(source)?.getText(source)
-										if (identifier && !themeTemplate.has(identifier)) {
-											themeTemplate.add(identifier)
-										}
+								} else if (count === 3) {
+									const identifier = node.getLastToken(source)?.getText(source)
+									if (identifier && !twTemplate.has(identifier)) {
+										twTemplate.add(identifier)
+									}
+								}
+							} else if (node.getFirstToken(source)?.getText(source) === "theme") {
+								const count = node.getChildCount(source)
+								if (count === 1) {
+									const identifier = node.getFirstToken(source)?.getText(source)
+									if (identifier && !themeTemplate.has(identifier)) {
+										themeTemplate.add(identifier)
+									}
+								} else if (count === 3) {
+									const identifier = node.getLastToken(source)?.getText(source)
+									if (identifier && !themeTemplate.has(identifier)) {
+										themeTemplate.add(identifier)
 									}
 								}
 							}
-						})
-					}
+						}
+					})
 				}
 			}
 		}
@@ -296,8 +296,13 @@ function checkImportTw(source: ts.SourceFile): Features {
 	return { twTemplate, themeTemplate } as const
 }
 
-export function findToken(source: ts.SourceFile, position: number, includeEnd: boolean): ExtractedToken | undefined {
-	const features = checkImportTw(source)
+export function findToken(
+	source: ts.SourceFile,
+	position: number,
+	includeEnd: boolean,
+	importLabels: string[],
+): ExtractedToken | undefined {
+	const features = checkImportTw(source, importLabels)
 	const node = findNode(source, source, position, features, includeEnd)
 	if (node == undefined) {
 		return undefined
@@ -305,12 +310,13 @@ export function findToken(source: ts.SourceFile, position: number, includeEnd: b
 	return transfromToken(node, source)
 }
 
-export function findAllToken(source: ts.SourceFile): ExtractedToken[] {
-	const features = checkImportTw(source)
+export function findAllToken(source: ts.SourceFile, importLabels: string[]): ExtractedToken[] {
+	const features = checkImportTw(source, importLabels)
 	return findAllNode(source, source, features)?.map(node => transfromToken(node, source)) ?? []
 }
 
 const typescriptExtractor: Extractor = {
+	importLabels: [],
 	acceptLanguage(languageId) {
 		switch (languageId) {
 			case "javascript":
@@ -342,7 +348,7 @@ const typescriptExtractor: Extractor = {
 		if (scriptKind) {
 			const source = ts.createSourceFile("", code, ts.ScriptTarget.Latest, false, scriptKind)
 			try {
-				return findAllToken(source)
+				return findAllToken(source, this.importLabels ?? [])
 			} catch {
 				return []
 			}
@@ -369,7 +375,7 @@ const typescriptExtractor: Extractor = {
 		}
 		if (scriptKind) {
 			const source = ts.createSourceFile("", code, ts.ScriptTarget.Latest, false, scriptKind)
-			const token = findToken(source, position, includeEnd)
+			const token = findToken(source, position, includeEnd, this.importLabels ?? [])
 			if (!token) {
 				return undefined
 			}

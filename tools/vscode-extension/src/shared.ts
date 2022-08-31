@@ -21,6 +21,7 @@ export interface Settings {
 	hoverColorHint: "none" | "hex" | "rgb" | "hsl"
 	otherLanguages: string[]
 	minimumContrastRatio: number
+	importLabels: string[]
 }
 
 export interface ColorDecoration {

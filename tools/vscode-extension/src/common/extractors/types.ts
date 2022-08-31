@@ -26,6 +26,7 @@ export interface ExtractedToken extends Token {
 }
 
 export interface Extractor {
+	importLabels?: string[]
 	acceptLanguage(languageId: LanguageId): boolean
 	find(
 		languageId: LanguageId,
