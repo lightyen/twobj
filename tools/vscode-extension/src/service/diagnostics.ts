@@ -187,6 +187,13 @@ function validateTw({
 				}
 				break
 			}
+			case parser.NodeType.ShortCss: {
+				const ans = rejectShortCss(item.target, document, offset)
+				for (let i = 0; i < ans.length; i++) {
+					if (!diagnostics.push(ans[i])) return false
+				}
+				break
+			}
 		}
 	}
 
@@ -513,6 +520,19 @@ function checkArbitraryProperty(
 			severity: vscode.DiagnosticSeverity.Error,
 		})
 	}
+	return result
+}
+
+function rejectShortCss(item: parser.ShortCss, document: TextDocument, offset: number) {
+	const result: IDiagnostic[] = []
+	const [start, end] = item.range
+	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
+	result.push({
+		source: DIAGNOSTICS_ID,
+		message: `Invalid.`,
+		range,
+		severity: vscode.DiagnosticSeverity.Error,
+	})
 	return result
 }
 
