@@ -44,6 +44,28 @@ export function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, d
 	return target !== undefined ? resolveThemeValue({ value: target, opacityValue }) : defaultValue ?? ""
 }
 
+export function resolveThemeNoDefault(
+	config: Tailwind.ResolvedConfigJS,
+	value: string,
+	defaultValue?: unknown,
+): unknown {
+	const node = parse_theme_val({ text: value })
+	let target = resolvePath(config.theme, node.path, false)
+	if (target) {
+		return resolveThemeValue({ value: target })
+	}
+
+	let opacityValue: string | undefined
+	const ret = tryOpacityValue(node.path)
+	if (ret.opacityValue) {
+		opacityValue = ret.opacityValue
+		node.path = ret.path
+	}
+
+	target = resolvePath(config.theme, node.path, false)
+	return target !== undefined ? resolveThemeValue({ value: target, opacityValue }) : defaultValue ?? ""
+}
+
 // for completions
 export function parseThemeValue({
 	config,

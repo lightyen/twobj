@@ -181,7 +181,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	}
 
 	function resolveTheme(value: string, defaultValue?: unknown): unknown {
-		return parser.resolveTheme(config, value, defaultValue)
+		return parser.resolveThemeNoDefault(config, value, defaultValue)
 	}
 
 	function resolveGlobalTheme(g: CSSProperties): void {
