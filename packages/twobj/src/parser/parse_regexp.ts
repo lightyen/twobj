@@ -295,8 +295,15 @@ function parseExpression({
 				}
 
 				// color[
-				// throw "shortcss not support"
-				return { expr: undefined, lastIndex: end }
+				const shortcss: nodes.ShortCss = {
+					type: nodes.NodeType.ShortCss,
+					prefix,
+					expr,
+					important: exclamationLeft,
+					range: [start, regexp.lastIndex],
+					closed: false,
+				}
+				return { expr: shortcss, lastIndex: end }
 			}
 
 			// Does it end with separator?
@@ -369,8 +376,17 @@ function parseExpression({
 
 			// shortcss
 			if (!slash && !hyphen) {
-				// throw "shortcss not support"
-				return { expr: undefined, lastIndex: regexp.lastIndex }
+				const exclamationRight = text.charCodeAt(regexp.lastIndex) === 33
+				if (exclamationRight) regexp.lastIndex += 1
+				const shortcss: nodes.ShortCss = {
+					type: nodes.NodeType.ShortCss,
+					prefix,
+					expr,
+					important: exclamationLeft || exclamationRight,
+					range: [start, exclamationRight ? regexp.lastIndex - 1 : regexp.lastIndex],
+					closed: true,
+				}
+				return { expr: shortcss, lastIndex: regexp.lastIndex }
 			}
 
 			let e: nodes.WithOpacity | nodes.EndOpacity | undefined

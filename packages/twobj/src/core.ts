@@ -746,6 +746,10 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 				}
 				break
 			}
+			case parser.NodeType.ShortCss: {
+				// do nothing
+				break
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@ import * as nodes from "./nodes"
 import * as parser from "./parse_regexp"
 
 export type SpreadDescription = {
-	target: nodes.Classname | nodes.ArbitraryClassname | nodes.ArbitraryProperty
+	target: nodes.Classname | nodes.ArbitraryClassname | nodes.ArbitraryProperty | nodes.ShortCss
 	value: string
 	variants: nodes.Variant[]
 	important: boolean
@@ -62,6 +62,18 @@ export function spread(text: string, { separator = ":" }: { separator?: string }
 		} else if (nodes.NodeType.ArbitraryProperty === node.type) {
 			if (!node.closed) {
 				notClosed.push(node)
+				return
+			}
+
+			items.push({
+				target: node,
+				value: text.slice(...node.range),
+				...ctx,
+				important: ctx.important || node.important,
+			})
+		} else if (nodes.NodeType.ShortCss === node.type) {
+			if (!node.closed) {
+				// notClosed.push(node)
 				return
 			}
 

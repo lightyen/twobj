@@ -1,11 +1,27 @@
-// NOTE:
-//
-// classname: aa-bbb
-// arbitrary-classname: aa-[value]
-// arbitrary-property: [aaa: value]
-// simple-variant: aa-bbb:
-// arbitrary-variant: aa-[value]:
-// arbitrary-selector: [&:bbb, &:ccc]:
+/**
+ *  Node Types
+ *
+ * 1. simple-classname
+ * aa-bbb
+ *
+ * 2. simple-variant
+ * aa-bbb:
+ *
+ * 3. arbitrary-classname
+ * aa-[value]
+ *
+ * 4. arbitrary-variant
+ * aa-[value]:
+ *
+ * 5. arbitrary-property
+ * [aaa: value]
+ *
+ * 6. arbitrary-selector
+ * [&:bbb, &:ccc]:
+ *
+ * 7. short-css
+ * aaa[value]
+ */
 
 export enum NodeType {
 	Program = "Program",
@@ -17,6 +33,7 @@ export enum NodeType {
 	ArbitraryVariant = "ArbitraryVariant",
 	ArbitraryProperty = "ArbitraryProperty",
 	ArbitrarySelector = "ArbitrarySelector",
+	ShortCss = "ShortCss",
 	CssSelector = "CssSelector",
 	Identifier = "Identifier",
 	CssDeclaration = "CssDeclaration",
@@ -111,13 +128,19 @@ export interface ArbitraryProperty extends BaseNode, NodeData, Important, Closed
 	decl: CssDeclaration
 }
 
+export interface ShortCss extends BaseNode, Important, Closed {
+	type: NodeType.ShortCss
+	prefix: Identifier
+	expr: CssExpression
+}
+
 export interface VariantSpan extends BaseNode {
 	type: NodeType.VariantSpan
 	variant: SimpleVariant | ArbitrarySelector | ArbitraryVariant
 	child?: TwExpression
 }
 
-export type TwExpression = Classname | ArbitraryClassname | ArbitraryProperty | VariantSpan | Group
+export type TwExpression = Classname | ArbitraryClassname | ArbitraryProperty | ShortCss | VariantSpan | Group
 
 export interface Group extends BaseNode, Important, Closed {
 	type: NodeType.Group
@@ -146,6 +169,7 @@ export type BracketNode =
 	| ArbitraryVariant
 	| ArbitraryClassname
 	| ArbitraryProperty
+	| ShortCss
 	| WithOpacity
 
 export interface ThemeFunctionNode extends BaseNode, Closed {
