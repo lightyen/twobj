@@ -403,6 +403,13 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			let represent: LookupSpec["represent"]
 			const types = toArray(type)
 			if (types.some(t => t === "any")) {
+				let ambiguous = false
+				let spec = utilityMap.get(key)
+				if (spec) {
+					spec = toArray(spec).filter((s): s is LookupSpec => s.type === "lookup")
+					ambiguous = spec.length > 1
+				}
+
 				represent = (input, node, getText, config, negative) => {
 					if (negative && !supportsNegativeValues) return undefined
 					return representAny({
@@ -411,9 +418,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 						getText,
 						values,
 						negative,
-						get ambiguous() {
-							return Array.isArray(utilityMap.get(key))
-						},
+						ambiguous,
 						template(value) {
 							const css = fn(value)
 							return merge({}, ...toArray(css).map(applyCamelCase))
@@ -449,6 +454,14 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			const noAnyTypes = types.filter((t): t is ValueType => t !== "any")
 			represent = (input, node, getText, config, negative) => {
 				if (negative && !supportsNegativeValues) return undefined
+
+				let ambiguous = false
+				let spec = utilityMap.get(key)
+				if (spec) {
+					spec = toArray(spec).filter((s): s is LookupSpec => s.type === "lookup")
+					ambiguous = spec.length > 1
+				}
+
 				return representTypes({
 					input,
 					node,
@@ -457,9 +470,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 					negative,
 					types: noAnyTypes,
 					filterDefault,
-					get ambiguous() {
-						return Array.isArray(utilityMap.get(key))
-					},
+					ambiguous,
 					template(value) {
 						const css = fn(value)
 						return merge({}, ...toArray(css))
@@ -813,11 +824,19 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			}
 
 			const key = input.slice(0, i)
-			result.spec = utilityMap.get(key)
-			if (result.spec) {
-				result.restInput = input.slice(i + 1)
-				return result
+			const spec = utilityMap.get(key)
+			if (!spec) {
+				continue
 			}
+
+			const lookupSpec = toArray(spec).filter((s): s is LookupSpec => s.type === "lookup")
+			if (lookupSpec.length === 0) {
+				continue
+			}
+
+			result.spec = lookupSpec
+			result.restInput = input.slice(i + 1)
+			return result
 		}
 
 		return result
