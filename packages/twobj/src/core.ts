@@ -357,8 +357,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		// { "@media (min-width: 1024px)": { "&": { padding: "10px" } } }
 		// { "@screen md": { borderColor: "black" } }
 		// { "@screen md": { "@apply text-white bg-black": { borderColor: "black" } } }
-		const AT_APPLY = "@apply "
-		const AT_SCREEN = "@screen "
+		const AT_APPLY = /^@apply\s+/
+		const AT_SCREEN = /^@screen\s+/
 
 		const target: CSSProperties = {}
 		for (const [key, value] of Object.entries(style)) {
@@ -367,14 +367,14 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 				continue
 			}
 
-			if (key.startsWith(AT_APPLY)) {
-				const input = key.slice(AT_APPLY.length)
+			if (AT_APPLY.test(key)) {
+				const input = key.replace(AT_APPLY, "")
 				merge(target, merge(css(input), expandAtRules(value)))
 				continue
 			}
 
-			if (key.startsWith(AT_SCREEN)) {
-				const input = key.slice(AT_SCREEN.length)
+			if (AT_SCREEN.test(key)) {
+				const input = key.replace(AT_SCREEN, "")
 				const fn = compose(variantMap.get(input), expandAtRules)
 				merge(target, fn(value))
 				continue
