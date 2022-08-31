@@ -170,6 +170,7 @@ function validateTw({
 				const ans = checkArbitraryClassname(
 					item.target,
 					document,
+					text,
 					offset,
 					diagnosticOptions.emptyChecking,
 					state,
@@ -378,6 +379,7 @@ function checkVariants(
 function checkArbitraryClassname(
 	item: parser.ArbitraryClassname,
 	document: TextDocument,
+	text: string,
 	offset: number,
 	emptyChecking: boolean,
 	state: TailwindLoader,
@@ -443,6 +445,20 @@ function checkArbitraryClassname(
 			range,
 			severity: vscode.DiagnosticSeverity.Error,
 		})
+	} else {
+		const cssText = state.tw.renderClassname({ classname: text.slice(...item.range) })
+		if (!cssText) {
+			const range = new vscode.Range(
+				document.positionAt(offset + item.expr.range[0]),
+				document.positionAt(offset + item.expr.range[1]),
+			)
+			result.push({
+				source: DIAGNOSTICS_ID,
+				message: `'${text.slice(item.expr.range[0], item.expr.range[1])}' is an unknown value.`,
+				range,
+				severity: vscode.DiagnosticSeverity.Error,
+			})
+		}
 	}
 
 	return result
