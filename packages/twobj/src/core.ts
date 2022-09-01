@@ -267,7 +267,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			const reg = /{/gs
 			const match = reg.exec(desc)
 			if (!match) {
-				return (css = {}) => ({ [desc]: css })
+				return (css = {}) => ({ [desc]: { ...css } })
 			} else {
 				const rb = parser.findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
 				if (rb == undefined) {
