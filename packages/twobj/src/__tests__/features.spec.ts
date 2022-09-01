@@ -170,3 +170,10 @@ const features = [
 test("features", async () => {
 	expect(features.sort()).toEqual(Array.from(context.features).sort())
 })
+
+it("snapshots", async () => {
+	const list = context.getClassList()
+	list.forEach(classname => {
+		expect(context.css(classname)).toMatchSnapshot(classname)
+	})
+})

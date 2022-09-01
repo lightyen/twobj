@@ -80,7 +80,7 @@ export const classPlugins: ClassPlugins = {
 			["border-b", "borderBottomColor"],
 			["border-l", "borderLeftColor"],
 			["border-x", value => ({ borderLeftColor: value, borderRightColor: value })],
-			["border-y", value => ({ borderTopColor: value, borderRightColor: value })],
+			["border-y", value => ({ borderTopColor: value, borderBottomColor: value })],
 		],
 		theme => ({
 			type: "color",
