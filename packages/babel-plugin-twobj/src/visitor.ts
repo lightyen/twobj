@@ -2,12 +2,13 @@ import type { NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import { createContext, resolveConfig } from "twobj"
 import * as plugins from "./plugins"
-import type { ThirdParty, ImportLibrary, PluginState, State } from "./types"
+import type { ImportLibrary, PluginState, State, ThirdParty } from "./types"
 import {
 	buildArrayExpression,
 	buildObjectExpression,
 	buildPrimitive,
 	buildStyleObjectExpression,
+	buildWrapObjectExpression,
 	getFirstQuasi,
 	isObject,
 } from "./util"
@@ -137,7 +138,7 @@ export function createVisitor({
 
 			if (thirdParty) {
 				program.traverse<State & PluginState>(
-					plugins[thirdParty.name]({ thirdParty, t, buildStyle, addImportDeclaration }),
+					plugins[thirdParty.name]({ thirdParty, t, buildStyle, buildWrap, addImportDeclaration }),
 					Object.assign(state, { styled: { imported: false, localName: "styled" } }),
 				)
 			}
@@ -158,6 +159,7 @@ export function createVisitor({
 							case "tw":
 							case "theme":
 							case "globalStyles":
+							case "wrap":
 								p.remove()
 								break
 						}
@@ -174,6 +176,10 @@ export function createVisitor({
 
 	function buildStyle(input: string) {
 		return buildStyleObjectExpression(t, ctx.css(input))
+	}
+
+	function buildWrap(input: string) {
+		return buildWrapObjectExpression(t, ctx.css(input))
 	}
 }
 

@@ -267,7 +267,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			const reg = /{/gs
 			const match = reg.exec(desc)
 			if (!match) {
-				return (css = {}) => ({ [desc]: { ...css } })
+				return (css = {}) => ({ [desc]: css })
 			} else {
 				const rb = parser.findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
 				if (rb == undefined) {
@@ -499,14 +499,14 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	}
 
 	function compose(...variants: (VariantSpec | undefined)[]): VariantSpec {
-		let ret: VariantSpec = (css = {}) => css
+		let wrap: VariantSpec = (css = {}) => css
 		for (const f of variants.reverse()) {
 			if (f) {
-				const g = ret
-				ret = (css = {}) => f(g(css))
+				const g = wrap
+				wrap = (css = {}) => f(g(css))
 			}
 		}
-		return ret
+		return wrap
 	}
 
 	function getClassList() {
@@ -784,7 +784,15 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		node: parser.Classname | parser.ArbitraryClassname,
 		getText: (node: parser.BaseNode) => string,
 	): [css?: CSSProperties, pluginName?: string] {
-		const value = node.type === parser.NodeType.ClassName ? getText(node) : getText(node.prefix)
+		let value: string
+		if (node.type === parser.NodeType.ClassName) {
+			value = getText(node)
+			if (value === "$e") {
+				return [Math.E as unknown as CSSProperties]
+			}
+		} else {
+			value = getText(node.prefix)
+		}
 		const { spec, negative, restInput } = parseInput(value)
 		if (spec) {
 			for (const c of toArray(spec)) {

@@ -35,6 +35,7 @@ export interface Plugin {
 		thirdParty: ThirdParty
 		t: typeof babel
 		buildStyle: (input: string) => babel.ObjectExpression
+		buildWrap: (input: string) => babel.ObjectExpression
 		addImportDeclaration: (declaration: babel.ImportDeclaration) => void
 	}): Visitor<State & PluginState>
 	id: ThirdPartyName

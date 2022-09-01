@@ -180,4 +180,5 @@ declare module "twobj" {
 	export const tw: CreateStyledTw
 	export const globalStyles: CSSInterpolation
 	export function theme(arr: TemplateStringsArray): unknown
+	export function wrap(arr: TemplateStringsArray): (arg: Interpolation) => CSSObject
 }

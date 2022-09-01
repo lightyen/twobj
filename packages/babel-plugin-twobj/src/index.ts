@@ -47,10 +47,10 @@ function findThirdParty(): ThirdParty | undefined {
 			payload.cssProp = cssProp
 		}
 		if (styled && isModule(styled)) {
-			payload.cssProp = styled
+			payload.styled = styled
 		}
 		if (className && isModule(className)) {
-			payload.cssProp = className
+			payload.className = className
 		}
 		if (payload.cssProp || payload.styled || payload.className) {
 			return payload

@@ -96,3 +96,33 @@ export function buildStyleObjectExpression(t: typeof babel, obj: Record<string, 
 	}
 	return t.objectExpression(members)
 }
+
+export function buildWrapObjectExpression(t: typeof babel, obj: Record<string, unknown>) {
+	const members: babel.ObjectProperty[] = []
+	for (const k in obj) {
+		const key = /^[a-zA-Z]\w*$/.test(k) ? t.identifier(k) : t.stringLiteral(k)
+		let v = (obj as Record<string, unknown>)[k]
+		if (isObject(v)) {
+			const result = buildWrapObjectExpression(t, v)
+			if (result) {
+				members.push(t.objectProperty(key, result))
+			}
+			continue
+		}
+
+		if (Array.isArray(v) && v[v.length - 1] != undefined) {
+			v = v[v.length - 1]
+		}
+
+		if (Array.isArray(v)) {
+			continue
+		}
+
+		if (v === Math.E) {
+			members.push(t.objectProperty(key, t.identifier("e")))
+		} else {
+			members.push(t.objectProperty(key, buildPrimitive(t, v)))
+		}
+	}
+	return t.objectExpression(members)
+}

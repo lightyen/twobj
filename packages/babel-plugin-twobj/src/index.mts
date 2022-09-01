@@ -53,12 +53,12 @@ async function findThirdParty(): Promise<ThirdParty | undefined> {
 			})(),
 			(async () => {
 				if (styled && (await isModule(styled))) {
-					payload.cssProp = styled
+					payload.styled = styled
 				}
 			})(),
 			(async () => {
 				if (className && (await isModule(className))) {
-					payload.cssProp = className
+					payload.className = className
 				}
 			})(),
 		])

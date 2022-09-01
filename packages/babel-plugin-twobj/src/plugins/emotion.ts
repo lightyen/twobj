@@ -3,7 +3,7 @@ import type babel from "@babel/types"
 import type { Plugin, State } from "../types"
 import { getFirstQuasi } from "../util"
 
-export const emotion: Plugin = function ({ thirdParty, t, buildStyle, addImportDeclaration }) {
+export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap, addImportDeclaration }) {
 	const styled = t.importDeclaration(
 		[t.importDefaultSpecifier(t.identifier("styled"))],
 		t.stringLiteral("@emotion/styled"),
@@ -157,6 +157,7 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, addImportD
 		/**
 		 * tw('div')(props => ({ width: props.width })) ==> styled('div')(props => ({ width: props.width }))
 		 * tw.div(props => ({ width: props.width })) ==> styled.div(props => ({ width: props.width }))
+		 * wrap``(payload) ==> ((e) => ({ ... }))(payload)
 		 */
 		CallExpression(path, state) {
 			if (state.imports.length === 0) return
@@ -165,7 +166,6 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, addImportD
 				for (const { localName, importedName } of variables) {
 					if (thirdParty.styled) {
 						let callee = path.get("callee")
-
 						if (callee.isCallExpression()) {
 							callee = callee.get("callee")
 							if (callee.isIdentifier() && callee.node.name === localName && importedName === "tw") {
@@ -201,6 +201,23 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, addImportD
 									}
 								}
 								object.replaceWith(t.identifier(state.styled.localName))
+							}
+						} else if (callee.isTaggedTemplateExpression()) {
+							const tag = callee.get("tag")
+							if (tag.isIdentifier() && importedName === "wrap" && tag.node.name === localName) {
+								const quasi = getFirstQuasi(callee)
+								if (quasi) {
+									const value = quasi.node.value.cooked ?? quasi.node.value.raw
+
+									const expr = t.callExpression(
+										t.arrowFunctionExpression([t.identifier("e")], buildWrap(value)),
+										path.get("arguments").map(arg => arg.node),
+									)
+
+									path.replaceWith(expr)
+									skip = true
+									break
+								}
 							}
 						}
 					}
