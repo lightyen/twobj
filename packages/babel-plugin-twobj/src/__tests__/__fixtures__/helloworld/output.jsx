@@ -18,7 +18,6 @@ import { jsx as _jsx } from "@emotion/react/jsx-runtime"
 
 function A() {
 	return _jsx("div", {
-		tw: "flex justify-center mx-auto",
 		css: [
 			"display:flex;justify-content:center;margin-left:auto;margin-right:auto;",
 			(e => ({

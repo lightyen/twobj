@@ -9,6 +9,8 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 		t.stringLiteral("@emotion/styled"),
 	)
 
+	const removeTwAttr = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test"
+
 	return {
 		JSXOpeningElement(path, state) {
 			if (thirdParty.cssProp) {
@@ -45,7 +47,7 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 					const objExpr = buildStyle(input)
 					if (!cssAttr) {
 						const attr = t.jsxAttribute(t.jsxIdentifier("css"), t.jsxExpressionContainer(objExpr))
-						twAttr.replaceWith(attr)
+						twAttr.insertAfter(attr)
 					} else {
 						const v = cssAttr.get("value")
 						if (v.isJSXExpressionContainer()) {
@@ -67,6 +69,10 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 								}
 							}
 						}
+					}
+
+					if (removeTwAttr) {
+						twAttr.remove()
 					}
 				}
 			}
