@@ -9168,19 +9168,11 @@ test("classList", async () => {
 	const classListSet = new Set<string>(context.getClassList())
 	const originSet = new Set<string>(source)
 
-	const errSet = new Set<string>()
-
-	for (const c of classListSet) {
-		if (!originSet.has(c)) {
-			errSet.add(c)
-		}
+	for (const s of classListSet) {
+		expect(originSet).toContain(s)
 	}
 
-	for (const c of originSet) {
-		if (!classListSet.has(c)) {
-			errSet.add(c)
-		}
+	for (const s of originSet) {
+		expect(classListSet).toContain(s)
 	}
-
-	expect(errSet.size).toEqual(0)
 })

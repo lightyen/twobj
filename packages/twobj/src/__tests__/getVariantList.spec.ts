@@ -124,19 +124,11 @@ test("variantList", async () => {
 	const variantListSet = new Set<string>(context.variants.keys())
 	const originSet = new Set<string>(source)
 
-	const errSet = new Set<string>()
-
-	for (const c of variantListSet) {
-		if (!originSet.has(c)) {
-			errSet.add(c)
-		}
+	for (const s of variantListSet) {
+		expect(originSet).toContain(s)
 	}
 
-	for (const c of originSet) {
-		if (!variantListSet.has(c)) {
-			errSet.add(c)
-		}
+	for (const s of originSet) {
+		expect(variantListSet).toContain(s)
 	}
-
-	expect(errSet.size).toEqual(0)
 })
