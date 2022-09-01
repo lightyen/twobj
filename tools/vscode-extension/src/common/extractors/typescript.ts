@@ -10,58 +10,10 @@ function transfromToken(
 	result: { kind: ExtractedTokenKind; token: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral },
 	source: ts.SourceFile,
 ): ExtractedToken {
-	const text = result.token.getText(source)
+	const value = result.token.text
 	const start = result.token.getStart(source) + 1
-	let end = result.token.getEnd()
-	const value = ts.isNoSubstitutionTemplateLiteral(result.token) ? result.token.rawText ?? "" : result.token.text
-	if (/['"`]$/.test(text)) {
-		end -= 1
-		return { kind: result.kind, start, end, value }
-	} else {
-		const m = text.match(/[ \r\t\n]/)
-		if (m?.index != undefined) {
-			end = start + m.index
-			return { kind: result.kind, start, end, value: value.slice(0, m.index) }
-		}
-		return { kind: result.kind, start, end, value }
-	}
-}
-
-function find<T>(
-	source: ts.SourceFile,
-	node: ts.Node,
-	cb: (node: T) => node is T,
-	position: number | undefined = undefined,
-): T | undefined {
-	if (typeof position == "number") {
-		if (position < node.getStart(source) || position >= node.getEnd()) {
-			return undefined
-		}
-	}
-	if (cb(node as unknown as T)) {
-		return node as unknown as T
-	}
-	return ts.forEachChild(node, child => find(source, child, cb, position))
-}
-
-function getJsxPropFirstStringLiteral(node: ts.JsxAttribute, source: ts.SourceFile): ts.StringLiteral | undefined {
-	if (node.getChildCount(source) < 3) {
-		return undefined
-	}
-	const target = node.getChildAt(2, source)
-	let token: ts.StringLiteral | undefined
-	if (ts.isStringLiteral(target)) {
-		token = target
-	} else if (ts.isJsxExpression(target)) {
-		for (let i = 0; i < target.getChildCount(source); i++) {
-			const t = target.getChildAt(i, source)
-			if (ts.isStringLiteral(t)) {
-				token = t
-				break
-			}
-		}
-	}
-	return token
+	const end = result.token.getEnd()
+	return { kind: result.kind, start, end, value }
 }
 
 function findNode(
@@ -74,86 +26,50 @@ function findNode(
 	if (position < node.getStart(source) || position >= node.getEnd()) {
 		return undefined
 	}
+
 	if (ts.isJsxAttribute(node)) {
-		const first = node.getFirstToken(source)
-		if (!first) {
-			return undefined
-		}
-		const id = first.getText(source)
-		if (id === "tw") {
-			const token = getJsxPropFirstStringLiteral(node, source)
-			if (!token) {
-				return undefined
+		const attrName = node.name.text
+		if (attrName === "tw" && node.initializer) {
+			let token: ts.StringLiteral | undefined
+			if (ts.isStringLiteral(node.initializer)) {
+				token = node.initializer
+			} else if (ts.isJsxExpression(node.initializer)) {
+				const { expression } = node.initializer
+				if (expression && ts.isStringLiteral(expression)) {
+					token = expression
+				}
 			}
-			if (position < token.getStart(source) + 1 || position >= token.getEnd()) {
-				return undefined
+			if (token && position >= token.getStart(source) + 1 && !greaterThenEnd(token)) {
+				return { token, kind: "tw" }
 			}
-			return { token, kind: "tw" }
 		}
 	} else if (ts.isTaggedTemplateExpression(node)) {
-		const getLiteral = (node: ts.Node) => {
-			const literal = node.getChildAt(1, source)
-			if (ts.isNoSubstitutionTemplateLiteral(literal)) {
-				return literal
+		const { tag, template } = node
+		if (ts.isNoSubstitutionTemplateLiteral(template)) {
+			let id: ts.Identifier | undefined
+			let e = tag
+			while (ts.isCallExpression(e) || ts.isPropertyAccessExpression(e)) {
+				e = e.expression
 			}
-			return undefined
-		}
-
-		const first = node.getFirstToken(source)
-		if (!first) {
-			return undefined
-		}
-		const id = first.getText(source)
-		if (features.twTemplate.has(id)) {
-			const token = getLiteral(node)
-			if (token) {
-				if (position < token.getStart(source) + 1 || greaterThenEnd(node)) {
-					return undefined
-				}
-				return { token, kind: "tw" }
-			} else {
-				return undefined
+			if (ts.isIdentifier(e)) {
+				id = e
 			}
-		} else if (features.themeTemplate.has(id)) {
-			const token = getLiteral(node)
-			if (token) {
-				if (position < token.getStart(source) + 1 || greaterThenEnd(node)) {
-					return undefined
-				}
-				return { token, kind: "theme" }
-			} else {
-				return undefined
-			}
-		} else {
-			const expr = find(source, node, ts.isTemplateExpression)
-			if (!expr) {
-				return undefined
-			}
-		}
-	} else if (ts.isCallExpression(node)) {
-		if (position < node.getStart(source) + 1 || greaterThenEnd(node)) {
-			return undefined
-		}
-
-		const first = node.getChildAt(0, source)
-		if (first && ts.isIdentifier(first)) {
-			if (features.themeTemplate.has(first.getText(source))) {
-				const token = ts.forEachChild(node, c => {
-					if (ts.isStringLiteral(c)) {
-						return c
+			if (id) {
+				if (features.twTemplate.has(id.text)) {
+					if (position < template.getStart(source) + 1 || greaterThenEnd(template)) {
+						return undefined
 					}
-					return undefined
-				})
-				if (!token) {
-					return undefined
+					return { token: template, kind: "tw" }
+				} else if (features.themeTemplate.has(id.text)) {
+					if (position < template.getStart(source) + 1 || greaterThenEnd(template)) {
+						return undefined
+					}
+					return { token: template, kind: "theme" }
 				}
-				if (position < node.getStart(source) + 1 || greaterThenEnd(node)) {
-					return undefined
-				}
-				return { token, kind: "theme" }
 			}
 		}
 	}
+
 	return ts.forEachChild(node, child => findNode(source, child, position, features, includeEnd))
 
 	function greaterThenEnd(node: ts.Node): boolean {
@@ -161,85 +77,51 @@ function findNode(
 	}
 }
 
-function notEmpty<T>(value: T | null | undefined): value is T {
-	return value != undefined
-}
-
 function findAllNode(
 	source: ts.SourceFile,
 	node: ts.Node,
 	features: Features,
-): Array<{ token: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral; kind: ExtractedTokenKind }> | undefined {
+): Array<{ token: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral; kind: ExtractedTokenKind }> {
 	if (ts.isJsxAttribute(node)) {
-		const first = node.getFirstToken(source)
-		if (!first) {
-			return undefined
-		}
-
-		const id = first.getText(source)
-		if (id === "tw") {
-			const token = getJsxPropFirstStringLiteral(node, source)
-			if (!token) {
-				return undefined
+		const attrName = node.name.text
+		if (attrName === "tw" && node.initializer) {
+			let token: ts.StringLiteral | undefined
+			if (ts.isStringLiteral(node.initializer)) {
+				token = node.initializer
+			} else if (ts.isJsxExpression(node.initializer)) {
+				const { expression } = node.initializer
+				if (expression && ts.isStringLiteral(expression)) {
+					token = expression
+				}
 			}
-			return [{ token, kind: "tw" }]
+			if (token) {
+				return [{ token, kind: "tw" }]
+			}
 		}
 	} else if (ts.isTaggedTemplateExpression(node)) {
-		const getLiteral = (node: ts.Node) => {
-			const literal = node.getChildAt(1, source)
-			if (ts.isNoSubstitutionTemplateLiteral(literal)) {
-				return literal
+		const { tag, template } = node
+		if (ts.isNoSubstitutionTemplateLiteral(template)) {
+			let id: ts.Identifier | undefined
+			let e = tag
+			while (ts.isCallExpression(e) || ts.isPropertyAccessExpression(e)) {
+				e = e.expression
 			}
-			return undefined
-		}
-
-		const first = node.getFirstToken(source)
-		if (!first) {
-			return undefined
-		}
-
-		const id = first.getText(source)
-		if (features.twTemplate.has(id)) {
-			const literal = getLiteral(node)
-			if (literal) {
-				return [{ token: literal, kind: "tw" }]
-			} else {
-				return undefined
+			if (ts.isIdentifier(e)) {
+				id = e
 			}
-		} else if (features.themeTemplate.has(id)) {
-			const literal = getLiteral(node)
-			if (literal) {
-				return [{ token: literal, kind: "theme" }]
-			} else {
-				return undefined
-			}
-		} else {
-			const expr = find(source, node, ts.isTemplateExpression)
-			if (!expr) {
-				return undefined
-			}
-		}
-	} else if (ts.isCallExpression(node)) {
-		const first = node.getChildAt(0, source)
-		if (first && ts.isIdentifier(first)) {
-			if (features.themeTemplate.has(first.getText(source))) {
-				const token = ts.forEachChild(node, c => {
-					if (ts.isStringLiteral(c)) {
-						return c
-					}
-					return undefined
-				})
-				if (!token) {
-					return undefined
+			if (id) {
+				if (features.twTemplate.has(id.text)) {
+					return [{ token: template, kind: "tw" }]
+				} else if (features.themeTemplate.has(id.text)) {
+					return [{ token: template, kind: "theme" }]
 				}
-				return [{ token, kind: "theme" }]
 			}
 		}
 	}
+
 	return node
 		.getChildren(source)
 		.map(c => findAllNode(source, c, features))
-		.filter(notEmpty)
 		.flat()
 }
 
@@ -249,46 +131,27 @@ function checkImportTw(source: ts.SourceFile, importLabels: string[]): Features 
 
 	source.forEachChild(node => {
 		if (ts.isImportDeclaration(node)) {
-			const token = find(source, node, ts.isStringLiteral)
-			if (token?.text == null || !importLabels.includes(token.text)) {
-				return
-			}
+			const { moduleSpecifier } = node
+			if (ts.isStringLiteral(moduleSpecifier) && importLabels.includes(moduleSpecifier.text)) {
+				const clause = node.importClause
+				if (clause) {
+					const { namedBindings } = clause
+					if (namedBindings && namedBindings.kind === ts.SyntaxKind.NamedImports) {
+						namedBindings.elements.forEach(node => {
+							const localName = node.name?.text
+							if (!localName) return
 
-			const clause = find(source, node, ts.isImportClause)
-			if (clause?.namedBindings) {
-				const namedImports = find(source, clause, ts.isNamedImports)
-				if (namedImports) {
-					namedImports.forEachChild(node => {
-						if (ts.isImportSpecifier(node)) {
-							if (node.getFirstToken(source)?.getText(source) === "tw") {
-								const count = node.getChildCount(source)
-								if (count === 1) {
-									const identifier = node.getFirstToken(source)?.getText(source)
-									if (identifier && !twTemplate.has(identifier)) {
-										twTemplate.add(identifier)
-									}
-								} else if (count === 3) {
-									const identifier = node.getLastToken(source)?.getText(source)
-									if (identifier && !twTemplate.has(identifier)) {
-										twTemplate.add(identifier)
-									}
-								}
-							} else if (node.getFirstToken(source)?.getText(source) === "theme") {
-								const count = node.getChildCount(source)
-								if (count === 1) {
-									const identifier = node.getFirstToken(source)?.getText(source)
-									if (identifier && !themeTemplate.has(identifier)) {
-										themeTemplate.add(identifier)
-									}
-								} else if (count === 3) {
-									const identifier = node.getLastToken(source)?.getText(source)
-									if (identifier && !themeTemplate.has(identifier)) {
-										themeTemplate.add(identifier)
-									}
-								}
+							const importedName = node.propertyName?.text ?? localName
+							switch (importedName) {
+								case "theme":
+									themeTemplate.add(localName)
+									break
+								case "tw":
+									twTemplate.add(localName)
+									break
 							}
-						}
-					})
+						})
+					}
 				}
 			}
 		}
@@ -312,7 +175,7 @@ export function findToken(
 
 export function findAllToken(source: ts.SourceFile, importLabels: string[]): ExtractedToken[] {
 	const features = checkImportTw(source, importLabels)
-	return findAllNode(source, source, features)?.map(node => transfromToken(node, source)) ?? []
+	return findAllNode(source, source, features).map(node => transfromToken(node, source))
 }
 
 const typescriptExtractor: Extractor = {
