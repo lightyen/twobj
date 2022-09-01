@@ -78,6 +78,20 @@ export default async function hover(
 					}
 				}
 
+				const getText = (node: parser.Node) => token.value.slice(node.range[0], node.range[1])
+				if (kind === "wrap") {
+					if (selection.target.type === parser.NodeType.ClassName) {
+						const value = getText(selection.target)
+						if (value === "$e") {
+							return {
+								range,
+								contents: [new vscode.MarkdownString("anchor")],
+							}
+						}
+					}
+					return
+				}
+
 				const header = new vscode.MarkdownString()
 				if (selection.target.type === parser.NodeType.ArbitraryProperty) {
 					const rawText = selection.target.decl.value
@@ -97,7 +111,6 @@ export default async function hover(
 					}
 				}
 
-				const getText = (node: parser.Node) => token.value.slice(node.range[0], node.range[1])
 				const value = getText(selection.target)
 
 				if (options.references) {
