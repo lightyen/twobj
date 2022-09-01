@@ -125,6 +125,8 @@ function twCompletion(
 }
 
 const classnameCompletion: CompletionFeature = (document, kind, offset, text, position, { target }, state) => {
+	if (kind === "wrap") return
+
 	if (!target) return state.provideClassCompletionList()
 
 	const [a, b] = target.range
@@ -462,6 +464,7 @@ function getScssSelectorCompletionList(
 }
 
 const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offset, text, position, { target }) => {
+	if (kind === "wrap") return
 	if (!target) return
 	if (target.type !== parser.NodeType.ArbitrarySelector) return
 	const { range, value } = target.selector
@@ -471,6 +474,7 @@ const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offs
 }
 
 const arbitraryPropertyCompletion: CompletionFeature = (document, kind, offset, text, position, { target }, state) => {
+	if (kind === "wrap") return
 	if (target) {
 		const [a, b] = target.range
 		switch (target.type) {

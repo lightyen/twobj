@@ -87,7 +87,7 @@ export function validate(
 					) {
 						return diagnostics
 					}
-				} else if (kind === "tw") {
+				} else {
 					const result = parser.spread(value, { separator: state.separator })
 					if (
 						!validateTw({
@@ -154,6 +154,11 @@ function validateTw({
 
 	if (!checkVariants(diagnostics, items, document, offset, diagnosticOptions.emptyChecking, state)) {
 		return false
+	}
+
+	if (kind === "wrap") {
+		// TODO: check item '$e'
+		return true
 	}
 
 	for (let i = 0; i < items.length; i++) {
