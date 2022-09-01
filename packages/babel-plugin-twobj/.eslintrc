@@ -10,7 +10,7 @@
 	"parserOptions": {
 		"project": "./tsconfig.json"
 	},
-	"ignorePatterns": ["demo", "index.js", "index.mjs"],
+	"ignorePatterns": ["index.js", "index.mjs", "__tests__/**/*"],
 	"rules": {
 		"spaced-comment": ["error", "always", { "markers": ["/"] }],
 		"no-var": "error",
