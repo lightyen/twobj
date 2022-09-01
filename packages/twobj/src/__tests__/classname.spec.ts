@@ -63,10 +63,34 @@ test("backgroundImage", async () => {
 	expect(tw`bg-[linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))]`).toEqual({
 		backgroundImage: "linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))",
 	})
-	expect(
-		tw`bg-[linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5)), url('https://mdn.mozillademos.org/files/7693/catfront.png')]`,
-	).toEqual({
-		backgroundImage:
-			"linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5)), url('https://mdn.mozillademos.org/files/7693/catfront.png')",
-	})
+	expect(tw`bg-[image:var(--image)]`).toEqual({ backgroundImage: "var(--image)" })
+})
+
+test("backgroundPosition", async () => {
+	expect(tw`bg-top`).toEqual({ backgroundPosition: "top" })
+	expect(tw`bg-right-bottom`).toEqual({ backgroundPosition: "right bottom" })
+	expect(tw`bg-[25% 75%]`).toEqual({ backgroundPosition: "25% 75%" })
+	expect(tw`bg-[bottom 50px right 100px]`).toEqual({ backgroundPosition: "bottom 50px right 100px" })
+	expect(tw`bg-[bottom 10px right]`).toEqual({ backgroundPosition: "bottom 10px right" })
+	expect(tw`bg-[position:var(--position)]`).toEqual({ backgroundPosition: "var(--position)" })
+})
+
+test("backgroundSize", async () => {
+	expect(tw`bg-auto`).toEqual({ backgroundSize: "auto" })
+	expect(tw`bg-contain`).toEqual({ backgroundSize: "contain" })
+	expect(tw`bg-cover`).toEqual({ backgroundSize: "cover" })
+	expect(tw`bg-[12%]`).toEqual({ backgroundSize: "12%" })
+	expect(tw`bg-[length:200px 20%]`).toEqual({ backgroundSize: "200px 20%" })
+	expect(tw`bg-[length:var(--size)]`).toEqual({ backgroundSize: "var(--size)" })
+})
+
+test("textColor", async () => {
+	expect(tw`text-white`).toEqual({ color: "#fff" })
+	expect(tw`text-[white]`).toEqual({ color: "white" })
+	expect(tw`text-[rgb(33 33 139)]`).toEqual({ color: "rgb(33 33 139)" })
+})
+
+test("fontSize", async () => {
+	expect(tw`text-lg`).toEqual({ fontSize: "1.125rem", lineHeight: "1.75rem" })
+	expect(tw`text-[22px]`).toEqual({ fontSize: "22px" })
 })

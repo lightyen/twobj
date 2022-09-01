@@ -832,7 +832,7 @@ const image: ValueTypeSpec<string | number | null | undefined> = (function () {
 					if (imageFunctions.findIndex(fn => fn === p.fn) === -1) {
 						return false
 					}
-					return p.params.every(v => typeof v === "string")
+					return true
 				})
 			) {
 				return undefined

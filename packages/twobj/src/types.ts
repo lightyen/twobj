@@ -208,6 +208,8 @@ export interface Context extends PluginOptions {
 	/** List all color's utilities */
 	getColorClasses(): Map<string, string[]>
 
+	getAmbiguous(): Map<string, LookupSpec[]>
+
 	getThemeValueCompletion(param: { position: number; text: string; start?: number; end?: number }): {
 		range: parser.Range
 		candidates: Array<[string, string]>

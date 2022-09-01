@@ -78,6 +78,9 @@ test("url", () => {
 test("image", () => {
 	expect(__types.image.handleValue("image(aaaaa)")).not.toBeUndefined()
 	expect(__types.image.handleValue("element(xxxx")).not.toBeUndefined()
+	expect(
+		__types.image.handleValue("linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))"),
+	).not.toBeUndefined()
 	expect(__types.image.handleValue("rgb(210 120 20)")).toBeUndefined()
 })
 

@@ -160,6 +160,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		renderThemeFunc,
 		getClassList,
 		getColorClasses,
+		getAmbiguous,
 		getThemeValueCompletion,
 		cssVariant,
 		addBase,
@@ -661,6 +662,17 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
 		const [, pluginName] = classname(node, getText)
 		return pluginName
+	}
+
+	function getAmbiguous() {
+		const ret = new Map<string, LookupSpec[]>()
+		for (const [key, u] of utilityMap) {
+			const spec = (Array.isArray(u) ? u : [u]).filter((s): s is LookupSpec => s.type === "lookup")
+			if (spec.length > 1) {
+				ret.set(key, spec)
+			}
+		}
+		return ret
 	}
 
 	function css(strings: string): CSSProperties
