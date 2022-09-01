@@ -40,3 +40,33 @@ test("stroke", async () => {
 	expect(tw`stroke-[#121029]`).toEqual({ stroke: "#121029" })
 	expect(tw`stroke-none`).toEqual({ stroke: "none" })
 })
+
+test("backgroundColor", async () => {
+	expect(tw`bg-black`).toEqual({ backgroundColor: "#000" })
+	expect(tw`bg-[ #444 ]`).toEqual({ backgroundColor: "#444" })
+	expect(tw`bg-black/31`).toEqual({ backgroundColor: "rgb(0 0 0 / 0.31)" })
+	expect(tw`bg-[ #444 ]/31`).toEqual({ backgroundColor: "rgb(68 68 68 / 0.31)" })
+	expect(tw`bg-[color:var(--color)]`).toEqual({ backgroundColor: "var(--color)" })
+})
+
+test("backgroundImage", async () => {
+	expect(tw`bg-none`).toEqual({ backgroundImage: "none" })
+	expect(tw`bg-gradient-to-tr`).toEqual({
+		backgroundImage: "linear-gradient(to top right, var(--tw-gradient-stops))",
+	})
+	expect(tw`bg-[url('/img/hero-pattern.svg')]`).toEqual({
+		backgroundImage: "url('/img/hero-pattern.svg')",
+	})
+	expect(tw`bg-[url(/img/hero-pattern.svg)]`).toEqual({
+		backgroundImage: "url(/img/hero-pattern.svg)",
+	})
+	expect(tw`bg-[linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))]`).toEqual({
+		backgroundImage: "linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))",
+	})
+	expect(
+		tw`bg-[linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5)), url('https://mdn.mozillademos.org/files/7693/catfront.png')]`,
+	).toEqual({
+		backgroundImage:
+			"linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5)), url('https://mdn.mozillademos.org/files/7693/catfront.png')",
+	})
+})

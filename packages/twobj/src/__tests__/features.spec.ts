@@ -167,6 +167,6 @@ const features = [
 	"content",
 ]
 
-test("features", () => {
+test("features", async () => {
 	expect(features.sort()).toEqual(Array.from(context.features).sort())
 })

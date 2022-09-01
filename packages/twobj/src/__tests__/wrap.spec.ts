@@ -1,6 +1,6 @@
 import { tw } from "./context"
 
-test("wrap function", () => {
+test("wrap function", async () => {
 	expect(tw`hover:$e`).toEqual({
 		"@media (hover: hover) and (pointer: fine)": {
 			"&:hover": Math.E,

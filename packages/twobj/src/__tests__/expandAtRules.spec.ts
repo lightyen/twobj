@@ -1,7 +1,7 @@
 import { resolveConfig } from "../config"
 import { createContext } from "../core"
 
-test("expandAtRules", () => {
+test("expandAtRules", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [

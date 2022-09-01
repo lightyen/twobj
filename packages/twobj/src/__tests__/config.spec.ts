@@ -1,6 +1,6 @@
 import { resolveConfig } from "../config"
 
-test("resolveConfig", () => {
+test("resolveConfig", async () => {
 	const resolved1 = resolveConfig({})
 	const resolved2 = resolveConfig(resolved1)
 	const resolved3 = resolveConfig(resolved2)
@@ -8,7 +8,7 @@ test("resolveConfig", () => {
 	expect(resolved2).toEqual(resolved3)
 })
 
-test("resolveConfig undefined", () => {
+test("resolveConfig undefined", async () => {
 	const resolved1 = resolveConfig(undefined)
 	const resolved2 = resolveConfig(resolved1)
 	const resolved3 = resolveConfig(resolved2)

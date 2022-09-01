@@ -2,7 +2,7 @@ import { resolveConfig } from "../config/resolveConfig"
 import { createContext } from "../core"
 import { createTw } from "./context"
 
-test("addUtilities with object", () => {
+test("addUtilities with object", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -37,7 +37,7 @@ test("addUtilities with object", () => {
 	})
 })
 
-test("addUtilities with array", () => {
+test("addUtilities with array", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -74,7 +74,7 @@ test("addUtilities with array", () => {
 	})
 })
 
-test("addComponents", () => {
+test("addComponents", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -107,7 +107,7 @@ test("addComponents", () => {
 	})
 })
 
-test("addComponents with media queries", () => {
+test("addComponents with media queries", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -152,7 +152,7 @@ test("addComponents with media queries", () => {
 	})
 })
 
-test("addComponents with nested rules", () => {
+test("addComponents with nested rules", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -207,7 +207,7 @@ test("addComponents with nested rules", () => {
 	})
 })
 
-test("escaped selectors", () => {
+test("escaped selectors", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [

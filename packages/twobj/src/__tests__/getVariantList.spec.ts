@@ -120,7 +120,7 @@ const source = [
 	"landscape",
 ]
 
-test("variantList", () => {
+test("variantList", async () => {
 	const variantListSet = new Set<string>(context.variants.keys())
 	const originSet = new Set<string>(source)
 

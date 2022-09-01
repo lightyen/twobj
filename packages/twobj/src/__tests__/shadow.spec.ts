@@ -1,7 +1,7 @@
 import { formatBoxShadowValues } from "../values"
 import { tw } from "./context"
 
-test("shadow", () => {
+test("shadow", async () => {
 	expect(tw`shadow`).toEqual({
 		"--tw-shadow-default-color-0": "rgb(0 0 0 / 0.1)",
 		"--tw-shadow-default-color-1": "rgb(0 0 0 / 0.1)",
@@ -12,7 +12,7 @@ test("shadow", () => {
 	})
 })
 
-test("shadow value", () => {
+test("shadow value", async () => {
 	const result = formatBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)")
 	expect(result).toEqual([
 		{

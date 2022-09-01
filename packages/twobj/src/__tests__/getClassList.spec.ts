@@ -9164,7 +9164,7 @@ const source = [
 	"content-none",
 ]
 
-test("classList", () => {
+test("classList", async () => {
 	const classListSet = new Set<string>(context.getClassList())
 	const originSet = new Set<string>(source)
 

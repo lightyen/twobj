@@ -1,6 +1,6 @@
 import { merge } from "../util"
 
-test("merge object", () => {
+test("merge object", async () => {
 	const a = { a: { b: { c: 24 } } }
 	const b = { a: { b: { d: "he" } } }
 	const result = merge(a, b)
