@@ -1177,7 +1177,7 @@ export const classPlugins: ClassPlugins = {
 			{
 				"drop-shadow"(value) {
 					return {
-						"--tw-drop-shadow": `drop-shadow(${value})`,
+						"--tw-drop-shadow": value,
 						filter: cssFilterValue,
 					}
 				},

@@ -8643,7 +8643,7 @@ exports[`snapshots: animate-pulse 1`] = `
 Object {
   "@keyframes pulse": Object {
     "50%": Object {
-      "opacity": ".5",
+      "opacity": "0.5",
     },
   },
   "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
@@ -28272,7 +28272,12 @@ Object {
 }
 `;
 
-exports[`snapshots: drop-shadow 1`] = `Object {}`;
+exports[`snapshots: drop-shadow 1`] = `
+Object {
+  "--tw-drop-shadow": "drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
+  "filter": "var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)",
+}
+`;
 
 exports[`snapshots: drop-shadow-2xl 1`] = `
 Object {
@@ -28281,9 +28286,19 @@ Object {
 }
 `;
 
-exports[`snapshots: drop-shadow-lg 1`] = `Object {}`;
+exports[`snapshots: drop-shadow-lg 1`] = `
+Object {
+  "--tw-drop-shadow": "drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
+  "filter": "var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)",
+}
+`;
 
-exports[`snapshots: drop-shadow-md 1`] = `Object {}`;
+exports[`snapshots: drop-shadow-md 1`] = `
+Object {
+  "--tw-drop-shadow": "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
+  "filter": "var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)",
+}
+`;
 
 exports[`snapshots: drop-shadow-none 1`] = `
 Object {
@@ -28299,7 +28314,12 @@ Object {
 }
 `;
 
-exports[`snapshots: drop-shadow-xl 1`] = `Object {}`;
+exports[`snapshots: drop-shadow-xl 1`] = `
+Object {
+  "--tw-drop-shadow": "drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08))",
+  "filter": "var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)",
+}
+`;
 
 exports[`snapshots: duration-75 1`] = `
 Object {
