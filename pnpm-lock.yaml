@@ -354,7 +354,7 @@ importers:
       terser-webpack-plugin: 5.3.6
       ts-paths-resolve-plugin: 5.8.0
       tslib: 2.4.0
-      twobj: 0.0.30
+      twobj: '>=1.0.0'
       typescript: 4.8.2
       typescript-paths: 1.4.0
       vsce: 2.11.0
