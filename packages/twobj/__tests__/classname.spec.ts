@@ -94,3 +94,9 @@ test("fontSize", async () => {
 	expect(tw`text-lg`).toEqual({ fontSize: "1.125rem", lineHeight: "1.75rem" })
 	expect(tw`text-[22px]`).toEqual({ fontSize: "22px" })
 })
+
+test("float", async () => {
+	expect(tw`float-left`).toEqual({ float: "left" })
+	expect(tw`float-right`).toEqual({ float: "right" })
+	expect(tw`float-none`).toEqual({ float: "none" })
+})
