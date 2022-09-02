@@ -1,4 +1,3 @@
-import "tailwind-types"
 import { createContext } from "tailwindcss/lib/lib/setupContextUtils.js"
 import resolveConfig from "tailwindcss/resolveConfig"
 import { context } from "./context"

@@ -1,7 +1,4 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["src/**/*.ts"],
-	"compilerOptions": {
-		"types": ["tailwind-types"]
-	}
+	"include": ["src/**/*.ts"]
 }
