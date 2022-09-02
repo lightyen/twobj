@@ -15,16 +15,7 @@ import type {
 	ValueType,
 	VariantSpec,
 } from "./types"
-import {
-	applyCamelCase,
-	applyImportant,
-	applyModifier,
-	flattenColorPalette,
-	isCSSValue,
-	merge,
-	reverseSign,
-	toArray,
-} from "./util"
+import { applyCamelCase, applyImportant, applyModifier, flattenColorPalette, isCSSValue, merge, toArray } from "./util"
 import { representAny, representTypes } from "./values"
 import { variantPlugins } from "./variantPlugins"
 
@@ -531,7 +522,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 				if (spec.supportsNegativeValues) {
 					return results.concat(
 						values
-							.filter(val => reverseSign(String(spec.values[val])) != undefined)
+							.filter(val => parser.reverseSign(String(spec.values[val])) != undefined)
 							.map(value => {
 								if (value === "DEFAULT") {
 									if (spec.filterDefault) return null

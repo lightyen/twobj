@@ -17,7 +17,6 @@ export function parseColor(css: string): Color | undefined {
 	return parseCssFunc(css)
 }
 
-
 function parseCssFunc(cssValue: string): Color | undefined {
 	const params = splitCssParams(cssValue)
 	if (params.length !== 1) {
@@ -385,5 +384,75 @@ export function parseAnimations(value: string): string[] {
 			default:
 				return false
 		}
+	}
+}
+
+export function reverseSign(value: string): string | undefined {
+	const match = matchValue(value)
+	if (match == null) {
+		return reverseNumberFunction(value)
+	}
+
+	const { num, unit } = match
+
+	if (num.startsWith("-")) {
+		return num.slice(1) + (unit ?? "")
+	}
+
+	if (num.startsWith("+")) {
+		return "-" + num.slice(1) + (unit ?? "")
+	}
+
+	return "-" + num + (unit ?? "")
+}
+
+export function reverseNumberFunction(value: string): string | undefined {
+	const params = splitCssParams(value)
+	if (params.length !== 1) {
+		return undefined
+	}
+	if (typeof params[0] === "string") {
+		return undefined
+	}
+	const { fn } = params[0]
+	for (const s of ["var", "min", "max", "clamp", "calc"]) {
+		if (s === fn) {
+			return `calc(${value} * -1)`
+		}
+	}
+	return undefined
+}
+
+export function getUnitFromNumberFunction(value: string): string | null | undefined {
+	const ret = splitCssParams(value)
+	if (ret.length !== 1) return undefined
+	if (typeof ret[0] === "string") return undefined
+
+	const { fn, params } = ret[0]
+	if (["var", "min", "max", "clamp", "calc"].some(v => v === fn)) {
+		return parseNumberFn(params)
+	}
+
+	return null
+
+	function parseNumberFn(values: Param[]): string | null {
+		let ans: string | null = null
+		for (const val of values) {
+			if (typeof val === "string") {
+				const result = matchValue(val)
+				if (result?.unit) {
+					ans = result.unit
+					if (ans !== "%") {
+						return ans
+					}
+				}
+			} else {
+				for (const v of val.params) {
+					const unit = parseNumberFn([v])
+					if (unit) return unit
+				}
+			}
+		}
+		return ans
 	}
 }

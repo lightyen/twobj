@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { camelCase, matchValue } from "./parser"
+import { camelCase } from "./parser"
 import { CSSProperties, CSSValue, PlainCSSProperties, PostModifier } from "./types"
 
 export function isCSSValue(value: unknown): value is CSSValue {
@@ -145,25 +145,6 @@ export function opacityToFloat(value: string): number {
 export function toArray<T>(target: T | T[]): T[] {
 	if (Array.isArray(target)) return target
 	return [target]
-}
-
-export function reverseSign(value: string): string | undefined {
-	const match = matchValue(value)
-	if (match == null) {
-		return undefined
-	}
-
-	const { num, unit } = match
-
-	if (num.startsWith("-")) {
-		return num.slice(1) + (unit ?? "")
-	}
-
-	if (num.startsWith("+")) {
-		return "-" + num.slice(1) + (unit ?? "")
-	}
-
-	return "-" + num + (unit ?? "")
 }
 
 // Data types:

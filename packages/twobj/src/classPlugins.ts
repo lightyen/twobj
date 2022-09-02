@@ -272,7 +272,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.rotate, supportsNegativeValues: true },
+			{ type: "angle", values: theme.rotate, supportsNegativeValues: true },
 		)
 	}),
 	skew: plugin("skew", ({ matchUtilities, theme }) => {
@@ -291,7 +291,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.skew, supportsNegativeValues: true },
+			{ type: "angle", values: theme.skew, supportsNegativeValues: true },
 		)
 	}),
 	scale: plugin("scale", ({ matchUtilities, theme }) => {

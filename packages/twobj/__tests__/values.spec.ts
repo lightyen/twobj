@@ -3,11 +3,12 @@ import { __types } from "../src/values"
 test("number", () => {
 	expect(__types.number.handleValue("0")).not.toBeUndefined()
 	expect(__types.number.handleValue("1")).not.toBeUndefined()
+	expect(__types.number.handleValue("calc(100 + 0.33)")).not.toBeUndefined()
 	expect(__types.number.handleValue("0px")).toBeUndefined()
 	expect(__types.number.handleValue("5rem")).toBeUndefined()
 	expect(__types.number.handleValue("2.2em")).toBeUndefined()
 	expect(__types.number.handleValue("10%")).toBeUndefined()
-	__types.number
+	expect(__types.number.handleValue("calc(100px + 3px)")).toBeUndefined()
 })
 
 test("length", () => {
@@ -15,6 +16,8 @@ test("length", () => {
 	expect(__types.length.handleValue("0px")).not.toBeUndefined()
 	expect(__types.length.handleValue("5rem")).not.toBeUndefined()
 	expect(__types.length.handleValue("2.2em")).not.toBeUndefined()
+	expect(__types.length.handleValue("calc(100px + 3px)")).not.toBeUndefined()
+	expect(__types.length.handleValue("calc(100% + 3px)")).not.toBeUndefined()
 	expect(__types.length.handleValue("1")).toBeUndefined()
 	expect(__types.length.handleValue("10%")).toBeUndefined()
 })
@@ -26,6 +29,7 @@ test("percentage", () => {
 	expect(__types.percentage.handleValue("2.2em")).toBeUndefined()
 	expect(__types.percentage.handleValue("1")).toBeUndefined()
 	expect(__types.percentage.handleValue("10%")).not.toBeUndefined()
+	expect(__types.percentage.handleValue("calc(100% + 4.2)")).not.toBeUndefined()
 })
 
 test("angle", () => {

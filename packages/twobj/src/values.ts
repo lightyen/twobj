@@ -1,6 +1,6 @@
 import * as parser from "./parser"
 import type { CSSProperties, CSSValue, Template, ValueType } from "./types"
-import { opacityToFloat, reverseSign, toArray } from "./util"
+import { opacityToFloat, toArray } from "./util"
 
 interface LookupResult {
 	key?: string
@@ -133,7 +133,7 @@ export function representAny({
 		value = value.toString().trim()
 
 		if (negative) {
-			const val = reverseSign(value)
+			const val = parser.reverseSign(value)
 			if (val != undefined) {
 				value = val
 			}
@@ -147,7 +147,7 @@ export function representAny({
 
 		if (!ambiguous) {
 			if (negative) {
-				const val = reverseSign(value)
+				const val = parser.reverseSign(value)
 				if (val != undefined) {
 					value = val
 				}
@@ -158,7 +158,7 @@ export function representAny({
 
 		if (result.valueTag === "any") {
 			if (negative) {
-				const val = reverseSign(value)
+				const val = parser.reverseSign(value)
 				if (val != undefined) {
 					value = val
 				}
@@ -187,7 +187,7 @@ const number: ValueTypeSpec<string | number | null | undefined> = (function () {
 				if (typeof config === "number") {
 					config = config * -1
 				} else {
-					const val = reverseSign(config)
+					const val = parser.reverseSign(config)
 					if (val != undefined) {
 						config = val
 					}
@@ -199,7 +199,14 @@ const number: ValueTypeSpec<string | number | null | undefined> = (function () {
 		handleValue(value, { negative } = {}) {
 			const num = Number(value)
 			if (Number.isNaN(num)) {
-				return undefined
+				const unit = parser.getUnitFromNumberFunction(value)
+				if (unit === undefined) {
+					return undefined
+				}
+				if (unit !== null) {
+					return undefined
+				}
+				return negative ? parser.reverseNumberFunction(value) : value
 			}
 			return num * (negative ? -1 : 1)
 		},
@@ -221,6 +228,10 @@ const length: ValueTypeSpec<string | number | null | undefined> = (function () {
 			if (!unit) {
 				if (Number(value) == 0) {
 					return 0
+				}
+				const unit = parser.getUnitFromNumberFunction(value)
+				if (units.some(u => u === unit)) {
+					return negative ? parser.reverseNumberFunction(value) : value
 				}
 				return undefined
 			}
@@ -251,6 +262,10 @@ const percentage: ValueTypeSpec<string | number | null | undefined> = (function 
 				if (Number(value) == 0) {
 					return 0
 				}
+				const unit = parser.getUnitFromNumberFunction(value)
+				if (unit === "%") {
+					return negative ? parser.reverseNumberFunction(value) : value
+				}
 				return undefined
 			}
 			value = value.slice(0, -1)
@@ -280,6 +295,10 @@ const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
 			if (!unit) {
 				if (Number(value) == 0) {
 					return 0
+				}
+				const unit = parser.getUnitFromNumberFunction(value)
+				if (units.some(u => u === unit)) {
+					return negative ? parser.reverseNumberFunction(value) : value
 				}
 				return undefined
 			}
@@ -849,6 +868,9 @@ export const __types: Types = {
 	number,
 	length,
 	percentage,
+	angle,
+	// <time>
+	// <frequency>
 	color,
 	"line-width": lineWidth,
 	"absolute-size": absoluteSize,
@@ -859,7 +881,6 @@ export const __types: Types = {
 	"generic-name": genericName,
 	"family-name": familyName,
 	position,
-	angle,
 }
 
 export function representTypes({
