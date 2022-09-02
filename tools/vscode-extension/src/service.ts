@@ -20,7 +20,7 @@ const context = { console, typescriptExtractor, typescript }
 
 export function createTailwindLanguageService(options: ServiceOptions) {
 	const configPath = options.configPath
-	const isDefaultConfig = options.configPath == undefined
+	const isDefault = options.configPath == undefined
 	const state = createTailwindLoader()
 	const configPathMessage = configPath == undefined ? "defaultConfig" : configPath.path
 	let loading = false
@@ -65,6 +65,7 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 			activatedEvent.dispose()
 			state.dispose()
 		},
+		isDefault,
 		start,
 		updateSettings,
 		completionItemProvider,
@@ -97,7 +98,7 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 			state.readTailwind({
 				configPath,
 				mode: options.extensionMode,
-				pnp: isDefaultConfig ? undefined : options.pnpContext,
+				pnp: isDefault ? undefined : options.pnpContext,
 				onChange: reload,
 			})
 			_colorProvider = createColorProvider(state.tw, state.separator)
@@ -122,7 +123,7 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 			state.readTailwind({
 				configPath,
 				mode: options.extensionMode,
-				pnp: isDefaultConfig ? undefined : options.pnpContext,
+				pnp: isDefault ? undefined : options.pnpContext,
 				onChange: reload,
 			})
 			if (_colorProvider) _colorProvider.dispose()

@@ -437,14 +437,13 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		if (!settings.fallbackDefaultConfig) {
 			return
 		}
-		if (services.size > 0) {
-			return
-		}
 		if (defaultServiceRunning) {
 			console.info("Default service is ready.")
 			return
 		}
-
+		if (services.has(ws.uri.toString())) {
+			return
+		}
 		const srv = createTailwindLanguageService({
 			...settings,
 			serverSourceMapUri,
@@ -459,11 +458,6 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 	}
 
 	function addService(configPath: URI, settings: Settings, startNow = false) {
-		if (defaultServiceRunning) {
-			services.clear()
-			defaultServiceRunning = false
-		}
-
 		const folder = Utils.dirname(configPath).toString()
 		const set = configFolders.get(folder)
 		if (!set) {
