@@ -1,6 +1,6 @@
 import pluginTester from "babel-plugin-tester"
 import path from "path"
-import babelPlugin from "../index"
+import babelPlugin from "../src/index"
 
 pluginTester({
 	plugin: babelPlugin,
@@ -14,7 +14,7 @@ pluginTester({
 			["@babel/preset-typescript"],
 			["@babel/preset-react", { runtime: "automatic", importSource: "@emotion/react" }],
 		],
-		plugins: ["@emotion"],
+		plugins: [["@emotion", { sourceMap: false }]],
 	},
 	snapshot: true,
 	fixtures: path.join(__dirname, "__fixtures__"),

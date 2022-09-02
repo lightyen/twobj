@@ -1,5 +1,5 @@
 {
-	"include": ["src/**/*.ts", "src/index.mts", "src/index.cts"],
+	"include": ["src/**/*.ts", "src/index.ts"],
 	"exclude": ["src/**/__tests__/*"],
 	"compilerOptions": {
 		"declaration": true,
@@ -12,7 +12,7 @@
 		"allowSyntheticDefaultImports": true,
 		"isolatedModules": true,
 		"esModuleInterop": true,
-		"module": "ESNext",
+		"module": "CommonJS",
 		"moduleResolution": "node",
 		"target": "es2021"
 	}

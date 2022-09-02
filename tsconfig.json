@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"types": ["@types/node", "@types/jest", "tailwind-types"],
+		"types": ["@types/node", "@types/jest"],
 		"strictNullChecks": true,
 		"noImplicitAny": false,
 		"allowSyntheticDefaultImports": true,

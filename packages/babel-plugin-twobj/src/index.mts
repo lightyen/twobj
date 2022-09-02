@@ -22,7 +22,6 @@ async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unk
 	if (debug) {
 		console.log("load esmodule configuration", fileURL)
 	}
-	import.meta.url
 	return import(fileURL).then(m => m.default)
 }
 
