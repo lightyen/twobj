@@ -4,6 +4,6 @@
 		"jsx": "preserve",
 		"allowJs": true,
 		"skipLibCheck": true,
-		"types": ["@types/node", "@emotion/react/types/css-prop", "../types/emotion"]
+		"types": ["@types/node", "@emotion/react/types/css-prop", "../../types/emotion"]
 	}
 }

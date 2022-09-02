@@ -1,4 +1,4 @@
-import { __types } from "../values"
+import { __types } from "../src/values"
 
 test("number", () => {
 	expect(__types.number.handleValue("0")).not.toBeUndefined()

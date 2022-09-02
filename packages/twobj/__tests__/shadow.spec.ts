@@ -1,4 +1,4 @@
-import { formatBoxShadowValues } from "../values"
+import { formatBoxShadowValues } from "../src/values"
 import { tw } from "./context"
 
 test("boxShadow", async () => {

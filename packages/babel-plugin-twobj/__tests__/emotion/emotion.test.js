@@ -1,11 +1,11 @@
 import pluginTester from "babel-plugin-tester"
 import path from "path"
-import babelPlugin from "../src/index"
+import babelPlugin from "../../src/index"
 
 pluginTester({
 	plugin: babelPlugin,
 	pluginName: "twobj",
-	title: "describe twobj",
+	title: "emotion react twobj",
 	pluginOptions: {
 		tailwindConfig: {},
 	},

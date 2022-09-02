@@ -1,4 +1,4 @@
-import { resolveConfig } from "../config"
+import { resolveConfig } from "../src/config"
 
 test("resolveConfig", async () => {
 	const resolved1 = resolveConfig({})

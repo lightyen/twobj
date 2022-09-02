@@ -1,4 +1,4 @@
-import { merge } from "../util"
+import { merge } from "../src/util"
 
 test("merge object", async () => {
 	const a = { a: { b: { c: 24 } } }

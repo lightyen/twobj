@@ -1,5 +1,5 @@
-import { resolveConfig } from "../config"
-import { createContext } from "../core"
+import { resolveConfig } from "../src/config"
+import { createContext } from "../src/core"
 
 test("expandAtRules", async () => {
 	const ctx = createContext(

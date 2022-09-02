@@ -305,12 +305,14 @@ importers:
       parsel-js: 1.0.2
       postcss: 8.4.16
       tailwind-types: 3.2.0
+      tailwindcss: 3.1.8
     devDependencies:
       '@types/cssesc': 3.0.0
       cssesc: 3.0.0
       parsel-js: 1.0.2
       postcss: 8.4.16
       tailwind-types: 3.2.0_postcss@8.4.16
+      tailwindcss: 3.1.8_postcss@8.4.16
 
   tools/vscode-extension:
     specifiers:
@@ -11921,8 +11923,8 @@ packages:
       webpack: 5.74.0_2ivlywgen2fleyz4hnjy7wq3tu
     dev: true
 
-  /terser-webpack-plugin/5.3.5_iydahrzc4664nc35pzxqlwvo54:
-    resolution: {integrity: sha512-AOEDLDxD2zylUGf/wxHxklEkOe2/r+seuyOWujejFrIxHf11brA1/dWQNIgXa1c6/Wkxgu7zvv0JhOWfc2ELEA==}
+  /terser-webpack-plugin/5.3.6_iydahrzc4664nc35pzxqlwvo54:
+    resolution: {integrity: sha512-kfLFk+PoLUQIbLmB1+PZDMRSZS99Mp+/MHqDNmMA6tOItzRt+Npe3E+fsMs5mfcM0wCtrrdU387UnV+vnSffXQ==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
       '@swc/core': '*'
@@ -11942,7 +11944,7 @@ packages:
       jest-worker: 27.5.1
       schema-utils: 3.1.1
       serialize-javascript: 6.0.0
-      terser: 5.14.2
+      terser: 5.15.0
       webpack: 5.74.0_2ivlywgen2fleyz4hnjy7wq3tu
 
   /terser-webpack-plugin/5.3.6_lidchysyxbvtyje7zjltu33hom:
@@ -11979,6 +11981,7 @@ packages:
       acorn: 8.8.0
       commander: 2.20.3
       source-map-support: 0.5.21
+    dev: true
 
   /terser/5.15.0:
     resolution: {integrity: sha512-L1BJiXVmheAQQy+as0oF3Pwtlo4s3Wi1X2zNZ2NxOB4wx9bdS9Vk67XQENLFdLYGCK/Z2di53mTj/hBafR+dTA==}
@@ -12784,7 +12787,7 @@ packages:
       neo-async: 2.6.2
       schema-utils: 3.1.1
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.5_iydahrzc4664nc35pzxqlwvo54
+      terser-webpack-plugin: 5.3.6_iydahrzc4664nc35pzxqlwvo54
       watchpack: 2.4.0
       webpack-cli: 4.10.0_3lewgxathpayo2pqi2m465vtiu
       webpack-sources: 3.2.3

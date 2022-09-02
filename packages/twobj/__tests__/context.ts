@@ -1,6 +1,6 @@
-import { resolveConfig } from "../config/resolveConfig"
-import { createContext } from "../core"
-import type { Context, CSSProperties } from "../types"
+import { resolveConfig } from "../src/config/resolveConfig"
+import { createContext } from "../src/core"
+import type { Context, CSSProperties } from "../src/types"
 
 export const context = createContext(resolveConfig())
 

@@ -1,5 +1,5 @@
-import { resolveConfig } from "../config/resolveConfig"
-import { createContext } from "../core"
+import { resolveConfig } from "../src/config/resolveConfig"
+import { createContext } from "../src/core"
 import { createTw } from "./context"
 
 test("addUtilities with object", async () => {
