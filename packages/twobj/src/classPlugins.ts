@@ -206,7 +206,7 @@ export const classPlugins: ClassPlugins = {
 			["mb", "marginBottom"],
 			["ml", "marginLeft"],
 		],
-		theme => ({ type: "length", values: theme.margin, supportsNegativeValues: true }),
+		theme => ({ values: theme.margin, supportsNegativeValues: true }),
 	),
 	aspectRatio: createUtilityPlugin("aspectRatio", [["aspect", "aspectRatio"]], theme => ({
 		values: theme.aspectRatio,
@@ -272,7 +272,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "angle", values: theme.rotate, supportsNegativeValues: true },
+			{ values: theme.rotate, supportsNegativeValues: true },
 		)
 	}),
 	skew: plugin("skew", ({ matchUtilities, theme }) => {
@@ -291,7 +291,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "angle", values: theme.skew, supportsNegativeValues: true },
+			{ values: theme.skew, supportsNegativeValues: true },
 		)
 	}),
 	scale: plugin("scale", ({ matchUtilities, theme }) => {
@@ -990,7 +990,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "length", values: theme.blur },
+			{ values: theme.blur },
 		)
 	}),
 	brightness: plugin("brightness", ({ matchUtilities, theme }) => {
@@ -1086,7 +1086,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "angle", values: theme.hueRotate, supportsNegativeValues: true },
+			{ values: theme.hueRotate, supportsNegativeValues: true },
 		)
 	}),
 	invert: plugin("invert", ({ matchUtilities, theme }) => {
@@ -1234,7 +1234,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "length", values: theme.backdropBlur },
+			{ values: theme.backdropBlur },
 		)
 	}),
 	backdropBrightness: plugin("backdropBrightness", ({ matchUtilities, theme }) => {
@@ -1330,7 +1330,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "angle", values: theme.backdropHueRotate, supportsNegativeValues: true },
+			{ values: theme.backdropHueRotate, supportsNegativeValues: true },
 		)
 	}),
 	backdropInvert: plugin("backdropInvert", ({ matchUtilities, theme }) => {

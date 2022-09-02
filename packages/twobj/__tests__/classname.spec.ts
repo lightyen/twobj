@@ -100,3 +100,16 @@ test("float", async () => {
 	expect(tw`float-right`).toEqual({ float: "right" })
 	expect(tw`float-none`).toEqual({ float: "none" })
 })
+
+test("margin", async () => {
+	expect(tw`my-0`).toEqual({ marginTop: "0px", marginBottom: "0px" })
+	expect(tw`mx-0`).toEqual({ marginLeft: "0px", marginRight: "0px" })
+	expect(tw`mx-1`).toEqual({ marginLeft: "0.25rem", marginRight: "0.25rem" })
+	expect(tw`mx-[0.33cm]`).toEqual({ marginLeft: "0.33cm", marginRight: "0.33cm" })
+	expect(tw`-mx-[0.33cm]`).toEqual({ marginLeft: "-0.33cm", marginRight: "-0.33cm" })
+	expect(tw`mx-[var(--len)]`).toEqual({ marginLeft: "var(--len)", marginRight: "var(--len)" })
+	expect(tw`-mx-[max(10px, var(--len))]`).toEqual({
+		marginLeft: "calc(max(10px, var(--len)) * -1)",
+		marginRight: "calc(max(10px, var(--len)) * -1)",
+	})
+})
