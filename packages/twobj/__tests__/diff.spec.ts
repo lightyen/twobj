@@ -1,3 +1,4 @@
+import "tailwind-types"
 import { createContext } from "tailwindcss/lib/lib/setupContextUtils.js"
 import resolveConfig from "tailwindcss/resolveConfig"
 import { context } from "./context"
@@ -21,7 +22,7 @@ test("diff tailwindcss", async () => {
 			}
 
 			// use 'bg-red-500/80'
-			if (/-opacity-\d+$/.test(classname)) {
+			if (/^(text|bg|divide|border|placeholder|ring)-opacity-\d+$/.test(classname)) {
 				return false
 			}
 

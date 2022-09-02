@@ -99,6 +99,7 @@ export default {
 		backdropSaturate: ({ theme }) => theme("saturate"),
 		backdropSepia: ({ theme }) => theme("sepia"),
 		backgroundColor: ({ theme }) => theme("colors"),
+		backdropOpacity: ({ theme }) => theme("opacity"),
 		backgroundImage: {
 			none: "none",
 			"gradient-to-t": "linear-gradient(to top, var(--tw-gradient-stops))",
