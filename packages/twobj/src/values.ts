@@ -650,6 +650,11 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 
 				if (!color) {
 					color = part
+					if (typeof color !== "string") {
+						if (color.params[3] === "/") {
+							color.params.splice(3, 1)
+						}
+					}
 				} else {
 					// error
 					return undefined

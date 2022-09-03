@@ -712,19 +712,13 @@ export const classPlugins: ClassPlugins = {
 						})
 						.join(", ")
 
-					_color.reduce((current, color, index) => {
-						if (isParamColor(color)) {
-							const { fn, params } = color
-							current["--tw-shadow-default-color-" + index] = fn + "(" + params.join(" ") + ")"
-						}
-						return current
-					}, {})
-
 					return {
 						..._color.reduce((current, color, index) => {
 							if (isParamColor(color)) {
 								const { fn, params } = color
-								current["--tw-shadow-default-color-" + index] = fn + "(" + params.join(" ") + ")"
+								const opacityValue = params[3] ? " / " + params[3] : ""
+								current["--tw-shadow-default-color-" + index] =
+									fn + "(" + params.slice(0, 3).join(" ") + opacityValue + ")"
 							}
 							return current
 						}, {}),
