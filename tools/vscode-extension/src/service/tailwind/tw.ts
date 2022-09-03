@@ -214,7 +214,8 @@ export function createTwContext(config: Tailwind.ResolvedConfigJS) {
 			return cssValue
 		}
 
-		return cssValue.replace(reg, text + `/** ${(rootFontSize * val).toFixed(0)}px */`)
+		const len = rootFontSize * val
+		return cssValue.replace(reg, text + `/** ${Number.isInteger(len) ? len.toFixed(0) : len.toFixed(1)}px */`)
 	}
 
 	function extendColorValue(cssValue: string, colorHint: "hex" | "rgb" | "hsl") {
