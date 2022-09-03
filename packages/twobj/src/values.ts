@@ -240,7 +240,7 @@ const length: ValueTypeSpec<string | number | null | undefined> = (function () {
 				if (units.some(u => u === unit)) {
 					return negative ? parser.reverseNumberFunction(value) : value
 				}
-				return undefined
+				return unambiguous ? "" : undefined
 			}
 			value = value.slice(0, -unit.length)
 			const num = number.handleValue(value, { negative })
@@ -276,7 +276,7 @@ const percentage: ValueTypeSpec<string | number | null | undefined> = (function 
 				if (unit === "%") {
 					return negative ? parser.reverseNumberFunction(value) : value
 				}
-				return undefined
+				return unambiguous ? "" : undefined
 			}
 			value = value.slice(0, -1)
 
@@ -364,16 +364,11 @@ const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | und
 			if (negative) {
 				return undefined
 			}
-			return parseColorValue(value, unambiguous === true, opacity)
+			return parseColorValue(value, unambiguous, opacity)
 		},
 	}
 
-	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
-		const color = parser.parseColor(value)
-		if (!color) {
-			return undefined
-		}
-
+	function parseColorValue(value: string, unambiguous: boolean | undefined, opacity?: string): string | undefined {
 		if (unambiguous) {
 			// like: fill, stroke, ...
 			if (opacity == undefined) {
@@ -390,6 +385,11 @@ const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | und
 				return "rgb(" + value + opacityValue + ")"
 			}
 			return value
+		}
+
+		const color = parser.parseColor(value)
+		if (!color) {
+			return undefined
 		}
 
 		if (!parser.isOpacityFunction(color.fn)) {
@@ -493,7 +493,10 @@ const genericName: ValueTypeSpec<string | number | null | undefined> = (function
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? value : undefined
+			}
 			const keyword = keywords.find(u => value.endsWith(u))
 			if (!keyword) {
 				return undefined
@@ -513,7 +516,10 @@ const familyName: ValueTypeSpec<string | number | null | undefined> = (function 
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? value : undefined
+			}
 			const fields = parser.splitAtTopLevelOnly(value)
 			if (fields.length == 0) {
 				return undefined
@@ -698,6 +704,10 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 			} else {
 				return false
 			}
+		}
+
+		if (!x || !y) {
+			return false
 		}
 
 		return true

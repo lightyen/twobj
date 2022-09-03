@@ -15,6 +15,7 @@ test("boxShadow", async () => {
 test("boxShadowColor", async () => {
 	expect(tw`shadow-red-500`).toEqual({ "--tw-shadow-color": "#ef4444" })
 	expect(tw`shadow-red-500/[0.3]`).toEqual({ "--tw-shadow-color": "rgb(239 68 68 / 0.3)" })
+	expect(tw`shadow-[#ef4444]/[0.3]`).toEqual({ "--tw-shadow-color": "rgb(239 68 68 / 0.3)" })
 })
 
 test("shadow value", async () => {
