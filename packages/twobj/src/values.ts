@@ -197,7 +197,10 @@ const number: ValueTypeSpec<string | number | null | undefined> = (function () {
 
 			return config
 		},
-		handleValue(value, { negative } = {}) {
+		handleValue(value, { negative, unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			const num = Number(value)
 			if (Number.isNaN(num)) {
 				const unit = parser.getUnitFromNumberFunction(value)
@@ -224,7 +227,10 @@ const length: ValueTypeSpec<string | number | null | undefined> = (function () {
 		handleConfig(config, options) {
 			return number.handleConfig(config, options)
 		},
-		handleValue(value, { negative = false } = {}) {
+		handleValue(value, { negative = false, unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			const unit = units.find(u => value.endsWith(u))
 			if (!unit) {
 				if (Number(value) == 0) {
@@ -258,7 +264,10 @@ const percentage: ValueTypeSpec<string | number | null | undefined> = (function 
 		handleConfig(config, options) {
 			return number.handleConfig(config, options)
 		},
-		handleValue(value, { negative = false } = {}) {
+		handleValue(value, { negative = false, unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			if (!value.endsWith("%")) {
 				if (Number(value) == 0) {
 					return 0
@@ -291,7 +300,10 @@ const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
 		handleConfig(config, options) {
 			return number.handleConfig(config, options)
 		},
-		handleValue(value, { negative = false } = {}) {
+		handleValue(value, { negative = false, unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			const unit = units.find(u => value.endsWith(u))
 			if (!unit) {
 				if (Number(value) == 0) {
@@ -346,6 +358,9 @@ const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | und
 			return parseColorValue(value, false, options.opacity) || value
 		},
 		handleValue(value, { negative, opacity, unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			if (negative) {
 				return undefined
 			}
@@ -547,7 +562,10 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			const params = parser.splitCssParams(value)
 			if (
 				params.some(p => {
@@ -580,7 +598,10 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			if (!parser.splitAtTopLevelOnly(value).every(isShadow)) {
 				return undefined
 			}
@@ -704,7 +725,10 @@ const position: ValueTypeSpec<string | number | null | undefined> = (function ()
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			const arr = parser.splitAtTopLevelOnly(value)
 
 			if (
@@ -880,7 +904,10 @@ const image: ValueTypeSpec<string | number | null | undefined> = (function () {
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
+			}
 			const params = parser.splitCssParams(value)
 			if (
 				!params.every(p => {
