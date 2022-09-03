@@ -17,7 +17,13 @@ test("boxShadow", async () => {
 		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
 	})
 	expect(tw`shadow-[10px 10px 5px rgba(66, 225, 106, 0.5)]`).toEqual({
-		"--tw-shadow-default-color-0": "rgba(66 225 106 / 0.5)",
+		"--tw-shadow-default-color-0": "rgba(66, 225, 106, 0.5)",
+		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, var(--tw-shadow-default-color-0))",
+		"--tw-shadow": "var(--tw-shadow-colored)",
+		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+	})
+	expect(tw`shadow-[10px 10px 5px #22121242]`).toEqual({
+		"--tw-shadow-default-color-0": "#22121242",
 		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, var(--tw-shadow-default-color-0))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
@@ -34,11 +40,11 @@ test("shadow value", async () => {
 	const result = formatBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 , 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)")
 	expect(result).toEqual([
 		{
-			color: { fn: "rgb", params: ["0", "0", "0", "0.1"] },
+			color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [17, 35] },
 			value: "0 10px 15px -3px var(--tw-shadow-color, var(--tw-shadow-default-color))",
 		},
 		{
-			color: { fn: "rgb", params: ["0", "0", "0", "0.1"] },
+			color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [52, 68] },
 			value: "0 4px 6px -4px var(--tw-shadow-color, var(--tw-shadow-default-color))",
 		},
 	])

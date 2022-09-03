@@ -99,7 +99,7 @@ export function findClasses(selector: string): Map<string, string> {
 
 	const classes = new Map<string, string>()
 
-	splitAtTopLevelOnly(selector).forEach(s => walk(parsel.parse(s)))
+	splitAtTopLevelOnly(selector).forEach(s => walk(parsel.parse(s.value)))
 
 	return classes
 

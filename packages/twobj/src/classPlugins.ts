@@ -671,15 +671,6 @@ export const classPlugins: ClassPlugins = {
 			"--tw-ring-shadow": "0 0 #0000",
 		})
 
-		function isParamColor(param: parser.Param | undefined): param is { fn: string; params: string[] } {
-			if (param && typeof param !== "string") {
-				if (param.params.every(p => typeof p === "string")) {
-					return true
-				}
-			}
-			return false
-		}
-
 		matchUtilities(
 			{
 				shadow(value): CSSProperties {
@@ -687,6 +678,12 @@ export const classPlugins: ClassPlugins = {
 						return {
 							boxShadow:
 								"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+						}
+					}
+					if (value === "none") {
+						return {
+							"--tw-shadow": "0 0 #0000",
+							boxShadow: `var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)`,
 						}
 					}
 
@@ -714,16 +711,15 @@ export const classPlugins: ClassPlugins = {
 
 					return {
 						..._color.reduce((current, color, index) => {
-							if (isParamColor(color)) {
-								const { fn, params } = color
-								const opacityValue = params[3] ? " / " + params[3] : ""
-								current["--tw-shadow-default-color-" + index] =
-									fn + "(" + params.slice(0, 3).join(" ") + opacityValue + ")"
+							if (typeof color !== "string") {
+								current["--tw-shadow-default-color-" + index] = value.slice(...color.range)
+							} else {
+								current["--tw-shadow-default-color-" + index] = color
 							}
 							return current
 						}, {}),
 						"--tw-shadow-colored": shadowColored,
-						"--tw-shadow": value === "none" ? "0 0 #0000" : "var(--tw-shadow-colored)",
+						"--tw-shadow": "var(--tw-shadow-colored)",
 						boxShadow: `var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)`,
 					}
 				},

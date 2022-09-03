@@ -187,9 +187,9 @@ export function dlv(cur: any, paths: string[]): any {
 	return cur
 }
 
-export function splitAtTopLevelOnly(value: string, trim = true): string[] {
+export function splitAtTopLevelOnly(value: string, trim = true): Array<{ value: string; range: [number, number] }> {
 	const stack: number[] = []
-	const result: string[] = []
+	const result: Array<{ value: string; range: [number, number] }> = []
 
 	let quoted = false
 	let base = 0
@@ -201,12 +201,15 @@ export function splitAtTopLevelOnly(value: string, trim = true): string[] {
 				continue
 			}
 
-			let str = value.slice(base, i)
+			let start = base
+			let end = i
 			if (trim) {
-				str = str.trim()
+				while (start < end && isSpace(value.charCodeAt(start))) start++
+				while (start < end && isSpace(value.charCodeAt(end - 1))) end--
 			}
+			const str = value.slice(start, end)
 			if (str) {
-				result.push(str)
+				result.push({ value: str, range: [start, end] })
 			}
 			base = i + 1
 			continue
@@ -235,12 +238,15 @@ export function splitAtTopLevelOnly(value: string, trim = true): string[] {
 		}
 	}
 
-	let last = value.slice(base, value.length)
+	let start = base
+	let end = value.length
 	if (trim) {
-		last = last.trim()
+		while (start < end && isSpace(value.charCodeAt(start))) start++
+		while (start < end && isSpace(value.charCodeAt(end - 1))) end--
 	}
+	const last = value.slice(start, end)
 	if (last) {
-		result.push(last)
+		result.push({ value: last, range: [start, end] })
 	}
 
 	return result

@@ -5,6 +5,7 @@ export type Param = ParamObject | string
 export interface ParamObject {
 	fn: string
 	params: Param[]
+	range: [number, number]
 }
 
 export function parseColor(css: string): ParamObject | undefined {
@@ -42,13 +43,17 @@ function parseHex(css: string): ParamObject | undefined {
 	if (!match) {
 		return undefined
 	}
-	const [, rgb, a, RGB, A] = match
+	const [text, rgb, a, RGB, A] = match
 	if (rgb) {
 		const value = parseInt(rgb, 16)
 		const r = (value >> 16) & 0xff
 		const g = (value >> 8) & 0xff
 		const b = value & 0xff
-		const color = { fn: "rgb", params: [r.toString(), g.toString(), b.toString()] }
+		const color: ParamObject = {
+			fn: "rgb",
+			params: [r.toString(), g.toString(), b.toString()],
+			range: [match.index, match.index + text.length],
+		}
 		if (a) {
 			color.params.push((parseInt(a) / 255).toString())
 		}
@@ -60,7 +65,11 @@ function parseHex(css: string): ParamObject | undefined {
 		const r = (value >> 16) & 0xff
 		const g = (value >> 8) & 0xff
 		const b = value & 0xff
-		const color = { fn: "rgb", params: [r.toString(), g.toString(), b.toString()] }
+		const color: ParamObject = {
+			fn: "rgb",
+			params: [r.toString(), g.toString(), b.toString()],
+			range: [match.index, match.index + text.length],
+		}
 		if (A) {
 			color.params.push((parseInt(A + A) / 255).toString())
 		}
@@ -69,10 +78,14 @@ function parseHex(css: string): ParamObject | undefined {
 	return undefined
 }
 
-function parseColorKeyword(css: string): ParamObject | undefined {
-	const hex = colors[css]
+function parseColorKeyword(value: string): ParamObject | undefined {
+	const hex = colors[value]
 	if (!hex) return undefined
-	return parseHex(hex)
+	const param = parseHex(hex)
+	if (param) {
+		param.range = [0, value.length]
+	}
+	return param
 }
 
 export function unwrapCssFunction(value: string): { fn: string; params: string } | undefined {
@@ -94,20 +107,37 @@ export function unwrapCssFunction(value: string): { fn: string; params: string }
 	return { fn, params: value.slice(regexp.lastIndex, rb) }
 }
 
-export function splitCssParams(value: string): Param[] {
+export function splitCssParams(source: string, [start = 0, end = source.length] = []): Param[] {
 	const result: Param[] = []
 	const regexp = /(?:([\w-]+)\()|([^\s,]+)/g
-	regexp.lastIndex = 0
+	regexp.lastIndex = start
+	source = source.slice(0, end)
 
-	for (let match = regexp.exec(value); match != null; match = regexp.exec(value)) {
+	for (let match = regexp.exec(source); match != null; match = regexp.exec(source)) {
 		const [, fn, word] = match
 		if (fn) {
-			const rb = findRightBracket({ text: value, start: regexp.lastIndex - 1, comments: fn !== "url" })
+			const rb = findRightBracket({ text: source, start: regexp.lastIndex - 1, comments: fn !== "url" })
 			if (rb == undefined) {
-				result.push({ fn, params: splitCssParams(value.slice(regexp.lastIndex, value.length)) })
+				const params = splitCssParams(source, [regexp.lastIndex])
+				if (isOpacityFunction(fn) && params[3] === "/") {
+					params.splice(3, 1)
+				}
+				result.push({
+					fn,
+					params,
+					range: [match.index, end],
+				})
 				return result
 			}
-			result.push({ fn, params: splitCssParams(value.slice(regexp.lastIndex, rb)) })
+			const params = splitCssParams(source, [regexp.lastIndex, rb])
+			if (isOpacityFunction(fn) && params[3] === "/") {
+				params.splice(3, 1)
+			}
+			result.push({
+				fn,
+				params,
+				range: [match.index, rb + 1],
+			})
 			regexp.lastIndex = rb + 1
 		} else if (word) {
 			result.push(word)
@@ -268,7 +298,7 @@ const colors: Record<string, string> = {
 }
 
 export function parseAnimations(value: string): string[] {
-	return splitAtTopLevelOnly(value).map(value => {
+	return splitAtTopLevelOnly(value).map(v => {
 		let timingFunction: Param | undefined
 		let duration: Param | undefined
 		let direction: Param | undefined
@@ -278,7 +308,7 @@ export function parseAnimations(value: string): string[] {
 		let delay: Param | undefined
 		let name = ""
 
-		for (const param of splitCssParams(value)) {
+		for (const param of splitCssParams(v.value)) {
 			if (!timingFunction && isTimingFunction(param)) {
 				timingFunction = param
 			} else if (!duration && isTime(param)) {

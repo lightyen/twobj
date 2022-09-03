@@ -33,7 +33,7 @@ function parse_theme_fn({ text, start = 0, end = text.length }: { text: string; 
 		let valueEnd = end
 		const params = splitAtTopLevelOnly(text.slice(start, valueEnd), false)
 		if (params.length > 1) {
-			const [first, ...rest] = params
+			const [first, ...rest] = params.map(v => v.value)
 			if (first.length !== valueEnd - start) {
 				defaultValue = rest.join(",").trim()
 				valueEnd = start + first.length
@@ -58,7 +58,7 @@ function parse_theme_fn({ text, start = 0, end = text.length }: { text: string; 
 
 	const params = splitAtTopLevelOnly(text.slice(start, end), false)
 	if (params.length > 1) {
-		const [first, ...rest] = params
+		const [first, ...rest] = params.map(v => v.value)
 		if (first.length !== end - start) {
 			defaultValue = rest.join(",").trim()
 			end = start + first.length

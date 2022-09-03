@@ -521,14 +521,14 @@ const familyName: ValueTypeSpec<string | number | null | undefined> = (function 
 				return unambiguous ? value : undefined
 			}
 			const fields = parser.splitAtTopLevelOnly(value)
-			if (fields.length == 0) {
+			if (fields.length === 0) {
 				return undefined
 			}
 			if (fields.length > 1) {
 				return value
 			}
 
-			if (!Number.isNaN(Number(fields[0]))) {
+			if (!Number.isNaN(Number(fields[0].value))) {
 				return undefined
 			}
 
@@ -592,7 +592,10 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 })()
 
 const shadow: ValueTypeSpec<string | number | null | undefined> & {
-	formatBoxShadow(shadow: string): { color: parser.Param | undefined; value: string } | undefined
+	formatBoxShadow(
+		source: string,
+		range: [number, number],
+	): { color: parser.Param | undefined; value: string } | undefined
 } = (function () {
 	const keywords = ["inset", "inherit", "initial", "revert", "revert-layer", "unset"]
 	return {
@@ -608,13 +611,13 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-			if (!parser.splitAtTopLevelOnly(value).every(isShadow)) {
+			if (!parser.splitAtTopLevelOnly(value).every(v => isShadow(v.value))) {
 				return undefined
 			}
 			return value
 		},
-		formatBoxShadow(shadow: string) {
-			const params = parser.splitCssParams(shadow)
+		formatBoxShadow(source, range) {
+			const params = parser.splitCssParams(source, range)
 
 			if (params.length === 0) {
 				return undefined
@@ -650,11 +653,6 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 
 				if (!color) {
 					color = part
-					if (typeof color !== "string") {
-						if (color.params[3] === "/") {
-							color.params.splice(3, 1)
-						}
-					}
 				} else {
 					// error
 					return undefined
@@ -722,9 +720,9 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 /**
  * @returns <...params> var(--tw-shadow-color, var(--tw-shadow-default-color))
  */
-export function formatBoxShadowValues(values: string) {
-	return parser.splitAtTopLevelOnly(values).map(value => {
-		const ans = shadow.formatBoxShadow(value)
+export function formatBoxShadowValues(source: string) {
+	return parser.splitAtTopLevelOnly(source).map(({ value, range }) => {
+		const ans = shadow.formatBoxShadow(source, range)
 		if (!ans) return value
 		return ans
 	})
@@ -747,8 +745,8 @@ const position: ValueTypeSpec<string | number | null | undefined> = (function ()
 			const arr = parser.splitAtTopLevelOnly(value)
 
 			if (
-				!arr.every(value => {
-					const params = parser.splitCssParams(value)
+				!arr.every(v => {
+					const params = parser.splitCssParams(v.value)
 					const parameters = params.filter((p: string): p is string => typeof p === "string")
 					if (params.length !== parameters.length) {
 						return false
