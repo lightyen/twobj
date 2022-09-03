@@ -458,15 +458,16 @@ function checkArbitraryClassname(
 			severity: vscode.DiagnosticSeverity.Error,
 		})
 	} else {
-		const cssText = state.tw.renderClassname({ classname: text.slice(...item.range) })
+		const classname = text.slice(...item.range)
+		const cssText = state.tw.renderClassname({ classname })
 		if (!cssText) {
-			const range = new vscode.Range(
-				document.positionAt(offset + item.expr.range[0]),
-				document.positionAt(offset + item.expr.range[1]),
-			)
+			let [start, end] = item.expr.range
+			while (start < end && parser.isSpace(text.charCodeAt(start))) start++
+			while (start < end && parser.isSpace(text.charCodeAt(end - 1))) end--
+			const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 			result.push({
 				source: DIAGNOSTICS_ID,
-				message: `'${text.slice(item.expr.range[0], item.expr.range[1])}' is an unknown value.`,
+				message: "Fail to resolve this value.",
 				range,
 				severity: vscode.DiagnosticSeverity.Error,
 			})
