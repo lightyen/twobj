@@ -17,6 +17,7 @@ interface ValueTypeSpec<ConfigValue = any> {
 		value: string,
 		options?: {
 			negative?: boolean
+			unambiguous?: boolean
 			opacity?: string
 		},
 	): string | number | undefined
@@ -342,33 +343,71 @@ const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | und
 				return value.replace("<alpha-value>", options.opacity ?? "1")
 			}
 
-			return parseColorValue(value, options.opacity) || value
+			return parseColorValue(value, false, options.opacity) || value
 		},
-		handleValue(value, { negative, opacity } = {}) {
+		handleValue(value, { negative, opacity, unambiguous } = {}) {
 			if (negative) {
 				return undefined
 			}
-			return parseColorValue(value, opacity)
+			return parseColorValue(value, unambiguous === true, opacity)
 		},
 	}
 
-	function parseColorValue(value: string, opacity?: string): string | undefined {
+	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
 		const color = parser.parseColor(value)
 		if (!color) {
 			return undefined
 		}
 
+		if (unambiguous) {
+			// like: fill, stroke, ...
+			if (opacity == undefined) {
+				return value
+			}
+			const opacityValue = " / " + opacity
+			const result = parser.unwrapCssFunction(value)
+			if (result) {
+				const { fn, params } = result
+				if (parser.isOpacityFunction(fn)) {
+					return fn + "(" + params + opacityValue + ")"
+				}
+				// prefer rgb()
+				return "rgb(" + value + opacityValue + ")"
+			}
+			return value
+		}
+
 		if (!parser.isOpacityFunction(color.fn)) {
-			return undefined
+			if (opacity == undefined) {
+				return undefined
+			}
+			if (!unambiguous) {
+				return undefined
+			}
+			const opacityValue = " / " + opacity
+			// prefer rgb()
+			return "rgb(" + value + opacityValue + ")"
 		}
 
 		if (opacity == undefined) {
 			return value
 		}
 
-		const { fn, params } = color
 		const opacityValue = " / " + opacity
-		return fn + "(" + params.slice(0, 3).join(" ") + opacityValue + ")"
+		const { fn, params } = color
+		if (params.every(p => typeof p === "string")) {
+			return fn + "(" + params.slice(0, 3).join(" ") + opacityValue + ")"
+		}
+
+		const result = parser.unwrapCssFunction(value)
+		if (result) {
+			const { fn, params } = result
+			if (parser.isOpacityFunction(fn)) {
+				return fn + "(" + params + opacityValue + ")"
+			}
+			return "rgb(" + params + opacityValue + ")"
+		}
+		return undefined
 	}
 })()
 
@@ -915,6 +954,7 @@ export function representTypes({
 
 	const options = {
 		negative,
+		unambiguous: !ambiguous,
 		opacity: result.opacity,
 	}
 
@@ -946,6 +986,9 @@ export function representTypes({
 		result.value = result.value.trim()
 
 		for (const h of _types) {
+			if (h.isTag(result.valueTag)) {
+				options.unambiguous = true
+			}
 			const value = h.handleValue(result.value, options)
 			if (result.valueTag) {
 				if (h.isTag(result.valueTag)) {

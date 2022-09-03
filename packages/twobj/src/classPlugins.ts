@@ -640,9 +640,13 @@ export const classPlugins: ClassPlugins = {
 			"--tw-ring-shadow": "0 0 #0000",
 		})
 
-		function formatColor(color: parser.Color) {
-			const { fn, params } = color
-			return fn + "(" + params.join(" ") + ")"
+		function isParamColor(param: parser.Param | undefined): param is { fn: string; params: string[] } {
+			if (param && typeof param !== "string") {
+				if (param.params.every(p => typeof p === "string")) {
+					return true
+				}
+			}
+			return false
 		}
 
 		matchUtilities(
@@ -678,16 +682,18 @@ export const classPlugins: ClassPlugins = {
 						.join(", ")
 
 					_color.reduce((current, color, index) => {
-						if (parser.isParamColor(color)) {
-							current["--tw-shadow-default-color-" + index] = formatColor(color)
+						if (isParamColor(color)) {
+							const { fn, params } = color
+							current["--tw-shadow-default-color-" + index] = fn + "(" + params.join(" ") + ")"
 						}
 						return current
 					}, {})
 
 					return {
 						..._color.reduce((current, color, index) => {
-							if (parser.isParamColor(color)) {
-								current["--tw-shadow-default-color-" + index] = formatColor(color)
+							if (isParamColor(color)) {
+								const { fn, params } = color
+								current["--tw-shadow-default-color-" + index] = fn + "(" + params.join(" ") + ")"
 							}
 							return current
 						}, {}),

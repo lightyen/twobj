@@ -1,34 +1,34 @@
 import { findRightBracket, matchValue, splitAtTopLevelOnly } from "./util"
 
-export interface Color {
+export type Param = ParamObject | string
+
+export interface ParamObject {
 	fn: string
-	params: string[]
+	params: Param[]
 }
 
-export function parseColor(css: string): Color | undefined {
-	let c: Color | undefined = parseHex(css)
-	if (c) {
-		return c
+export function parseColor(css: string): ParamObject | undefined {
+	let color = parseHex(css)
+	if (color) {
+		return color
 	}
-	c = parseColorKeyword(css)
-	if (c) {
-		return c
+	color = parseColorKeyword(css)
+	if (color) {
+		return color
 	}
-	return parseCssFunc(css)
+	return parseColorFunc(css)
 }
 
-function parseCssFunc(cssValue: string): Color | undefined {
+function parseColorFunc(cssValue: string): ParamObject | undefined {
 	const params = splitCssParams(cssValue)
 	if (params.length !== 1) {
 		return undefined
 	}
-	if (typeof params[0] === "string") {
+	const param = params[0]
+	if (typeof param === "string") {
 		return undefined
 	}
-	for (const p of params[0].params) {
-		if (typeof p !== "string") return undefined
-	}
-	return params[0] as Color
+	return param
 }
 
 const opacityFunc = new Set(["rgb", "rgba", "hsl", "hsla", "hwb", "lch", "lab"])
@@ -37,7 +37,7 @@ export function isOpacityFunction(fnName: string) {
 }
 
 const hexRegexp = /(?:^#([A-Fa-f0-9]{6})([A-Fa-f0-9]{2})?$)|(?:^#([A-Fa-f0-9]{3})([A-Fa-f0-9])?$)/
-function parseHex(css: string): Color | undefined {
+function parseHex(css: string): ParamObject | undefined {
 	const match = hexRegexp.exec(css)
 	if (!match) {
 		return undefined
@@ -69,26 +69,29 @@ function parseHex(css: string): Color | undefined {
 	return undefined
 }
 
-export function parseColorKeyword(css: string): Color | undefined {
+function parseColorKeyword(css: string): ParamObject | undefined {
 	const hex = colors[css]
 	if (!hex) return undefined
 	return parseHex(hex)
 }
 
-export type Param = ParamObject | string
-
-interface ParamObject {
-	fn: string
-	params: Param[]
-}
-
-export function isParamColor(param: Param | undefined): param is Color {
-	if (param && typeof param !== "string") {
-		if (param.params.every(p => typeof p === "string")) {
-			return true
-		}
+export function unwrapCssFunction(value: string): { fn: string; params: string } | undefined {
+	const regexp = /(?:([\w-]+)\()/g
+	const match = regexp.exec(value)
+	if (!match) {
+		return undefined
 	}
-	return false
+
+	const [, fn] = match
+	if (!fn) {
+		return undefined
+	}
+
+	const rb = findRightBracket({ text: value, start: regexp.lastIndex - 1, comments: fn !== "url" })
+	if (rb == undefined) {
+		return { fn, params: value.slice(regexp.lastIndex) }
+	}
+	return { fn, params: value.slice(regexp.lastIndex, rb) }
 }
 
 export function splitCssParams(value: string): Param[] {

@@ -33,6 +33,10 @@ test("fill", async () => {
 	expect(tw`fill-[#121029]`).toEqual({ fill: "#121029" })
 	expect(tw`fill-[url(#helloworld)]`).toEqual({ fill: "url(#helloworld)" })
 	expect(tw`fill-none`).toEqual({ fill: "none" })
+	expect(tw`fill-[rgb(var(--color))]`).toEqual({ fill: "rgb(var(--color))" })
+	expect(tw`fill-[rgb(var(--color))]/20`).toEqual({ fill: "rgb(var(--color) / 0.2)" })
+	expect(tw`fill-[var(--color)]`).toEqual({ fill: "var(--color)" })
+	expect(tw`fill-[var(--color)]/10`).toEqual({ fill: "rgb(var(--color) / 0.1)" })
 })
 
 test("stroke", async () => {
@@ -43,10 +47,15 @@ test("stroke", async () => {
 
 test("backgroundColor", async () => {
 	expect(tw`bg-black`).toEqual({ backgroundColor: "#000" })
-	expect(tw`bg-[ #444 ]`).toEqual({ backgroundColor: "#444" })
+	expect(tw`bg-[#444]`).toEqual({ backgroundColor: "#444" })
 	expect(tw`bg-black/31`).toEqual({ backgroundColor: "rgb(0 0 0 / 0.31)" })
-	expect(tw`bg-[ #444 ]/31`).toEqual({ backgroundColor: "rgb(68 68 68 / 0.31)" })
+	expect(tw`bg-[#444]/31`).toEqual({ backgroundColor: "rgb(68 68 68 / 0.31)" })
+	expect(tw`bg-[rgb(var(--color))]`).toEqual({ backgroundColor: "rgb(var(--color))" })
+	expect(tw`bg-[rgb(var(--color))]/68`).toEqual({ backgroundColor: "rgb(var(--color) / 0.68)" })
+	expect(tw`bg-[var(--color)]`).toEqual({})
+	expect(tw`bg-[var(--color)]/33`).toEqual({})
 	expect(tw`bg-[color:var(--color)]`).toEqual({ backgroundColor: "var(--color)" })
+	expect(tw`bg-[color:var(--color)]/30`).toEqual({ backgroundColor: "rgb(var(--color) / 0.3)" })
 })
 
 test("backgroundImage", async () => {
@@ -88,6 +97,13 @@ test("textColor", async () => {
 	expect(tw`text-white`).toEqual({ color: "#fff" })
 	expect(tw`text-[white]`).toEqual({ color: "white" })
 	expect(tw`text-[rgb(33 33 139)]`).toEqual({ color: "rgb(33 33 139)" })
+	expect(tw`text-[rgb(var(--color))]`).toEqual({ color: "rgb(var(--color))" })
+	expect(tw`text-[rgb(var(--color))]/35`).toEqual({ color: "rgb(var(--color) / 0.35)" })
+	expect(tw`text-[rgb(var(--color))]/[40%]`).toEqual({ color: "rgb(var(--color) / 40%)" })
+	expect(tw`text-[var(--color)]`).toEqual({})
+	expect(tw`text-[var(--color)]/33`).toEqual({})
+	expect(tw`text-[color:var(--color)]`).toEqual({ color: "var(--color)" })
+	expect(tw`text-[color:var(--color)]/33`).toEqual({ color: "rgb(var(--color) / 0.33)" })
 })
 
 test("fontSize", async () => {
