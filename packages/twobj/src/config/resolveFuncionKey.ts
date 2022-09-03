@@ -21,17 +21,6 @@ export default function isPlainObject(value: unknown) {
 
 const configUtils = {
 	colors: defaultColors,
-	breakpoints(screens: Record<string, unknown>) {
-		return Object.keys(screens)
-			.filter(key => typeof screens[key] === "string")
-			.reduce(
-				(breakpoints, key) => ({
-					...breakpoints,
-					[`screen-${key}`]: screens[key],
-				}),
-				{},
-			)
-	},
 }
 
 function parseColorFormat(value: unknown) {

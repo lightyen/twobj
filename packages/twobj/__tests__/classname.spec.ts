@@ -129,3 +129,11 @@ test("margin", async () => {
 		marginRight: "calc(max(10px, var(--len)) * -1)",
 	})
 })
+
+test("maxWidth", async () => {
+	expect(tw`max-w-0`).toEqual({ maxWidth: "0rem" })
+	expect(tw`max-w-fit`).toEqual({ maxWidth: "fit-content" })
+	expect(tw`max-w-full`).toEqual({ maxWidth: "100%" })
+	expect(tw`max-w-xl`).toEqual({ maxWidth: "36rem" })
+	expect(tw`max-w-screen-xl`).toEqual({ maxWidth: "1280px" })
+})

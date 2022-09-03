@@ -594,7 +594,7 @@ export default {
 			max: "max-content",
 			fit: "fit-content",
 		}),
-		maxWidth: ({ theme, breakpoints }) => ({
+		maxWidth: {
 			none: "none",
 			0: "0rem",
 			xs: "20rem",
@@ -613,8 +613,7 @@ export default {
 			max: "max-content",
 			fit: "fit-content",
 			prose: "65ch",
-			...breakpoints(theme("screens")),
-		}),
+		},
 		minHeight: {
 			0: "0px",
 			full: "100%",

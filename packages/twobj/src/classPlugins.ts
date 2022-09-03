@@ -215,7 +215,38 @@ export const classPlugins: ClassPlugins = {
 	maxHeight: createUtilityPlugin("maxHeight", [["max-h", "maxHeight"]], theme => ({ values: theme.maxHeight })),
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
-	maxWidth: createUtilityPlugin("maxWidth", [["max-w", "maxWidth"]], theme => ({ values: theme.maxWidth })),
+	maxWidth: plugin("maxWidth", ({ theme, matchUtilities }) => {
+		const screens = Object.keys(theme.screens).reduce((breakpoints, key) => {
+			let value: string | undefined
+			const v = theme.screens[key]
+			if (typeof v === "string") {
+				value = v
+			} else {
+				if (Array.isArray(v) && v.length > 1) {
+					value = v[1]
+				} else if (typeof v === "object" && v !== null) {
+					if (typeof v["max"] === "string") {
+						value = v["max"]
+					}
+				}
+			}
+			if (value) {
+				return Object.assign(breakpoints, { [`screen-${key}`]: value })
+			}
+			return breakpoints
+		}, {})
+		const values = Object.assign({}, theme.maxWidth, screens)
+		matchUtilities(
+			{
+				"max-w"(value) {
+					return {
+						maxWidth: value,
+					}
+				},
+			},
+			{ values },
+		)
+	}),
 	minWidth: createUtilityPlugin("minWidth", [["min-w", "minWidth"]], theme => ({ values: theme.minWidth })),
 	flex: createUtilityPlugin("flex", [["flex", "flex"]], theme => ({ values: theme.flex })),
 	flexShrink: createUtilityPlugin("flexShrink", [["shrink", "flexShrink"]], theme => ({ values: theme.flexShrink })),
