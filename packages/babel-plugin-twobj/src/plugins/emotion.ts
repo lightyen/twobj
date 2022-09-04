@@ -16,64 +16,142 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 			if (thirdParty.cssProp) {
 				/** <div tw="bg-black" /> ==> <div css={{...}} /> */
 				const attrs = path.get("attributes")
-				let twIndex = -1
-				let twAttr: NodePath<babel.JSXAttribute> | undefined
-				let cssIndex = -1
-				let cssAttr: NodePath<babel.JSXAttribute> | undefined
-				let input = ""
+
+				interface TwAttr {
+					kind: "tw"
+					index: number
+					path: NodePath<babel.JSXAttribute>
+					value: string
+				}
+
+				interface ClassNameAttr {
+					kind: "className"
+					index: number
+					path: NodePath<babel.JSXAttribute>
+					value: string
+				}
+
+				interface CssAttr {
+					kind: "css"
+					index: number
+					path: NodePath<babel.JSXAttribute>
+				}
+
+				type JSXAttr = TwAttr | ClassNameAttr | CssAttr
+
+				const attributes: JSXAttr[] = []
 
 				for (let i = 0; i < attrs.length; i++) {
-					if (twIndex >= 0 && cssIndex >= 0) {
+					if ((!useClassName && attributes.length >= 2) || (useClassName && attributes.length >= 3)) {
 						break
 					}
+
 					const attr = attrs[i]
 					if (!attr.isJSXAttribute()) {
 						continue
 					}
+
 					const name = attr.get("name").node.name
 					const value = attr.get("value")
-					const twName = useClassName ? "className" : "tw"
-					if (name === twName && value.isStringLiteral()) {
-						twIndex = i
-						twAttr = attr
-						input = value.node.value
-					}
-					if (name === "css") {
-						cssIndex = i
-						cssAttr = attr
+
+					if (name === "tw" && value.isStringLiteral()) {
+						if (!attributes.find(a => a.kind === "tw")) {
+							attributes.push({
+								kind: "tw",
+								index: i,
+								value: value.node.value,
+								path: attr,
+							})
+						}
+					} else if (name === "css") {
+						if (!attributes.find(a => a.kind === "css")) {
+							attributes.push({
+								kind: "css",
+								index: i,
+								path: attr,
+							})
+						}
+					} else if (useClassName && name === "className" && value.isStringLiteral()) {
+						if (!attributes.find(a => a.kind === "className")) {
+							attributes.push({
+								kind: "className",
+								index: i,
+								value: value.node.value,
+								path: attr,
+							})
+						}
 					}
 				}
 
-				if (twAttr) {
-					const objExpr = buildStyle(input)
-					if (!cssAttr) {
-						const attr = t.jsxAttribute(t.jsxIdentifier("css"), t.jsxExpressionContainer(objExpr))
-						twAttr.insertAfter(attr)
-					} else {
-						const v = cssAttr.get("value")
-						if (v.isJSXExpressionContainer()) {
-							const expression = v.get("expression")
+				const cssProp = attributes.find(a => a.kind === "css")
+				const targets = attributes.filter((a): a is TwAttr | ClassNameAttr => a.kind !== "css")
+
+				if (targets.length > 0) {
+					if (cssProp) {
+						const value = cssProp.path.get("value")
+						if (value.isJSXExpressionContainer()) {
+							const expression = value.get("expression")
 							if (expression.isArrayExpression()) {
 								const elements = expression.get("elements")
 								if (elements.length === 0) {
-									expression.replaceWith(objExpr)
-								} else if (twIndex < cssIndex) {
-									expression.replaceWith(t.arrayExpression([objExpr, ...elements.map(e => e.node)]))
+									const expr =
+										targets.length === 1
+											? buildStyle(targets[0].value)
+											: t.arrayExpression(targets.map(t => buildStyle(t.value)))
+									expression.replaceWith(expr)
 								} else {
-									expression.replaceWith(t.arrayExpression([...elements.map(e => e.node), objExpr]))
+									interface A {
+										index: number
+										elements: Array<babel.Expression | babel.SpreadElement | null>
+									}
+									const sorted = targets
+										.map<A>(t => ({ index: t.index, elements: [buildStyle(t.value)] }))
+										.concat({ index: cssProp.index, elements: elements.map(e => e.node) })
+										.sort((a, b) => {
+											if (a.index < b.index) {
+												return -1
+											}
+											return 1
+										})
+									expression.replaceWith(
+										t.arrayExpression(
+											sorted.flatMap<babel.Expression | babel.SpreadElement | null>(
+												s => s.elements,
+											),
+										),
+									)
 								}
 							} else if (expression.isExpression()) {
-								if (twIndex < cssIndex) {
-									expression.replaceWith(t.arrayExpression([objExpr, expression.node]))
-								} else {
-									expression.replaceWith(t.arrayExpression([expression.node, objExpr]))
+								interface B {
+									index: number
+									element: babel.Expression | babel.SpreadElement
 								}
+								const sorted = targets
+									.map<B>(t => ({ index: t.index, element: buildStyle(t.value) }))
+									.concat({ index: cssProp.index, element: expression.node })
+									.sort((a, b) => {
+										if (a.index < b.index) {
+											return -1
+										}
+										return 1
+									})
+								expression.replaceWith(t.arrayExpression(sorted.map(s => s.element)))
 							}
 						}
+					} else {
+						const attr = t.jsxAttribute(
+							t.jsxIdentifier("css"),
+							t.jsxExpressionContainer(t.arrayExpression(targets.map(t => buildStyle(t.value)))),
+						)
+						const last = targets[targets.length - 1]
+						last.path.insertAfter(attr)
 					}
 
-					if (removeTwAttr && !useClassName) {
-						twAttr.remove()
+					if (removeTwAttr) {
+						const tw = attributes.find(a => a.kind === "tw")
+						if (tw) {
+							tw.path.remove()
+						}
 					}
 				}
 			}
