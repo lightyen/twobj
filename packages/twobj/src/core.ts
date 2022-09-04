@@ -415,7 +415,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 							const css = fn(value)
 							return merge({}, ...toArray(css).map(applyCamelCase))
 						},
-						config,
 						filterDefault,
 					})
 				}
@@ -467,7 +466,6 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 						const css = fn(value)
 						return merge({}, ...toArray(css))
 					},
-					config,
 				})
 			}
 			addUtilitySpec(key, {
@@ -795,8 +793,12 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			}
 		} else {
 			value = getText(node.prefix)
+			if (node.expr) {
+				node.expr.value = renderThemeFunc(node.expr.value)
+			}
 		}
 		const { spec, negative, restInput } = parseInput(value)
+
 		if (spec) {
 			for (const c of toArray(spec)) {
 				if (c.type === "lookup") {

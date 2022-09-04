@@ -34,7 +34,6 @@ function lookupValues(
 	input: string,
 	node: parser.Classname | parser.ArbitraryClassname,
 	values: Record<string, unknown>,
-	config: Tailwind.ResolvedConfigJS,
 	filterDefault?: boolean,
 ): LookupResult | undefined {
 	const result: { key?: string; value?: string; valueTag?: string; opacity?: string } = {}
@@ -48,7 +47,6 @@ function lookupValues(
 				result.valueTag = tag
 				result.value = node.expr.value.slice(tagRegexp.lastIndex)
 			}
-			result.value = parser.renderThemeFunc(config, result.value)
 		} else {
 			result.key = input
 		}
@@ -100,7 +98,6 @@ export function representAny({
 	negative,
 	template,
 	ambiguous,
-	config,
 	filterDefault,
 }: {
 	input: string
@@ -111,10 +108,9 @@ export function representAny({
 	negative: boolean
 	template: Template
 	ambiguous: boolean
-	config: Tailwind.ResolvedConfigJS
 	filterDefault: boolean
 }) {
-	const result = lookupValues(input, node, values, config, filterDefault)
+	const result = lookupValues(input, node, values, filterDefault)
 	if (!result) {
 		return undefined
 	}
@@ -843,7 +839,6 @@ export function representTypes({
 	negative,
 	template,
 	ambiguous,
-	config,
 	filterDefault,
 	types,
 }: {
@@ -855,11 +850,10 @@ export function representTypes({
 	negative: boolean
 	template: Template
 	ambiguous: boolean
-	config: Tailwind.ResolvedConfigJS
 	filterDefault: boolean
 	types: ValueType[]
 }): CSSProperties | undefined {
-	const result = lookupValues(input, node, values, config, filterDefault)
+	const result = lookupValues(input, node, values, filterDefault)
 
 	if (!result) {
 		return undefined

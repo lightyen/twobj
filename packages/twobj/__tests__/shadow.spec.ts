@@ -28,6 +28,18 @@ test("boxShadow", async () => {
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
 	})
+	expect(tw`shadow-[10px 10px 5px theme(colors.red.500)]`).toEqual({
+		"--tw-shadow-default-color-0": "#ef4444",
+		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, var(--tw-shadow-default-color-0))",
+		"--tw-shadow": "var(--tw-shadow-colored)",
+		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+	})
+	expect(tw`shadow-[10px 10px 5px theme(colors.red.500 / 50%)]`).toEqual({
+		"--tw-shadow-default-color-0": "rgb(239 68 68 / 50%)",
+		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, var(--tw-shadow-default-color-0))",
+		"--tw-shadow": "var(--tw-shadow-colored)",
+		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+	})
 })
 
 test("boxShadowColor", async () => {

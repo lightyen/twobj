@@ -56,6 +56,11 @@ test("backgroundColor", async () => {
 	expect(tw`bg-[var(--color)]/33`).toEqual({})
 	expect(tw`bg-[color:var(--color)]`).toEqual({ backgroundColor: "var(--color)" })
 	expect(tw`bg-[color:var(--color)]/30`).toEqual({ backgroundColor: "rgb(var(--color) / 0.3)" })
+	expect(tw`bg-red-500`).toEqual({ backgroundColor: "#ef4444" })
+	expect(tw`bg-red-500/50`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
+	expect(tw`bg-[theme(colors.red.500)]`).toEqual({ backgroundColor: "#ef4444" })
+	expect(tw`bg-[theme(colors.red.500)]/50`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
+	expect(tw`bg-[theme(colors.red.500 / 0.5)]`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
 })
 
 test("backgroundImage", async () => {
@@ -104,6 +109,9 @@ test("textColor", async () => {
 	expect(tw`text-[var(--color)]/33`).toEqual({})
 	expect(tw`text-[color:var(--color)]`).toEqual({ color: "var(--color)" })
 	expect(tw`text-[color:var(--color)]/33`).toEqual({ color: "rgb(var(--color) / 0.33)" })
+	expect(tw`text-[theme(colors.red.500)]`).toEqual({ color: "#ef4444" })
+	expect(tw`text-[theme(colors.red.500)]/50`).toEqual({ color: "rgb(239 68 68 / 0.5)" })
+	expect(tw`text-[theme(colors.red.500 / 0.5)]`).toEqual({ color: "rgb(239 68 68 / 0.5)" })
 })
 
 test("fontSize", async () => {
