@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import Module from "module"
 import path from "path"
-import type { PluginOptions } from "./options"
 import * as plugins from "./plugins"
-import { ThirdParty } from "./types"
+import type { PluginOptions, ThirdParty } from "./types"
 import { createVisitor } from "./visitor"
 
 function readConfig({ tailwindConfig, debug }: PluginOptions): unknown {
@@ -59,10 +58,7 @@ function findThirdParty(): ThirdParty | undefined {
 	return undefined
 }
 
-function babelPlugin(
-	babel: typeof import("babel__core"),
-	options: import("./options").PluginOptions,
-): import("babel__core").PluginObj {
+function babelPlugin(babel: typeof import("babel__core"), options: PluginOptions): import("babel__core").PluginObj {
 	let config
 	try {
 		config = readConfig(options)

@@ -1,6 +1,14 @@
 import type { BabelFile, NodePath, Visitor } from "@babel/core"
 import type babel from "@babel/types"
 
+export interface PluginOptions {
+	tailwindConfig?: unknown
+	debug?: boolean
+	thirdParty?: ThirdParty | "auto"
+	/** experimental */
+	useClassName?: boolean
+}
+
 export interface ImportLibrary {
 	path: NodePath<babel.ImportDeclaration>
 	libName: string
@@ -37,6 +45,7 @@ export interface Plugin {
 		buildStyle: (input: string) => babel.ObjectExpression
 		buildWrap: (input: string) => babel.ObjectExpression
 		addImportDeclaration: (declaration: babel.ImportDeclaration) => void
+		useClassName: boolean
 	}): Visitor<State & PluginState>
 	id: ThirdPartyName
 	lookup: string[]

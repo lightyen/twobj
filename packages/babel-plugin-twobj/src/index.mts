@@ -2,9 +2,8 @@
 import { createRequire, Module } from "node:module"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
-import type { PluginOptions } from "./options"
 import * as plugins from "./plugins"
-import { ThirdParty } from "./types"
+import type { PluginOptions, ThirdParty } from "./types"
 import { createVisitor } from "./visitor"
 
 async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unknown> {
@@ -70,7 +69,7 @@ async function findThirdParty(): Promise<ThirdParty | undefined> {
 
 export default async function babelPlugin(
 	babel: typeof import("babel__core"),
-	options: import("./options").PluginOptions,
+	options: PluginOptions,
 ): Promise<import("babel__core").PluginObj> {
 	let config
 	try {

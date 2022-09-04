@@ -3,7 +3,7 @@ import type babel from "@babel/types"
 import type { Plugin, State } from "../types"
 import { getFirstQuasi } from "../util"
 
-export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap, addImportDeclaration }) {
+export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap, addImportDeclaration, useClassName }) {
 	const styled = t.importDeclaration(
 		[t.importDefaultSpecifier(t.identifier("styled"))],
 		t.stringLiteral("@emotion/styled"),
@@ -32,7 +32,8 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 					}
 					const name = attr.get("name").node.name
 					const value = attr.get("value")
-					if (name === "tw" && value.isStringLiteral()) {
+					const twName = useClassName ? "className" : "tw"
+					if (name === twName && value.isStringLiteral()) {
 						twIndex = i
 						twAttr = attr
 						input = value.node.value
@@ -71,7 +72,7 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 						}
 					}
 
-					if (removeTwAttr) {
+					if (removeTwAttr && !useClassName) {
 						twAttr.remove()
 					}
 				}

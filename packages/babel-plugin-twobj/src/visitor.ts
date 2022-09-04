@@ -2,7 +2,7 @@ import type { NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import { createContext, resolveConfig } from "twobj"
 import * as plugins from "./plugins"
-import type { ImportLibrary, PluginState, State, ThirdParty } from "./types"
+import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
 import {
 	buildArrayExpression,
 	buildObjectExpression,
@@ -17,13 +17,13 @@ export const packageName = "twobj"
 
 export function createVisitor({
 	babel,
-	options,
+	options: { useClassName = false },
 	config,
 	moduleType,
 	thirdParty,
 }: {
 	babel: typeof import("babel__core")
-	options: import("./options").PluginOptions
+	options: PluginOptions
 	config: unknown
 	moduleType: "esm" | "cjs"
 	thirdParty: ThirdParty | undefined
@@ -138,7 +138,14 @@ export function createVisitor({
 
 			if (thirdParty) {
 				program.traverse<State & PluginState>(
-					plugins[thirdParty.name]({ thirdParty, t, buildStyle, buildWrap, addImportDeclaration }),
+					plugins[thirdParty.name]({
+						thirdParty,
+						t,
+						buildStyle,
+						buildWrap,
+						addImportDeclaration,
+						useClassName,
+					}),
 					Object.assign(state, { styled: { imported: false, localName: "styled" } }),
 				)
 			}
