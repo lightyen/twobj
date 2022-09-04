@@ -3,7 +3,7 @@ import { plugin } from "./plugin"
 import type { MatchUtilitiesOption, UnnamedPlugin } from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
 import { isCSSValue, normalizeScreens } from "./util"
-import { formatBoxShadowValues, withAlphaValue } from "./values"
+import { withAlphaValue } from "./values"
 
 type ClassPlugins = {
 	[P in keyof Tailwind.CorePluginFeatures]?: UnnamedPlugin
@@ -692,7 +692,8 @@ export const classPlugins: ClassPlugins = {
 					const _color: parser.Param[] = []
 					let index = 0
 
-					const shadowColored = formatBoxShadowValues(value)
+					const shadowColored = parser
+						.parseBoxShadowValues(value)
 						.map(val => {
 							if (typeof val === "string") {
 								return val

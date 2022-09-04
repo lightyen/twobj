@@ -1,4 +1,4 @@
-import { formatBoxShadowValues } from "../src/values"
+import { parseBoxShadowValues } from "../src/parser"
 import { tw } from "./context"
 
 test("boxShadow", async () => {
@@ -37,14 +37,15 @@ test("boxShadowColor", async () => {
 })
 
 test("shadow value", async () => {
-	const result = formatBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 , 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)")
+	const result = parseBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 , 0.1), unknown, 0 4px 6px -4px rgb(0 0 0 / 0.1)")
 	expect(result).toEqual([
 		{
 			color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [17, 35] },
 			value: "0 10px 15px -3px var(--tw-shadow-color, var(--tw-shadow-default-color))",
 		},
+		"unknown",
 		{
-			color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [52, 68] },
+			color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [61, 77] },
 			value: "0 4px 6px -4px var(--tw-shadow-color, var(--tw-shadow-default-color))",
 		},
 	])

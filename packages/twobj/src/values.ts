@@ -197,28 +197,27 @@ const number: ValueTypeSpec<string | number | null | undefined> = (function () {
 
 			return config
 		},
-		handleValue(value, { negative, unambiguous } = {}) {
-			if (value === "") {
+		handleValue(value, { negative, unambiguous = false } = {}) {
+			if (!parser.isValidNumber(value)) {
 				return unambiguous ? "" : undefined
 			}
-			const num = Number(value)
+			let num = Number(value)
 			if (Number.isNaN(num)) {
-				const unit = parser.getUnitFromNumberFunction(value)
-				if (unit === undefined) {
-					return undefined
-				}
-				if (unit !== null) {
-					return undefined
-				}
 				return negative ? parser.reverseNumberFunction(value) : value
 			}
-			return num * (negative ? -1 : 1)
+
+			num = num * (negative ? -1 : 1)
+
+			if (Object.is(num, -0)) {
+				return "-0"
+			}
+
+			return String(num)
 		},
 	}
 })()
 
 const length: ValueTypeSpec<string | number | null | undefined> = (function () {
-	const units = ["px", "rem", "em", "vw", "vh", "vmin", "vmax", "ex", "cm", "mm", "in", "pt", "pc", "ch", "Q", "lh"]
 	return {
 		type: "length",
 		isTag(tag) {
@@ -227,30 +226,26 @@ const length: ValueTypeSpec<string | number | null | undefined> = (function () {
 		handleConfig(config, options) {
 			return number.handleConfig(config, options)
 		},
-		handleValue(value, { negative = false, unambiguous } = {}) {
-			if (value === "") {
+		handleValue(value, { negative = false, unambiguous = false } = {}) {
+			const result = parser.isValidLength(value)
+			if (!result) {
 				return unambiguous ? "" : undefined
 			}
-			const unit = units.find(u => value.endsWith(u))
-			if (!unit) {
-				if (Number(value) == 0) {
-					return 0
-				}
-				const unit = parser.getUnitFromNumberFunction(value)
-				if (units.some(u => u === unit)) {
-					return negative ? parser.reverseNumberFunction(value) : value
-				}
-				return unambiguous ? "" : undefined
+
+			let num = Number(result.num)
+			if (Number.isNaN(num)) {
+				return negative ? parser.reverseNumberFunction(value) : value
 			}
-			value = value.slice(0, -unit.length)
-			const num = number.handleValue(value, { negative })
-			if (num === undefined) {
-				return undefined
-			}
+
+			num = num * (negative ? -1 : 1)
 			if (num === 0) {
-				return 0
+				if (Object.is(num, -0)) {
+					return "-0" + result.unit
+				}
+				return "0" + result.unit
 			}
-			return num + unit
+
+			return num + result.unit
 		},
 	}
 })()
@@ -264,34 +259,31 @@ const percentage: ValueTypeSpec<string | number | null | undefined> = (function 
 		handleConfig(config, options) {
 			return number.handleConfig(config, options)
 		},
-		handleValue(value, { negative = false, unambiguous } = {}) {
-			if (value === "") {
+		handleValue(value, { negative = false, unambiguous = false } = {}) {
+			const result = parser.isValidPercentage(value)
+			if (!result) {
 				return unambiguous ? "" : undefined
 			}
-			if (!value.endsWith("%")) {
-				if (Number(value) == 0) {
-					return 0
-				}
-				const unit = parser.getUnitFromNumberFunction(value)
-				if (unit === "%") {
-					return negative ? parser.reverseNumberFunction(value) : value
-				}
-				return unambiguous ? "" : undefined
-			}
-			value = value.slice(0, -1)
 
-			const num = Number(value)
+			let num = Number(result.num)
 			if (Number.isNaN(num)) {
-				return undefined
+				return negative ? parser.reverseNumberFunction(value) : value
 			}
 
-			return num * (negative ? -1 : 1) + "%"
+			num = num * (negative ? -1 : 1)
+			if (num === 0) {
+				if (Object.is(num, -0)) {
+					return "-0" + result.unit
+				}
+				return "0" + result.unit
+			}
+
+			return num + result.unit
 		},
 	}
 })()
 
 const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
-	const units = ["deg", "rad", "grad", "turn"]
 	return {
 		type: "angle",
 		isTag(tag) {
@@ -300,30 +292,26 @@ const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
 		handleConfig(config, options) {
 			return number.handleConfig(config, options)
 		},
-		handleValue(value, { negative = false, unambiguous } = {}) {
-			if (value === "") {
+		handleValue(value, { negative = false, unambiguous = false } = {}) {
+			const result = parser.isValidAngle(value)
+			if (!result) {
 				return unambiguous ? "" : undefined
 			}
-			const unit = units.find(u => value.endsWith(u))
-			if (!unit) {
-				if (Number(value) == 0) {
-					return 0
-				}
-				const unit = parser.getUnitFromNumberFunction(value)
-				if (units.some(u => u === unit)) {
-					return negative ? parser.reverseNumberFunction(value) : value
-				}
-				return undefined
+
+			let num = Number(result.num)
+			if (Number.isNaN(num)) {
+				return negative ? parser.reverseNumberFunction(value) : value
 			}
-			value = value.slice(0, -unit.length)
-			const num = number.handleValue(value, { negative })
-			if (num === undefined) {
-				return undefined
-			}
+
+			num = num * (negative ? -1 : 1)
 			if (num === 0) {
-				return 0
+				if (Object.is(num, -0)) {
+					return "-0" + result.unit
+				}
+				return "0" + result.unit
 			}
-			return num + unit
+
+			return num + result.unit
 		},
 	}
 })()
@@ -357,7 +345,7 @@ const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | und
 
 			return parseColorValue(value, false, options.opacity) || value
 		},
-		handleValue(value, { negative, opacity, unambiguous } = {}) {
+		handleValue(value, { negative, opacity, unambiguous = false } = {}) {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
@@ -368,7 +356,7 @@ const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | und
 		},
 	}
 
-	function parseColorValue(value: string, unambiguous: boolean | undefined, opacity?: string): string | undefined {
+	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
 		if (unambiguous) {
 			// like: fill, stroke, ...
 			if (opacity == undefined) {
@@ -591,13 +579,7 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 	}
 })()
 
-const shadow: ValueTypeSpec<string | number | null | undefined> & {
-	formatBoxShadow(
-		source: string,
-		range: [number, number],
-	): { color: parser.Param | undefined; value: string } | undefined
-} = (function () {
-	const keywords = ["inset", "inherit", "initial", "revert", "revert-layer", "unset"]
+const shadow: ValueTypeSpec<string | number | null | undefined> = (function () {
 	return {
 		type: "shadow",
 		isTag(tag) {
@@ -611,122 +593,13 @@ const shadow: ValueTypeSpec<string | number | null | undefined> & {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-			if (!parser.splitAtTopLevelOnly(value).every(v => isShadow(v.value))) {
+			if (!parser.splitAtTopLevelOnly(value).every(v => parser.isValidShadow(v.value))) {
 				return undefined
 			}
 			return value
 		},
-		formatBoxShadow(source, range) {
-			const params = parser.splitCssParams(source, range)
-
-			if (params.length === 0) {
-				return undefined
-			}
-
-			let keyword = ""
-			let x = ""
-			let y = ""
-			let blur = ""
-			let spread = ""
-			let color: parser.Param | undefined
-
-			for (const part of params) {
-				if (typeof part === "string") {
-					if (!keyword && keywords.find(v => v === part)) {
-						keyword = part
-						continue
-					}
-
-					if (length.handleValue(part, { negative: false }) != undefined || /[+-]?0/.test(part)) {
-						if (!x) {
-							x = part
-						} else if (!y) {
-							y = part
-						} else if (!blur) {
-							blur = part
-						} else if (!spread) {
-							spread = part
-						}
-						continue
-					}
-				}
-
-				if (!color) {
-					color = part
-				} else {
-					// error
-					return undefined
-				}
-			}
-
-			return {
-				color,
-				value: [keyword, x, y, blur, spread, "var(--tw-shadow-color, var(--tw-shadow-default-color))"]
-					.filter(Boolean)
-					.join(" "),
-			}
-		},
-	}
-
-	function isShadow(shadow: string): boolean {
-		const params = parser.splitCssParams(shadow)
-		if (params.length === 0) {
-			return false
-		}
-
-		let keyword = ""
-		let x = ""
-		let y = ""
-		let blur = ""
-		let spread = ""
-		let color: parser.Param | undefined
-
-		for (const part of params) {
-			if (typeof part === "string") {
-				if (!keyword && keywords.find(v => v === part)) {
-					keyword = part
-					continue
-				}
-
-				if (length.handleValue(part, { negative: false }) != undefined || /[+-]?0/.test(part)) {
-					if (!x) {
-						x = part
-					} else if (!y) {
-						y = part
-					} else if (!blur) {
-						blur = part
-					} else if (!spread) {
-						spread = part
-					}
-					continue
-				}
-			}
-
-			if (color == undefined) {
-				color = part
-			} else {
-				return false
-			}
-		}
-
-		if (!x || !y) {
-			return false
-		}
-
-		return true
 	}
 })()
-
-/**
- * @returns <...params> var(--tw-shadow-color, var(--tw-shadow-default-color))
- */
-export function formatBoxShadowValues(source: string) {
-	return parser.splitAtTopLevelOnly(source).map(({ value, range }) => {
-		const ans = shadow.formatBoxShadow(source, range)
-		if (!ans) return value
-		return ans
-	})
-}
 
 const position: ValueTypeSpec<string | number | null | undefined> = (function () {
 	return {
