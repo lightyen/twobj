@@ -7,35 +7,21 @@
       "name": "meta.tag.tw",
       "begin": "\\s*(tw)(=)(\")",
       "beginCaptures": {
-        "1": {
-          "name": "entity.other.attribute-name"
-        },
-        "2": {
-          "name": "keyword.operator.assignment"
-        },
-        "3": {
-          "name": "string.quoted.double"
-        }
+        "1": { "name": "entity.other.attribute-name" },
+        "2": { "name": "keyword.operator.assignment" },
+        "3": { "name": "string.quoted.double" }
       },
       "end": "(\")",
       "endCaptures": {
-        "1": {
-          "name": "string.quoted.double"
-        }
+        "1": { "name": "string.quoted.double" }
       },
       "patterns": [
         {
           "end": "\"",
           "patterns": [
-            {
-              "include": "#line-comment-end-double-quote"
-            },
-            {
-              "include": "#block-comment-end-double-quote"
-            },
-            {
-              "include": "source.tw"
-            }
+            { "include": "#line-comment-end-double-quote" },
+            { "include": "#block-comment-end-double-quote" },
+            { "include": "source.tw" }
           ]
         }
       ]
@@ -44,35 +30,21 @@
       "name": "meta.tag.tw",
       "begin": "\\s*(tw)(=)(')",
       "beginCaptures": {
-        "1": {
-          "name": "entity.other.attribute-name"
-        },
-        "2": {
-          "name": "keyword.operator.assignment"
-        },
-        "3": {
-          "name": "string.quoted.single"
-        }
+        "1": { "name": "entity.other.attribute-name" },
+        "2": { "name": "keyword.operator.assignment" },
+        "3": { "name": "string.quoted.single" }
       },
       "end": "(')",
       "endCaptures": {
-        "1": {
-          "name": "string.quoted.single"
-        }
+        "1": { "name": "string.quoted.single" }
       },
       "patterns": [
         {
           "end": "'",
           "patterns": [
-            {
-              "include": "#line-comment-end-single-quote"
-            },
-            {
-              "include": "#block-comment-end-single-quote"
-            },
-            {
-              "include": "source.tw"
-            }
+            { "include": "#line-comment-end-single-quote" },
+            { "include": "#block-comment-end-single-quote" },
+            { "include": "source.tw" }
           ]
         }
       ]
@@ -81,35 +53,21 @@
       "name": "meta.tag.tw",
       "begin": "\\s*(tw)(=){(\")",
       "beginCaptures": {
-        "1": {
-          "name": "entity.other.attribute-name"
-        },
-        "2": {
-          "name": "keyword.operator.assignment"
-        },
-        "3": {
-          "name": "string.quote.double"
-        }
+        "1": { "name": "entity.other.attribute-name" },
+        "2": { "name": "keyword.operator.assignment" },
+        "3": { "name": "string.quote.double" }
       },
       "end": "(\")}",
       "endCaptures": {
-        "1": {
-          "name": "string.quote.double"
-        }
+        "1": { "name": "string.quote.double" }
       },
       "patterns": [
         {
           "end": "\"}",
           "patterns": [
-            {
-              "include": "#line-comment-end-double-quote"
-            },
-            {
-              "include": "#block-comment-end-double-quote"
-            },
-            {
-              "include": "source.tw"
-            }
+            { "include": "#line-comment-end-double-quote" },
+            { "include": "#block-comment-end-double-quote" },
+            { "include": "source.tw" }
           ]
         }
       ]
@@ -118,35 +76,21 @@
       "name": "meta.tag.tw",
       "begin": "\\s*(tw)(=){(')",
       "beginCaptures": {
-        "1": {
-          "name": "entity.other.attribute-name"
-        },
-        "2": {
-          "name": "keyword.operator.assignment"
-        },
-        "3": {
-          "name": "string.quote.single"
-        }
+        "1": { "name": "entity.other.attribute-name" },
+        "2": { "name": "keyword.operator.assignment" },
+        "3": { "name": "string.quote.single" }
       },
       "end": "(')}",
       "endCaptures": {
-        "1": {
-          "name": "string.quote.single"
-        }
+        "1": { "name": "string.quote.single" }
       },
       "patterns": [
         {
           "end": "\"}",
           "patterns": [
-            {
-              "include": "#line-comment-end-single-quote"
-            },
-            {
-              "include": "#block-comment-end-single-quote"
-            },
-            {
-              "include": "source.tw"
-            }
+            { "include": "#line-comment-end-single-quote" },
+            { "include": "#block-comment-end-single-quote" },
+            { "include": "source.tw" }
           ]
         }
       ]
@@ -156,52 +100,36 @@
     "line-comment-end-double-quote": {
       "match": "(//)[^\"]*",
       "captures": {
-        "0": {
-          "name": "comment.line.double-slash.tw"
-        },
-        "1": {
-          "name": "punctuation.definition.comment.tw"
-        }
+        "0": { "name": "comment.line.double-slash.tw" },
+        "1": { "name": "punctuation.definition.comment.tw" }
       }
     },
     "block-comment-end-double-quote": {
       "begin": "(/\\*)",
       "beginCaptures": {
-        "1": {
-          "name": "punctuation.definition.comment.begin.tw"
-        }
+        "1": { "name": "punctuation.definition.comment.begin.tw" }
       },
       "end": "(\\*/)|\"",
       "endCaptures": {
-        "1": {
-          "name": "punctuation.definition.comment.end.tw"
-        }
+        "1": { "name": "punctuation.definition.comment.end.tw" }
       },
       "contentName": "comment.block.tw"
     },
     "line-comment-end-single-quote": {
       "match": "(//)[^']*",
       "captures": {
-        "0": {
-          "name": "comment.line.double-slash.tw"
-        },
-        "1": {
-          "name": "punctuation.definition.comment.tw"
-        }
+        "0": { "name": "comment.line.double-slash.tw" },
+        "1": { "name": "punctuation.definition.comment.tw" }
       }
     },
     "block-comment-end-single-quote": {
       "begin": "(/\\*)",
       "beginCaptures": {
-        "1": {
-          "name": "punctuation.definition.comment.begin.tw"
-        }
+        "1": { "name": "punctuation.definition.comment.begin.tw" }
       },
       "end": "(\\*/)|'",
       "endCaptures": {
-        "1": {
-          "name": "punctuation.definition.comment.end.tw"
-        }
+        "1": { "name": "punctuation.definition.comment.end.tw" }
       },
       "contentName": "comment.block.tw"
     }

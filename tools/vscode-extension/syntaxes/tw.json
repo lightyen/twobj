@@ -1,17 +1,19 @@
 {
   "name": "tw",
   "scopeName": "source.tw",
-  "patterns": [{ "include": "#line-comment" }, { "include": "#block-comment" }, { "include": "#expression" }],
+  "patterns": [{ "include": "#expression" }],
   "repository": {
     "expression": {
       "patterns": [
+        { "include": "#line-comment" },
+        { "include": "#block-comment" },
         { "include": "#arbitrary-variant-or-property" },
         { "include": "#variant" },
         { "include": "#short-css" },
         { "include": "#arbitrary-classname" },
         { "include": "#arbitrary-opacity" },
-        { "include": "#group" },
-        { "include": "#classname" }
+        { "include": "#classname" },
+        { "include": "#group" }
       ]
     },
     "line-comment": {
@@ -73,7 +75,7 @@
       ]
     },
     "classname": {
-      "match": "(!?)(?:(?!\\/\\/|\\/\\*)[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/])*[\\w\\-\\./]+(!?)(?<!/)",
+      "match": "(!?)(?:(?!\\/\\/|\\/\\*)[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/])*[\\w\\-\\.%]+(?:\\/[\\w\\-\\.%]+)*(!?)(?<!/)",
       "captures": {
         "0": { "name": "support.constant.classname.tw" },
         "1": { "name": "support.function.important-bang.before.tw" },
