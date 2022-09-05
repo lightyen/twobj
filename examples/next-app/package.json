@@ -1,0 +1,28 @@
+{
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@babel/core": "7.18.13",
+    "@emotion/css": "11.10.0",
+    "@emotion/react": "11.10.4",
+    "@emotion/server": "11.10.0",
+    "@emotion/styled": "11.10.4",
+    "babel-plugin-twobj": "1.0.2",
+    "next": "12.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "twobj": "1.0.4"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ],
+  "prettier": {
+    "semi": false,
+    "arrowParens": "avoid",
+    "trailingComma": "all"
+  }
+}

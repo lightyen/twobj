@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.snippetSuggestions": "none",
+  "javascript.suggestionActions.enabled": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "emmet.excludeLanguages": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+}
