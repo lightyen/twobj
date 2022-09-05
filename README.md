@@ -11,7 +11,6 @@ Convert tailwind declarations to a style object
 - Not support custom prefix
 - Not support [important everything](https://tailwindcss.com/docs/configuration#important)
 - Not support [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
-- Not support custom separator
 - All deprecated features are dropped, you can NOT use `flex-grow`, `text-opacity-0` ...
 
 ### Features

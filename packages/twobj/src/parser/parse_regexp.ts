@@ -71,12 +71,19 @@ function compileRegexp(sep: string) {
 	)
 }
 
-let separator = escapeRegexp(":")
-let regexp = compileRegexp(separator)
+let separator = ":"
+export let regexp = compileRegexp(escapeRegexp(":"))
 
 export function setSeparator(sep: string) {
-	separator = escapeRegexp(sep)
-	regexp = compileRegexp(separator)
+	if (!validSeparator(sep)) {
+		console.warn("[warn] invalid separator:", sep)
+	}
+	separator = sep
+	regexp = compileRegexp(escapeRegexp(sep))
+}
+
+function validSeparator(sep: string): boolean {
+	return /[^\s()[\]{}/!-]/.test(sep)
 }
 
 function parseExpression({

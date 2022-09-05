@@ -45,8 +45,9 @@ export const colorProps = new Set<string>([
 
 export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	const separator = config.separator || ":"
-	config.prefix = ""
 	parser.setSeparator(separator)
+
+	config.prefix = ""
 
 	const preflightDisabled =
 		(config.corePlugins && (config.corePlugins as unknown as Record<string, unknown>)["preflight"]) === false
