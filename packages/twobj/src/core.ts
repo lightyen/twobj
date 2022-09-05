@@ -48,7 +48,10 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	config.prefix = ""
 	parser.setSeparator(separator)
 
-	const globalStyles: Record<string, CSSProperties> = Object.assign(preflight, {
+	const preflightDisabled =
+		(config.corePlugins && (config.corePlugins as unknown as Record<string, unknown>)["preflight"]) === false
+
+	const globalStyles: Record<string, CSSProperties> = Object.assign(preflightDisabled ? {} : preflight, {
 		"*, ::before, ::after": {},
 		"::backdrop": {},
 	})
