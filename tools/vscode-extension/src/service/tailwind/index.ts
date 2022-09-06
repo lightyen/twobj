@@ -1,7 +1,7 @@
 import type { PnpApi } from "@yarnpkg/pnp"
 import chokidar from "chokidar"
 import Fuse from "fuse.js"
-import { resolveConfig } from "twobj"
+import * as twobj from "twobj"
 import defaultConfig from "twobj/config/defaultConfig"
 import * as vscode from "vscode"
 import { URI } from "vscode-uri"
@@ -70,7 +70,7 @@ export function createTailwindLoader() {
 	let classCompletionList: ICompletionItem[] | undefined
 	let cssPropsCompletionList: ICompletionItem[] | undefined
 
-	let config: Tailwind.ResolvedConfigJS & { extrators?: Extractor[] }
+	let config: twobj.ResolvedConfigJS & { extrators?: Extractor[] }
 	let tw: TwContext
 	let variants: Fuse<string>
 	let classnames: Fuse<string>
@@ -106,26 +106,9 @@ export function createTailwindLoader() {
 		if (watcher) watcher.close()
 	}
 
-	function preprocessConfig(config: Tailwind.ConfigJS): Tailwind.ConfigJS {
-		const cfg = { ...config } as Tailwind.ConfigJS
-		delete cfg.content
-		delete cfg.purge
-		delete cfg.safelist
-		delete cfg.important
-		if (
-			cfg.darkMode !== "media" &&
-			cfg.darkMode !== "class" &&
-			!(Array.isArray(cfg.darkMode) && cfg.darkMode[0] === "class" && typeof cfg.darkMode[1] === "string")
-		) {
-			cfg.darkMode = "media"
-		}
-		cfg.separator = ":"
-		return cfg
-	}
-
 	function readTailwind({ configPath, pnp, mode, onChange }: CreateTailwindLoaderOptions) {
 		dispose()
-		let __config: Tailwind.ConfigJS
+		let __config: twobj.ConfigJS
 		const deps: string[] = []
 		if (configPath) {
 			try {
@@ -149,8 +132,7 @@ export function createTailwindLoader() {
 		}
 
 		if (__config) {
-			__config = preprocessConfig(__config)
-			config = resolveConfig(__config)
+			config = twobj.resolveConfig(__config)
 		}
 
 		createContext()

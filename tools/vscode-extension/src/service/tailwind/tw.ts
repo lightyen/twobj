@@ -55,7 +55,7 @@ function guessValue(typ: twobj.ValueType | "any") {
 	}
 }
 
-export function createTwContext(config: Tailwind.ResolvedConfigJS) {
+export function createTwContext(config: twobj.ResolvedConfigJS) {
 	const context = twobj.createContext(config)
 	const screens = Object.keys(config.theme.screens).sort(screenSorter)
 
@@ -306,7 +306,7 @@ export function createTwContext(config: Tailwind.ResolvedConfigJS) {
 		const { root } = render(classname, tabSize)
 		if (important || rootFontSize) {
 			root.walkDecls(decl => {
-				decl.important = important
+				decl.important ||= important
 				if (colorHint && colorHint !== "none") decl.value = extendColorValue(decl.value, colorHint)
 				decl.value = toPixelUnit(decl.value, rootFontSize)
 			})

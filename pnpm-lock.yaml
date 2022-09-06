@@ -377,7 +377,7 @@ importers:
       terser-webpack-plugin: 5.3.6
       ts-paths-resolve-plugin: 5.8.0
       tslib: 2.4.0
-      twobj: 1.0.5
+      twobj: 1.0.6
       typescript: 4.8.2
       typescript-paths: 1.4.0
       vsce: 2.11.0
@@ -4886,7 +4886,7 @@ packages:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.7.6
+      '@types/node': 18.7.15
     dev: true
 
   /@types/graceful-fs/4.1.5:
@@ -4969,6 +4969,9 @@ packages:
   /@types/node/16.11.56:
     resolution: {integrity: sha512-aFcUkv7EddxxOa/9f74DINReQ/celqH8DiB3fRYgVDM2Xm5QJL8sl80QKuAnGvwAsMn+H3IFA6WCrQh1CY7m1A==}
     dev: true
+
+  /@types/node/18.7.15:
+    resolution: {integrity: sha512-XnjpaI8Bgc3eBag2Aw4t2Uj/49lLBSStHWfqKvIuXD7FIrZyMLWp8KuAFHAqxMZYTF9l08N1ctUn9YNybZJVmQ==}
 
   /@types/node/18.7.6:
     resolution: {integrity: sha512-EdxgKRXgYsNITy5mjjXjVE/CS8YENSdhiagGrLqjG0pvA2owgJ6i4l7wy/PFZGC0B1/H20lWKN7ONVDNYDZm7A==}
@@ -5770,7 +5773,7 @@ packages:
     resolution: {integrity: sha512-O3oV0J9KtwGZaPBW95KKxA0cVDNcDSyM5RnBjhILIW9Y7Morp9DPd0gvvGKgbB6HsBZlr3oWMthhlZgdV/5DbQ==}
     engines: {node: '>=14.15.0'}
     dependencies:
-      '@types/node': 18.7.6
+      '@types/node': 18.7.15
       '@yarnpkg/fslib': 3.0.0-rc.18
     dev: true
 
@@ -9835,7 +9838,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 18.7.6
+      '@types/node': 18.7.15
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -9843,7 +9846,7 @@ packages:
     resolution: {integrity: sha512-CqRA220YV/6jCo8VWvAt1KKx6eek1VIHMPeLEbpcfSfkEeWyBNppynM/o6q+Wmw+sOhos2ml34wZbSX3G13//g==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     dependencies:
-      '@types/node': 18.7.6
+      '@types/node': 18.7.15
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: true
