@@ -9,7 +9,7 @@ Convert tailwind declarations to a style object
 ## Differ from tailwindcss
 
 - Not support [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
-- All deprecated features are dropped, you can NOT use `flex-grow`, `text-opacity-0` ...
+- Drop all deprecated features and opacity, you can NOT use `flex-grow`, `text-opacity-0` ...
 
 ### Features
 
