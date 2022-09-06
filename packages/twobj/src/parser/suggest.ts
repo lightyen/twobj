@@ -37,7 +37,7 @@ export function suggest({
 	}
 
 	parser.setSeparator(separator)
-	const result = travel(parser.parse(text, { breac: position }), { variants: [] })
+	const result = travel(parser.parse(text, [undefined, undefined, position]), { variants: [] })
 
 	if (!result.target) {
 		return {

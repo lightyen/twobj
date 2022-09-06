@@ -44,8 +44,10 @@ export const colorProps = new Set<string>([
 ])
 
 export function createContext(config: Tailwind.ResolvedConfigJS): Context {
-	const separator = config.separator || ":"
-	parser.setSeparator(separator)
+	if (typeof config.separator !== "string" || !config.separator) {
+		config.separator = ":"
+	}
+	parser.setSeparator(config.separator)
 
 	config.prefix = ""
 
@@ -872,7 +874,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 						return variant
 					}
 
-					const program = parser.parse(value + separator)
+					const program = parser.parse(value + config.separator)
 					if (program.expressions.length !== 1) {
 						return undefined
 					}

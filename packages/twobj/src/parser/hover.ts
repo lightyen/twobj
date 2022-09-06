@@ -105,7 +105,7 @@ export function hover({
 	}
 
 	parser.setSeparator(separator)
-	return travel(parser.parse(text, { breac: position }), {
+	return travel(parser.parse(text, [undefined, undefined, position]), {
 		important: false,
 		variants: [],
 	})
