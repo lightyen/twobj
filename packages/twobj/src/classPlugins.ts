@@ -1,12 +1,12 @@
 import * as parser from "./parser"
 import { plugin } from "./plugin"
-import type { MatchOption, UnnamedPlugin } from "./types"
+import type { CorePluginFeatures, MatchOption, Palette, StrictResolvedConfigJS, UnnamedPlugin } from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
 import { isCSSValue, normalizeScreens } from "./util"
 import { withAlphaValue } from "./values"
 
 type ClassPlugins = {
-	[P in keyof Tailwind.CorePluginFeatures]?: UnnamedPlugin
+	[P in keyof CorePluginFeatures]?: UnnamedPlugin
 }
 
 const emptyCssValue: CSSValue = "var(--tw-empty,/**/ /**/)"
@@ -14,7 +14,7 @@ const emptyCssValue: CSSValue = "var(--tw-empty,/**/ /**/)"
 function createUtilityPlugin(
 	pluginName: string,
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
-	getOptions: (theme: Tailwind.ResolvedConfigJS["theme"]) => MatchOption,
+	getOptions: (theme: StrictResolvedConfigJS["theme"]) => MatchOption,
 ) {
 	return plugin(pluginName, ({ matchUtilities, theme }) => {
 		matchUtilities(
@@ -41,7 +41,7 @@ function createUtilityPlugin(
 function createColorPlugin(
 	pluginName: string,
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
-	getValues: (theme: Tailwind.ResolvedConfigJS["theme"]) => Tailwind.Palette,
+	getValues: (theme: StrictResolvedConfigJS["theme"]) => Palette,
 ) {
 	return createUtilityPlugin(pluginName, mappings, theme => ({
 		type: "color",

@@ -1,11 +1,13 @@
-import { resolveConfig } from "../src/config/resolveConfig"
-import { createContext } from "../src/core"
+import { createContext, resolveConfig } from "../src"
 import { createTw } from "./context"
 
 test("addUtilities with object", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
+				({ addUtilities }) => {
+					//
+				},
 				function ({ addUtilities }) {
 					addUtilities({
 						".custom-object-fill": {

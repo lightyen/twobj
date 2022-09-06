@@ -1,17 +1,17 @@
 import postcss from "postcss"
 import postcssJs from "postcss-js"
-import "tailwind-types"
 import expandApplyAtRules from "tailwindcss/lib/lib/expandApplyAtRules"
 import { generateRules } from "tailwindcss/lib/lib/generateRules"
 import { createContext } from "tailwindcss/lib/lib/setupContextUtils"
 import escapeClassName from "tailwindcss/lib/util/escapeClassName"
 import resolveConfig from "tailwindcss/resolveConfig"
+import { Config } from "tailwindcss/types/config"
 import { escapeRegexp } from "../src/parser"
 import { CSSProperties } from "../src/types"
 import { context } from "./context"
 
 test("diff tailwindcss", async () => {
-	const ctx = createContext(resolveConfig({}))
+	const ctx = createContext(resolveConfig({} as Config))
 
 	/** classnames */
 

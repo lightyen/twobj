@@ -1,5 +1,5 @@
 import * as parser from "./parser"
-import type { CSSProperties, CSSValue, Template, ValueType } from "./types"
+import type { ColorValueFunc, CSSProperties, CSSValue, Template, Value, ValueType } from "./types"
 import { opacityToFloat, toArray } from "./util"
 
 interface LookupResult {
@@ -312,7 +312,7 @@ const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
 	}
 })()
 
-const color: ValueTypeSpec<Tailwind.Value | Tailwind.ColorValueFunc | null | undefined> = (function () {
+const color: ValueTypeSpec<Value | ColorValueFunc | null | undefined> = (function () {
 	return {
 		type: "color",
 		isTag(tag) {

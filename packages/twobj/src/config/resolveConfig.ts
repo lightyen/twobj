@@ -2,21 +2,28 @@
 
 // import resolveConfigObjects from "tailwindcss/lib/util/resolveConfig.js"
 
+import type {
+	ConfigJS,
+	CustomTheme,
+	PresetFunction,
+	ResolvedConfigJS,
+	UserPlugin,
+	UserPluginFunctionWithOption,
+	UserPluginObject,
+} from "../types"
 import defaultConfig from "./defaultConfig"
 import { resolveFunctionKeys } from "./resolveFuncionKey"
 
-function getAllConfigs(config: Tailwind.ConfigJS): Tailwind.ConfigJS[] {
+function getAllConfigs(config: ConfigJS): ConfigJS[] {
 	const presets = (config.presets ?? [defaultConfig])
 		.slice()
 		.reverse()
-		.flatMap((preset: Tailwind.PresetFunction | Tailwind.ConfigJS | Tailwind.DefaultConfig) =>
-			getAllConfigs(preset instanceof Function ? preset() : preset),
-		)
+		.flatMap((preset: PresetFunction | ConfigJS) => getAllConfigs(preset instanceof Function ? preset() : preset))
 	return [config, ...presets]
 }
 
-export function resolveConfig(...args: Array<Tailwind.ConfigJS | null | undefined>) {
-	let configs = args.filter((c): c is Tailwind.ConfigJS => Boolean(c))
+export function resolveConfig(...args: Array<ConfigJS | null | undefined>) {
+	let configs = args.filter((c): c is ConfigJS => Boolean(c))
 	if (configs.length === 0) {
 		configs = [defaultConfig]
 	}
@@ -24,15 +31,15 @@ export function resolveConfig(...args: Array<Tailwind.ConfigJS | null | undefine
 	return resolveConfigObjects([...configs, ...presets])
 }
 
-function normalizeConfig(config: Tailwind.ResolvedConfigJS): Tailwind.ResolvedConfigJS {
+function normalizeConfig(config: ResolvedConfigJS): ResolvedConfigJS {
 	if (typeof config.prefix !== "string") {
 		config.prefix = ""
 	}
 	return config
 }
 
-function extractPluginConfigs(configs: Tailwind.ConfigJS[]): Tailwind.ConfigJS[] {
-	let allConfigs: Tailwind.ConfigJS[] = []
+function extractPluginConfigs(configs: ConfigJS[]): ConfigJS[] {
+	let allConfigs: ConfigJS[] = []
 
 	configs.forEach(config => {
 		allConfigs = [...allConfigs, config]
@@ -44,10 +51,10 @@ function extractPluginConfigs(configs: Tailwind.ConfigJS[]): Tailwind.ConfigJS[]
 		}
 
 		plugins.forEach(plugin => {
-			if ((plugin as Tailwind.PluginFunctionWithOption).__isOptionsFunction) {
-				plugin = (plugin as Tailwind.PluginFunctionWithOption)()
+			if ((plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
+				plugin = (plugin as UserPluginFunctionWithOption)()
 			}
-			const pluginConfig = (plugin as Tailwind.PluginObject).config
+			const pluginConfig = (plugin as UserPluginObject).config
 			if (pluginConfig) {
 				allConfigs = [...allConfigs, ...extractPluginConfigs([pluginConfig])]
 			}
@@ -57,7 +64,7 @@ function extractPluginConfigs(configs: Tailwind.ConfigJS[]): Tailwind.ConfigJS[]
 	return allConfigs
 }
 
-function resolvePluginLists(pluginLists: Array<Tailwind.Plugin>[]) {
+function resolvePluginLists(pluginLists: Array<UserPlugin>[]) {
 	return pluginLists.reduceRight((resolved, pluginList) => {
 		return [...resolved, ...pluginList]
 	}, [])
@@ -126,7 +133,7 @@ function mergeExtensionCustomizer(merged: any, value: any) {
 	return undefined
 }
 
-function collectExtends(themes: Array<Tailwind.Theme & Tailwind.CustomTheme>) {
+function collectExtends(themes: Array<CustomTheme>) {
 	return themes.reduce((merged, { extend }) => {
 		return mergeWith(merged, [extend], (mergedValue, extendValue) => {
 			if (mergedValue === undefined) {
@@ -142,7 +149,7 @@ function collectExtends(themes: Array<Tailwind.Theme & Tailwind.CustomTheme>) {
 	}, {})
 }
 
-function mergeThemes(themes: Array<Tailwind.Theme & Tailwind.CustomTheme>): { theme: unknown; extend: unknown[] } {
+function mergeThemes(themes: Array<CustomTheme>): { theme: unknown; extend: unknown[] } {
 	return {
 		extend: collectExtends(themes),
 		theme: themes.reduce(
@@ -176,8 +183,8 @@ function mergeExtensions({ extend, theme }: { theme: unknown; extend: unknown[] 
 	})
 }
 
-function resolveConfigObjects(configs: Tailwind.ConfigJS[]) {
-	const allConfigs = [
+function resolveConfigObjects(configs: ConfigJS[]) {
+	const allConfigs: ConfigJS[] = [
 		...extractPluginConfigs(configs),
 		{
 			prefix: "",
@@ -185,7 +192,7 @@ function resolveConfigObjects(configs: Tailwind.ConfigJS[]) {
 		},
 	]
 
-	const themes = allConfigs.map(t => t.theme).filter((t): t is Tailwind.Theme & Tailwind.CustomTheme => t != null)
+	const themes = allConfigs.map(t => t.theme).filter((t): t is CustomTheme => t != null)
 
 	return normalizeConfig(
 		defaults(
@@ -194,6 +201,6 @@ function resolveConfigObjects(configs: Tailwind.ConfigJS[]) {
 				plugins: resolvePluginLists(configs.map(c => c?.plugins ?? [])),
 			},
 			...(allConfigs as Record<string | symbol, unknown>[]),
-		) as Tailwind.ResolvedConfigJS,
+		) as ResolvedConfigJS,
 	)
 }

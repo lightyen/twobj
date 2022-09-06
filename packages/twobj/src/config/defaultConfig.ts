@@ -1,6 +1,8 @@
+import type { ConfigJS } from "../types"
+
 export default {
-	content: [],
 	presets: [],
+	plugins: [],
 	darkMode: "media",
 	theme: {
 		screens: {
@@ -901,5 +903,4 @@ export default {
 			50: "50",
 		},
 	},
-	plugins: [],
-} as Tailwind.ConfigJS
+} as ConfigJS

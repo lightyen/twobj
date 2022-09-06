@@ -1,9 +1,10 @@
+import type { ResolvedConfigJS } from "../types"
 import * as css from "./css"
 import { NodeType, ThemePathNode } from "./nodes"
 import { parse_theme, parse_theme_val } from "./parse_theme"
 import { dlv } from "./util"
 
-export function renderThemeFunc(config: Tailwind.ResolvedConfigJS, value: string): string {
+export function renderThemeFunc(config: ResolvedConfigJS, value: string): string {
 	let start = 0
 	let ret = ""
 
@@ -20,13 +21,13 @@ export function renderThemeFunc(config: Tailwind.ResolvedConfigJS, value: string
 	return ret.trim()
 }
 
-export function renderTheme(config: Tailwind.ResolvedConfigJS, value: string): string {
+export function renderTheme(config: ResolvedConfigJS, value: string): string {
 	const node = parse_theme_val({ text: value })
 	const result = theme(config, node.path)
 	return result.value !== undefined ? renderThemeValue(result) : ""
 }
 
-export function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, defaultValue?: unknown): unknown {
+export function resolveTheme(config: ResolvedConfigJS, value: string, defaultValue?: unknown): unknown {
 	const node = parse_theme_val({ text: value })
 	let target = resolvePath(config.theme, node.path, true)
 	if (target) {
@@ -44,11 +45,7 @@ export function resolveTheme(config: Tailwind.ResolvedConfigJS, value: string, d
 	return target !== undefined ? resolveThemeValue({ value: target, opacityValue }) : defaultValue ?? ""
 }
 
-export function resolveThemeNoDefault(
-	config: Tailwind.ResolvedConfigJS,
-	value: string,
-	defaultValue?: unknown,
-): unknown {
+export function resolveThemeNoDefault(config: ResolvedConfigJS, value: string, defaultValue?: unknown): unknown {
 	const node = parse_theme_val({ text: value })
 	let target = resolvePath(config.theme, node.path, false)
 	if (target) {
@@ -74,7 +71,7 @@ export function parseThemeValue({
 	start = 0,
 	end = text.length,
 }: {
-	config: Tailwind.ResolvedConfigJS
+	config: ResolvedConfigJS
 	useDefault?: boolean
 	text: string
 	start?: number
@@ -91,7 +88,7 @@ export function parseThemeValue({
 	return { path: node.path, range: node.range }
 }
 
-export function theme(config: Tailwind.ResolvedConfigJS, path: ThemePathNode[], useDefault = false) {
+export function theme(config: ResolvedConfigJS, path: ThemePathNode[], useDefault = false) {
 	let opacityValue: string | undefined
 	let value = resolvePath(config.theme, path, useDefault)
 	if (value === undefined) {
@@ -152,7 +149,7 @@ export function tryOpacityValue(path: ThemePathNode[]) {
 }
 
 export function renderThemePath(
-	config: Tailwind.ResolvedConfigJS,
+	config: ResolvedConfigJS,
 	path: Array<string | ThemePathNode>,
 	useDefault = false,
 ): string {

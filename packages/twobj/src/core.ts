@@ -4,13 +4,16 @@ import { escapeCss, findClasses } from "./postcss"
 import { preflight } from "./preflight"
 import type {
 	Context,
+	CorePluginFeatures,
 	CorePluginOptions,
 	CSSProperties,
 	CSSValue,
 	LookupSpec,
+	Plugin,
 	PostModifier,
+	ResolvedConfigJS,
 	StaticSpec,
-	UserPlugin,
+	UserPluginFunctionWithOption,
 	UserPluginOptions,
 	ValueType,
 	VariantSpec,
@@ -43,7 +46,7 @@ export const colorProps = new Set<string>([
 	"--tw-shadow-color",
 ])
 
-export function createContext(config: Tailwind.ResolvedConfigJS): Context {
+export function createContext(config: ResolvedConfigJS): Context {
 	if (typeof config.separator !== "string" || !config.separator) {
 		config.separator = ":"
 	}
@@ -113,7 +116,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		},
 		config: legacyConfig,
 		theme: resolveTheme,
-		corePlugins(feature: keyof Tailwind.CorePluginFeatures): boolean {
+		corePlugins(feature: keyof CorePluginFeatures): boolean {
 			return features.has(feature)
 		},
 		prefix(value) {
@@ -122,10 +125,12 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	}
 
 	for (let i = 0; i < config.plugins.length; i++) {
-		let plugin = config.plugins[i]
-		if (typeof plugin === "function" && plugin.__isOptionsFunction) {
-			plugin = (plugin as Tailwind.PluginFunctionWithOption)()
+		let _plugin = config.plugins[i]
+		if (typeof _plugin === "function" && (_plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
+			_plugin = (_plugin as UserPluginFunctionWithOption)()
 		}
+
+		const plugin: Plugin = _plugin
 		const pluginName = plugin["name"]
 		if (typeof pluginName === "string" && pluginName) {
 			currentPluginName = pluginName
@@ -135,11 +140,9 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			features.add(currentPluginName)
 		}
 		if (typeof plugin === "function") {
-			const userPlugin = plugin as unknown as UserPlugin
-			userPlugin(userContext)
+			plugin(userContext)
 		} else if (plugin.handler) {
-			const userPlugin = plugin.handler as unknown as UserPlugin
-			userPlugin(userContext)
+			plugin.handler(userContext)
 		}
 		currentPluginName = undefined
 	}

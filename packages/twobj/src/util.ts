@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { camelCase } from "./parser"
-import { CSSProperties, CSSValue, PlainCSSProperties, PostModifier } from "./types"
+import type { ColorValueFunc, CSSProperties, CSSValue, Palette, PlainCSSProperties, PostModifier, Value } from "./types"
 
 export function isCSSValue(value: unknown): value is CSSValue {
 	return typeof value === "string" || typeof value === "number"
@@ -98,8 +98,8 @@ export function merge(target: any, ...sources: any[]): any {
 	return merge(target, ...sources)
 }
 
-export function flattenColorPalette(colors: Tailwind.Palette | null | undefined): {
-	[color: string]: Tailwind.Value | Tailwind.ColorValueFunc | undefined
+export function flattenColorPalette(colors: Palette | null | undefined): {
+	[color: string]: Value | ColorValueFunc | undefined
 } {
 	return Object.assign(
 		{},
@@ -107,7 +107,7 @@ export function flattenColorPalette(colors: Tailwind.Palette | null | undefined)
 			if (typeof child !== "object" || child === null) {
 				return [{ [key]: child }]
 			}
-			return Object.entries(flattenColorPalette(child as Tailwind.Palette | null | undefined)).map(([k, v]) => {
+			return Object.entries(flattenColorPalette(child as Palette | null | undefined)).map(([k, v]) => {
 				return {
 					[key + (k === "DEFAULT" ? "" : "-" + k)]: v,
 				}

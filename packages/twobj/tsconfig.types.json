@@ -1,19 +1,19 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/__tests__/*"],
-  "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationDir": ".",
-    "types": ["@types/node", "tailwind-types"],
-    "strict": false,
-    "strictNullChecks": true,
-    "noImplicitAny": false,
-    "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "target": "es2021"
-  }
+	"include": ["src/**/*.ts"],
+	"exclude": ["src/**/__tests__/*"],
+	"compilerOptions": {
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"declarationDir": ".",
+		"types": ["@types/node"],
+		"strict": false,
+		"strictNullChecks": true,
+		"noImplicitAny": false,
+		"allowSyntheticDefaultImports": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"target": "es2021"
+	}
 }
