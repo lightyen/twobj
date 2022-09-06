@@ -45,13 +45,14 @@ export interface LookupSpec {
 		restInput: string,
 		node: parser.Classname | parser.ArbitraryClassname,
 		getText: (node: parser.BaseNode) => string,
-		config: Tailwind.ResolvedConfigJS,
 		negative: boolean,
 	): CSSProperties | undefined
 	supportsNegativeValues: boolean
 	filterDefault: boolean
 	isColor?: boolean
 	pluginName?: string
+	respectPrefix: boolean
+	respectImportant: boolean
 }
 
 export interface StaticSpec {
@@ -59,6 +60,8 @@ export interface StaticSpec {
 	css: CSSProperties
 	supportsNegativeValues: false
 	pluginName?: string
+	respectPrefix: boolean
+	respectImportant: boolean
 }
 
 export interface CorePluginOptions extends PluginOptions {
@@ -96,13 +99,18 @@ export interface UserPlugin {
 	(options: UserPluginOptions): void
 }
 
-export interface MatchUtilitiesOption {
+export interface AddOption {
+	respectPrefix?: boolean
+	respectImportant?: boolean
+}
+
+export interface MatchOption {
 	values?: Record<string, unknown>
 	type?: ValueType | ValueType[]
 	supportsNegativeValues?: boolean
 	filterDefault?: boolean
-	// respectPrefix?: boolean
-	// respectImportant?: boolean
+	respectPrefix?: boolean
+	respectImportant?: boolean
 }
 
 export interface PluginOptions {
@@ -111,33 +119,21 @@ export interface PluginOptions {
 	addDefaults(pluginName: string, properties: Record<string, string | string[]>): void
 
 	/** Register new utility */
-	addUtilities(
-		utilities: CSSProperties | CSSProperties[],
-		options?: {
-			// respectPrefix?: boolean // always true
-			// respectImportant?: boolean // always true
-		},
-	): void
+	addUtilities(utilities: CSSProperties | CSSProperties[], options?: AddOption): void
 
 	/** Same as addUtilities */
-	addComponents(
-		components: CSSProperties | CSSProperties[],
-		options?: {
-			// respectPrefix?: boolean // always true
-			// respectImportant?: boolean // always true
-		},
-	): void
+	addComponents(components: CSSProperties | CSSProperties[], options?: AddOption): void
 
 	/** Register new utility */
 	matchUtilities(
 		utilities: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
-		options?: MatchUtilitiesOption,
+		options?: MatchOption,
 	): void
 
 	/** Same as matchUtilities */
 	matchComponents(
 		components: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
-		options?: MatchUtilitiesOption,
+		options?: MatchOption,
 	): void
 
 	/** Register custom variant */

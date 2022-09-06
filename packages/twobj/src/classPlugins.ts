@@ -1,6 +1,6 @@
 import * as parser from "./parser"
 import { plugin } from "./plugin"
-import type { MatchUtilitiesOption, UnnamedPlugin } from "./types"
+import type { MatchOption, UnnamedPlugin } from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
 import { isCSSValue, normalizeScreens } from "./util"
 import { withAlphaValue } from "./values"
@@ -14,7 +14,7 @@ const emptyCssValue: CSSValue = "var(--tw-empty,/**/ /**/)"
 function createUtilityPlugin(
 	pluginName: string,
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
-	getOptions: (theme: Tailwind.ResolvedConfigJS["theme"]) => MatchUtilitiesOption,
+	getOptions: (theme: Tailwind.ResolvedConfigJS["theme"]) => MatchOption,
 ) {
 	return plugin(pluginName, ({ matchUtilities, theme }) => {
 		matchUtilities(

@@ -8,8 +8,6 @@ Convert tailwind declarations to a style object
 
 ## Differ from tailwindcss
 
-- Not support custom prefix
-- Not support [important everything](https://tailwindcss.com/docs/configuration#important)
 - Not support [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
 - All deprecated features are dropped, you can NOT use `flex-grow`, `text-opacity-0` ...
 

@@ -49,7 +49,11 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	}
 	parser.setSeparator(config.separator)
 
-	config.prefix = ""
+	if (typeof config.prefix !== "string") {
+		config.prefix = ""
+	}
+
+	const importantAll = config.important === true
 
 	const preflightDisabled =
 		(config.corePlugins && (config.corePlugins as unknown as Record<string, unknown>)["preflight"]) === false
@@ -69,10 +73,10 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		addBase,
 		addDefaults,
 		addUtilities,
-		addComponents: addUtilities,
+		addComponents,
 		addVariant,
 		matchUtilities,
-		matchComponents: matchUtilities,
+		matchComponents,
 		matchVariant,
 	}
 
@@ -163,10 +167,10 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		addBase,
 		addDefaults,
 		addUtilities,
-		addComponents: addUtilities,
+		addComponents,
 		addVariant,
 		matchUtilities,
-		matchComponents: matchUtilities,
+		matchComponents,
 		matchVariant,
 	}
 
@@ -291,15 +295,31 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		}
 	}
 
-	function addUtilities(utilities: CSSProperties | CSSProperties[]): void {
+	function addComponents(
+		components: CSSProperties | CSSProperties[],
+		{
+			respectPrefix = true,
+			respectImportant = false,
+		}: { respectPrefix?: boolean; respectImportant?: boolean } = {},
+	): void {
+		addUtilities(components, { respectPrefix, respectImportant })
+	}
+
+	function addUtilities(
+		utilities: CSSProperties | CSSProperties[],
+		{ respectPrefix = true, respectImportant = true }: { respectPrefix?: boolean; respectImportant?: boolean } = {},
+	): void {
 		utilities = toArray(utilities).map(applyCamelCase)
 		const keyStylePairs = getKeyStylePairs(utilities)
-		for (const [key, css] of keyStylePairs) {
+		for (const [_key, css] of keyStylePairs) {
+			const key = respectPrefix ? config.prefix + _key : _key
 			addUtilitySpec(key, {
 				type: "static",
 				css: expandAtRules(css),
 				supportsNegativeValues: false,
 				pluginName: currentPluginName,
+				respectPrefix,
+				respectImportant,
 			})
 		}
 		return
@@ -383,6 +403,34 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		return target
 	}
 
+	function matchComponents(
+		components: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
+		{
+			type = "any",
+			values = {},
+			supportsNegativeValues = false,
+			filterDefault = false,
+			respectPrefix = true,
+			respectImportant = false,
+		}: {
+			type?: (ValueType | "any") | (ValueType | "any")[]
+			values?: Record<string, unknown>
+			supportsNegativeValues?: boolean
+			filterDefault?: boolean
+			respectPrefix?: boolean
+			respectImportant?: boolean
+		} = {},
+	): void {
+		matchUtilities(components, {
+			type,
+			values,
+			supportsNegativeValues,
+			filterDefault,
+			respectPrefix,
+			respectImportant,
+		})
+	}
+
 	function matchUtilities(
 		utilities: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
 		{
@@ -390,14 +438,19 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			values = {},
 			supportsNegativeValues = false,
 			filterDefault = false,
+			respectPrefix = true,
+			respectImportant = true,
 		}: {
 			type?: (ValueType | "any") | (ValueType | "any")[]
 			values?: Record<string, unknown>
 			supportsNegativeValues?: boolean
 			filterDefault?: boolean
+			respectPrefix?: boolean
+			respectImportant?: boolean
 		} = {},
-	) {
-		for (const [key, fn] of Object.entries(utilities)) {
+	): void {
+		for (const [_key, fn] of Object.entries(utilities)) {
+			const key = respectPrefix ? config.prefix + _key : _key
 			let represent: LookupSpec["represent"]
 			const types = toArray(type)
 			if (types.some(t => t === "any")) {
@@ -408,7 +461,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 					ambiguous = spec.length > 1
 				}
 
-				represent = (input, node, getText, config, negative) => {
+				represent = (input, node, getText, negative) => {
 					if (negative && !supportsNegativeValues) return undefined
 					return representAny({
 						input,
@@ -431,6 +484,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 					supportsNegativeValues,
 					filterDefault,
 					pluginName: currentPluginName,
+					respectPrefix,
+					respectImportant,
 				})
 				const valueTypes = arbitraryUtilityMap.get(key)
 				if (valueTypes) {
@@ -449,7 +504,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			}
 
 			const noAnyTypes = types.filter((t): t is ValueType => t !== "any")
-			represent = (input, node, getText, config, negative) => {
+			represent = (input, node, getText, negative) => {
 				if (negative && !supportsNegativeValues) return undefined
 
 				let ambiguous = false
@@ -482,6 +537,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 				filterDefault,
 				isColor,
 				pluginName: currentPluginName,
+				respectPrefix,
+				respectImportant,
 			})
 			const valueTypes = arbitraryUtilityMap.get(key)
 			if (valueTypes) {
@@ -655,8 +712,8 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		}
 
 		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
-		const [, pluginName] = classname(node, getText)
-		return pluginName
+		const [, spec] = classname(node, getText)
+		return spec?.pluginName
 	}
 
 	function getAmbiguous() {
@@ -680,11 +737,19 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			value = strings
 		}
 		const rootStyle: CSSProperties = {}
+		let importantRootStyle: CSSProperties | undefined
+
+		const importantSelector: string = typeof config.important === "string" ? config.important : ""
+		if (importantSelector) {
+			importantRootStyle = {}
+			rootStyle[`${importantSelector} &`] = importantRootStyle
+		}
+
 		const rootFn: VariantSpec = (css = {}) => css
 		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
 		const program = parser.parse(value)
 		for (let i = 0; i < program.expressions.length; i++) {
-			process(program.expressions[i], rootStyle, rootFn, getText, false)
+			process(program.expressions[i], rootStyle, importantRootStyle, rootFn, getText, false)
 		}
 		return rootStyle
 	}
@@ -692,6 +757,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	function process(
 		node: parser.TwExpression,
 		root: CSSProperties,
+		importantRoot: CSSProperties | undefined,
 		variantCtx: VariantSpec,
 		getText: (node: parser.BaseNode) => string,
 		important: boolean,
@@ -702,21 +768,21 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 					case parser.NodeType.SimpleVariant: {
 						const variant = simpleVariant(node.variant)
 						if (node.child) {
-							process(node.child, root, compose(variantCtx, variant), getText, important)
+							process(node.child, root, importantRoot, compose(variantCtx, variant), getText, important)
 						}
 						break
 					}
 					case parser.NodeType.ArbitraryVariant: {
 						const variant = arbitraryVariant(node.variant)
 						if (node.child) {
-							process(node.child, root, compose(variantCtx, variant), getText, important)
+							process(node.child, root, importantRoot, compose(variantCtx, variant), getText, important)
 						}
 						break
 					}
 					case parser.NodeType.ArbitrarySelector: {
 						const variant = arbitrarySelector(node.variant)
 						if (node.child) {
-							process(node.child, root, compose(variantCtx, variant), getText, important)
+							process(node.child, root, importantRoot, compose(variantCtx, variant), getText, important)
 						}
 						break
 					}
@@ -725,19 +791,24 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 			}
 			case parser.NodeType.Group: {
 				for (let i = 0; i < node.expressions.length; i++) {
-					process(node.expressions[i], root, variantCtx, getText, important || node.important)
+					process(node.expressions[i], root, importantRoot, variantCtx, getText, important || node.important)
 				}
 				break
 			}
 			case parser.NodeType.ClassName:
 			case parser.NodeType.ArbitraryClassname: {
-				let [css] = classname(node, getText)
+				const [result, spec] = classname(node, getText)
+				let css = result
 				if (css != undefined) {
-					if (important || node.important) {
+					if (important || node.important || (spec?.respectImportant && importantAll)) {
 						css = applyImportant(css)
 					}
 				}
-				merge(root, variantCtx(css))
+				if (spec?.respectImportant && importantRoot) {
+					merge(importantRoot, variantCtx(css))
+				} else {
+					merge(root, variantCtx(css))
+				}
 				break
 			}
 			case parser.NodeType.ArbitraryProperty: {
@@ -747,8 +818,17 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 					const value = node.decl.value.slice(i + 1).trim()
 					if (prop && value) {
 						let css: CSSProperties = { [parser.camelCase(prop)]: value }
-						if (css != undefined && (important || node.important)) css = applyImportant(css)
-						merge(root, variantCtx(css))
+
+						if (css != undefined) {
+							if (important || node.important || importantAll) {
+								css = applyImportant(css)
+							}
+						}
+						if (importantRoot) {
+							merge(importantRoot, variantCtx(css))
+						} else {
+							merge(root, variantCtx(css))
+						}
 					}
 				}
 				break
@@ -790,7 +870,7 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 	function classname(
 		node: parser.Classname | parser.ArbitraryClassname,
 		getText: (node: parser.BaseNode) => string,
-	): [css?: CSSProperties, pluginName?: string] {
+	): [css?: CSSProperties, spec?: LookupSpec | StaticSpec] {
 		let value: string
 		if (node.type === parser.NodeType.ClassName) {
 			value = getText(node)
@@ -808,12 +888,12 @@ export function createContext(config: Tailwind.ResolvedConfigJS): Context {
 		if (spec) {
 			for (const c of toArray(spec)) {
 				if (c.type === "lookup") {
-					const css = c.represent(restInput, node, getText, config, negative)
+					const css = c.represent(restInput, node, getText, negative)
 					if (css) {
-						return [css, c.pluginName]
+						return [css, c]
 					}
 				} else {
-					return [c.css, c.pluginName]
+					return [c.css, c]
 				}
 			}
 		}
