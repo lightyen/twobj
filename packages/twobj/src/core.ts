@@ -117,6 +117,9 @@ export function createContext(config: ResolvedConfigJS): Context {
 		config: legacyConfig,
 		theme: resolveTheme,
 		corePlugins(feature: keyof CorePluginFeatures): boolean {
+			if (feature === "preflight") {
+				return !preflightDisabled
+			}
 			return features.has(feature)
 		},
 		prefix(value) {
@@ -226,7 +229,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		merge(globalStyles, ...bases)
 	}
 
-	function addDefaults(pluginName: string, properties: Record<string, string | string[]>): void {
+	function addDefaults(pluginName: string, properties: Record<string, string>): void {
 		properties = Object.fromEntries(
 			Object.entries(properties).map(([key, value]) => [parser.camelCase(key), value]),
 		)
