@@ -1,7 +1,6 @@
-import { classPlugins, coreFeatures } from "./classPlugins"
+import { classPlugins } from "./classPlugins"
 import * as parser from "./parser"
 import { escapeCss, findClasses } from "./postcss"
-import { preflight } from "./preflight"
 import type {
 	Context,
 	CorePluginFeatures,
@@ -61,18 +60,21 @@ export function createContext(config: ResolvedConfigJS): Context {
 	const corePlugins = new Set(
 		Array.isArray(config.corePlugins)
 			? config.corePlugins
-			: coreFeatures.filter(k => {
-					if (config.corePlugins?.[k] === false) {
-						return false
-					}
-					return true
-			  }),
+			: Object.values(classPlugins)
+					.map(p => p.name)
+					.filter(Boolean)
+					.filter(k => {
+						if (config.corePlugins?.[k] === false) {
+							return false
+						}
+						return true
+					}),
 	)
 
-	const globalStyles: Record<string, CSSProperties> = Object.assign(corePlugins.has("preflight") ? preflight : {}, {
+	const globalStyles: Record<string, CSSProperties> = {
 		"*, ::before, ::after": {},
 		"::backdrop": {},
-	})
+	}
 
 	const defaults = [globalStyles["*, ::before, ::after"], globalStyles["::backdrop"]]
 	const utilityMap = new Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>()
@@ -146,7 +148,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			currentPluginName = pluginName
 			features.add(currentPluginName)
 		} else {
-			currentPluginName = `plugin${i}`
+			currentPluginName = `userPlugin-${i}`
 			features.add(currentPluginName)
 		}
 		if (typeof plugin === "function") {

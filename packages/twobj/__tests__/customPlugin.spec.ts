@@ -1,13 +1,37 @@
 import { createContext, resolveConfig } from "../src"
 import { createTw } from "./context"
 
+test("addBase", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			plugins: [
+				({ addBase }) => {
+					addBase({
+						".custom": {
+							backgroundColor: "black",
+						},
+						"div.custom": {
+							color: "white",
+						},
+					})
+				},
+			],
+		}),
+	)
+	expect(ctx.globalStyles).toMatchObject({
+		".custom": {
+			backgroundColor: "black",
+		},
+		"div.custom": {
+			color: "white",
+		},
+	})
+})
+
 test("addUtilities with object", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
-				({ addUtilities }) => {
-					//
-				},
 				function ({ addUtilities }) {
 					addUtilities({
 						".custom-object-fill": {

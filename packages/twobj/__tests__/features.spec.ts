@@ -1,6 +1,7 @@
 import { context } from "./context"
 
 const features = [
+	"preflight",
 	"container",
 	"accessibility",
 	"pointerEvents",

@@ -1,5 +1,4 @@
 import { createContext, resolveConfig } from "../src"
-import { preflight } from "../src/preflight"
 
 test("preflight", async () => {
 	expect(
@@ -88,8 +87,10 @@ test("preflight", async () => {
 			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		},
 	})
-	expect(createContext(resolveConfig({})).globalStyles).toEqual({
-		...preflight,
+
+	expect(createContext(resolveConfig({})).globalStyles).toMatchSnapshot()
+
+	expect(createContext(resolveConfig({})).globalStyles).toMatchObject({
 		"*, ::before, ::after": {
 			"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
 			"--tw-backdrop-brightness": "var(--tw-empty,/**/ /**/)",
