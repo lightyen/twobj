@@ -1,4 +1,4 @@
-import { classPlugins } from "./classPlugins"
+import { classPlugins, coreFeatures } from "./classPlugins"
 import * as parser from "./parser"
 import { escapeCss, findClasses } from "./postcss"
 import { preflight } from "./preflight"
@@ -58,10 +58,18 @@ export function createContext(config: ResolvedConfigJS): Context {
 
 	const importantAll = config.important === true
 
-	const preflightDisabled =
-		(config.corePlugins && (config.corePlugins as unknown as Record<string, unknown>)["preflight"]) === false
+	const corePlugins = new Set(
+		Array.isArray(config.corePlugins)
+			? config.corePlugins
+			: coreFeatures.filter(k => {
+					if (config.corePlugins?.[k] === false) {
+						return false
+					}
+					return true
+			  }),
+	)
 
-	const globalStyles: Record<string, CSSProperties> = Object.assign(preflightDisabled ? {} : preflight, {
+	const globalStyles: Record<string, CSSProperties> = Object.assign(corePlugins.has("preflight") ? preflight : {}, {
 		"*, ::before, ::after": {},
 		"::backdrop": {},
 	})
@@ -97,8 +105,10 @@ export function createContext(config: ResolvedConfigJS): Context {
 
 	for (const [, plugin] of Object.entries(classPlugins)) {
 		currentPluginName = plugin.name
-		features.add(currentPluginName)
-		plugin(apiContext)
+		if (corePlugins.has(currentPluginName)) {
+			features.add(currentPluginName)
+			plugin(apiContext)
+		}
 		currentPluginName = undefined
 	}
 
@@ -117,10 +127,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		config: legacyConfig,
 		theme: resolveTheme,
 		corePlugins(feature: keyof CorePluginFeatures): boolean {
-			if (feature === "preflight") {
-				return !preflightDisabled
-			}
-			return features.has(feature)
+			return corePlugins.has(feature)
 		},
 		prefix(value) {
 			return value

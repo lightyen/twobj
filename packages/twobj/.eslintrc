@@ -16,6 +16,7 @@
 		"no-var": "error",
 		"no-extra-bind": "error",
 		"prefer-arrow-callback": "error",
+		"no-mixed-spaces-and-tabs": "off",
 		"no-empty": [
 			"error",
 			{

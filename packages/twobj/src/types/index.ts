@@ -606,7 +606,7 @@ export interface StrictConfigJS {
 	extrators?: unknown[]
 	plugins?: Plugin[]
 	darkMode?: boolean | "media" | "class" | ["class", string]
-	corePlugins?: { preflight?: boolean }
+	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures>
 	separator?: string
 	prefix?: string
 	important?: boolean | string

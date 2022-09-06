@@ -168,3 +168,15 @@ test("preflight", async () => {
 		},
 	})
 })
+
+test("corePlugins", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			corePlugins: {
+				backgroundColor: false,
+			},
+		}),
+	)
+	expect(ctx.css("bg-black")).toEqual({})
+	expect(ctx.css("bg-auto")).toEqual({ backgroundSize: "auto" })
+})
