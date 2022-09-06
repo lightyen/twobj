@@ -32,6 +32,7 @@
 	"files": [
 		"parser",
 		"config",
+		"types",
 		"index.js",
 		"index.mjs",
 		"*.d.ts"

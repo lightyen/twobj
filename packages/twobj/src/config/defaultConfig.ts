@@ -3,7 +3,10 @@ import type { ConfigJS } from "../types"
 export default {
 	presets: [],
 	plugins: [],
+	prefix: "",
+	separator: ":",
 	darkMode: "media",
+	important: false,
 	theme: {
 		screens: {
 			sm: "640px",

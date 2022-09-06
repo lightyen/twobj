@@ -677,11 +677,9 @@ type ResolvedResult<T, V = unknown> = Partial<T> & Record<string, V>
 export interface StrictResolvedConfigJS {
 	presets: ConfigJS[]
 	separator: string
-	extrators: unknown[]
 	prefix: string
 	important: boolean
 	darkMode: boolean | "media" | "class" | ["class", string]
-	corePlugins: Array<keyof CorePluginFeatures>
 	plugins: UserPlugin[]
 	theme: {
 		screens: ResolvedResult<{

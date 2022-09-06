@@ -184,13 +184,7 @@ function mergeExtensions({ extend, theme }: { theme: unknown; extend: unknown[] 
 }
 
 function resolveConfigObjects(configs: ConfigJS[]) {
-	const allConfigs: ConfigJS[] = [
-		...extractPluginConfigs(configs),
-		{
-			prefix: "",
-			separator: ":",
-		},
-	]
+	const allConfigs: ConfigJS[] = [...extractPluginConfigs(configs)]
 
 	const themes = allConfigs.map(t => t.theme).filter((t): t is CustomTheme => t != null)
 
