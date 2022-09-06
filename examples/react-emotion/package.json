@@ -47,8 +47,7 @@
     "react-redux": "8.0.2",
     "redux": "4.2.0",
     "redux-saga": "1.2.1",
-    "tailwind-types": "3.2.0",
-    "twobj": "1.0.4"
+    "twobj": "1.0.6"
   },
   "browserslist": [
     "defaults",

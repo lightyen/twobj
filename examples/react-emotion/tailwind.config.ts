@@ -1,4 +1,5 @@
 import utopia, { fontSize } from "./utopia"
+
 export default {
 	plugins: [
 		utopia(fontSize()),
@@ -34,4 +35,4 @@ export default {
 			},
 		},
 	},
-} as Tailwind.ConfigJS
+} as import("twobj").ConfigJS

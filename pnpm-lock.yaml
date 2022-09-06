@@ -16,7 +16,6 @@ importers:
       postcss: 8.4.16
       postcss-js: 4.0.0
       prettier: 2.7.1
-      tailwind-types: 3.2.0
       ts-jest: 28.0.8
       tsup: 6.2.3
       typescript: 4.8.2
@@ -33,7 +32,6 @@ importers:
       postcss: 8.4.16
       postcss-js: 4.0.0_postcss@8.4.16
       prettier: 2.7.1
-      tailwind-types: 3.2.0_postcss@8.4.16
       ts-jest: 28.0.8_556mfp7b5dutuj2jcrj5i7zc5q
       tsup: 6.2.3_smra3m4etnqqd4smp32kkf5ksq
       typescript: 4.8.2
@@ -49,7 +47,7 @@ importers:
       next: 12.2.5
       react: 18.2.0
       react-dom: 18.2.0
-      twobj: 1.0.4
+      twobj: 1.0.6
     dependencies:
       '@babel/core': 7.18.13
       '@emotion/css': 11.10.0_@babel+core@7.18.13
@@ -60,11 +58,11 @@ importers:
       next: 12.2.5_rlaikcoslzwwtqyk7brpdzej5y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      twobj: 1.0.4
+      twobj: link:../../packages/twobj
 
   examples/node:
     specifiers:
-      twobj: '*'
+      twobj: 1.0.6
     dependencies:
       twobj: link:../../packages/twobj
 
@@ -101,8 +99,7 @@ importers:
       redux: 4.2.0
       redux-saga: 1.2.1
       rollup: 2.78.1
-      tailwind-types: 3.2.0
-      twobj: 1.0.4
+      twobj: 1.0.6
       typescript: 4.7.4
       vite: 3.0.9
       vite-plugin-eslint: 1.8.1
@@ -121,8 +118,7 @@ importers:
       react-redux: 8.0.2_ps4ywwwjjeajezffxxirqk36qa
       redux: 4.2.0
       redux-saga: 1.2.1
-      tailwind-types: 3.2.0_postcss@8.4.16
-      twobj: 1.0.4
+      twobj: link:../../packages/twobj
     devDependencies:
       '@rollup/plugin-yaml': 3.1.0_rollup@2.78.1
       '@swc/core': 1.2.242
@@ -178,7 +174,7 @@ importers:
       autoprefixer: ^10.4.8
       axios: 0.27.2
       babel-loader: 8.2.5
-      babel-plugin-twobj: '*'
+      babel-plugin-twobj: 1.0.2
       cross-env: 7.0.3
       css-loader: 6.7.1
       css-minimizer-webpack-plugin: 4.0.0
@@ -202,14 +198,13 @@ importers:
       redux: 4.2.0
       redux-saga: 1.1.3
       style-loader: 3.3.1
-      tailwind-types: 3.1.11
       tailwindcss: ^3.1.8
       tailwindcss-debug-screens: ^2.2.1
       terser-webpack-plugin: 5.3.3
       tiny-glob: 0.2.9
       ts-paths-resolve-plugin: 5.8.0
       tslib: ^2.4.0
-      twobj: '*'
+      twobj: 1.0.6
       typescript: 4.7.4
       webpack: 5.74.0
       webpack-bundle-analyzer: 4.5.0
@@ -231,7 +226,6 @@ importers:
       react-redux: 8.0.2_rxpulxqxsibgdk5rs4llgxl6gy
       redux: 4.2.0
       redux-saga: 1.1.3
-      tailwind-types: 3.1.11_postcss@8.4.14
       twobj: link:../../packages/twobj
     devDependencies:
       '@babel/core': 7.18.9
@@ -11246,6 +11240,7 @@ packages:
       nanoid: 3.3.4
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
 
   /prebuild-install/7.1.1:
     resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
@@ -12365,23 +12360,6 @@ packages:
       webpack: 5.74.0_jryf4xtz2eid2ilq2tnlqiqhte
     dev: true
 
-  /tailwind-types/3.1.11_postcss@8.4.14:
-    resolution: {integrity: sha512-OjPNm2NW96f9i85hf2VtiQn0VZIvZ2gtR7Yo50P+ssLtwEMHAewxlHLNURtqwPDsO2u1TGxQ3lHRfXrEGjau3g==}
-    peerDependencies:
-      postcss: ^8.3.9
-    dependencies:
-      csstype: 3.1.0
-      postcss: 8.4.14
-    dev: false
-
-  /tailwind-types/3.2.0_postcss@8.4.16:
-    resolution: {integrity: sha512-GuTe5XaN6if415Uv2Ej8Gb7nCLfbcEnu7i43i1UU1Z0ZW+CDWUg2rXE7aM+8B7YEInzijEvOiLliVkqz4ZAEeA==}
-    peerDependencies:
-      postcss: ^8.4.16
-    dependencies:
-      csstype: 3.1.0
-      postcss: 8.4.16
-
   /tailwindcss-debug-screens/2.2.1_tailwindcss@3.1.8:
     resolution: {integrity: sha512-EMyA0CYBzqcZJHtVDvBfmYzfx3NxuK4qDyVO5wnzcGOrmJsv25D9xPpWefVTORTvhE6pCh90Z1WYnLUKsg3yMw==}
     peerDependencies:
@@ -12821,10 +12799,6 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
-
-  /twobj/1.0.4:
-    resolution: {integrity: sha512-Q+u6woJVef87Tml9/vmHk1GvXoMCaYXJ2a1Sa1qaIOUmM4JAleaCceI2EtFqkmNrWxQPsjBWsDsQTIicylax8w==}
-    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}

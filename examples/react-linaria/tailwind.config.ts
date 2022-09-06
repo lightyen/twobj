@@ -62,4 +62,4 @@ export default {
 			},
 		},
 	},
-} as Tailwind.ConfigJS
+} as import("twobj").ConfigJS
