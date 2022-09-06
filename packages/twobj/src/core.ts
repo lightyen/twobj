@@ -17,33 +17,21 @@ import type {
 	ValueType,
 	VariantSpec,
 } from "./types"
-import { applyCamelCase, applyImportant, applyModifier, flattenColorPalette, isCSSValue, merge, toArray } from "./util"
+import {
+	applyCamelCase,
+	applyImportant,
+	applyModifier,
+	flattenColorPalette,
+	getAmbiguousFrom,
+	getClassListFrom,
+	getColorClassesFrom,
+	getThemeValueCompletionFromConfig,
+	isCSSValue,
+	merge,
+	toArray,
+} from "./util"
 import { representAny, representTypes } from "./values"
 import { variantPlugins } from "./variantPlugins"
-
-export const colorProps = new Set<string>([
-	"color",
-	"outline-color",
-	"border-color",
-	"border-top-color",
-	"border-right-color",
-	"border-bottom-color",
-	"border-left-color",
-	"background-color",
-	"text-decoration-color",
-	"accent-color",
-	"caret-color",
-	"fill",
-	"stroke",
-	"stop-color",
-	"column-rule-color",
-	"--tw-ring-color",
-	"--tw-ring-offset-color",
-	"--tw-gradient-from",
-	"--tw-gradient-to",
-	"--tw-gradient-stops",
-	"--tw-shadow-color",
-])
 
 export function createContext(config: ResolvedConfigJS): Context {
 	if (typeof config.separator !== "string" || !config.separator) {
@@ -172,12 +160,22 @@ export function createContext(config: ResolvedConfigJS): Context {
 		features,
 		config: legacyConfig,
 		theme: resolveTheme,
-		renderTheme,
+		renderTheme(value) {
+			return parser.renderTheme(config, value)
+		},
 		renderThemeFunc,
-		getClassList,
-		getColorClasses,
-		getAmbiguous,
-		getThemeValueCompletion,
+		getClassList() {
+			return getClassListFrom(utilityMap)
+		},
+		getColorClasses() {
+			return getColorClassesFrom(utilityMap)
+		},
+		getAmbiguous() {
+			return getAmbiguousFrom(utilityMap)
+		},
+		getThemeValueCompletion(options) {
+			return getThemeValueCompletionFromConfig({ config, ...options })
+		},
 		cssVariant,
 		addBase,
 		addDefaults,
@@ -192,11 +190,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 	function renderThemeFunc(value: string): string {
 		return parser.renderThemeFunc(config, value)
 	}
-
-	function renderTheme(value: string): string {
-		return parser.renderTheme(config, value)
-	}
-
 	function resolveTheme(value: string, defaultValue?: unknown): unknown {
 		return parser.resolveThemeNoDefault(config, value, defaultValue)
 	}
@@ -577,144 +570,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return wrap
 	}
 
-	function getClassList() {
-		return Array.from(utilityMap.entries()).flatMap(([key, specs]) => {
-			specs = toArray(specs)
-			return specs.flatMap(spec => {
-				if (spec.type === "static") {
-					return [key]
-				}
-
-				const values = Object.keys(spec.values)
-				const results = values
-					.map(value => {
-						if (value === "DEFAULT") {
-							if (spec.filterDefault) return null
-							return key
-						}
-						return key + "-" + value
-					})
-					.filter((v): v is string => typeof v === "string")
-				if (spec.supportsNegativeValues) {
-					return results.concat(
-						values
-							.filter(val => parser.reverseSign(String(spec.values[val])) != undefined)
-							.map(value => {
-								if (value === "DEFAULT") {
-									if (spec.filterDefault) return null
-									return key
-								}
-								return "-" + key + "-" + value
-							})
-							.filter((v): v is string => typeof v === "string"),
-					)
-				}
-				return results
-			})
-		})
-	}
-
-	function getThemeValueCompletion({
-		position,
-		text,
-		start = 0,
-		end = text.length,
-	}: {
-		position: number
-		text: string
-		start?: number
-		end?: number
-	}): {
-		range: parser.Range
-		candidates: Array<[string, string]>
-	} {
-		const node = parser.parse_theme_val({ text, start, end })
-		const result = parser.resolvePath(config.theme, node.path, true)
-
-		if (result === undefined) {
-			const ret = parser.tryOpacityValue(node.path)
-			if (ret.opacityValue) {
-				node.path = ret.path
-			}
-		}
-
-		if (node.path.length === 0) {
-			return {
-				range: node.range,
-				candidates: format(config.theme),
-			}
-		}
-
-		const i = node.path.findIndex(p => position >= p.range[0] && position <= p.range[1])
-		const obj = parser.resolvePath(config.theme, node.path.slice(0, i))
-		return {
-			range: node.path[i].range,
-			candidates: format(obj),
-		}
-
-		function format(obj: unknown): Array<[string, string]> {
-			if (typeof obj !== "object") {
-				return []
-			}
-			return Object.entries(Object.assign({}, obj)).map(([key, value]) => {
-				return [key, parser.renderThemeValue({ value })]
-			})
-		}
-	}
-
-	function getColorClasses() {
-		const collection = new Map<string, string[]>()
-
-		for (const entry of utilityMap.entries()) {
-			const key = entry[0]
-			let specs = entry[1]
-			specs = toArray(specs)
-			for (const s of specs) {
-				if (s.type === "lookup" && s.isColor) {
-					for (const [k, value] of Object.entries(s.values)) {
-						collection.set(key + "-" + k, [toColorValue(value)])
-					}
-				} else if (s.type === "static") {
-					const colors = extractColors(s.css)
-					if (colors.length > 0) {
-						collection.set(key, colors)
-					}
-				}
-			}
-		}
-
-		return collection
-
-		function toColorValue(value: unknown): string {
-			if (typeof value === "string") {
-				return value.replace("<alpha-value>", "1")
-			}
-			if (typeof value === "function") {
-				return String(value({ opacityValue: "1" }))
-			}
-			return String(value)
-		}
-
-		function extractColors(style: CSSProperties): string[] {
-			const colors: string[] = []
-			for (const [prop, value] of Object.entries(style)) {
-				if (isCSSValue(value)) {
-					if (typeof value === "string") {
-						const color = parser.parseColor(value)
-						if (color && parser.isOpacityFunction(color.fn)) {
-							colors.push(value)
-						} else if (colorProps.has(prop)) {
-							colors.push(value)
-						}
-					}
-				} else {
-					colors.push(...extractColors(value))
-				}
-			}
-			return colors
-		}
-	}
-
 	function getPluginName(value: string): string | undefined {
 		const program = parser.parse(value)
 		if (program.expressions.length !== 1) {
@@ -729,17 +584,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
 		const [, spec] = classname(node, getText)
 		return spec?.pluginName
-	}
-
-	function getAmbiguous() {
-		const ret = new Map<string, LookupSpec[]>()
-		for (const [key, u] of utilityMap) {
-			const spec = (Array.isArray(u) ? u : [u]).filter((s): s is LookupSpec => s.type === "lookup")
-			if (spec.length > 1) {
-				ret.set(key, spec)
-			}
-		}
-		return ret
 	}
 
 	function css(strings: string): CSSProperties
