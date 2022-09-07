@@ -1,4 +1,5 @@
 import * as culori from "culori"
+import type { SuggestResult } from "twobj/parser"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
 import { getCSSLanguageService } from "vscode-css-languageservice"
@@ -61,7 +62,7 @@ interface CompletionFeature {
 		offset: number,
 		text: string,
 		position: number,
-		suggestion: ReturnType<typeof parser.suggest>,
+		suggestion: SuggestResult,
 		state: TailwindLoader,
 		options: ServiceOptions,
 	): ICompletionItem[] | null | undefined
@@ -110,7 +111,7 @@ function twCompletion(
 	state: TailwindLoader,
 	options: ServiceOptions,
 ): vscode.CompletionList<ICompletionItem> {
-	const suggestion = parser.suggest({ text, position, separator: state.separator })
+	const suggestion = state.tw.context.parser.suggest(text, position)
 	if (suggestion.inComment) return new vscode.CompletionList<ICompletionItem>(undefined)
 	let items: ICompletionItem[] = []
 	applyFeatures(variantCompletion, classnameCompletion, arbitraryPropertyCompletion, arbitraryVariantValueCompletion)
@@ -299,7 +300,7 @@ const variantCompletion: CompletionFeature = (
 	const userVariants = new Set(
 		variants
 			.filter((v): v is parser.SimpleVariant => v.type === parser.NodeType.SimpleVariant)
-			.map(v => v.id.value),
+			.map(v => v.id.getText()),
 	)
 	items = items.filter(item => !userVariants.has(item.label.slice(0, -state.separator.length)))
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
@@ -343,7 +344,7 @@ function getCssDeclarationCompletionList(
 	css: string | [prop: string, value: string],
 	state: TailwindLoader,
 ): ICompletionItem[] {
-	for (const t of parser.parse_theme({ text, start: exprRange[0], end: exprRange[1] })) {
+	for (const t of parser.parse_theme(text, exprRange)) {
 		if (position >= t.valueRange[0] && position <= t.valueRange[1]) {
 			return themeCompletion(document, offset, text, position, state, t.valueRange).items
 		}
@@ -467,8 +468,8 @@ const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offs
 	if (kind === "wrap") return
 	if (!target) return
 	if (target.type !== parser.NodeType.ArbitrarySelector) return
-	const { range, value } = target.selector
-	const [a, b] = range
+	const [a, b] = target.selector.range
+	const value = target.selector.getText()
 	if (position < a || position > b) return
 	return getScssSelectorCompletionList(document, position, offset, a, value)
 }
@@ -497,7 +498,7 @@ const arbitraryPropertyCompletion: CompletionFeature = (document, kind, offset, 
 				const [pa, pb] = expr.range
 				if (position < pa || position > pb) return
 				const cssValueItems = new Map<string, ICompletionItem>()
-				let prefix = target.prefix.value
+				let prefix = target.prefix.getText()
 				if (prefix[0] === "-") prefix = prefix.slice(1)
 				if (prefix.startsWith(state.tw.prefix)) prefix = prefix.slice(state.tw.prefix.length)
 				const propAndTypes = state.tw.arbitrary[prefix]
@@ -531,7 +532,7 @@ const arbitraryPropertyCompletion: CompletionFeature = (document, kind, offset, 
 					text,
 					position,
 					[target.range[0] + 1, target.range[1] - 1],
-					target.decl.value,
+					target.decl.getText(),
 					state,
 				)
 			}
@@ -581,7 +582,7 @@ function themeCompletion(
 	state: TailwindLoader,
 	[start, end]: [start: number, end: number] = [0, text.length],
 ): vscode.CompletionList<ICompletionItem> {
-	const node = parser.parseThemeValue({ config: state.config, text, start, end })
+	const node = parser.parseThemeValue(state.config, text, [start, end])
 
 	const i = node.path.findIndex(p => position >= p.range[0] && position <= p.range[1])
 	if (i === -1 && node.path.length !== 0) {
@@ -589,7 +590,7 @@ function themeCompletion(
 	}
 
 	const keys = node.path.slice(0, i)
-	const obj = parser.resolvePath(state.config.theme, keys)
+	const obj = parser.resolve(state.config.theme, keys)
 	if (!obj || typeof obj !== "object") {
 		return { items: [] }
 	}
@@ -600,7 +601,7 @@ function themeCompletion(
 
 	const items = candidates.map<ICompletionItem>(label => {
 		const valueString = parser.renderThemePath(state.config, [...keys, label])
-		const value = parser.resolvePath(state.config.theme, [...keys, label])
+		const value = parser.resolve(state.config.theme, [...keys, label])
 		const item: ICompletionItem = {
 			label,
 			sortText: isScreen ? state.tw.screens.indexOf(label).toString().padStart(5, " ") : formatCandidates(label),

@@ -1,5 +1,5 @@
 import { css_beautify } from "js-beautify"
-import * as parser from "twobj/parser"
+import { NodeType, parse_theme_val, renderThemePath, ThemeValueNode } from "twobj/parser"
 import vscode from "vscode"
 import { getEntryDescription } from "vscode-css-languageservice/lib/esm/languageFacts/entry"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -25,31 +25,30 @@ export default async function hover(
 		try {
 			const { kind, ...token } = result
 			if (kind === "theme") {
-				const node = parser.parse_theme_val({ text: token.value })
+				const node = parse_theme_val(token.value)
 				const range = new vscode.Range(
 					document.positionAt(token.start + node.range[0]),
 					document.positionAt(token.start + node.range[1]),
 				)
 				return resolveThemeValue({ kind, range, node, state, options })
 			} else {
-				const selection = parser.hover({
-					text: token.value,
-					position: document.offsetAt(position) - token.start,
-					separator: state.separator,
-				})
-				if (!selection) return undefined
+				const hoverResult = state.tw.context.parser.hover(
+					token.value,
+					document.offsetAt(position) - token.start,
+				)
+				if (!hoverResult) return undefined
 
-				const [start, end] = selection.target.range
+				const [start, end] = hoverResult.target.range
 
 				const range = new vscode.Range(
 					document.positionAt(token.start + start),
 					document.positionAt(token.start + end),
 				)
 
-				if (selection.type === "variant") {
+				if (hoverResult.type === "variant") {
 					const header = new vscode.MarkdownString()
-					if (selection.target.type === parser.NodeType.SimpleVariant) {
-						const variant = selection.target.id.value
+					if (hoverResult.target.type === NodeType.SimpleVariant) {
+						const variant = hoverResult.target.id.getText()
 						if (options.references) {
 							const isScreens = state.tw.screens.indexOf(variant) === -1
 							const desc = isScreens ? getDescription(variant) : getDescription("screens")
@@ -68,7 +67,7 @@ export default async function hover(
 						header.appendMarkdown("**arbitrary variant**")
 					}
 
-					const code = beautify(state.tw.renderVariant(selection.target, tabSize))
+					const code = beautify(state.tw.renderVariant(hoverResult.target, tabSize))
 					const codes = new vscode.MarkdownString()
 					if (code) codes.appendCodeblock(code, "scss")
 					if (!header.value && !codes.value) return undefined
@@ -78,10 +77,9 @@ export default async function hover(
 					}
 				}
 
-				const getText = (node: parser.Node) => token.value.slice(node.range[0], node.range[1])
 				if (kind === "wrap") {
-					if (selection.target.type === parser.NodeType.ClassName) {
-						const value = getText(selection.target)
+					if (hoverResult.target.type === NodeType.ClassName) {
+						const value = hoverResult.target.getText()
 						if (value === "$e") {
 							return {
 								range,
@@ -93,8 +91,8 @@ export default async function hover(
 				}
 
 				const header = new vscode.MarkdownString()
-				if (selection.target.type === parser.NodeType.ArbitraryProperty) {
-					const rawText = selection.target.decl.value
+				if (hoverResult.target.type === NodeType.ArbitraryProperty) {
+					const rawText = hoverResult.target.decl.getText()
 					let prop = rawText.trim()
 					const i = rawText.indexOf(":")
 					if (i >= 0) {
@@ -111,7 +109,7 @@ export default async function hover(
 					}
 				}
 
-				const value = getText(selection.target)
+				const value = hoverResult.target.getText()
 
 				if (options.references) {
 					const pluginName = state.tw.context.getPluginName(value)
@@ -131,7 +129,7 @@ export default async function hover(
 
 				const code = state.tw.renderClassname({
 					classname: value,
-					important: selection.important,
+					important: hoverResult.important,
 					rootFontSize: options.rootFontSize,
 					colorHint: options.hoverColorHint,
 					tabSize,
@@ -172,11 +170,11 @@ function resolveThemeValue({
 }: {
 	kind: ExtractedTokenKind
 	range: vscode.Range
-	node: parser.ThemeValueNode
+	node: ThemeValueNode
 	state: TailwindLoader
 	options: ServiceOptions
 }): vscode.Hover | undefined {
-	const text = parser.renderThemePath(state.config, node.path)
+	const text = renderThemePath(state.config, node.path)
 	if (text === "[undefined]") return
 	const markdown = new vscode.MarkdownString()
 	markdown.value = `\`\`\`txt\n${text}\n\`\`\``

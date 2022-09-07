@@ -1,4 +1,5 @@
 import Fuse from "fuse.js"
+import type { SpreadedItem, SpreadResult } from "twobj/parser"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -88,7 +89,7 @@ export function validate(
 						return diagnostics
 					}
 				} else {
-					const result = parser.spread(value, { separator: state.separator })
+					const result = state.tw.context.parser.spread(value)
 					if (
 						!validateTw({
 							document,
@@ -135,7 +136,7 @@ function validateTw({
 	state: TailwindLoader
 	diagnosticOptions: ServiceOptions["diagnostics"]
 	diagnostics: IDiagnostic[]
-} & ReturnType<typeof parser.spread>): boolean {
+} & SpreadResult): boolean {
 	for (const e of notClosed) {
 		if (
 			!diagnostics.push({
@@ -223,9 +224,10 @@ function validateTw({
 			const hash = state.tw.renderVariantScope(...item.variants)
 			switch (item.target.type) {
 				case parser.NodeType.ArbitraryProperty: {
-					const i = item.target.decl.value.indexOf(":")
+					const value = item.target.decl.getText()
+					const i = value.indexOf(":")
 					if (i < 0) continue
-					const prop = item.target.decl.value.slice(0, i).trim()
+					const prop = value.slice(0, i).trim()
 					if (isLooseProperty(prop)) {
 						const key = [hash, prop].join(".")
 						addItem(key, item.target.range)
@@ -318,7 +320,7 @@ function validateTw({
 
 function checkVariants(
 	diagnostics: IDiagnostic[],
-	items: parser.SpreadDescription[],
+	items: SpreadedItem[],
 	document: TextDocument,
 	offset: number,
 	emptyChecking: boolean,
@@ -326,7 +328,7 @@ function checkVariants(
 ) {
 	for (const node of getVariantMap(items).values()) {
 		if (node.type === parser.NodeType.ArbitrarySelector || node.type === parser.NodeType.ArbitraryVariant) {
-			if (emptyChecking && node.selector.value.trim() === "") {
+			if (emptyChecking && node.selector.getText().trim() === "") {
 				if (
 					!diagnostics.push({
 						source: DIAGNOSTICS_ID,
@@ -344,9 +346,10 @@ function checkVariants(
 			continue
 		}
 		const {
-			id: { value: variant },
+			id,
 			range: [a, b],
 		} = node
+		const variant = id.getText()
 		if (state.tw.isVariant(variant)) {
 			continue
 		}
@@ -374,8 +377,8 @@ function checkVariants(
 	}
 	return true
 
-	function getVariantMap(items: parser.SpreadDescription[]) {
-		const s = new Map<string, parser.SpreadDescription["variants"][0]>()
+	function getVariantMap(items: SpreadedItem[]) {
+		const s = new Map<string, SpreadedItem["variants"][0]>()
 		for (const item of items) {
 			for (const node of item.variants) {
 				const [a, b] = node.range
@@ -411,7 +414,7 @@ function checkArbitraryClassname(
 		}
 	}
 
-	let prefix = item.prefix.value
+	let prefix = item.prefix.getText()
 	if (item.expr == undefined) {
 		const [start, end] = item.prefix.range
 		const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end - 1))
@@ -484,7 +487,7 @@ function checkArbitraryProperty(
 	emptyChecking: boolean,
 ) {
 	const result: IDiagnostic[] = []
-	let prop = item.decl.value.trim()
+	let prop = item.decl.getText().trim()
 	if (!prop) {
 		if (emptyChecking) {
 			result.push({
@@ -499,9 +502,11 @@ function checkArbitraryProperty(
 		}
 		return result
 	}
-	const i = item.decl.value.indexOf(":")
-	if (i >= 0) prop = item.decl.value.slice(0, i).trim()
-	const start = item.decl.range[0] + item.decl.value.search(/[\w-]/)
+
+	const value = item.decl.getText()
+	const i = value.indexOf(":")
+	if (i >= 0) prop = value.slice(0, i).trim()
+	const start = item.decl.range[0] + value.search(/[\w-]/)
 	const end = start + prop.length
 	if (prop.startsWith("-")) return result
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
@@ -703,7 +708,7 @@ function validateTwTheme({
 	diagnostics: IDiagnostic[]
 }): boolean {
 	let diagnostic: IDiagnostic | undefined
-	const { path, range } = parser.parse_theme_val({ text })
+	const { path, range } = parser.parse_theme_val(text)
 	for (const { closed, range } of path) {
 		if (!closed) {
 			const [a] = range
@@ -717,7 +722,7 @@ function validateTwTheme({
 		}
 	}
 	if (!diagnostic) {
-		const { value } = parser.theme(state.config, path)
+		const [value] = parser.theme(state.config, path)
 		if (value === undefined) {
 			diagnostic = {
 				range: new vscode.Range(document.positionAt(offset + range[0]), document.positionAt(offset + range[1])),

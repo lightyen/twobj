@@ -80,7 +80,7 @@
     "terser-webpack-plugin": "5.3.6",
     "ts-paths-resolve-plugin": "5.8.0",
     "tslib": "2.4.0",
-    "twobj": "1.0.6",
+    "twobj": "../../packages/twobj",
     "typescript": "4.8.2",
     "typescript-paths": "1.4.0",
     "vsce": "2.11.0",

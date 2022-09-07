@@ -70,12 +70,12 @@ export function createColorProvider(tw: TwContext, separator: string) {
 			const { start: offset, kind } = token
 			switch (kind) {
 				case "tw": {
-					const result = parser.spread(token.value, { separator })
+					const result = tw.context.parser.spread(token.value)
 					for (const item of result.items) {
 						if (item.target.type === parser.NodeType.ClassName) {
 							const color = tw.decorationColors.get(item.value)
 							if (!color) {
-								const i = item.target.value.lastIndexOf("/")
+								const i = item.target.getText().lastIndexOf("/")
 								if (i === -1) continue
 							}
 							if (color) {
@@ -98,7 +98,7 @@ export function createColorProvider(tw: TwContext, separator: string) {
 							}
 						} else if (item.target.type === parser.NodeType.ArbitraryClassname) {
 							const [start] = item.target.range
-							const end = start + item.target.prefix.value.length
+							const end = start + item.target.prefix.range[1] - item.target.prefix.range[0]
 							const value = token.value.slice(start, end)
 							const color = tw.decorationColors.get(value)
 							if (color) {
@@ -113,7 +113,7 @@ export function createColorProvider(tw: TwContext, separator: string) {
 					break
 				}
 				case "theme": {
-					const val = parser.parse_theme_val({ text: token.value })
+					const val = parser.parse_theme_val(token.value)
 					const color = getThemeDecoration(val, tw)
 					if (color) {
 						const range = new vscode.Range(
