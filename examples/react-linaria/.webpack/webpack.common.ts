@@ -34,7 +34,7 @@ export default function (): Configuration {
 				NODE_ENV: process.env.NODE_ENV,
 				APP_NAME: "react-emotion-typescript",
 			}),
-			new TsPathsResolvePlugin({ tsConfigPath: path.resolve(src, "tsconfig.json") }),
+			new TsPathsResolvePlugin(),
 			new MiniCssExtractPlugin({
 				filename: join_network(outputCSS, "[name].css?[fullhash]"),
 				chunkFilename: join_network(outputCSS, "[name].chunk.css?[fullhash:8]"),

@@ -8,5 +8,5 @@ export declare global {
 		APP_NAME: string
 	}
 
-	declare var process: { env: ProcessEnv }
+	declare let process: { env: ProcessEnv }
 }

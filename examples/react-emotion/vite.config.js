@@ -1,6 +1,5 @@
 import yaml from "@rollup/plugin-yaml"
 import react from "@vitejs/plugin-react"
-import path from "path"
 import { defineConfig } from "vite"
 import eslint from "vite-plugin-eslint"
 import svg from "vite-plugin-svgr"
@@ -12,7 +11,7 @@ export default defineConfig(({}) => ({
 		svg({ exportAsDefault: true }),
 		yaml(),
 		eslint(),
-		tsConfigPaths({ tsConfigPath: path.resolve(__dirname, "src", "tsconfig.json") }),
+		tsConfigPaths(),
 		react({
 			jsxImportSource: "@emotion/react",
 			babel: {

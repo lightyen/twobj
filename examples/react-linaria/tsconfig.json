@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "lib": ["ESNext"],
+    "lib": ["esnext", "dom", "dom.iterable", "webworker"],
+    "jsx": "preserve",
     "noImplicitAny": false,
     "strict": true,
     "allowJs": true,
@@ -12,6 +13,10 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "removeComments": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "~/*": ["./src/*"],
+      "assets/*": ["./src/assets/*"]
+    }
   }
 }

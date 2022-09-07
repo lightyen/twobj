@@ -1,6 +1,5 @@
 import daisyui from "daisyui"
 import debug from "tailwindcss-debug-screens"
-import utopia, { fontSize } from "./utopia"
 
 export default {
 	daisyui: {
@@ -9,7 +8,6 @@ export default {
 	plugins: [
 		debug,
 		daisyui,
-		utopia(fontSize()),
 		function ({ addVariant, addComponents }) {
 			addVariant("dropdown", ".dropdown &")
 			addVariant("dropdown-show", [
