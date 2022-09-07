@@ -70,7 +70,7 @@ export function createTailwindLoader() {
 	let classCompletionList: ICompletionItem[] | undefined
 	let cssPropsCompletionList: ICompletionItem[] | undefined
 
-	let config: twobj.ResolvedConfigJS & { extrators?: Extractor[] }
+	let config: twobj.ResolvedConfigJS
 	let tw: TwContext
 	let variants: Fuse<string>
 	let classnames: Fuse<string>

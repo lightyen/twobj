@@ -603,7 +603,6 @@ export interface PresetFunction {
 export interface StrictConfigJS {
 	presets?: (ConfigJS | PresetFunction)[]
 	theme?: Theme & CustomTheme
-	extrators?: unknown[]
 	plugins?: Plugin[]
 	darkMode?: boolean | "media" | "class" | ["class", string]
 	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures>
