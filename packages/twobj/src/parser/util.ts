@@ -7,73 +7,7 @@ export function camelCase(value: string) {
 	return value.replace(/-[a-z]/g, x => x[1].toUpperCase())
 }
 
-/** NOTE: respect quoted string */
-export function removeComment(text: string): string {
-	let comment = 0
-	let string = 0
-	const arr: string[] = []
-	const start = 0
-	const end = text.length
-
-	let base = start
-	let i = start
-	for (; i < end; i++) {
-		const char = text.charCodeAt(i)
-		let __comment = comment
-
-		if (comment === 0) {
-			if (string === 0) {
-				if (char === 47 && text.charCodeAt(i + 1) === 47) {
-					__comment = 1
-				} else if (char === 47 && text.charCodeAt(i + 1) === 42) {
-					__comment = 2
-				}
-			}
-		} else if (comment === 1 && char === 10) {
-			__comment = 0
-		} else if (comment === 2 && char === 42 && text.charCodeAt(i + 1) === 47) {
-			__comment = 0
-		}
-
-		if (string === 0) {
-			if (comment === 0) {
-				if (char === 34) {
-					string = 1
-				} else if (char === 39) {
-					string = 2
-				}
-			}
-		} else if (string === 1 && char === 34) {
-			string = 0
-		} else if (string === 2 && char === 39) {
-			string = 0
-		}
-
-		if (comment === 0 && __comment > 0) {
-			if (base < i) {
-				arr.push(text.slice(base, i))
-				base = i
-			}
-			if (__comment === 2) i += 1
-		} else if (comment > 0 && __comment === 0) {
-			base = i
-			if (comment === 2) {
-				i += 1
-				base += 2
-			}
-		}
-
-		comment = __comment
-	}
-
-	if (comment === 0 && base < i) {
-		arr.push(text.slice(base, i))
-	}
-
-	return arr.join("").trim()
-}
-
-/** Try to find right bracket from left bracket, return `undefind` if not found. */
+/** Try to find right bracket from left bracket, return `undefind` if it is not found. */
 export function findRightBracket({
 	text,
 	start = 0,
@@ -261,4 +195,84 @@ export function matchValue(value: string): { num: string; unit?: string } | unde
 	}
 	const [, num, unit] = match
 	return { num, unit }
+}
+
+export function removeComments(
+	source: string,
+	keepSpaces = false,
+	separator = ":",
+	[start = 0, end = source.length] = [],
+): string {
+	const regexp = /(")|(')|(\[)|(\/\/[^\r\n]*(?:[^\r\n]|$))|((?:\/\*).*?(?:\*\/|$))/gs
+	let match: RegExpExecArray | null
+	regexp.lastIndex = start
+	source = source.slice(0, end)
+	let strings: 1 | 2 | undefined
+
+	let buffer = ""
+	while ((match = regexp.exec(source))) {
+		const [, doubleQuote, singleQuote, bracket, lineComment, blockComment] = match
+
+		let hasComment = false
+		if (doubleQuote) {
+			if (!strings) {
+				strings = 1
+			} else {
+				strings = undefined
+			}
+		} else if (singleQuote) {
+			if (!strings) {
+				strings = 2
+			} else {
+				strings = undefined
+			}
+		} else if (bracket) {
+			const rb = findRightBracket({
+				text: source,
+				start: regexp.lastIndex - 1,
+				brackets: [91, 93],
+				end,
+				comments: false,
+			})
+
+			// TODO: Remove comments in arbitrary selectors only.
+			if (rb) {
+				let match = true
+				for (let i = 0; i < separator.length; i++) {
+					if (separator.charCodeAt(i) !== source.charCodeAt(rb + 1 + i)) {
+						match = false
+						break
+					}
+				}
+				if (match && source[regexp.lastIndex - 2] !== "-") {
+					buffer += source.slice(start, regexp.lastIndex)
+					buffer += removeComments(source, keepSpaces, separator, [regexp.lastIndex, rb])
+					start = rb
+				}
+			}
+
+			regexp.lastIndex = rb ? rb + 1 : end
+		} else if (!strings && (lineComment || blockComment)) {
+			hasComment = true
+		}
+
+		let data = source.slice(start, regexp.lastIndex)
+		if (hasComment) {
+			data = data.replace(lineComment || blockComment, match => {
+				if (keepSpaces) {
+					return "".padStart(match.length)
+				}
+				return ""
+			})
+		}
+
+		buffer += data
+		start = regexp.lastIndex
+	}
+
+	if (start < end) {
+		buffer += source.slice(start, end)
+	}
+
+	return buffer
 }

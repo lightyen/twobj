@@ -740,10 +740,7 @@ export const classPlugins: ClassPlugins = {
 		values: theme.boxShadowColor,
 	})),
 	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, theme, resolveTheme, config }) => {
-		const ringColorDefault = withAlphaValue(
-			resolveTheme("ringColor.DEFAULT", "rgb(147 197 253)") as CSSValue,
-			"0.5",
-		)
+		const ringColorDefault = withAlphaValue(resolveTheme("ringColor.DEFAULT", "rgb(147 197 253)") as string, "0.5")
 		addDefaults("ring-width", {
 			"--tw-ring-inset": emptyCssValue,
 			"--tw-ring-offset-width": (resolveTheme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
@@ -849,7 +846,7 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	gradientColorStops: plugin("gradientColorStops", ({ matchUtilities, theme }) => {
-		function transparentTo(color: CSSValue) {
+		function transparentTo(color: string) {
 			return withAlphaValue(color, "0")
 		}
 
@@ -858,13 +855,13 @@ export const classPlugins: ClassPlugins = {
 				from(value) {
 					return {
 						"--tw-gradient-from": value,
-						"--tw-gradient-to": transparentTo(value),
+						"--tw-gradient-to": transparentTo(value.toString()),
 						"--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to)`,
 					}
 				},
 				via(value) {
 					return {
-						"--tw-gradient-to": transparentTo(value),
+						"--tw-gradient-to": transparentTo(value.toString()),
 						"--tw-gradient-stops": `var(--tw-gradient-from), ${value}, var(--tw-gradient-to)`,
 					}
 				},

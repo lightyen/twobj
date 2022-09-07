@@ -17,6 +17,7 @@ test("access tailwind config theme", async () => {
 						"1/1": "#051025",
 						"1.5": "#791291",
 					},
+					var: "var(--color)",
 				},
 			},
 		}),
@@ -55,6 +56,8 @@ test("access tailwind config theme", async () => {
 	expect(theme`colors.foo-5/10 / 0.2`).toEqual("rgb(5 16 96 / 0.2)")
 	expect(theme`colors.foo-5/10/10%`).toEqual("#651025")
 	expect(theme`colors.foo-5/10/10%/20%`).toEqual("rgb(101 16 37 / 20%)")
+	expect(theme`colors.var`).toEqual("var(--color)")
+	expect(theme`colors.var / 10%`).toEqual("rgb(var(--color) / 10%)")
 	expect(tw`bg-[theme(colors.foo-5 / 0.1)]`).toEqual({ backgroundColor: "rgb(5 102 96 / 0.1)" })
 	expect(tw`bg-[theme(colors.foo-5/10 /10%)]`).toEqual({ backgroundColor: "rgb(5 16 96 / 10%)" })
 	expect(tw`bg-foo-5/10/10%`).toEqual({ backgroundColor: "#651025" })
@@ -68,4 +71,5 @@ test("access tailwind config theme", async () => {
 	expect(tw`bg-[theme(colors.foo-5/10 0.2)]`).toEqual({})
 	expect(tw`bg-[theme(colors.foo-5/10   10%)]`).toEqual({})
 	expect(tw`bg-[theme(width.1/2)]`).toEqual({ backgroundSize: "50%" })
+	expect(tw`[background-color: theme(colors.space.DEFAULT)]`).toEqual({ backgroundColor: "#012012" })
 })

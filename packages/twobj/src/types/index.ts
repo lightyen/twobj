@@ -44,7 +44,6 @@ export interface LookupSpec {
 	represent(
 		restInput: string,
 		node: parser.Classname | parser.ArbitraryClassname,
-		getText: (node: parser.BaseNode) => string,
 		negative: boolean,
 	): CSSProperties | undefined
 	supportsNegativeValues: boolean
@@ -160,6 +159,9 @@ export interface CorePlugin {
 }
 
 export interface Context extends PluginOptions {
+	/** core parser */
+	parser: ReturnType<typeof parser.createParser>
+
 	/** globalStyles */
 	globalStyles: Record<string, CSSProperties>
 
@@ -200,11 +202,6 @@ export interface Context extends PluginOptions {
 	getColorClasses(): Map<string, string[]>
 
 	getAmbiguous(): Map<string, LookupSpec[]>
-
-	getThemeValueCompletion(param: { position: number; text: string; start?: number; end?: number }): {
-		range: parser.Range
-		candidates: Array<[string, string]>
-	}
 }
 
 /**

@@ -9,7 +9,6 @@ import type {
 	Palette,
 	PlainCSSProperties,
 	PostModifier,
-	ResolvedConfigJS,
 	StaticSpec,
 	Value,
 } from "./types"
@@ -323,54 +322,4 @@ export function getAmbiguousFrom(utilities: Map<string, LookupSpec | StaticSpec 
 		}
 	}
 	return ret
-}
-
-export function getThemeValueCompletionFromConfig({
-	config,
-	position,
-	text,
-	start = 0,
-	end = text.length,
-}: {
-	config: ResolvedConfigJS
-	position: number
-	text: string
-	start?: number
-	end?: number
-}): {
-	range: parser.Range
-	candidates: Array<[string, string]>
-} {
-	const node = parser.parse_theme_val({ text, start, end })
-	const result = parser.resolvePath(config.theme, node.path, true)
-
-	if (result === undefined) {
-		const ret = parser.tryOpacityValue(node.path)
-		if (ret.opacityValue) {
-			node.path = ret.path
-		}
-	}
-
-	if (node.path.length === 0) {
-		return {
-			range: node.range,
-			candidates: format(config.theme),
-		}
-	}
-
-	const i = node.path.findIndex(p => position >= p.range[0] && position <= p.range[1])
-	const obj = parser.resolvePath(config.theme, node.path.slice(0, i))
-	return {
-		range: node.path[i].range,
-		candidates: format(obj),
-	}
-
-	function format(obj: unknown): Array<[string, string]> {
-		if (typeof obj !== "object") {
-			return []
-		}
-		return Object.entries(Object.assign({}, obj)).map(([key, value]) => {
-			return [key, parser.renderThemeValue({ value })]
-		})
-	}
 }

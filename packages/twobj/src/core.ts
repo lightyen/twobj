@@ -1,5 +1,16 @@
 import { classPlugins } from "./classPlugins"
-import * as parser from "./parser"
+import { camelCase, createParser, findRightBracket } from "./parser"
+import {
+	ArbitraryClassname,
+	ArbitrarySelector,
+	ArbitraryVariant,
+	Classname,
+	Expression,
+	NodeType,
+	SimpleVariant,
+	Variant,
+} from "./parser/nodes"
+import * as theme from "./parser/theme"
 import { escapeCss, findClasses } from "./postcss"
 import type {
 	Context,
@@ -25,7 +36,6 @@ import {
 	getAmbiguousFrom,
 	getClassListFrom,
 	getColorClassesFrom,
-	getThemeValueCompletionFromConfig,
 	isCSSValue,
 	merge,
 	toArray,
@@ -37,7 +47,9 @@ export function createContext(config: ResolvedConfigJS): Context {
 	if (typeof config.separator !== "string" || !config.separator) {
 		config.separator = ":"
 	}
-	parser.setSeparator(config.separator)
+
+	const parser = createParser()
+	parser.separator = config.separator
 
 	if (typeof config.prefix !== "string") {
 		config.prefix = ""
@@ -150,6 +162,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 	resolveGlobalTheme(globalStyles)
 
 	return {
+		parser,
 		globalStyles,
 		utilities: utilityMap,
 		variants: variantMap,
@@ -161,7 +174,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		config: legacyConfig,
 		theme: resolveTheme,
 		renderTheme(value) {
-			return parser.renderTheme(config, value)
+			return theme.renderTheme(config, value)
 		},
 		renderThemeFunc,
 		getClassList() {
@@ -172,9 +185,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 		},
 		getAmbiguous() {
 			return getAmbiguousFrom(utilityMap)
-		},
-		getThemeValueCompletion(options) {
-			return getThemeValueCompletionFromConfig({ config, ...options })
 		},
 		cssVariant,
 		addBase,
@@ -188,10 +198,10 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function renderThemeFunc(value: string): string {
-		return parser.renderThemeFunc(config, value)
+		return theme.renderThemeFunc(config, value)
 	}
 	function resolveTheme(value: string, defaultValue?: unknown): unknown {
-		return parser.resolveThemeNoDefault(config, value, defaultValue)
+		return theme.resolveThemeNoDefault(config, value, defaultValue)
 	}
 
 	function resolveGlobalTheme(g: CSSProperties): void {
@@ -199,7 +209,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		Object.entries(g).map(([key, child]) => {
 			if (typeof child !== "object") {
 				if (typeof child === "string") {
-					g[key] = parser.renderThemeFunc(config, child)
+					g[key] = theme.renderThemeFunc(config, child)
 				}
 				return
 			}
@@ -208,8 +218,9 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function legacyConfig(path: string, defaultValue?: unknown): unknown {
-		const node = parser.parse_theme_val({ text: path })
-		const target = parser.resolvePath(config, node.path, true)
+		const node = theme.parse_theme_val(path)
+		const useDefault = true
+		const target = theme.resolve(config, node.path, useDefault)
 		return target === undefined ? defaultValue : target
 	}
 
@@ -232,9 +243,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function addDefaults(pluginName: string, properties: Record<string, string>): void {
-		properties = Object.fromEntries(
-			Object.entries(properties).map(([key, value]) => [parser.camelCase(key), value]),
-		)
+		properties = Object.fromEntries(Object.entries(properties).map(([key, value]) => [camelCase(key), value]))
 		for (let i = 0; i < defaults.length; i++) {
 			merge(defaults[i], properties)
 		}
@@ -279,7 +288,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			if (!match) {
 				return (css = {}) => ({ [desc]: typeof css === "object" ? { ...css } : css })
 			} else {
-				const rb = parser.findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
+				const rb = findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
 				if (rb == undefined) {
 					return (css = {}) => ({ [desc]: css })
 				}
@@ -469,12 +478,11 @@ export function createContext(config: ResolvedConfigJS): Context {
 					ambiguous = spec.length > 1
 				}
 
-				represent = (input, node, getText, negative) => {
+				represent = (input, node, negative) => {
 					if (negative && !supportsNegativeValues) return undefined
 					return representAny({
 						input,
 						node,
-						getText,
 						values,
 						negative,
 						ambiguous,
@@ -512,7 +520,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			}
 
 			const noAnyTypes = types.filter((t): t is ValueType => t !== "any")
-			represent = (input, node, getText, negative) => {
+			represent = (input, node, negative) => {
 				if (negative && !supportsNegativeValues) return undefined
 
 				let ambiguous = false
@@ -525,7 +533,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 				return representTypes({
 					input,
 					node,
-					getText,
 					values,
 					negative,
 					types: noAnyTypes,
@@ -577,12 +584,11 @@ export function createContext(config: ResolvedConfigJS): Context {
 		}
 
 		const node = program.expressions[0]
-		if (node.type !== parser.NodeType.ClassName && node.type !== parser.NodeType.ArbitraryClassname) {
+		if (node.type !== NodeType.ClassName && node.type !== NodeType.ArbitraryClassname) {
 			return undefined
 		}
 
-		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
-		const [, spec] = classname(node, getText)
+		const [, spec] = classname(node)
 		return spec?.pluginName
 	}
 
@@ -605,58 +611,56 @@ export function createContext(config: ResolvedConfigJS): Context {
 		}
 
 		const rootFn: VariantSpec = (css = {}) => css
-		const getText = (node: parser.BaseNode) => value.slice(node.range[0], node.range[1])
 		const program = parser.parse(value)
 		for (let i = 0; i < program.expressions.length; i++) {
-			process(program.expressions[i], rootStyle, importantRootStyle, rootFn, getText, false)
+			process(program.expressions[i], rootStyle, importantRootStyle, rootFn, false)
 		}
 		return rootStyle
 	}
 
 	function process(
-		node: parser.TwExpression,
+		node: Expression,
 		root: CSSProperties,
 		importantRoot: CSSProperties | undefined,
 		variantCtx: VariantSpec,
-		getText: (node: parser.BaseNode) => string,
 		important: boolean,
 	) {
 		switch (node.type) {
-			case parser.NodeType.VariantSpan: {
+			case NodeType.VariantSpan: {
 				switch (node.variant.type) {
-					case parser.NodeType.SimpleVariant: {
+					case NodeType.SimpleVariant: {
 						const variant = simpleVariant(node.variant)
 						if (node.child) {
-							process(node.child, root, importantRoot, compose(variantCtx, variant), getText, important)
+							process(node.child, root, importantRoot, compose(variantCtx, variant), important)
 						}
 						break
 					}
-					case parser.NodeType.ArbitraryVariant: {
+					case NodeType.ArbitraryVariant: {
 						const variant = arbitraryVariant(node.variant)
 						if (node.child) {
-							process(node.child, root, importantRoot, compose(variantCtx, variant), getText, important)
+							process(node.child, root, importantRoot, compose(variantCtx, variant), important)
 						}
 						break
 					}
-					case parser.NodeType.ArbitrarySelector: {
+					case NodeType.ArbitrarySelector: {
 						const variant = arbitrarySelector(node.variant)
 						if (node.child) {
-							process(node.child, root, importantRoot, compose(variantCtx, variant), getText, important)
+							process(node.child, root, importantRoot, compose(variantCtx, variant), important)
 						}
 						break
 					}
 				}
 				break
 			}
-			case parser.NodeType.Group: {
+			case NodeType.Group: {
 				for (let i = 0; i < node.expressions.length; i++) {
-					process(node.expressions[i], root, importantRoot, variantCtx, getText, important || node.important)
+					process(node.expressions[i], root, importantRoot, variantCtx, important || node.important)
 				}
 				break
 			}
-			case parser.NodeType.ClassName:
-			case parser.NodeType.ArbitraryClassname: {
-				const [result, spec] = classname(node, getText)
+			case NodeType.ClassName:
+			case NodeType.ArbitraryClassname: {
+				const [result, spec] = classname(node)
 				let css = result
 				if (css != undefined) {
 					if (important || node.important || (spec?.respectImportant && importantAll)) {
@@ -670,13 +674,13 @@ export function createContext(config: ResolvedConfigJS): Context {
 				}
 				break
 			}
-			case parser.NodeType.ArbitraryProperty: {
-				const i = node.decl.value.indexOf(":")
+			case NodeType.ArbitraryProperty: {
+				const i = node.decl.getText().indexOf(":")
 				if (i !== -1) {
-					const prop = node.decl.value.slice(0, i).trim()
-					const value = node.decl.value.slice(i + 1).trim()
+					const prop = node.decl.getText().slice(0, i).trim()
+					const value = renderThemeFunc(node.decl.getText().slice(i + 1)).trim()
 					if (prop && value) {
-						let css: CSSProperties = { [parser.camelCase(prop)]: value }
+						let css: CSSProperties = { [camelCase(prop)]: value }
 
 						if (css != undefined) {
 							if (important || node.important || importantAll) {
@@ -692,33 +696,36 @@ export function createContext(config: ResolvedConfigJS): Context {
 				}
 				break
 			}
-			case parser.NodeType.ShortCss: {
+			case NodeType.ShortCss: {
 				// do nothing
 				break
 			}
 		}
 	}
 
-	function simpleVariant(node: parser.SimpleVariant) {
-		return variantMap.get(node.id.value)
+	function simpleVariant(node: SimpleVariant) {
+		return variantMap.get(node.id.getText())
 	}
 
-	function arbitraryVariant(node: parser.ArbitraryVariant) {
+	function arbitraryVariant(node: ArbitraryVariant) {
 		let variant: VariantSpec | undefined
-		const prefix = node.prefix.value
+		const prefix = node.prefix.getText()
 		if (prefix.endsWith("-")) {
 			const key = prefix.slice(0, -1)
 			const spec = arbitraryVariantMap.get(key)
 			if (spec) {
-				const input = node.selector.value
+				const input = node.selector.getText()
 				variant = spec(input)
 			}
 		}
 		return variant
 	}
 
-	function arbitrarySelector(node: parser.ArbitrarySelector) {
-		const value = node.selector.value.trim().replace(/\s{2,}/g, " ")
+	function arbitrarySelector(node: ArbitrarySelector) {
+		const value = node.selector
+			.getText()
+			.trim()
+			.replace(/\s{2,}/g, " ")
 		if (value) {
 			const variant: VariantSpec = (css = {}) => ({ [value]: css })
 			return variant
@@ -726,18 +733,15 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return undefined
 	}
 
-	function classname(
-		node: parser.Classname | parser.ArbitraryClassname,
-		getText: (node: parser.BaseNode) => string,
-	): [css?: CSSProperties, spec?: LookupSpec | StaticSpec] {
+	function classname(node: Classname | ArbitraryClassname): [css?: CSSProperties, spec?: LookupSpec | StaticSpec] {
 		let value: string
-		if (node.type === parser.NodeType.ClassName) {
-			value = getText(node)
+		if (node.type === NodeType.ClassName) {
+			value = node.getText()
 			if (value === "$e") {
 				return [Math.E as unknown as CSSProperties]
 			}
 		} else {
-			value = getText(node.prefix)
+			value = node.prefix.getText()
 			if (node.expr) {
 				node.expr.value = renderThemeFunc(node.expr.value)
 			}
@@ -747,7 +751,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		if (spec) {
 			for (const c of toArray(spec)) {
 				if (c.type === "lookup") {
-					const css = c.represent(restInput, node, getText, negative)
+					const css = c.represent(restInput, node, negative)
 					if (css) {
 						return [css, c]
 					}
@@ -804,7 +808,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return result
 	}
 
-	function cssVariant(...variants: Array<parser.Variant | string>) {
+	function cssVariant(...variants: Array<Variant | string>) {
 		return compose(
 			...variants.map(value => {
 				if (typeof value === "string") {
@@ -819,14 +823,11 @@ export function createContext(config: ResolvedConfigJS): Context {
 					}
 
 					const node = program.expressions[0]
-					if (
-						node.type !== parser.NodeType.VariantSpan ||
-						node.variant.type === parser.NodeType.SimpleVariant
-					) {
+					if (node.type !== NodeType.VariantSpan || node.variant.type === NodeType.SimpleVariant) {
 						return undefined
 					}
 
-					if (node.variant.type === parser.NodeType.ArbitrarySelector) {
+					if (node.variant.type === NodeType.ArbitrarySelector) {
 						return arbitrarySelector(node.variant)
 					}
 
@@ -834,11 +835,11 @@ export function createContext(config: ResolvedConfigJS): Context {
 				}
 
 				const node = value
-				if (node.type === parser.NodeType.SimpleVariant) {
-					return variantMap.get(node.id.value)
+				if (node.type === NodeType.SimpleVariant) {
+					return variantMap.get(node.id.getText())
 				}
 
-				if (node.type === parser.NodeType.ArbitrarySelector) {
+				if (node.type === NodeType.ArbitrarySelector) {
 					return arbitrarySelector(node)
 				}
 

@@ -58,6 +58,7 @@ test("backgroundColor", async () => {
 	expect(tw`bg-[color:var(--color)]/30`).toEqual({ backgroundColor: "rgb(var(--color) / 0.3)" })
 	expect(tw`bg-red-500`).toEqual({ backgroundColor: "#ef4444" })
 	expect(tw`bg-red-500/50`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
+	expect(tw`bg-red-500/50%`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
 	expect(tw`bg-[theme(colors.red.500)]`).toEqual({ backgroundColor: "#ef4444" })
 	expect(tw`bg-[theme(colors.red.500)]/50`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
 	expect(tw`bg-[theme(colors.red.500 / 0.5)]`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
@@ -100,6 +101,8 @@ test("backgroundSize", async () => {
 
 test("textColor", async () => {
 	expect(tw`text-white`).toEqual({ color: "#fff" })
+	expect(tw`text-white/12`).toEqual({ color: "rgb(255 255 255 / 0.12)" })
+	expect(tw`text-white/12%`).toEqual({ color: "rgb(255 255 255 / 0.12)" })
 	expect(tw`text-[white]`).toEqual({ color: "white" })
 	expect(tw`text-[rgb(33 33 139)]`).toEqual({ color: "rgb(33 33 139)" })
 	expect(tw`text-[rgb(var(--color))]`).toEqual({ color: "rgb(var(--color))" })
@@ -144,4 +147,12 @@ test("maxWidth", async () => {
 	expect(tw`max-w-full`).toEqual({ maxWidth: "100%" })
 	expect(tw`max-w-xl`).toEqual({ maxWidth: "36rem" })
 	expect(tw`max-w-screen-xl`).toEqual({ maxWidth: "1280px" })
+})
+
+test("invalid", async () => {
+	expect(tw`h-unknown`).toEqual({})
+	expect(tw`h-1/xx`).toEqual({})
+	expect(tw`h-1/3d`).toEqual({})
+	expect(tw`text-xl/2%`).toEqual({})
+	expect(tw`text-xl/[0.2]`).toEqual({})
 })

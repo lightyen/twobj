@@ -47,18 +47,11 @@ export enum NodeType {
 
 export type Range = [number, number]
 
-export interface NodeToken {
-	range: Range
-}
-
-export interface NodeData {
-	value: string
-}
-
-export type TokenString = NodeToken & NodeData
-
-export interface BaseNode extends NodeToken {
+export interface BaseNode {
 	type: NodeType
+	range: Range
+	/** Get raw text in the range. */
+	getText(): string
 }
 
 export interface Important {
@@ -69,7 +62,7 @@ export interface Closed {
 	closed: boolean
 }
 
-export interface Identifier extends BaseNode, NodeData {
+export interface Identifier extends BaseNode {
 	type: NodeType.Identifier
 }
 
@@ -91,16 +84,17 @@ export interface ArbitraryVariant extends BaseNode {
 
 export type Variant = SimpleVariant | ArbitrarySelector | ArbitraryVariant
 
-export interface CssSelector extends BaseNode, NodeData {
+export interface CssSelector extends BaseNode {
 	type: NodeType.CssSelector
 }
 
-export interface Classname extends BaseNode, NodeData, Important {
+export interface Classname extends BaseNode, Important {
 	type: NodeType.ClassName
 }
 
-export interface CssExpression extends BaseNode, NodeData {
+export interface CssExpression extends BaseNode {
 	type: NodeType.CssExpression
+	value: string
 }
 
 export interface WithOpacity extends BaseNode, Closed {
@@ -108,7 +102,7 @@ export interface WithOpacity extends BaseNode, Closed {
 	opacity: Identifier
 }
 
-export interface EndOpacity extends BaseNode, NodeData {
+export interface EndOpacity extends BaseNode {
 	type: NodeType.EndOpacity
 }
 
@@ -119,11 +113,11 @@ export interface ArbitraryClassname extends BaseNode, Important, Closed {
 	e?: WithOpacity | EndOpacity
 }
 
-export interface CssDeclaration extends BaseNode, NodeData {
+export interface CssDeclaration extends BaseNode {
 	type: NodeType.CssDeclaration
 }
 
-export interface ArbitraryProperty extends BaseNode, NodeData, Important, Closed {
+export interface ArbitraryProperty extends BaseNode, Important, Closed {
 	type: NodeType.ArbitraryProperty
 	decl: CssDeclaration
 }
@@ -137,24 +131,24 @@ export interface ShortCss extends BaseNode, Important, Closed {
 export interface VariantSpan extends BaseNode {
 	type: NodeType.VariantSpan
 	variant: SimpleVariant | ArbitrarySelector | ArbitraryVariant
-	child?: TwExpression
+	child?: Expression
 }
 
-export type TwExpression = Classname | ArbitraryClassname | ArbitraryProperty | ShortCss | VariantSpan | Group
+export type Expression = Classname | ArbitraryClassname | ArbitraryProperty | ShortCss | VariantSpan | Group
 
 export interface Group extends BaseNode, Important, Closed {
 	type: NodeType.Group
-	expressions: TwExpression[]
+	expressions: Expression[]
 }
 
 export interface Program extends BaseNode {
 	type: NodeType.Program
-	expressions: TwExpression[]
+	expressions: Expression[]
 }
 
 export type Node =
 	| Program
-	| TwExpression
+	| Expression
 	| SimpleVariant
 	| ArbitrarySelector
 	| ArbitraryVariant
@@ -177,16 +171,14 @@ export interface ThemeFunctionNode extends BaseNode, Closed {
 	value: ThemeValueNode
 	valueRange: Range
 	defaultValue?: string
-	toString(): string
 }
 
 export interface ThemeValueNode extends BaseNode {
 	type: NodeType.ThemeValue
 	path: ThemePathNode[]
-	toString(): string
 }
 
-export interface ThemePathNode extends BaseNode, NodeData, Closed {
+export interface ThemePathNode extends BaseNode, Closed {
 	type: NodeType.ThemePath
-	toString(): string
+	value: string
 }

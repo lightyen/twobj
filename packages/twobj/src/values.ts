@@ -1,5 +1,5 @@
 import * as parser from "./parser"
-import type { ColorValueFunc, CSSProperties, CSSValue, Template, Value, ValueType } from "./types"
+import type { ColorValueFunc, CSSProperties, Template, Value, ValueType } from "./types"
 import { opacityToFloat, toArray } from "./util"
 
 interface LookupResult {
@@ -52,9 +52,9 @@ function lookupValues(
 		}
 		if (node.e) {
 			if (node.e.type === parser.NodeType.WithOpacity) {
-				result.opacity = node.e.opacity.value
+				result.opacity = node.e.opacity.getText()
 			} else if (node.e.type === parser.NodeType.EndOpacity) {
-				const opacity = opacityToFloat(node.e.value)
+				const opacity = opacityToFloat(node.e.getText())
 				if (!Number.isNaN(opacity)) {
 					result.opacity = opacity.toString()
 				}
@@ -79,11 +79,12 @@ function lookupValues(
 			if (i === -1) {
 				return undefined
 			}
-			const opacity = opacityToFloat(input.slice(i + 1))
+			const suffix = input.slice(i + 1)
+			const opacity = opacityToFloat(suffix)
 			if (!Number.isNaN(opacity)) {
-				result.opacity = opacity.toString()
+				result.opacity = String(opacity)
+				result.key = input.slice(0, i)
 			}
-			result.key = input.slice(0, i)
 		}
 	}
 
@@ -93,7 +94,6 @@ function lookupValues(
 export function representAny({
 	input,
 	node,
-	getText,
 	values,
 	negative,
 	template,
@@ -102,7 +102,6 @@ export function representAny({
 }: {
 	input: string
 	node: parser.Classname | parser.ArbitraryClassname
-	getText: (node: parser.BaseNode) => string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	values: Record<string, any>
 	negative: boolean
@@ -119,6 +118,11 @@ export function representAny({
 	if (result.key != undefined) {
 		const exists = Object.prototype.hasOwnProperty.call(values, result.key)
 		if (!exists) {
+			return undefined
+		}
+
+		if (result.opacity) {
+			// color types should be handled with representTypes()
 			return undefined
 		}
 
@@ -834,7 +838,6 @@ export const __types: Types = {
 export function representTypes({
 	input,
 	node,
-	getText,
 	values,
 	negative,
 	template,
@@ -844,7 +847,6 @@ export function representTypes({
 }: {
 	input: string
 	node: parser.Classname | parser.ArbitraryClassname
-	getText: (node: parser.BaseNode) => string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	values: Record<string, any>
 	negative: boolean
@@ -879,6 +881,9 @@ export function representTypes({
 		const config = values[result.key]
 
 		for (const h of _types) {
+			if (h !== color && result.opacity) {
+				continue
+			}
 			const value = h.handleConfig(config, options)
 			if (typeof value === "string" || typeof value === "number") {
 				return template(value)
@@ -914,17 +919,14 @@ export function representTypes({
 	return undefined
 }
 
-export function withAlphaValue(
-	color: CSSValue | ((options: { opacityValue?: string }) => CSSValue),
-	opacityValue?: string,
-) {
+export function withAlphaValue(color: string | ((options: { opacityValue?: string }) => string), opacity?: string) {
 	if (typeof color === "function") {
-		return color({ opacityValue })
+		return color({ opacityValue: opacity })
 	}
 	if (typeof color === "number") {
 		return color
 	}
-	if (!opacityValue) {
+	if (!opacity) {
 		return color
 	}
 	const result = parser.parseColor(color)
@@ -937,6 +939,6 @@ export function withAlphaValue(
 	if (!parser.isOpacityFunction(result.fn)) {
 		return color
 	}
-	opacityValue = " / " + opacityValue
+	const opacityValue = " / " + opacity
 	return result.fn + "(" + result.params.slice(0, 3).join(" ") + opacityValue + ")"
 }

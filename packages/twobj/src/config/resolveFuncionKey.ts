@@ -53,8 +53,8 @@ function withAlphaValue(color: unknown, opacityValue?: string) {
 }
 
 export function resolveFunctionKeys(themeObject: Record<string, unknown>): Record<string, unknown> {
-	const resolveThemePath = (key: string, defaultValue?: unknown) => {
-		const node = parser.parse_theme_val({ text: key })
+	const resolveThemePath = (path: string, defaultValue?: unknown) => {
+		const node = parser.parse_theme_val(path)
 
 		let target: unknown = themeObject
 		let paths = node.path
@@ -65,11 +65,11 @@ export function resolveFunctionKeys(themeObject: Record<string, unknown>): Recor
 			if (Object.prototype.hasOwnProperty.call(target, path)) {
 				target = (target as Record<string, unknown>)[path]
 			} else {
-				const result = parser.tryOpacityValue(paths)
-				if (!result.opacityValue) {
+				const result = parser.tryOpacity(paths)
+				if (!result.opacity) {
 					target = undefined
 				} else {
-					opacityValue = result.opacityValue
+					opacityValue = result.opacity
 					paths = result.path
 
 					if (i < paths.length && Object.prototype.hasOwnProperty.call(target, paths[i].value)) {
@@ -87,8 +87,8 @@ export function resolveFunctionKeys(themeObject: Record<string, unknown>): Recor
 
 		if (target !== undefined) {
 			if (opacityValue) {
-				if (typeof target === "string" && target.includes("<alpha-value>")) {
-					target.replace("<alpha-value>", "1")
+				if (typeof target === "string") {
+					target = target.replace("<alpha-value>", "1")
 				}
 				if (typeof target === "function") {
 					target = target({ opacityValue })
