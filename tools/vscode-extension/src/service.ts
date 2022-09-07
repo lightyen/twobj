@@ -14,6 +14,7 @@ import completion from "./service/completion"
 import completionResolve from "./service/completionResolve"
 import { validate } from "./service/diagnostics"
 import hover from "./service/hover"
+import { semanticTokens } from "./service/semanticTokens"
 import { createTailwindLoader } from "./service/tailwind"
 
 const context = { console, typescriptExtractor, typescript }
@@ -40,6 +41,12 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 		tabSize: 4,
 		provideHover(document, position) {
 			return onHover(document, position, this.tabSize)
+		},
+	}
+
+	const documentSemanticTokensProvider: vscode.DocumentRangeSemanticTokensProvider = {
+		provideDocumentRangeSemanticTokens(document, range) {
+			return onRangeSemanticTokens(document, range)
 		},
 	}
 
@@ -70,6 +77,7 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 		updateSettings,
 		completionItemProvider,
 		hoverProvider,
+		documentSemanticTokensProvider,
 		provideDiagnostics,
 		colorProvider: {
 			dispose() {
@@ -198,6 +206,21 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 					}, undefined)
 
 				return hover(token, document, position, state, options, tabSize)
+			} catch (error) {
+				console.error(error)
+				return defaultValue
+			}
+		})
+	}
+
+	async function onRangeSemanticTokens(document: TextDocument, range: vscode.Range) {
+		return wait<vscode.ProviderResult<vscode.SemanticTokens>>(undefined, defaultValue => {
+			try {
+				const tokens = defaultExtractors
+					.concat(state.extractors)
+					.filter(e => e.acceptLanguage(document.languageId))
+					.flatMap(extractor => extractor.findAll(document.languageId, document.getText(), context))
+				return semanticTokens(tokens, document, range, state, options)
 			} catch (error) {
 				console.error(error)
 				return defaultValue

@@ -7,8 +7,6 @@
       "patterns": [
         { "include": "#line-comment" },
         { "include": "#block-comment" },
-        { "include": "#arbitrary-variant-or-property" },
-        { "include": "#variant" },
         { "include": "#short-css" },
         { "include": "#arbitrary-classname" },
         { "include": "#arbitrary-opacity" },

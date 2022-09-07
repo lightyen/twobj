@@ -177,6 +177,15 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			},
 		}
 
+		const documentRangeSemanticTokensProvider: vscode.DocumentRangeSemanticTokensProvider = {
+			async provideDocumentRangeSemanticTokens(document, range, token) {
+				if (!settings.enabled) return null
+				const srv = matchService(document.uri, services)
+				if (!srv) return null
+				return srv.documentSemanticTokensProvider.provideDocumentRangeSemanticTokens(document, range, token)
+			},
+		}
+
 		disposes.push(
 			vscode.languages.registerCompletionItemProvider(
 				documentSelector,
@@ -185,6 +194,14 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			),
 			vscode.languages.registerHoverProvider(documentSelector, hoverProvider),
 			vscode.languages.registerCodeActionsProvider(documentSelector, codeActionProvider),
+			vscode.languages.registerDocumentRangeSemanticTokensProvider(
+				documentSelector,
+				documentRangeSemanticTokensProvider,
+				{
+					tokenTypes: ["variant"],
+					tokenModifiers: ["tw"],
+				},
+			),
 			vscode.window.onDidChangeActiveTextEditor(async editor => {
 				activeTextEditor = editor
 				if (activeTextEditor?.document.uri.scheme === "output") return

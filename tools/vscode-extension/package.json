@@ -31,6 +31,7 @@
     "theme": "dark"
   },
   "activationEvents": [
+    "*",
     "workspaceContains:**/{*.js,*.jsx,*.ts,*.tsx}"
   ],
   "main": "./dist/extension",
@@ -131,12 +132,20 @@
       {
         "injectTo": [
           "source.tsx",
-          "source.js.jsx"
+          "source.js.jsx",
+          "source.js"
         ],
         "scopeName": "source.tag.tw",
         "path": "./syntaxes/injectionJsx.json"
       }
     ],
+    "configurationDefaults": {
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "variant.tw": "#C678DD"
+        }
+      }
+    },
     "configuration": {
       "title": "Twobj IntelliSense",
       "properties": {
