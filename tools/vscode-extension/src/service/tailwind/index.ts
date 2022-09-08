@@ -1,8 +1,8 @@
 import type { PnpApi } from "@yarnpkg/pnp"
 import chokidar from "chokidar"
 import Fuse from "fuse.js"
-import * as twobj from "twobj"
-import defaultConfig from "twobj/config/defaultConfig"
+import type { ConfigJS, ResolvedConfigJS } from "twobj"
+import { defaultConfig, resolveConfig } from "twobj"
 import * as vscode from "vscode"
 import { URI } from "vscode-uri"
 import { calcFraction } from "~/common"
@@ -70,7 +70,7 @@ export function createTailwindLoader() {
 	let classCompletionList: ICompletionItem[] | undefined
 	let cssPropsCompletionList: ICompletionItem[] | undefined
 
-	let config: twobj.ResolvedConfigJS
+	let config: ResolvedConfigJS
 	let tw: TwContext
 	let variants: Fuse<string>
 	let classnames: Fuse<string>
@@ -108,7 +108,7 @@ export function createTailwindLoader() {
 
 	function readTailwind({ configPath, pnp, mode, onChange }: CreateTailwindLoaderOptions) {
 		dispose()
-		let __config: twobj.ConfigJS
+		let __config: ConfigJS
 		const deps: string[] = []
 		if (configPath) {
 			try {
@@ -132,10 +132,9 @@ export function createTailwindLoader() {
 		}
 
 		if (__config) {
-			config = twobj.resolveConfig(__config)
+			config = resolveConfig(__config)
+			createContext()
 		}
-
-		createContext()
 	}
 
 	function createContext() {

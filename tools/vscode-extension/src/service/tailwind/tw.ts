@@ -2,7 +2,8 @@ import * as culori from "culori"
 import { sha1 } from "object-hash"
 import type { AtRule, Root, Rule } from "postcss"
 import postcss from "postcss"
-import * as twobj from "twobj"
+import type { CSSProperties, ResolvedConfigJS, ValueType } from "twobj"
+import { createContext } from "twobj"
 import * as parser from "twobj/parser"
 import { isColorFunction, isColorHexValue, isColorIdentifier, parse as parseColors } from "~/common/color"
 import { defaultLogger as console } from "~/common/logger"
@@ -20,7 +21,7 @@ export type TwContext = ReturnType<typeof createTwContext>
 export type CssText = string
 export type ScssText = string
 
-function guessValue(typ: twobj.ValueType | "any") {
+function guessValue(typ: ValueType | "any") {
 	switch (typ) {
 		case "number":
 			return "1"
@@ -55,10 +56,7 @@ function guessValue(typ: twobj.ValueType | "any") {
 	}
 }
 
-export function createTwContext(config: twobj.ResolvedConfigJS) {
-	const context = twobj.createContext(config)
-	const screens = Object.keys(config.theme.screens).sort(screenSorter)
-
+export function createTwContext(config: ResolvedConfigJS) {
 	if (typeof config.prefix === "function") {
 		console.info("function prefix is not supported.")
 		config.prefix = ""
@@ -67,6 +65,9 @@ export function createTwContext(config: twobj.ResolvedConfigJS) {
 	if (typeof config.prefix !== "string") {
 		config.prefix = ""
 	}
+
+	const context = createContext(config)
+	const screens = Object.keys(config.theme.screens).sort(screenSorter)
 
 	const restVariants = Array.from(context.variants.keys()).filter(
 		key => screens.indexOf(key) === -1 && key !== "dark" && key !== "light" && key !== "placeholder",
@@ -94,7 +95,7 @@ export function createTwContext(config: twobj.ResolvedConfigJS) {
 	]
 	const classnames = context.getClassList()
 
-	const arbitrary: Record<string, Partial<Record<twobj.ValueType | "any", string[]>>> = {}
+	const arbitrary: Record<string, Partial<Record<ValueType | "any", string[]>>> = {}
 
 	for (const [key, valueTypes] of context.arbitraryUtilities) {
 		const prefix = key + "-"
@@ -104,7 +105,7 @@ export function createTwContext(config: twobj.ResolvedConfigJS) {
 
 		const props = new Set<string>()
 		for (const type of valueTypes) {
-			const input = `${config.prefix}${key}-[${guessValue(type)}]`
+			const input = `${key}-[${guessValue(type)}]`
 			const { decls } = renderDecls(input)
 			for (const key of decls.keys()) {
 				props.add(key)
@@ -129,19 +130,11 @@ export function createTwContext(config: twobj.ResolvedConfigJS) {
 		renderVariantScope,
 		renderClassname,
 		renderDecls,
-		getPluginName(classname: string) {
-			return context.getPluginName(trimPrefix(classname))
-		},
 		decorationColors,
 		completionColors,
 		prefix: config.prefix,
-		trimPrefix,
 		arbitrary,
 	} as const
-
-	function trimPrefix(classname: string): string {
-		return classname.slice(config.prefix.length)
-	}
 
 	function replaceSelectorAndComment(node: AtRule | Rule | Root, tabSize = 4) {
 		if ((node.type === "rule" || node.type === "atrule") && node.nodes.every(n => n.type === "decl")) {
@@ -185,11 +178,11 @@ export function createTwContext(config: twobj.ResolvedConfigJS) {
 		return hash
 	}
 
-	function renderScope(style: twobj.CSSProperties) {
+	function renderScope(style: CSSProperties) {
 		style = copyWithoutProps(style)
 		return sha1(style) as string
-		function copyWithoutProps(obj: twobj.CSSProperties) {
-			const retValue: twobj.CSSProperties = {}
+		function copyWithoutProps(obj: CSSProperties) {
+			const retValue: CSSProperties = {}
 			for (const [key, value] of Object.entries(obj)) {
 				if (typeof value !== "string" && typeof value !== "number") {
 					retValue[key] = copyWithoutProps(value)
@@ -278,7 +271,7 @@ export function createTwContext(config: twobj.ResolvedConfigJS) {
 		raws.indent = "".padStart(tabSize)
 		return { root, css }
 
-		function wrap(style: twobj.CSSProperties) {
+		function wrap(style: CSSProperties) {
 			if (
 				Object.values(style).some(value => {
 					return typeof value === "string" || typeof value === "number"

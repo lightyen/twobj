@@ -420,6 +420,23 @@ function checkArbitraryClassname(
 		const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end - 1))
 		const ret = guess(state, prefix)
 		if (ret.score === 0) {
+			if (item.e) {
+				const classname = item.getText()
+				const cssText = state.tw.renderClassname({ classname })
+				if (!cssText) {
+					const [start, end] = item.range
+					const range = new vscode.Range(
+						document.positionAt(offset + start),
+						document.positionAt(offset + end),
+					)
+					result.push({
+						source: DIAGNOSTICS_ID,
+						message: `'${classname}' is an unknown value.`,
+						range,
+						severity: vscode.DiagnosticSeverity.Error,
+					})
+				}
+			}
 			return result
 		}
 		if (ret.value) {
@@ -448,7 +465,6 @@ function checkArbitraryClassname(
 	}
 
 	if (prefix[0] === "-") prefix = prefix.slice(1)
-	if (prefix.startsWith(state.tw.prefix)) prefix = prefix.slice(state.tw.prefix.length)
 
 	if (!state.tw.arbitrary[prefix]) {
 		const start = item.range[0]
@@ -668,7 +684,7 @@ function guess(state: TailwindLoader, text: string): { kind: PredictionKind; val
 }
 
 function isLoose(state: TailwindLoader, label: string, decls: Map<string, string[]>) {
-	const pluginName = state.tw.getPluginName(label)
+	const pluginName = state.tw.context.getPluginName(label)
 	if (!pluginName) return true
 	switch (pluginName) {
 		case "lineHeight":
