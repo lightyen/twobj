@@ -58,13 +58,13 @@ importers:
       next: 12.2.5_rlaikcoslzwwtqyk7brpdzej5y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      twobj: link:../../packages/twobj
+      twobj: 1.0.6
 
   examples/node:
     specifiers:
       twobj: 1.0.6
     dependencies:
-      twobj: link:../../packages/twobj
+      twobj: 1.0.6
 
   examples/react-emotion:
     specifiers:
@@ -118,7 +118,7 @@ importers:
       react-redux: 8.0.2_yjtsim5uvgjttslbpqb5so5y3m
       redux: 4.2.0
       redux-saga: 1.2.1
-      twobj: link:../../packages/twobj
+      twobj: 1.0.6
     devDependencies:
       '@rollup/plugin-yaml': 3.1.0_rollup@2.79.0
       '@swc/core': 1.2.248
@@ -226,7 +226,7 @@ importers:
       react-redux: 8.0.2_rxpulxqxsibgdk5rs4llgxl6gy
       redux: 4.2.0
       redux-saga: 1.1.3
-      twobj: link:../../packages/twobj
+      twobj: 1.0.6
     devDependencies:
       '@babel/core': 7.18.9
       '@babel/plugin-transform-runtime': 7.18.9_@babel+core@7.18.9
@@ -371,7 +371,7 @@ importers:
       terser-webpack-plugin: 5.3.6
       ts-paths-resolve-plugin: 5.8.0
       tslib: 2.4.0
-      twobj: ../../packages/twobj
+      twobj: 1.1.0
       typescript: 4.8.2
       typescript-paths: 1.4.0
       vsce: 2.11.0
@@ -12963,6 +12963,10 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
+
+  /twobj/1.0.6:
+    resolution: {integrity: sha512-b+JEyc5sroiKEjOvFP4BRquHROGGPhakxnHuOGg1/iyi8gizoPaDqsO7T0Z3XHweWpt0ZQWLNsPIWYTJkN3okw==}
+    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
