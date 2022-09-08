@@ -22,6 +22,7 @@ function getAllConfigs(config: ConfigJS): ConfigJS[] {
 	return [config, ...presets]
 }
 
+/** Resolve all tailwind configurations. */
 export function resolveConfig(...args: Array<ConfigJS | null | undefined>) {
 	let configs = args.filter((c): c is ConfigJS => Boolean(c))
 	if (configs.length === 0) {

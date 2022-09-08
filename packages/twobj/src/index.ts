@@ -1,3 +1,5 @@
+export { default as defaultColors } from "./config/defaultColors"
+export { default as defaultConfig } from "./config/defaultConfig"
 export { resolveConfig } from "./config/resolveConfig"
 export { createContext } from "./core"
 export { plugin } from "./plugin"

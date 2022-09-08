@@ -43,6 +43,7 @@ import {
 import { representAny, representTypes } from "./values"
 import { variantPlugins } from "./variantPlugins"
 
+/** Create a tailwind context. */
 export function createContext(config: ResolvedConfigJS): Context {
 	if (typeof config.separator !== "string" || !config.separator) {
 		config.separator = ":"

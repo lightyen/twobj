@@ -17,17 +17,12 @@
 		"./parser": {
 			"require": "./parser/index.js",
 			"import": "./parser/index.mjs"
-		},
-		"./config/defaultConfig": {
-			"require": "./config/defaultConfig.js",
-			"import": "./config/defaultConfig.mjs"
 		}
 	},
 	"scripts": {
-		"compile": "del ./index.* ./parser ./config && tsup",
-		"types": "del *.d.ts **/*.d.ts && tsc --project tsconfig.types.json",
+		"compile": "del ./index.* ./parser ./config *.d.ts **/*.d.ts && tsup",
 		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
-		"build": "npm run compile && npm run types && npm run format"
+		"build": "npm run compile && npm run format"
 	},
 	"files": [
 		"parser",

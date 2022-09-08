@@ -1,4 +1,4 @@
-import { resolveConfig } from "../src/config"
+import { resolveConfig } from "../src"
 import { createContext } from "../src/core"
 
 test("expandAtRules", async () => {

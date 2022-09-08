@@ -1,4 +1,4 @@
-import { resolveConfig } from "../src/config"
+import { resolveConfig } from "../src"
 import { ConfigJS } from "../src/types"
 
 test("defaultConfig", async () => {

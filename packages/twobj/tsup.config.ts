@@ -7,6 +7,7 @@ export default defineConfig([
 		splitting: false,
 		sourcemap: false,
 		clean: false,
+		dts: true,
 		format: ["esm", "cjs"],
 	},
 	{
@@ -15,22 +16,7 @@ export default defineConfig([
 		splitting: false,
 		sourcemap: false,
 		clean: false,
-		format: ["esm", "cjs"],
-	},
-	{
-		entry: ["src/config/defaultConfig.ts"],
-		outDir: "./config",
-		splitting: false,
-		sourcemap: false,
-		clean: false,
-		format: ["esm", "cjs"],
-	},
-	{
-		entry: ["src/config/defaultColors.ts"],
-		outDir: "./config",
-		splitting: false,
-		sourcemap: false,
-		clean: false,
+		dts: true,
 		format: ["esm", "cjs"],
 	},
 ])

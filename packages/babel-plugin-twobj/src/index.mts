@@ -3,7 +3,7 @@ import { createRequire, Module } from "node:module"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
 import * as plugins from "./plugins"
-import type { PluginOptions, ThirdParty } from "./types"
+import { PluginOptions, ThirdParty } from "./types"
 import { createVisitor } from "./visitor"
 
 async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unknown> {

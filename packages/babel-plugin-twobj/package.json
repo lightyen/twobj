@@ -16,10 +16,9 @@
 		}
 	},
 	"scripts": {
-		"compile": "del ./index.* && tsup",
-		"types": "del *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/*.d.ts && tsc --project tsconfig.types.json",
+		"compile": "del ./index.* *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/*.d.ts && tsup",
 		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
-		"build": "npm run compile && npm run types && npm run format"
+		"build": "npm run compile && npm run format"
 	},
 	"peerDependencies": {
 		"twobj": ">=1.0.0"
