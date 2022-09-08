@@ -25,4 +25,12 @@ export default defineConfig([
 		clean: false,
 		format: ["esm", "cjs"],
 	},
+	{
+		entry: ["src/config/defaultColors.ts"],
+		outDir: "./config",
+		splitting: false,
+		sourcemap: false,
+		clean: false,
+		format: ["esm", "cjs"],
+	},
 ])
