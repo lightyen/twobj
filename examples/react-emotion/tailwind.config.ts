@@ -1,4 +1,4 @@
-import utopia, { fontSize } from "./utopia"
+import utopia, { fontSize } from "./utopia.js"
 
 export default {
 	plugins: [

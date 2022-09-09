@@ -12,7 +12,6 @@
 	"parserOptions": {
 		"project": "./tsconfig.json"
 	},
-	"ignorePatterns": ["typings"],
 	"rules": {
 		"spaced-comment": "error",
 		"no-var": "error",

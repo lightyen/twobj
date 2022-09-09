@@ -1,4 +1,4 @@
-declare module "" {
+declare global {
 	declare module "@emotion/react" {
 		export interface Theme {
 			colors: {

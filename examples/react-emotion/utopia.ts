@@ -1,7 +1,20 @@
 // https://utopia.fyi/type/calculator/?c=480,14,1.125,1300,16,1.125,10,3,&s=0.75%7C0.5%7C0.25,1.5%7C2%7C3%7C4%7C6,s-l
 
-export default function utopia(config: Array<[string, number, number, number]>, rootFontSize = 16): Tailwind.Plugin {
-	const fontSize: Record<string, Tailwind.FontSizeValue> = {}
+type FontSizeValueDetail = [
+	fontSize: unknown,
+	options: {
+		lineHeight?: unknown
+		letterSpacing?: unknown
+		fontWeight?: unknown
+	},
+]
+type FontSizeValue = unknown | [fontSize: unknown, lineHeight: unknown] | FontSizeValueDetail
+
+export default function utopia(
+	config: Array<[string, number, number, number]>,
+	rootFontSize = 16,
+): import("twobj").Plugin {
+	const fontSize: Record<string, FontSizeValue> = {}
 	function variableName(minValue: number, maxValue: number) {
 		return `--step-${minValue}〰️${maxValue}`.replace(/\./g, "_")
 	}
