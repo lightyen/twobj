@@ -1,4 +1,4 @@
-import { CSSObject, PropsOf, Theme } from "@emotion/react"
+import { PropsOf, Theme } from "@emotion/react"
 import { CSSInterpolation, Interpolation } from "@emotion/serialize"
 import { StyledComponent, StyledOptions } from "@emotion/styled"
 import { FilteringStyledOptions } from "@emotion/styled/types/base"
@@ -53,7 +53,7 @@ declare module "twobj" {
 		 */
 		<
 			C extends React.ComponentClass<React.ComponentProps<C>>,
-			ForwardedProps extends keyof React.ComponentProps<C> = keyof React.ComponentProps<C>,
+			ForwardedProps extends keyof React.ComponentProps<C> & string = keyof React.ComponentProps<C> & string,
 		>(
 			component: C,
 			options: FilteringStyledOptions<React.ComponentProps<C>, ForwardedProps>,
@@ -100,7 +100,7 @@ declare module "twobj" {
 		 */
 		<
 			C extends React.ComponentType<React.ComponentProps<C>>,
-			ForwardedProps extends keyof React.ComponentProps<C> = keyof React.ComponentProps<C>,
+			ForwardedProps extends keyof React.ComponentProps<C> & string = keyof React.ComponentProps<C> & string,
 		>(
 			component: C,
 			options: FilteringStyledOptions<React.ComponentProps<C>, ForwardedProps>,
@@ -139,7 +139,8 @@ declare module "twobj" {
 		 */
 		<
 			Tag extends keyof JSX.IntrinsicElements,
-			ForwardedProps extends keyof JSX.IntrinsicElements[Tag] = keyof JSX.IntrinsicElements[Tag],
+			ForwardedProps extends keyof JSX.IntrinsicElements[Tag] & string = keyof JSX.IntrinsicElements[Tag] &
+				string,
 		>(
 			tag: Tag,
 			options: FilteringStyledOptions<JSX.IntrinsicElements[Tag], ForwardedProps>,
@@ -174,11 +175,11 @@ declare module "twobj" {
 	}
 
 	interface CreateStyledTw extends StyledTags, CreateStyled {
-		(arr: TemplateStringsArray): CSSObject
+		(arr: TemplateStringsArray): CSSInterpolation
 	}
 
 	export const tw: CreateStyledTw
 	export const globalStyles: CSSInterpolation
 	export function theme(arr: TemplateStringsArray): unknown
-	export function wrap(arr: TemplateStringsArray): (arg: CSSInterpolation) => CSSObject
+	export function wrap(arr: TemplateStringsArray): (arg: CSSInterpolation) => CSSInterpolation
 }

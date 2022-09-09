@@ -292,6 +292,7 @@ importers:
       '@babel/types': ^7.18.13
       '@emotion/babel-plugin': 11.10.2
       '@emotion/react': 11.10.4
+      '@emotion/serialize': 1.1.0
       '@emotion/styled': 11.10.4
       '@types/babel-plugin-tester': 9.0.5
       '@types/babel__core': ^7.1.19
@@ -310,6 +311,7 @@ importers:
       '@babel/types': 7.18.13
       '@emotion/babel-plugin': 11.10.2_@babel+core@7.18.13
       '@emotion/react': 11.10.4_v3lqmnp7jnla5x5eji467wk4ae
+      '@emotion/serialize': 1.1.0
       '@emotion/styled': 11.10.4_qzbwge7tbhs2ordiiw7o6wknfm
       '@types/babel-plugin-tester': 9.0.5
       '@types/babel__core': 7.1.19
