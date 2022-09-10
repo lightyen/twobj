@@ -31,13 +31,17 @@ function findNode(
 	if (ts.isJsxAttribute(node)) {
 		const attrName = node.name.text
 		if (attrName === "tw" && node.initializer) {
-			let token: ts.StringLiteral | undefined
+			let token: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral | undefined
 			if (ts.isStringLiteral(node.initializer)) {
 				token = node.initializer
 			} else if (ts.isJsxExpression(node.initializer)) {
 				const { expression } = node.initializer
-				if (expression && ts.isStringLiteral(expression)) {
-					token = expression
+				if (expression) {
+					if (ts.isStringLiteral(expression)) {
+						token = expression
+					} else if (ts.isNoSubstitutionTemplateLiteral(expression)) {
+						token = expression
+					}
 				}
 			}
 			if (token && position >= token.getStart(source) + 1 && !greaterThenEnd(token)) {
@@ -92,13 +96,17 @@ function findAllNode(
 	if (ts.isJsxAttribute(node)) {
 		const attrName = node.name.text
 		if (attrName === "tw" && node.initializer) {
-			let token: ts.StringLiteral | undefined
+			let token: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral | undefined
 			if (ts.isStringLiteral(node.initializer)) {
 				token = node.initializer
 			} else if (ts.isJsxExpression(node.initializer)) {
 				const { expression } = node.initializer
-				if (expression && ts.isStringLiteral(expression)) {
-					token = expression
+				if (expression) {
+					if (ts.isStringLiteral(expression)) {
+						token = expression
+					} else if (ts.isNoSubstitutionTemplateLiteral(expression)) {
+						token = expression
+					}
 				}
 			}
 			if (token) {
