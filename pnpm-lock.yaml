@@ -43,28 +43,28 @@ importers:
       '@emotion/react': 11.10.4
       '@emotion/server': 11.10.0
       '@emotion/styled': 11.10.4
-      babel-plugin-twobj: 1.0.2
+      babel-plugin-twobj: 1.0.5
       next: 12.2.5
       react: 18.2.0
       react-dom: 18.2.0
-      twobj: 1.0.6
+      twobj: 1.2.0
     dependencies:
       '@babel/core': 7.18.13
       '@emotion/css': 11.10.0_@babel+core@7.18.13
       '@emotion/react': 11.10.4_ucuhn75irpsvlf3yq3xnib3jky
       '@emotion/server': 11.10.0_@emotion+css@11.10.0
       '@emotion/styled': 11.10.4_w535q24fobqk4qid5wrv4dbx6u
-      babel-plugin-twobj: 1.0.2_twobj@1.0.6
+      babel-plugin-twobj: link:../../packages/babel-plugin-twobj
       next: 12.2.5_rlaikcoslzwwtqyk7brpdzej5y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      twobj: 1.0.6
+      twobj: link:../../packages/twobj
 
   examples/node:
     specifiers:
-      twobj: 1.0.6
+      twobj: 1.2.0
     dependencies:
-      twobj: 1.0.6
+      twobj: link:../../packages/twobj
 
   examples/react-emotion:
     specifiers:
@@ -84,7 +84,7 @@ importers:
       '@typescript-eslint/parser': 5.36.2
       '@vitejs/plugin-react': 2.1.0
       axios: 0.27.2
-      babel-plugin-twobj: 1.0.2
+      babel-plugin-twobj: 1.0.5
       eslint: 8.23.0
       eslint-plugin-react: 7.31.7
       eslint-plugin-react-hooks: 4.6.0
@@ -111,7 +111,7 @@ importers:
       '@reduxjs/toolkit': 1.8.5_kkwg4cbsojnjnupd3btipussee
       '@tanstack/react-query': 4.2.3_biqbaboplfbrettd7655fr4n2y
       axios: 0.27.2
-      babel-plugin-twobj: 1.0.2_twobj@packages+twobj
+      babel-plugin-twobj: link:../../packages/babel-plugin-twobj
       react-intl: 6.1.1_n4upredruleo7vrbwztywbpoxq
       react-redux: 8.0.2_yjtsim5uvgjttslbpqb5so5y3m
       redux: 4.2.0
@@ -170,7 +170,7 @@ importers:
       autoprefixer: ^10.4.8
       axios: 0.27.2
       babel-loader: 8.2.5
-      babel-plugin-twobj: 1.0.2
+      babel-plugin-twobj: 1.0.5
       cross-env: 7.0.3
       css-loader: 6.7.1
       css-minimizer-webpack-plugin: 4.0.0
@@ -200,7 +200,7 @@ importers:
       tiny-glob: 0.2.9
       ts-paths-resolve-plugin: 5.8.0
       tslib: ^2.4.0
-      twobj: 1.0.6
+      twobj: 1.2.0
       typescript: 4.7.4
       webpack: 5.74.0
       webpack-bundle-analyzer: 4.5.0
@@ -217,12 +217,12 @@ importers:
       '@reduxjs/toolkit': 1.8.3_kkwg4cbsojnjnupd3btipussee
       '@tanstack/react-query': 4.0.10_biqbaboplfbrettd7655fr4n2y
       axios: 0.27.2
-      babel-plugin-twobj: 1.0.2_twobj@1.0.6
+      babel-plugin-twobj: link:../../packages/babel-plugin-twobj
       react-intl: 6.0.5_qtbnez4q7bzoc4eqybg3efzzxe
       react-redux: 8.0.2_rxpulxqxsibgdk5rs4llgxl6gy
       redux: 4.2.0
       redux-saga: 1.1.3
-      twobj: 1.0.6
+      twobj: link:../../packages/twobj
     devDependencies:
       '@babel/core': 7.18.9
       '@babel/plugin-transform-runtime': 7.18.9_@babel+core@7.18.9
@@ -4067,7 +4067,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@eslint/eslintrc/1.3.0:
@@ -5451,7 +5450,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@swc/wasm': 1.2.122
-    dev: true
     optional: true
 
   /@swc/core-android-arm64/1.2.220:
@@ -5481,7 +5479,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@swc/wasm': 1.2.130
-    dev: true
     optional: true
 
   /@swc/core-darwin-arm64/1.2.220:
@@ -5507,7 +5504,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core-darwin-x64/1.2.220:
@@ -5533,7 +5529,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core-freebsd-x64/1.2.220:
@@ -5563,7 +5558,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@swc/wasm': 1.2.130
-    dev: true
     optional: true
 
   /@swc/core-linux-arm-gnueabihf/1.2.220:
@@ -5593,7 +5587,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@swc/wasm': 1.2.130
-    dev: true
     optional: true
 
   /@swc/core-linux-arm64-gnu/1.2.220:
@@ -5619,7 +5612,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core-linux-arm64-musl/1.2.220:
@@ -5645,7 +5637,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core-linux-x64-gnu/1.2.220:
@@ -5671,7 +5662,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core-linux-x64-musl/1.2.220:
@@ -5697,7 +5687,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core-win32-arm64-msvc/1.2.220:
@@ -5727,7 +5716,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@swc/wasm': 1.2.130
-    dev: true
     optional: true
 
   /@swc/core-win32-ia32-msvc/1.2.220:
@@ -5757,7 +5745,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@swc/wasm': 1.2.130
-    dev: true
     optional: true
 
   /@swc/core-win32-x64-msvc/1.2.220:
@@ -5783,7 +5770,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/core/1.2.220:
@@ -5846,7 +5832,6 @@ packages:
       '@swc/core-win32-arm64-msvc': 1.2.249
       '@swc/core-win32-ia32-msvc': 1.2.249
       '@swc/core-win32-x64-msvc': 1.2.249
-    dev: true
 
   /@swc/helpers/0.4.3:
     resolution: {integrity: sha512-6JrF+fdUK2zbGpJIlN7G3v966PQjyx/dPt1T9km2wj+EUBqgrxCk3uX4Kct16MIm9gGxfKRcfax2hVf5jvlTzA==}
@@ -5887,13 +5872,11 @@ packages:
   /@swc/wasm/1.2.122:
     resolution: {integrity: sha512-sM1VCWQxmNhFtdxME+8UXNyPNhxNu7zdb6ikWpz0YKAQQFRGT5ThZgJrubEpah335SUToNg8pkdDF7ibVCjxbQ==}
     requiresBuild: true
-    dev: true
     optional: true
 
   /@swc/wasm/1.2.130:
     resolution: {integrity: sha512-rNcJsBxS70+pv8YUWwf5fRlWX6JoY/HJc25HD/F8m6Kv7XhJdqPPMhyX6TKkUBPAG7TWlZYoxa+rHAjPy4Cj3Q==}
     requiresBuild: true
-    dev: true
     optional: true
 
   /@tailwindcss/typography/0.5.4_tailwindcss@3.1.8:
@@ -6861,8 +6844,8 @@ packages:
       webpack: 4.x.x || 5.x.x
       webpack-cli: 4.x.x
     dependencies:
-      webpack: 5.74.0_2ivlywgen2fleyz4hnjy7wq3tu
-      webpack-cli: 4.10.0_3lewgxathpayo2pqi2m465vtiu
+      webpack: 5.74.0_yscfprbdjwznrcj7ckfq63qlym
+      webpack-cli: 4.10.0_webpack@5.74.0
 
   /@webpack-cli/info/1.5.0_webpack-cli@4.10.0:
     resolution: {integrity: sha512-e8tSXZpw2hPl2uMJY6fsMswaok5FdlGNRTktvFk2sD8RjH0hE2+XistawJx1vmKteh4NmGmNUrp+Tb2w+udPcQ==}
@@ -6870,7 +6853,7 @@ packages:
       webpack-cli: 4.x.x
     dependencies:
       envinfo: 7.8.1
-      webpack-cli: 4.10.0_3lewgxathpayo2pqi2m465vtiu
+      webpack-cli: 4.10.0_webpack@5.74.0
 
   /@webpack-cli/serve/1.7.0_jrmoy2z4ppm6sherzyq2k2csya:
     resolution: {integrity: sha512-oxnCNGj88fL+xzV+dacXs44HcDwf1ovs3AuEzvP7mqXw7fQntqIhQ1BRmynh4qEKQSSSRSWVyXRjmTbZIX9V2Q==}
@@ -6894,7 +6877,6 @@ packages:
         optional: true
     dependencies:
       webpack-cli: 4.10.0_webpack@5.74.0
-    dev: true
 
   /@xtuc/ieee754/1.2.0:
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -7414,22 +7396,6 @@ packages:
 
   /babel-plugin-transform-react-remove-prop-types/0.4.24:
     resolution: {integrity: sha512-eqj0hVcJUR57/Ug2zE1Yswsw4LhuqqHhD+8v120T1cl3kjg76QwtyBrdIk4WVwK+lAhBJVYCd/v+4nc4y+8JsA==}
-    dev: false
-
-  /babel-plugin-twobj/1.0.2_twobj@1.0.6:
-    resolution: {integrity: sha512-039loddpCFLX/07G8h8Uxh3IJJfBe4pqxnT9Ld9DxYAm74q88FUr2Y/g/ItyGxTfFRrjPHKgDmdNOqOM7Iap2A==}
-    peerDependencies:
-      twobj: '>=1.0.0'
-    dependencies:
-      twobj: 1.0.6
-    dev: false
-
-  /babel-plugin-twobj/1.0.2_twobj@packages+twobj:
-    resolution: {integrity: sha512-039loddpCFLX/07G8h8Uxh3IJJfBe4pqxnT9Ld9DxYAm74q88FUr2Y/g/ItyGxTfFRrjPHKgDmdNOqOM7Iap2A==}
-    peerDependencies:
-      twobj: '>=1.0.0'
-    dependencies:
-      twobj: link:packages/twobj
     dev: false
 
   /babel-preset-current-node-syntax/1.0.1_@babel+core@7.19.0:
@@ -8631,7 +8597,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-android-arm64/0.15.5:
@@ -8649,7 +8614,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-darwin-64/0.15.5:
@@ -8667,7 +8631,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-darwin-arm64/0.15.5:
@@ -8685,7 +8648,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-freebsd-64/0.15.5:
@@ -8703,7 +8665,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-freebsd-arm64/0.15.5:
@@ -8721,7 +8682,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-32/0.15.5:
@@ -8739,7 +8699,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-64/0.15.5:
@@ -8757,7 +8716,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-arm/0.15.5:
@@ -8775,7 +8733,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-arm64/0.15.5:
@@ -8793,7 +8750,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-mips64le/0.15.5:
@@ -8811,7 +8767,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-ppc64le/0.15.5:
@@ -8829,7 +8784,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-riscv64/0.15.5:
@@ -8847,7 +8801,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-s390x/0.15.5:
@@ -8865,7 +8818,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-netbsd-64/0.15.5:
@@ -8883,7 +8835,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-openbsd-64/0.15.5:
@@ -8901,7 +8852,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-sunos-64/0.15.5:
@@ -8919,7 +8869,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-32/0.15.5:
@@ -8937,7 +8886,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-64/0.15.5:
@@ -8955,7 +8903,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-arm64/0.15.5:
@@ -8973,7 +8920,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild/0.15.5:
@@ -9032,7 +8978,6 @@ packages:
       esbuild-windows-32: 0.15.7
       esbuild-windows-64: 0.15.7
       esbuild-windows-arm64: 0.15.7
-    dev: true
 
   /escalade/3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
@@ -13977,7 +13922,6 @@ packages:
       serialize-javascript: 6.0.0
       terser: 5.15.0
       webpack: 5.74.0_yscfprbdjwznrcj7ckfq63qlym
-    dev: true
 
   /terser-webpack-plugin/5.3.6_iydahrzc4664nc35pzxqlwvo54:
     resolution: {integrity: sha512-kfLFk+PoLUQIbLmB1+PZDMRSZS99Mp+/MHqDNmMA6tOItzRt+Npe3E+fsMs5mfcM0wCtrrdU387UnV+vnSffXQ==}
@@ -14271,10 +14215,6 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
-
-  /twobj/1.0.6:
-    resolution: {integrity: sha512-b+JEyc5sroiKEjOvFP4BRquHROGGPhakxnHuOGg1/iyi8gizoPaDqsO7T0Z3XHweWpt0ZQWLNsPIWYTJkN3okw==}
-    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -14741,7 +14681,6 @@ packages:
       rechoir: 0.7.1
       webpack: 5.74.0_yscfprbdjwznrcj7ckfq63qlym
       webpack-merge: 5.8.0
-    dev: true
 
   /webpack-dev-middleware/5.3.3_webpack@5.74.0:
     resolution: {integrity: sha512-hj5CYrY0bZLB+eTO+x/j67Pkrquiy7kWepMHmUMoPsmcUaeEnQJqFzHJOyxgWlq746/wUuA64p9ta34Kyb01pA==}
@@ -14905,7 +14844,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: true
 
   /webpackbar/5.0.2_webpack@5.74.0:
     resolution: {integrity: sha512-BmFJo7veBDgQzfWXl/wwYXr/VFus0614qZ8i9znqcl9fnEdiVkdbi0TedLQ6xAK92HZHDJ0QmyQ0fmuZPAgCYQ==}
