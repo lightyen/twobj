@@ -135,7 +135,7 @@ export default async function hover(
 					tabSize,
 				})
 				const codes = new vscode.MarkdownString()
-				if (code) codes.appendCodeblock(code, "scss")
+				if (code) codes.appendCodeblock(beautify(code), "scss")
 
 				if (!header.value && !codes.value) return undefined
 
