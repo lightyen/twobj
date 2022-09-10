@@ -54,14 +54,40 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 					const name = attr.get("name").node.name
 					const value = attr.get("value")
 
-					if (name === "tw" && value.isStringLiteral()) {
-						if (!attributes.find(a => a.kind === "tw")) {
-							attributes.push({
-								kind: "tw",
-								index: i,
-								value: value.node.value,
-								path: attr,
-							})
+					if (name === "tw") {
+						if (value.isStringLiteral()) {
+							if (!attributes.find(a => a.kind === "tw")) {
+								attributes.push({
+									kind: "tw",
+									index: i,
+									value: value.node.value,
+									path: attr,
+								})
+							}
+						} else if (value.isJSXExpressionContainer()) {
+							const expression = value.get("expression")
+							if (expression.isStringLiteral()) {
+								if (!attributes.find(a => a.kind === "tw")) {
+									attributes.push({
+										kind: "tw",
+										index: i,
+										value: expression.node.value,
+										path: attr,
+									})
+								}
+							} else if (expression.isTemplateLiteral()) {
+								const quasi = getFirstQuasi(expression)
+								if (quasi) {
+									if (!attributes.find(a => a.kind === "tw")) {
+										attributes.push({
+											kind: "tw",
+											index: i,
+											value: quasi.node.value.cooked ?? quasi.node.value.raw,
+											path: attr,
+										})
+									}
+								}
+							}
 						}
 					} else if (name === "css") {
 						if (!attributes.find(a => a.kind === "css")) {

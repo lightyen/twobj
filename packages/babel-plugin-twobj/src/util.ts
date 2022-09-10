@@ -6,9 +6,15 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 export function getFirstQuasi(
-	path: NodePath<babel.TaggedTemplateExpression>,
+	path: NodePath<babel.TaggedTemplateExpression | babel.TemplateLiteral>,
 ): NodePath<babel.TemplateElement> | undefined {
-	const quasi = path.get("quasi")
+	let quasi: NodePath<babel.TemplateLiteral>
+	if (path.isTaggedTemplateExpression()) {
+		quasi = path.get("quasi")
+	} else {
+		quasi = path as NodePath<babel.TemplateLiteral>
+	}
+
 	const expressions = quasi.get("expressions")
 	if (expressions.length > 0) {
 		throw expressions[0].buildCodeFrameError("twobj: only allow plain text in template string.")
