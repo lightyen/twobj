@@ -1,7 +1,7 @@
 {
   "name": "source.template.tw",
   "scopeName": "source.template.tw",
-  "injectionSelector": "L:source -comment -string",
+  "injectionSelector": "L:source -comment",
   "patterns": [
     {
       "begin": "\\s*(tw|wrap)(?:(?:(?:\\.[\\w$]+)*|(\\([^\\)]*\\))))*(`)",
