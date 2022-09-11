@@ -17,7 +17,7 @@ function createUtilityPlugin(
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
 	getOptions: (theme: StrictResolvedConfigJS["theme"]) => MatchOption,
 ) {
-	return plugin(pluginName, ({ matchUtilities, theme }) => {
+	return plugin(pluginName, ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			Object.assign(
 				{},
@@ -34,7 +34,7 @@ function createUtilityPlugin(
 					}
 				}),
 			),
-			getOptions?.(theme),
+			getOptions?.(themeObject),
 		)
 	})
 }
@@ -44,9 +44,9 @@ function createColorPlugin(
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
 	getValues: (theme: StrictResolvedConfigJS["theme"]) => Palette,
 ) {
-	return createUtilityPlugin(pluginName, mappings, theme => ({
+	return createUtilityPlugin(pluginName, mappings, themeObject => ({
 		type: "color",
-		values: getValues(theme),
+		values: getValues(themeObject),
 	}))
 }
 
@@ -219,10 +219,10 @@ export const classPlugins: ClassPlugins = {
 	maxHeight: createUtilityPlugin("maxHeight", [["max-h", "maxHeight"]], theme => ({ values: theme.maxHeight })),
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
-	maxWidth: plugin("maxWidth", ({ theme, matchUtilities }) => {
-		const screens = Object.keys(theme.screens).reduce((breakpoints, key) => {
+	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
+		const screens = Object.keys(themeObject.screens).reduce((breakpoints, key) => {
 			let value: string | undefined
-			const v = theme.screens[key]
+			const v = themeObject.screens[key]
 			if (typeof v === "string") {
 				value = v
 			} else {
@@ -239,7 +239,7 @@ export const classPlugins: ClassPlugins = {
 			}
 			return breakpoints
 		}, {})
-		const values = Object.assign({}, theme.maxWidth, screens)
+		const values = Object.assign({}, themeObject.maxWidth, screens)
 		matchUtilities(
 			{
 				"max-w"(value) {
@@ -278,7 +278,7 @@ export const classPlugins: ClassPlugins = {
 	transformOrigin: createUtilityPlugin("transformOrigin", [["origin", "transformOrigin"]], theme => ({
 		values: theme.transformOrigin,
 	})),
-	translate: plugin("translate", ({ matchUtilities, theme }) => {
+	translate: plugin("translate", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			{
 				"translate-x"(value) {
@@ -294,10 +294,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.translate, supportsNegativeValues: true },
+			{ values: themeObject.translate, supportsNegativeValues: true },
 		)
 	}),
-	rotate: plugin("rotate", ({ matchUtilities, theme }) => {
+	rotate: plugin("rotate", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			{
 				rotate(value) {
@@ -307,10 +307,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.rotate, supportsNegativeValues: true },
+			{ values: themeObject.rotate, supportsNegativeValues: true },
 		)
 	}),
-	skew: plugin("skew", ({ matchUtilities, theme }) => {
+	skew: plugin("skew", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			{
 				"skew-x"(value) {
@@ -326,10 +326,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.skew, supportsNegativeValues: true },
+			{ values: themeObject.skew, supportsNegativeValues: true },
 		)
 	}),
-	scale: plugin("scale", ({ matchUtilities, theme }) => {
+	scale: plugin("scale", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			{
 				scale(value) {
@@ -352,7 +352,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.scale, supportsNegativeValues: true },
+			{ values: themeObject.scale, supportsNegativeValues: true },
 		)
 	}),
 	cursor: createUtilityPlugin("cursor", [["cursor", "cursor"]], theme => ({
@@ -468,7 +468,7 @@ export const classPlugins: ClassPlugins = {
 		],
 		theme => ({ type: ["line-width", "length"], values: theme.borderWidth }),
 	),
-	borderSpacing: plugin("borderSpacing", ({ addDefaults, matchUtilities, theme }) => {
+	borderSpacing: plugin("borderSpacing", ({ addDefaults, matchUtilities, themeObject }) => {
 		addDefaults("border-spacing", {
 			"--tw-border-spacing-x": "0",
 			"--tw-border-spacing-y": "0",
@@ -495,7 +495,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.borderSpacing },
+			{ values: themeObject.borderSpacing },
 		)
 	}),
 	backgroundImage: createUtilityPlugin("backgroundImage", [["bg", "backgroundImage"]], theme => ({
@@ -556,11 +556,11 @@ export const classPlugins: ClassPlugins = {
 		values: theme.textIndent,
 		supportsNegativeValues: true,
 	})),
-	fontFamily: plugin("fontFamily", ({ matchUtilities, theme }) => {
+	fontFamily: plugin("fontFamily", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			{
 				font(value) {
-					const values = theme.fontFamily[value]
+					const values = themeObject.fontFamily[value]
 					return {
 						fontFamily: Array.isArray(values) ? values.join(", ") : "",
 					}
@@ -568,7 +568,7 @@ export const classPlugins: ClassPlugins = {
 			},
 			{
 				type: ["generic-name", "family-name"],
-				values: theme.fontFamily,
+				values: themeObject.fontFamily,
 			},
 		)
 	}),
@@ -605,9 +605,9 @@ export const classPlugins: ClassPlugins = {
 		}),
 	),
 
-	fontSize: plugin("fontSize", ({ matchUtilities, theme }) => {
+	fontSize: plugin("fontSize", ({ matchUtilities, themeObject }) => {
 		const values = Object.fromEntries(
-			Object.entries(theme.fontSize).map(([key, value]) => {
+			Object.entries(themeObject.fontSize).map(([key, value]) => {
 				const [fontSize, options = {}] = Array.isArray(value) ? value : [value]
 				const opts =
 					typeof options === "string" || typeof options === "number" ? { lineHeight: options } : options
@@ -629,14 +629,14 @@ export const classPlugins: ClassPlugins = {
 				},
 			},
 			{
-				values: theme.fontSize,
+				values: themeObject.fontSize,
 				type: ["length", "percentage", "absolute-size", "relative-size"],
 			},
 		)
 	}),
-	transitionProperty: plugin("transitionProperty", ({ matchUtilities, resolveTheme, theme }) => {
-		const defaultTimingFunction = resolveTheme("transitionTimingFunction.DEFAULT") as string
-		const defaultDuration = resolveTheme("transitionDuration.DEFAULT") as string
+	transitionProperty: plugin("transitionProperty", ({ matchUtilities, theme, themeObject }) => {
+		const defaultTimingFunction = theme("transitionTimingFunction.DEFAULT") as string
+		const defaultDuration = theme("transitionDuration.DEFAULT") as string
 		matchUtilities(
 			{
 				transition(value): CSSProperties {
@@ -650,7 +650,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.transitionProperty },
+			{ values: themeObject.transitionProperty },
 		)
 	}),
 	transitionDelay: createUtilityPlugin("transitionDelay", [["delay", "transitionDelay"]], theme => ({
@@ -668,7 +668,7 @@ export const classPlugins: ClassPlugins = {
 			filterDefault: true,
 		}),
 	),
-	boxShadow: plugin("boxShadow", ({ addDefaults, matchUtilities, theme }) => {
+	boxShadow: plugin("boxShadow", ({ addDefaults, matchUtilities, themeObject }) => {
 		addDefaults("box-shadow", {
 			"--tw-ring-inset": emptyCssValue,
 			"--tw-ring-offset-shadow": "0 0 #0000",
@@ -729,7 +729,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "shadow", values: theme.boxShadow },
+			{ type: "shadow", values: themeObject.boxShadow },
 		)
 
 		return
@@ -739,12 +739,12 @@ export const classPlugins: ClassPlugins = {
 		filterDefault: true, // 'shadow' already exists
 		values: theme.boxShadowColor,
 	})),
-	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, theme, resolveTheme, config }) => {
-		const ringColorDefault = withAlphaValue(resolveTheme("ringColor.DEFAULT", "rgb(147 197 253)") as string, "0.5")
+	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, themeObject, theme }) => {
+		const ringColorDefault = withAlphaValue(theme("ringColor.DEFAULT", "rgb(147 197 253)") as string, "0.5")
 		addDefaults("ring-width", {
 			"--tw-ring-inset": emptyCssValue,
-			"--tw-ring-offset-width": (resolveTheme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
-			"--tw-ring-offset-color": (resolveTheme("ringOffsetColor.DEFAULT", "#fff") as CSSValue).toString(),
+			"--tw-ring-offset-width": (theme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
+			"--tw-ring-offset-color": (theme("ringOffsetColor.DEFAULT", "#fff") as CSSValue).toString(),
 			"--tw-ring-color": ringColorDefault.toString(),
 			"--tw-ring-offset-shadow": "0 0 #0000",
 			"--tw-ring-shadow": "0 0 #0000",
@@ -763,7 +763,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: "length", values: theme.ringWidth },
+			{ type: "length", values: themeObject.ringWidth },
 		)
 	}),
 	ringColor: createUtilityPlugin("ringColor", [["ring", "--tw-ring-color"]], theme => ({
@@ -779,7 +779,7 @@ export const classPlugins: ClassPlugins = {
 		type: "color",
 		values: theme.ringOffsetColor,
 	})),
-	divideWidth: plugin("divideWidth", ({ addUtilities, matchUtilities, theme }) => {
+	divideWidth: plugin("divideWidth", ({ addUtilities, matchUtilities, themeObject }) => {
 		addUtilities({
 			".divide-y-reverse > :not([hidden]) ~ :not([hidden])": {
 				"--tw-divide-y-reverse": "1",
@@ -811,10 +811,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["line-width", "length"], values: theme.divideWidth },
+			{ type: ["line-width", "length"], values: themeObject.divideWidth },
 		)
 	}),
-	space: plugin("space", ({ addUtilities, matchUtilities, theme }) => {
+	space: plugin("space", ({ addUtilities, matchUtilities, themeObject }) => {
 		addUtilities({
 			".space-y-reverse > :not([hidden]) ~ :not([hidden])": { "--tw-space-y-reverse": "1" },
 			".space-x-reverse > :not([hidden]) ~ :not([hidden])": { "--tw-space-x-reverse": "1" },
@@ -842,10 +842,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.space, supportsNegativeValues: true },
+			{ values: themeObject.space, supportsNegativeValues: true },
 		)
 	}),
-	gradientColorStops: plugin("gradientColorStops", ({ matchUtilities, theme }) => {
+	gradientColorStops: plugin("gradientColorStops", ({ matchUtilities, themeObject }) => {
 		function transparentTo(color: string) {
 			return withAlphaValue(color, "0")
 		}
@@ -871,11 +871,11 @@ export const classPlugins: ClassPlugins = {
 			},
 			{
 				type: "color",
-				values: theme.gradientColorStops,
+				values: themeObject.gradientColorStops,
 			},
 		)
 	}),
-	verticalAlign: plugin("verticalAlign", ({ addUtilities, matchUtilities, theme }) => {
+	verticalAlign: plugin("verticalAlign", ({ addUtilities, matchUtilities }) => {
 		addUtilities({
 			".align-baseline": { verticalAlign: "baseline" },
 			".align-top": { verticalAlign: "top" },
@@ -893,9 +893,9 @@ export const classPlugins: ClassPlugins = {
 			},
 		})
 	}),
-	container: plugin("container", ({ addComponents, theme, resolveTheme }) => {
-		const screens = normalizeScreens(resolveTheme("container.screens", theme.screens))
-		const container = theme.container
+	container: plugin("container", ({ addComponents, themeObject, theme }) => {
+		const screens = normalizeScreens(theme("container.screens", themeObject.screens))
+		const container = themeObject.container
 		const center = container.center ?? false
 		const padding = (container.padding as Record<string, string> | string | undefined) ?? {}
 
@@ -951,9 +951,9 @@ export const classPlugins: ClassPlugins = {
 			...others,
 		])
 	}),
-	animation: plugin("animation", ({ matchUtilities, theme, config }) => {
+	animation: plugin("animation", ({ matchUtilities, themeObject }) => {
 		const keyframes = Object.fromEntries(
-			Object.entries(theme.keyframes).map(([key, value]) => {
+			Object.entries(themeObject.keyframes).map(([key, value]) => {
 				return [key, { [`@keyframes ${key}`]: value }]
 			}),
 		)
@@ -967,7 +967,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.animation },
+			{ values: themeObject.animation },
 		)
 	}),
 	filter: plugin("filter", ({ addDefaults, addUtilities }) => {
@@ -998,7 +998,7 @@ export const classPlugins: ClassPlugins = {
 			".filter-none": { filter: "none" },
 		})
 	}),
-	blur: plugin("blur", ({ matchUtilities, theme }) => {
+	blur: plugin("blur", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1019,10 +1019,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.blur },
+			{ values: themeObject.blur },
 		)
 	}),
-	brightness: plugin("brightness", ({ matchUtilities, theme }) => {
+	brightness: plugin("brightness", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1043,10 +1043,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.brightness },
+			{ type: ["number", "percentage"], values: themeObject.brightness },
 		)
 	}),
-	contrast: plugin("contrast", ({ matchUtilities, theme }) => {
+	contrast: plugin("contrast", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1067,10 +1067,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.contrast },
+			{ type: ["number", "percentage"], values: themeObject.contrast },
 		)
 	}),
-	grayscale: plugin("grayscale", ({ matchUtilities, theme }) => {
+	grayscale: plugin("grayscale", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1091,10 +1091,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.grayscale },
+			{ type: ["number", "percentage"], values: themeObject.grayscale },
 		)
 	}),
-	hueRotate: plugin("hueRotate", ({ matchUtilities, theme }) => {
+	hueRotate: plugin("hueRotate", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1115,10 +1115,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.hueRotate, supportsNegativeValues: true },
+			{ values: themeObject.hueRotate, supportsNegativeValues: true },
 		)
 	}),
-	invert: plugin("invert", ({ matchUtilities, theme }) => {
+	invert: plugin("invert", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1139,10 +1139,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.invert },
+			{ type: ["number", "percentage"], values: themeObject.invert },
 		)
 	}),
-	saturate: plugin("saturate", ({ matchUtilities, theme }) => {
+	saturate: plugin("saturate", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1163,10 +1163,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.saturate },
+			{ type: ["number", "percentage"], values: themeObject.saturate },
 		)
 	}),
-	sepia: plugin("sepia", ({ matchUtilities, theme }) => {
+	sepia: plugin("sepia", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1187,10 +1187,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.sepia },
+			{ type: ["number", "percentage"], values: themeObject.sepia },
 		)
 	}),
-	dropShadow: plugin("dropShadow", ({ matchUtilities, theme }) => {
+	dropShadow: plugin("dropShadow", ({ matchUtilities, themeObject }) => {
 		const cssFilterValue = [
 			"var(--tw-blur)",
 			"var(--tw-brightness)",
@@ -1211,7 +1211,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.dropShadow },
+			{ values: themeObject.dropShadow },
 		)
 	}),
 	backdropFilter: plugin("backdropFilter", ({ addDefaults, addUtilities }) => {
@@ -1242,7 +1242,7 @@ export const classPlugins: ClassPlugins = {
 			".backdrop-filter-none": { backdropFilter: "none" },
 		})
 	}),
-	backdropBlur: plugin("backdropBlur", ({ matchUtilities, theme }) => {
+	backdropBlur: plugin("backdropBlur", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1263,10 +1263,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.backdropBlur },
+			{ values: themeObject.backdropBlur },
 		)
 	}),
-	backdropBrightness: plugin("backdropBrightness", ({ matchUtilities, theme }) => {
+	backdropBrightness: plugin("backdropBrightness", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1287,10 +1287,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropBrightness },
+			{ type: ["number", "percentage"], values: themeObject.backdropBrightness },
 		)
 	}),
-	backdropContrast: plugin("backdropContrast", ({ matchUtilities, theme }) => {
+	backdropContrast: plugin("backdropContrast", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1311,10 +1311,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropContrast },
+			{ type: ["number", "percentage"], values: themeObject.backdropContrast },
 		)
 	}),
-	backdropGrayscale: plugin("backdropGrayscale", ({ matchUtilities, theme }) => {
+	backdropGrayscale: plugin("backdropGrayscale", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1335,10 +1335,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropGrayscale },
+			{ type: ["number", "percentage"], values: themeObject.backdropGrayscale },
 		)
 	}),
-	backdropHueRotate: plugin("backdropHueRotate", ({ matchUtilities, theme }) => {
+	backdropHueRotate: plugin("backdropHueRotate", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1359,10 +1359,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ values: theme.backdropHueRotate, supportsNegativeValues: true },
+			{ values: themeObject.backdropHueRotate, supportsNegativeValues: true },
 		)
 	}),
-	backdropInvert: plugin("backdropInvert", ({ matchUtilities, theme }) => {
+	backdropInvert: plugin("backdropInvert", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1383,10 +1383,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropInvert },
+			{ type: ["number", "percentage"], values: themeObject.backdropInvert },
 		)
 	}),
-	backdropSaturate: plugin("backdropSaturate", ({ matchUtilities, theme }) => {
+	backdropSaturate: plugin("backdropSaturate", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1407,10 +1407,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropSaturate },
+			{ type: ["number", "percentage"], values: themeObject.backdropSaturate },
 		)
 	}),
-	backdropSepia: plugin("backdropSepia", ({ matchUtilities, theme }) => {
+	backdropSepia: plugin("backdropSepia", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1431,10 +1431,10 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropSepia },
+			{ type: ["number", "percentage"], values: themeObject.backdropSepia },
 		)
 	}),
-	backdropOpacity: plugin("backdropOpacity", ({ matchUtilities, theme }) => {
+	backdropOpacity: plugin("backdropOpacity", ({ matchUtilities, themeObject }) => {
 		const cssBackdropFilterValue = [
 			"var(--tw-backdrop-blur)",
 			"var(--tw-backdrop-brightness)",
@@ -1455,7 +1455,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			},
-			{ type: ["number", "percentage"], values: theme.backdropOpacity },
+			{ type: ["number", "percentage"], values: themeObject.backdropOpacity },
 		)
 	}),
 	fontVariantNumeric: plugin("fontVariantNumeric", ({ addDefaults, addUtilities }) => {

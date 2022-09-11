@@ -7,16 +7,16 @@ type VariantPlugins = {
 }
 
 export const variantPlugins: VariantPlugins = {
-	darkVariants: plugin("darkVariants", ({ config, addVariant }) => {
-		if (Array.isArray(config.darkMode)) {
-			const [mode, className = ".dark"] = config.darkMode
+	darkVariants: plugin("darkVariants", ({ configObject, addVariant }) => {
+		if (Array.isArray(configObject.darkMode)) {
+			const [mode, className = ".dark"] = configObject.darkMode
 			if (mode === "class") {
 				addVariant("dark", `${className} &`)
 				return
 			}
 		}
 
-		if (config.darkMode === "class") {
+		if (configObject.darkMode === "class") {
 			addVariant("dark", `.dark &`)
 			return
 		}
@@ -24,8 +24,8 @@ export const variantPlugins: VariantPlugins = {
 		addVariant("dark", "@media (prefers-color-scheme: dark)")
 	}),
 
-	screenVariants: plugin("screenVariants", ({ theme, addVariant }) => {
-		const screens = normalizeScreens(theme.screens)
+	screenVariants: plugin("screenVariants", ({ themeObject, addVariant }) => {
+		const screens = normalizeScreens(themeObject.screens)
 		for (const [key, value] of screens) {
 			let { min, max } = value
 			if (typeof min === "number") min = min + "px"

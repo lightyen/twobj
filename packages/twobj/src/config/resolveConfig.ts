@@ -1,18 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// import resolveConfigObjects from "tailwindcss/lib/util/resolveConfig.js"
-
 import type {
 	ConfigJS,
-	CustomTheme,
 	PresetFunction,
 	ResolvedConfigJS,
+	ResolveThemePath,
 	UserPlugin,
 	UserPluginFunctionWithOption,
 	UserPluginObject,
 } from "../types"
+import type { AnyTheme, AnyThemeEntry, AnyThemeObject } from "../types/config"
 import defaultConfig from "./defaultConfig"
-import { resolveFunctionKeys } from "./resolveFuncionKey"
+import { configUtils, resolveFunctionKeys } from "./resolveFuncionKey"
 
 function getAllConfigs(config: ConfigJS): ConfigJS[] {
 	const presets = (config.presets ?? [defaultConfig])
@@ -32,14 +29,14 @@ export function resolveConfig(...args: Array<ConfigJS | null | undefined>) {
 	return resolveConfigObjects([...configs, ...presets])
 }
 
-function normalizeConfig(config: ResolvedConfigJS): ResolvedConfigJS {
+function normalizeConfig(config: ResolvedConfigJS) {
 	if (typeof config.prefix !== "string") {
 		config.prefix = ""
 	}
 	return config
 }
 
-function extractPluginConfigs(configs: ConfigJS[]): ConfigJS[] {
+function extractPluginConfigs(configs: ConfigJS[]) {
 	let allConfigs: ConfigJS[] = []
 
 	configs.forEach(config => {
@@ -71,7 +68,8 @@ function resolvePluginLists(pluginLists: Array<UserPlugin>[]) {
 	}, [])
 }
 
-function defaults(target: Record<string | symbol, unknown>, ...sources: Record<string | symbol, unknown>[]): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function defaults(target: Record<string | symbol, any>, ...sources: Record<string | symbol, any>[]) {
 	for (const source of sources) {
 		for (const k in source) {
 			if (!Object.prototype.hasOwnProperty.call(target, k)) {
@@ -89,113 +87,138 @@ function defaults(target: Record<string | symbol, unknown>, ...sources: Record<s
 	return target
 }
 
-function isObject(value: unknown) {
-	return typeof value === "object" && value !== null
+// eslint-disable-next-line @typescript-eslint/ban-types
+function isFunction(value: unknown): value is Function {
+	return typeof value === "function"
 }
 
-function mergeWith(target: any, sources: any[], customizer: (objValue: any, srcValue: any) => unknown) {
+function value(valueToResolve: unknown, ...args: unknown[]) {
+	return isFunction(valueToResolve) ? valueToResolve(...args) : valueToResolve
+}
+
+export function mergeWith<Item extends Array<AnyThemeEntry | AnyThemeObject> | AnyThemeObject, Return>(
+	customizer: (objValue: Array<AnyThemeEntry | AnyThemeObject> | AnyThemeObject, srcValue: Item) => AnyThemeEntry,
+	target: Return,
+	...sources: (Item | undefined)[]
+) {
 	for (const source of sources) {
+		if (!isObject(source)) {
+			continue
+		}
 		for (const k in source) {
 			const merged = customizer(target[k], source[k])
 
-			if (merged !== undefined) {
-				target[k] = merged
-				continue
-			}
-
-			if (isObject(target[k]) && isObject(source[k])) {
-				target[k] = mergeWith(target[k], source[k], customizer)
+			if (merged === undefined) {
+				const t = target[k]
+				const s = source[k]
+				if (isObject(t) && isObject(s)) {
+					target[k] = mergeWith(customizer, {}, t, s)
+				} else {
+					target[k] = source[k]
+				}
 			} else {
-				target[k] = source[k]
+				target[k] = merged
 			}
 		}
 	}
 
 	return target
+
+	function isObject(value: unknown): value is Array<AnyThemeEntry | AnyThemeObject> | AnyThemeObject {
+		return typeof value === "object" && value !== null
+	}
 }
 
-function mergeExtensionCustomizer(merged: any, value: any) {
-	// When we have an array of objects, we do want to merge it
-	if (Array.isArray(merged) && isObject(merged[0])) {
-		return merged.concat(value)
-	}
-
-	// When the incoming value is an array, and the existing config is an object, prepend the existing object
-	if (Array.isArray(value) && isObject(value[0]) && isObject(merged)) {
-		return [merged, ...value]
-	}
-
-	// Override arrays (for example for font-families, box-shadows, ...)
-	if (Array.isArray(value)) {
-		return value
-	}
-
-	// Execute default behaviour
-	return undefined
-}
-
-function collectExtends(themes: Array<CustomTheme>) {
+function collectExtends(themes: AnyTheme[]) {
+	const init: AnyThemeObject[] = []
 	return themes.reduce((merged, { extend }) => {
-		return mergeWith(merged, [extend], (mergedValue, extendValue) => {
-			if (mergedValue === undefined) {
-				return [extendValue]
-			}
-
-			if (Array.isArray(mergedValue)) {
-				return [extendValue, ...mergedValue]
-			}
-
-			return [extendValue, mergedValue]
-		})
-	}, {})
+		return mergeWith(
+			(mergedValue, extendValue) => {
+				if (Array.isArray(mergedValue)) {
+					return [extendValue, ...mergedValue] as AnyThemeObject[]
+				}
+				return [extendValue, mergedValue] as AnyThemeObject[]
+			},
+			merged,
+			extend,
+		)
+	}, init)
 }
 
-function mergeThemes(themes: Array<CustomTheme>): { theme: unknown; extend: unknown[] } {
+function collectThemes(themes: AnyTheme[]): { extend: AnyThemeObject[]; theme: AnyTheme } {
 	return {
+		theme: themes.reduce((merged, theme) => defaults(merged, theme), {}),
 		extend: collectExtends(themes),
-		theme: themes.reduce(
-			(merged, theme) =>
-				defaults(merged as Record<string | symbol, unknown>, theme as Record<string | symbol, unknown>),
-			{},
-		),
 	}
 }
 
-function value(valueToResolve: unknown, ...args: any[]) {
-	return typeof valueToResolve === "function" ? valueToResolve(...args) : valueToResolve
-}
+function mergeExtensions({ theme, extend }: ReturnType<typeof collectThemes>) {
+	return mergeWith(
+		(themeValue, extensions) => {
+			// The `extend` property is an array, so we need to check if it contains any functions
+			if (!isFunction(themeValue) && Array.isArray(extensions) && !extensions.some(isFunction)) {
+				return mergeWith(mergeExtensionCustomizer, {}, themeValue, ...extensions)
+			}
 
-function mergeExtensions({ extend, theme }: { theme: unknown; extend: unknown[] }) {
-	return mergeWith(theme, [extend], (themeValue, extensions) => {
-		// The `extend` property is an array, so we need to check if it contains any functions
-		if (
-			typeof themeValue !== "function" &&
-			(!Array.isArray(extensions) || !extensions.some(e => typeof e === "function"))
-		) {
-			return mergeWith({}, [themeValue, ...extensions], mergeExtensionCustomizer)
+			return (resolveThemePath: ResolveThemePath, utils: typeof configUtils) =>
+				mergeWith(
+					mergeExtensionCustomizer,
+					[],
+					...[themeValue, ...extensions].map(funcOrValue => value(funcOrValue, resolveThemePath, utils)),
+				)
+		},
+		theme,
+		extend,
+	)
+
+	function isObject(value: unknown): value is Array<AnyThemeEntry | AnyThemeObject> | AnyThemeObject {
+		return typeof value === "object" && value !== null
+	}
+
+	function mergeExtensionCustomizer(
+		merged: Array<AnyThemeEntry | AnyThemeObject> | AnyThemeObject,
+		value: Array<AnyThemeEntry | AnyThemeObject> | AnyThemeObject,
+	) {
+		// When we have an array of objects, we do want to merge it
+		if (Array.isArray(merged) && isObject(merged[0])) {
+			return merged.concat(value)
 		}
 
-		return (resolveThemePath: any, configUtils: any) =>
-			mergeWith(
-				{},
-				[themeValue, ...extensions].map(e => value(e, resolveThemePath, configUtils)),
-				mergeExtensionCustomizer,
-			)
-	})
+		// When the incoming value is an array, and the existing config is an object, prepend the existing object
+		if (Array.isArray(value) && isObject(value[0]) && isObject(merged)) {
+			return [merged, ...value]
+		}
+
+		// Override arrays (for example for font-families, box-shadows, ...)
+		if (Array.isArray(value)) {
+			return value
+		}
+
+		// Execute default behaviour
+		return undefined
+	}
 }
 
 function resolveConfigObjects(configs: ConfigJS[]) {
 	const allConfigs: ConfigJS[] = [...extractPluginConfigs(configs)]
 
-	const themes = allConfigs.map(t => t.theme).filter((t): t is CustomTheme => t != null)
+	const themes = getThemes(allConfigs)
 
 	return normalizeConfig(
 		defaults(
 			{
-				theme: resolveFunctionKeys(mergeExtensions(mergeThemes(themes))),
+				theme: resolveFunctionKeys(mergeExtensions(collectThemes(themes))),
 				plugins: resolvePluginLists(configs.map(c => c?.plugins ?? [])),
 			},
-			...(allConfigs as Record<string | symbol, unknown>[]),
-		) as ResolvedConfigJS,
+			...allConfigs,
+		) as unknown as ResolvedConfigJS,
 	)
+
+	function isObject(value: unknown): value is object {
+		return typeof value === "object" && value !== null
+	}
+
+	function getThemes(configs: ConfigJS[]) {
+		return configs.filter((c): c is { theme: AnyTheme } => isObject(c.theme)).map(c => c.theme)
+	}
 }

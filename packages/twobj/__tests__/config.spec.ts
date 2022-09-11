@@ -26,3 +26,30 @@ test("overwrite defaultConfig", async () => {
 	const resolved = resolveConfig(data)
 	expect(resolved).toMatchObject(data)
 })
+
+test("does not duplicate extended configs every time resolveConfig is called", () => {
+	const shared = {
+		foo: { bar: { baz: [{ color: "red" }] } },
+	}
+
+	const createConfig = (color: string) =>
+		resolveConfig({
+			theme: {
+				foo: shared.foo,
+				extend: {
+					foo: { bar: { baz: { color } } },
+				},
+			},
+		})
+
+	createConfig("orange")
+	createConfig("yellow")
+	createConfig("green")
+
+	const result = createConfig("blue")
+
+	expect(shared.foo.bar.baz).toMatchObject([{ color: "red" }])
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const foo = result.theme.foo as any
+	expect(foo?.bar?.baz).toMatchObject([{ color: "red" }, { color: "blue" }])
+})

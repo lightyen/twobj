@@ -58,6 +58,9 @@ export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSPr
 	}
 	for (const key in css) {
 		const value = css[key]
+		if (value === undefined) {
+			continue
+		}
 		if (isCSSValue(value)) {
 			continue
 		}
@@ -66,18 +69,26 @@ export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSPr
 	return css
 }
 
-export function isObject(value: unknown): boolean {
+export function isObject(value: unknown): value is object {
 	if (typeof value !== "object") return false
 	if (value === null) return false
 	return true
 }
 
-export function isPlainObject(value: unknown): boolean {
+export function isPlainObject(value: unknown): value is {} {
 	if (Object.prototype.toString.call(value) !== "[object Object]") {
 		return false
 	}
 	const prototype = Object.getPrototypeOf(value)
-	return prototype === Object.prototype || prototype === null
+	return prototype === null || prototype === Object.prototype
+}
+
+export function isPlainArray(value: unknown): value is Array<unknown> {
+	if (Object.prototype.toString.call(value) !== "[object Array]") {
+		return false
+	}
+	const prototype = Object.getPrototypeOf(value)
+	return prototype === null || prototype === Array.prototype
 }
 
 export function assignImpotant(target: any, source: any): any {
@@ -259,6 +270,9 @@ export function getColorClassesFrom(utilities: Map<string, LookupSpec | StaticSp
 	function extractColors(style: CSSProperties): string[] {
 		const colors: string[] = []
 		for (const [prop, value] of Object.entries(style)) {
+			if (value === undefined) {
+				continue
+			}
 			if (isCSSValue(value)) {
 				if (typeof value === "string") {
 					const color = parser.parseColor(value)

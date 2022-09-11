@@ -236,7 +236,7 @@ export function renderTheme(config: ResolvedConfigJS, source: string): string {
  * @return value target
  */
 export function resolveThemeNoDefault(
-	config: ResolvedConfigJS,
+	config: { theme?: unknown },
 	source: string,
 	defaultValue: unknown = undefined,
 ): unknown {

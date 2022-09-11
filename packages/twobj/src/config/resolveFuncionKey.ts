@@ -1,4 +1,7 @@
 import * as parser from "../parser"
+import { ConfigUtils } from "../types"
+import { AnyTheme, AnyThemeEntry, ResolveThemePath } from "../types/config"
+import { isPlainArray, isPlainObject } from "../util"
 import defaultColors from "./defaultColors"
 
 function cloneDeep(value: unknown): unknown {
@@ -11,59 +14,22 @@ function cloneDeep(value: unknown): unknown {
 	return value
 }
 
-export default function isPlainObject(value: unknown) {
-	if (Object.prototype.toString.call(value) !== "[object Object]") {
-		return false
-	}
-	const prototype = Object.getPrototypeOf(value)
-	return prototype === null || prototype === Object.prototype
-}
-
-const configUtils = {
+export const configUtils: ConfigUtils = {
 	colors: defaultColors,
 }
 
-function parseColorFormat(value: unknown) {
-	if (typeof value === "string" && value.includes("<alpha-value>")) {
-		const oldValue = value
-		return ({ opacityValue = "1" }) => oldValue.replace("<alpha-value>", opacityValue)
-	}
-	return value
-}
-
-function withAlphaValue(color: unknown, opacityValue?: string) {
-	if (typeof color === "function") {
-		return color({ opacityValue })
-	}
-	if (typeof color !== "string" || !opacityValue) {
-		return color
-	}
-	const result = parser.parseColor(color)
-	if (!result) {
-		return color
-	}
-	if (result.params.length > 3) {
-		return color
-	}
-	if (!parser.isOpacityFunction(result.fn)) {
-		return color
-	}
-	opacityValue = " / " + opacityValue
-	return result.fn + "(" + result.params.slice(0, 3).join(" ") + opacityValue + ")"
-}
-
-export function resolveFunctionKeys(themeObject: Record<string, unknown>): Record<string, unknown> {
-	const resolveThemePath = (path: string, defaultValue?: unknown) => {
+export function resolveFunctionKeys(themeObject: AnyTheme): AnyTheme {
+	const resolveThemePath: ResolveThemePath = (path, defaultValue) => {
 		const node = parser.parse_theme_val(path)
 
-		let target: unknown = themeObject
+		let target: AnyThemeEntry = themeObject
 		let paths = node.path
 		let opacityValue = ""
 
 		for (let i = 0; i < paths.length; i++) {
 			const path = paths[i].value
 			if (Object.prototype.hasOwnProperty.call(target, path)) {
-				target = (target as Record<string, unknown>)[path]
+				target = (target as AnyTheme)[path]
 			} else {
 				const result = parser.tryOpacity(paths)
 				if (!result.opacity) {
@@ -73,7 +39,7 @@ export function resolveFunctionKeys(themeObject: Record<string, unknown>): Recor
 					paths = result.path
 
 					if (i < paths.length && Object.prototype.hasOwnProperty.call(target, paths[i].value)) {
-						target = (target as Record<string, unknown>)[paths[i].value]
+						target = (target as AnyTheme)[paths[i].value]
 					} else {
 						target = undefined
 					}
@@ -86,18 +52,14 @@ export function resolveFunctionKeys(themeObject: Record<string, unknown>): Recor
 		}
 
 		if (target !== undefined) {
-			if (opacityValue) {
-				if (typeof target === "string") {
-					target = target.replace("<alpha-value>", "1")
-				}
-				if (typeof target === "function") {
-					target = target({ opacityValue })
-				}
-				const color = parseColorFormat(target)
-				return withAlphaValue(color, opacityValue)
-			}
 			if (isPlainObject(target)) {
 				return cloneDeep(target)
+			}
+			if (isPlainArray(target)) {
+				return cloneDeep(target)
+			}
+			if (opacityValue) {
+				target = parser.resolveThemeValue(target, opacityValue) as AnyThemeEntry
 			}
 			return target
 		}
@@ -105,12 +67,10 @@ export function resolveFunctionKeys(themeObject: Record<string, unknown>): Recor
 		return defaultValue
 	}
 
-	Object.assign(resolveThemePath, {
-		theme: resolveThemePath,
-		...configUtils,
-	})
+	resolveThemePath.theme = resolveThemePath
+	resolveThemePath.colors = defaultColors
 
-	return Object.keys(themeObject).reduce<Record<string, unknown>>((resolved, key) => {
+	return Object.keys(themeObject).reduce((resolved, key) => {
 		const target = themeObject[key]
 		if (typeof target === "function") {
 			resolved[key] = target(resolveThemePath, configUtils)

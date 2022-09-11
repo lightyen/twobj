@@ -83,7 +83,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 	const arbitraryVariantMap = new Map<string, (value: string) => VariantSpec>()
 	const arbitraryUtilityMap = new Map<string, Set<ValueType | "any">>()
 
-	const options = {
+	const options: UserPluginOptions = {
 		addBase,
 		addDefaults,
 		addUtilities,
@@ -92,15 +92,28 @@ export function createContext(config: ResolvedConfigJS): Context {
 		matchUtilities,
 		matchComponents,
 		matchVariant,
+		config: legacyConfig,
+		theme: resolveTheme,
+		e(value) {
+			return escapeCss(value)
+		},
+		variants(corePlugin) {
+			return []
+		},
+		corePlugins(feature: keyof CorePluginFeatures): boolean {
+			return corePlugins.has(feature)
+		},
+		prefix(value) {
+			return value
+		},
 	}
 
 	// resolvePlugins
 
 	const apiContext: CorePluginOptions = {
 		...options,
-		config,
-		theme: config.theme,
-		resolveTheme,
+		configObject: config,
+		themeObject: config.theme,
 	}
 
 	const features = new Set<string>()
@@ -119,24 +132,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 		plugin(apiContext)
 	}
 
-	const userContext: UserPluginOptions = {
-		...options,
-		e(value) {
-			return escapeCss(value)
-		},
-		variants(corePlugin) {
-			return []
-		},
-		config: legacyConfig,
-		theme: resolveTheme,
-		corePlugins(feature: keyof CorePluginFeatures): boolean {
-			return corePlugins.has(feature)
-		},
-		prefix(value) {
-			return value
-		},
-	}
-
 	for (let i = 0; i < config.plugins.length; i++) {
 		let _plugin = config.plugins[i]
 		if (typeof _plugin === "function" && (_plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
@@ -153,9 +148,9 @@ export function createContext(config: ResolvedConfigJS): Context {
 			features.add(currentPluginName)
 		}
 		if (typeof plugin === "function") {
-			plugin(userContext)
+			plugin(options)
 		} else if (plugin.handler) {
-			plugin.handler(userContext)
+			plugin.handler(options)
 		}
 		currentPluginName = undefined
 	}
@@ -166,14 +161,12 @@ export function createContext(config: ResolvedConfigJS): Context {
 		parser,
 		globalStyles,
 		utilities: utilityMap,
-		variants: variantMap,
+		variantMap,
 		arbitraryVariants: arbitraryVariantMap,
 		arbitraryUtilities: arbitraryUtilityMap,
 		css,
 		getPluginName,
 		features,
-		config: legacyConfig,
-		theme: resolveTheme,
 		renderTheme(value) {
 			return theme.renderTheme(config, value)
 		},
@@ -188,14 +181,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			return getAmbiguousFrom(utilityMap)
 		},
 		cssVariant,
-		addBase,
-		addDefaults,
-		addUtilities,
-		addComponents,
-		addVariant,
-		matchUtilities,
-		matchComponents,
-		matchVariant,
+		...options,
 	}
 
 	function renderThemeFunc(value: string): string {
@@ -376,7 +362,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 					for (const [key, rest] of selectors) {
 						if (rest !== "&") {
 							ret.push([key, { [rest]: value }])
-						} else if (!isCSSValue(value)) {
+						} else if (value !== undefined && !isCSSValue(value)) {
 							ret.push([key, value])
 						}
 					}

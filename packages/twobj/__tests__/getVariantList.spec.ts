@@ -121,7 +121,7 @@ const source = [
 ]
 
 test("variantList", async () => {
-	const variantListSet = new Set<string>(context.variants.keys())
+	const variantListSet = new Set<string>(context.variantMap.keys())
 	const originSet = new Set<string>(source)
 
 	for (const s of variantListSet) {

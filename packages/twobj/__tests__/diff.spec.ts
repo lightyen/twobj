@@ -66,7 +66,7 @@ test("diff tailwindcss", async () => {
 	/** variants */
 
 	const s2 = new Set(ctx.variantMap.keys())
-	const s3 = new Set(context.variants.keys())
+	const s3 = new Set(context.variantMap.keys())
 	for (const s of s2) {
 		expect(s3).toContain(s)
 	}
