@@ -37,6 +37,7 @@ import {
 	getClassListFrom,
 	getColorClassesFrom,
 	isCSSValue,
+	isObject,
 	merge,
 	toArray,
 } from "./util"
@@ -59,17 +60,22 @@ export function createContext(config: ResolvedConfigJS): Context {
 	const importantAll = config.important === true
 
 	const corePlugins = new Set(
-		Array.isArray(config.corePlugins)
-			? config.corePlugins
-			: Object.values(classPlugins)
+		(() => {
+			const { corePlugins } = config
+			if (Array.isArray(corePlugins)) {
+				return corePlugins
+			}
+			if (isObject(corePlugins)) {
+				return Object.values(classPlugins)
 					.map(p => p.name)
 					.filter(Boolean)
-					.filter(k => {
-						if (config.corePlugins?.[k] === false) {
-							return false
-						}
-						return true
-					}),
+					.filter(k => corePlugins[k] !== false)
+			}
+			if (typeof corePlugins === "boolean" && corePlugins === false) {
+				return []
+			}
+			return Object.values(classPlugins).map(p => p.name)
+		})(),
 	)
 
 	const globalStyles: Record<string, CSSProperties> = {

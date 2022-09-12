@@ -170,7 +170,7 @@ test("preflight", async () => {
 	})
 })
 
-test("corePlugins", async () => {
+test("disable corePlugins", async () => {
 	const ctx = createContext(
 		resolveConfig({
 			corePlugins: {
@@ -180,4 +180,22 @@ test("corePlugins", async () => {
 	)
 	expect(ctx.css("bg-black")).toEqual({})
 	expect(ctx.css("bg-auto")).toEqual({ backgroundSize: "auto" })
+})
+
+test("disable all corePlugins", async () => {
+	let ctx = createContext(
+		resolveConfig({
+			corePlugins: [],
+		}),
+	)
+	expect(ctx.css("bg-black")).toEqual({})
+	expect(ctx.css("bg-auto")).toEqual({})
+
+	ctx = createContext(
+		resolveConfig({
+			corePlugins: false,
+		}),
+	)
+	expect(ctx.css("bg-black")).toEqual({})
+	expect(ctx.css("bg-auto")).toEqual({})
 })

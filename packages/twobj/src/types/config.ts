@@ -244,7 +244,7 @@ export interface StrictConfigJS {
 	theme?: Theme & CustomTheme
 	plugins?: Plugin[]
 	darkMode?: boolean | "media" | "class" | ["class", string]
-	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures>
+	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures> | boolean
 	separator?: string
 	prefix?: string
 	important?: boolean | string
