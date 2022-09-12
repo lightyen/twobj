@@ -8,13 +8,15 @@ pluginTester({
 	title: "emotion react twobj",
 	pluginOptions: {
 		tailwindConfig: {},
+		thirdParty: {
+			name: "emotion",
+			cssProp: "@emotion/babel-plugin",
+			styled: "@emotion/styled",
+			className: "@emotion/css",
+		},
 	},
 	babelOptions: {
-		presets: [
-			["@babel/preset-typescript"],
-			["@babel/preset-react", { runtime: "automatic", importSource: "@emotion/react" }],
-		],
-		plugins: [["@emotion", { sourceMap: false }]],
+		presets: [["@babel/preset-typescript"]],
 	},
 	snapshot: true,
 	fixtures: path.join(__dirname, "__fixtures__"),
