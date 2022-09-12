@@ -1,3 +1,4 @@
+import { isNotEmpty } from "../util"
 import { Param, splitCssParams } from "./css"
 import { isValidLength } from "./length"
 import { splitAtTopLevelOnly } from "./util"
@@ -119,7 +120,7 @@ export function parseBoxShadow(source: string, range: [number, number]): Shadow 
 	return {
 		color,
 		value: [keyword, x, y, blur, spread, "var(--tw-shadow-color, var(--tw-shadow-default-color))"]
-			.filter(Boolean)
+			.filter(isNotEmpty)
 			.join(" "),
 	}
 }

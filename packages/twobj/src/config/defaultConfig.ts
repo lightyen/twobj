@@ -697,7 +697,7 @@ export default {
 			8: "8px",
 		},
 		ringColor: ({ theme }) => ({
-			DEFAULT: theme(`colors.blue.500`, "#3b82f6"),
+			DEFAULT: theme("colors.blue.500", "#3b82f6"),
 			...theme("colors"),
 		}),
 		ringOffsetColor: ({ theme }) => theme("colors"),

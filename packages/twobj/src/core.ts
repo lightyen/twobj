@@ -13,12 +13,14 @@ import {
 import * as theme from "./parser/theme"
 import { escapeCss, findClasses } from "./postcss"
 import type {
+	ConfigObject,
 	Context,
 	CorePluginFeatures,
 	CorePluginOptions,
 	CSSProperties,
 	CSSValue,
 	LookupSpec,
+	Palette,
 	Plugin,
 	PostModifier,
 	ResolvedConfigJS,
@@ -424,7 +426,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			respectImportant = false,
 		}: {
 			type?: (ValueType | "any") | (ValueType | "any")[]
-			values?: Record<string, unknown>
+			values?: ConfigObject
 			supportsNegativeValues?: boolean
 			filterDefault?: boolean
 			respectPrefix?: boolean
@@ -452,7 +454,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			respectImportant = true,
 		}: {
 			type?: (ValueType | "any") | (ValueType | "any")[]
-			values?: Record<string, unknown>
+			values?: ConfigObject
 			supportsNegativeValues?: boolean
 			filterDefault?: boolean
 			respectPrefix?: boolean
@@ -508,7 +510,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			// if types has 'color', always flatten the values
 			let isColor = false
 			if (types.some(t => t === "color")) {
-				values = flattenColorPalette(values)
+				values = flattenColorPalette(values as Palette)
 				isColor = true
 			}
 

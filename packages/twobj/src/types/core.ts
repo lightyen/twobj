@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type * as parser from "../parser"
 import { CSSProperties, CSSValue, PlainCSSProperties } from "./base"
-import { ResolvedConfigJS } from "./config"
+import { ConfigObject, ResolvedConfigJS, ResolvePath } from "./config"
 import { CorePluginFeatures } from "./features"
 
 export type ValueType =
@@ -68,7 +68,7 @@ export interface AddOption {
 }
 
 export interface MatchOption {
-	values?: Record<string, unknown>
+	values?: ConfigObject
 	type?: ValueType | ValueType[]
 	supportsNegativeValues?: boolean
 	filterDefault?: boolean
@@ -77,6 +77,7 @@ export interface MatchOption {
 }
 
 export interface UserPluginOptions {
+	/** Add global css. */
 	addBase(bases: CSSProperties | CSSProperties[]): void
 
 	/** Add global css variables. */
@@ -113,31 +114,31 @@ export interface UserPluginOptions {
 	matchVariant(
 		variants: Record<string, (value?: string) => string | string[]>,
 		options?: {
-			values?: Record<string, string>
+			values?: ConfigObject
 			postModifier?: VariantSpec
 		},
 	): void
 
 	/** Look up values in the user's theme configuration */
-	theme(path: string, defaultValue?: unknown): any
+	theme: ResolvePath
 
 	/** Look up values in the user's Tailwind configuration. */
-	config(path: string, defaultValue?: unknown): any
+	config: ResolvePath
 
-	/** Escape CSS */
+	/** Escape css. */
 	e(classname: string): string
 	/**
-	 * Do nothing
+	 * Do nothing.
 	 * @deprecated
 	 */
 	prefix(classname: string): string
 	/**
-	 * Do nothing
+	 * Do nothing.
 	 * @deprecated
 	 */
 	variants(corePlugin: string): string[]
 
-	/** Test a feature exists whether or not */
+	/** Test a feature exists whether or not. */
 	corePlugins(feature: keyof CorePluginFeatures): boolean
 }
 

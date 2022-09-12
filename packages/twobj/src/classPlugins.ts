@@ -1,9 +1,18 @@
 import * as parser from "./parser"
 import { plugin } from "./plugin"
 import { preflight } from "./preflight"
-import type { CorePluginFeatures, MatchOption, Palette, StrictResolvedConfigJS, UnnamedPlugin } from "./types"
+import type {
+	ConfigEntry,
+	ConfigObject,
+	CorePluginFeatures,
+	FontSizeValue,
+	MatchOption,
+	ScreenConfigValue,
+	StrictResolvedConfigJS,
+	UnnamedPlugin,
+} from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
-import { isCSSValue, normalizeScreens } from "./util"
+import { isCSSValue, isNotEmpty, isObject, normalizeScreens } from "./util"
 import { withAlphaValue } from "./values"
 
 type ClassPlugins = {
@@ -42,11 +51,11 @@ function createUtilityPlugin(
 function createColorPlugin(
 	pluginName: string,
 	mappings: Array<[key: string, propOrTemplate: string | Template]>,
-	getValues: (theme: StrictResolvedConfigJS["theme"]) => Palette,
+	getValues: (theme: StrictResolvedConfigJS["theme"]) => ConfigEntry,
 ) {
 	return createUtilityPlugin(pluginName, mappings, themeObject => ({
 		type: "color",
-		values: getValues(themeObject),
+		values: getValues(themeObject) as ConfigObject,
 	}))
 }
 
@@ -221,17 +230,18 @@ export const classPlugins: ClassPlugins = {
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
 	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
 		const screens = Object.keys(themeObject.screens).reduce((breakpoints, key) => {
-			let value: string | undefined
-			const v = themeObject.screens[key]
-			if (typeof v === "string") {
+			let value: string | number | undefined
+			const v = themeObject.screens[key] as ScreenConfigValue
+			if (isCSSValue(v)) {
 				value = v
-			} else {
-				if (Array.isArray(v) && v.length > 1) {
-					value = v[1]
-				} else if (typeof v === "object" && v !== null) {
-					if (typeof v["max"] === "string") {
-						value = v["max"]
+			} else if (isObject(v)) {
+				if (Array.isArray(v)) {
+					const [, max] = v
+					if (isCSSValue(max)) {
+						value = max
 					}
+				} else if (isCSSValue(v.max)) {
+					value = v.max
 				}
 			}
 			if (value) {
@@ -606,19 +616,37 @@ export const classPlugins: ClassPlugins = {
 	),
 
 	fontSize: plugin("fontSize", ({ matchUtilities, themeObject }) => {
+		interface Settings {
+			fontSize?: CSSValue
+			lineHeight?: CSSValue
+			letterSpacing?: CSSValue
+			fontWeight?: CSSValue
+		}
 		const values = Object.fromEntries(
-			Object.entries(themeObject.fontSize).map(([key, value]) => {
-				const [fontSize, options = {}] = Array.isArray(value) ? value : [value]
-				const opts =
-					typeof options === "string" || typeof options === "number" ? { lineHeight: options } : options
-				return [
-					key,
-					{
-						fontSize: fontSize,
-						...opts,
-					},
-				]
-			}),
+			Object.entries(themeObject.fontSize)
+				.map(([key, c]) => {
+					const value = c as FontSizeValue
+					const [fontSize, options = {}] = Array.isArray(value) ? value : [value]
+					if (!isCSSValue(fontSize)) {
+						return undefined
+					}
+					if (!isCSSValue(options) && !isObject(options)) {
+						return undefined
+					}
+					const ext: Settings = isCSSValue(options) ? { lineHeight: options } : options
+					if (Object.values(ext).some(v => !isCSSValue(v))) {
+						return undefined
+					}
+
+					return [
+						key,
+						{
+							fontSize: fontSize,
+							...ext,
+						},
+					] as [string, CSSProperties | undefined]
+				})
+				.filter((t): t is [string, CSSProperties | undefined] => !!t),
 		)
 		matchUtilities(
 			{
@@ -962,7 +990,7 @@ export const classPlugins: ClassPlugins = {
 				animate(value) {
 					const names = parser.parseAnimations(typeof value === "string" ? value : "")
 					return {
-						...Object.assign({}, ...names.map(name => keyframes[name]).filter(Boolean)),
+						...Object.assign({}, ...names.map(name => keyframes[name]).filter(isNotEmpty)),
 						animation: value,
 					}
 				},

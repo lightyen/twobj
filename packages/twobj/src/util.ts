@@ -2,19 +2,49 @@
 
 import * as parser from "./parser"
 import type {
-	ColorValueFunc,
+	ColorValue,
+	ConfigValue,
 	CSSProperties,
 	CSSValue,
+	CustomPalette,
+	Func,
 	LookupSpec,
 	Palette,
 	PlainCSSProperties,
 	PostModifier,
 	StaticSpec,
-	Value,
 } from "./types"
 
 export function isCSSValue(value: unknown): value is CSSValue {
 	return typeof value === "string" || typeof value === "number"
+}
+
+export function isConfigValue(value: unknown): value is ConfigValue {
+	return !isObject(value)
+}
+
+export function isString(value: unknown): value is string {
+	return typeof value === "string"
+}
+
+export function isNumber(value: unknown): value is number {
+	return typeof value === "number"
+}
+
+export function isObject(value: unknown): value is Record<string | symbol, unknown> {
+	return typeof value === "object" && value !== null
+}
+
+export function isFunction(value: unknown): value is Func {
+	return typeof value === "function"
+}
+
+export function isExists<T>(value: T): value is Exclude<T, null | undefined> {
+	return value !== null && value !== undefined
+}
+
+export function isNotEmpty<T>(value: T): value is Exclude<T, null | undefined | "" | 0> {
+	return !!value
 }
 
 export function isPlainCSSProperties(css: CSSProperties): css is PlainCSSProperties {
@@ -69,12 +99,6 @@ export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSPr
 	return css
 }
 
-export function isObject(value: unknown): value is object {
-	if (typeof value !== "object") return false
-	if (value === null) return false
-	return true
-}
-
 export function isPlainObject(value: unknown): value is {} {
 	if (Object.prototype.toString.call(value) !== "[object Object]") {
 		return false
@@ -120,7 +144,7 @@ export function merge(target: any, ...sources: any[]): any {
 }
 
 export function flattenColorPalette(colors: Palette | null | undefined): {
-	[color: string]: Value | ColorValueFunc | undefined
+	[color: string | string]: Exclude<ColorValue, CustomPalette>
 } {
 	return Object.assign(
 		{},

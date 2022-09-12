@@ -1,6 +1,14 @@
 import * as parser from "./parser"
-import type { ColorValueFunc, CSSProperties, Template, Value, ValueType } from "./types"
-import { opacityToFloat, toArray } from "./util"
+import type {
+	ColorValueFunc,
+	ConfigEntry,
+	ConfigObject,
+	ConfigValue,
+	CSSProperties,
+	Template,
+	ValueType,
+} from "./types"
+import { isCSSValue, isNotEmpty, opacityToFloat, toArray } from "./util"
 
 interface LookupResult {
 	key?: string
@@ -9,8 +17,7 @@ interface LookupResult {
 	value?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface ValueTypeSpec<ConfigValue = any> {
+interface ValueTypeSpec<T> {
 	type: ValueType
 	isTag(tag?: string): boolean
 	handleValue(
@@ -22,7 +29,7 @@ interface ValueTypeSpec<ConfigValue = any> {
 		},
 	): string | number | undefined
 	handleConfig(
-		config: ConfigValue,
+		config: T,
 		options: {
 			negative: boolean
 			opacity?: string
@@ -102,8 +109,7 @@ export function representAny({
 }: {
 	input: string
 	node: parser.Classname | parser.ArbitraryClassname
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	values: Record<string, any>
+	values: ConfigObject
 	negative: boolean
 	template: Template
 	ambiguous: boolean
@@ -316,7 +322,7 @@ const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
 	}
 })()
 
-const color: ValueTypeSpec<Value | ColorValueFunc | null | undefined> = (function () {
+const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (function () {
 	return {
 		type: "color",
 		isTag(tag) {
@@ -333,7 +339,7 @@ const color: ValueTypeSpec<Value | ColorValueFunc | null | undefined> = (functio
 				return config({ opacityValue: options.opacity }).toString()
 			}
 
-			if (typeof config !== "string" && typeof config !== "number") {
+			if (!isCSSValue(config)) {
 				return ""
 			}
 
@@ -814,7 +820,7 @@ const image: ValueTypeSpec<string | number | null | undefined> = (function () {
 })()
 
 type Types = {
-	[P in Exclude<ValueType, "any">]: ValueTypeSpec
+	[P in Exclude<ValueType, "any">]: ValueTypeSpec<ConfigEntry>
 }
 export const __types: Types = {
 	number,
@@ -847,8 +853,7 @@ export function representTypes({
 }: {
 	input: string
 	node: parser.Classname | parser.ArbitraryClassname
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	values: Record<string, any>
+	values: ConfigObject
 	negative: boolean
 	template: Template
 	ambiguous: boolean
@@ -869,7 +874,7 @@ export function representTypes({
 
 	const _types = toArray(types)
 		.map(t => __types[t])
-		.filter(Boolean)
+		.filter(isNotEmpty)
 
 	// lookup value
 	if (result.key != undefined) {
@@ -885,7 +890,7 @@ export function representTypes({
 				continue
 			}
 			const value = h.handleConfig(config, options)
-			if (typeof value === "string" || typeof value === "number") {
+			if (isCSSValue(value)) {
 				return template(value)
 			} else {
 				return template(result.key)
