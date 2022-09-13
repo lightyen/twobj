@@ -39,7 +39,10 @@ import {
 	getClassListFrom,
 	getColorClassesFrom,
 	isCSSValue,
+	isFunction,
+	isNotEmpty,
 	isObject,
+	isString,
 	merge,
 	toArray,
 } from "./util"
@@ -142,24 +145,25 @@ export function createContext(config: ResolvedConfigJS): Context {
 
 	for (let i = 0; i < config.plugins.length; i++) {
 		let _plugin = config.plugins[i]
-		if (typeof _plugin === "function" && (_plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
-			_plugin = (_plugin as UserPluginFunctionWithOption)()
+		if (isFunction(_plugin) && (_plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
+			_plugin = _plugin()
 		}
 
 		const plugin: Plugin = _plugin
 		const pluginName = plugin["name"]
-		if (typeof pluginName === "string" && pluginName) {
+		if (isString(pluginName) && isNotEmpty(pluginName)) {
 			currentPluginName = pluginName
-			features.add(currentPluginName)
 		} else {
 			currentPluginName = `userPlugin-${i}`
-			features.add(currentPluginName)
 		}
-		if (typeof plugin === "function") {
+		features.add(currentPluginName)
+
+		if (isFunction(plugin)) {
 			plugin(options)
 		} else if (plugin.handler) {
 			plugin.handler(options)
 		}
+
 		currentPluginName = undefined
 	}
 

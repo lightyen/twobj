@@ -57,12 +57,13 @@ export interface UserPluginFunction {
 export interface UserPluginObject {
 	handler?: UserPluginFunction
 	config?: ConfigJS
+	name?: string
 	[key: string | symbol]: ConfigEntry
 }
 
 export interface UserPluginFunctionWithOption<Options = unknown> {
 	(options?: Options): UserPluginObject
-	__isOptionsFunction: true
+	__isOptionsFunction: boolean
 	__pluginFunction: (options?: Options) => UserPluginFunction
 	__configFunction: (options?: Options) => ConfigJS
 }
