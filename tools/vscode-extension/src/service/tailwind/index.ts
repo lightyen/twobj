@@ -92,8 +92,12 @@ export function createTailwindLoader() {
 		get classnames() {
 			return classnames
 		},
-		get extractors(): Extractor[] {
-			return config && Array.isArray(config.extrators) ? config.extrators.filter(isExtrator) : []
+		get extractors() {
+			const extrators = config.extrators as unknown
+			if (Array.isArray(extrators)) {
+				return extrators.filter(isExtrator)
+			}
+			return []
 		},
 		dispose,
 		readTailwind,

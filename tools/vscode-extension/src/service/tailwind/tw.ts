@@ -69,7 +69,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 	const context = createContext(config)
 	const screens = Object.keys(config.theme.screens).sort(screenSorter)
 
-	const restVariants = Array.from(context.variants.keys()).filter(
+	const restVariants = Array.from(context.variantMap.keys()).filter(
 		key => screens.indexOf(key) === -1 && key !== "dark" && key !== "light" && key !== "placeholder",
 	)
 
@@ -394,6 +394,6 @@ export function createTwContext(config: ResolvedConfigJS) {
 	}
 
 	function isVariant(value: string) {
-		return context.variants.has(value)
+		return context.variantMap.has(value)
 	}
 }
