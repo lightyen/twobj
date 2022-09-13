@@ -1,4 +1,4 @@
-import { resolveConfig } from "../src"
+import { createContext, resolveConfig } from "../src"
 import { ConfigJS } from "../src/types"
 
 test("defaultConfig", async () => {
@@ -25,6 +25,12 @@ test("overwrite defaultConfig", async () => {
 	const data: ConfigJS = { darkMode: "class", prefix: "tw-", separator: "||", important: "#app" }
 	const resolved = resolveConfig(data)
 	expect(resolved).toMatchObject(data)
+})
+
+test("extend", async () => {
+	const ctx = createContext(resolveConfig({ theme: { extend: { colors: { foo: "#fff" } } } }))
+	expect(ctx.css("text-white")).toEqual({ color: "#fff" })
+	expect(ctx.css("text-foo")).toEqual({ color: "#fff" })
 })
 
 test("does not duplicate extended configs every time resolveConfig is called", () => {
