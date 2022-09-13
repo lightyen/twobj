@@ -5,7 +5,6 @@ import type {
 	ConfigEntry,
 	ConfigObject,
 	CorePluginFeatures,
-	FontSizeValue,
 	MatchOption,
 	ScreenConfigValue,
 	StrictResolvedConfigJS,
@@ -567,13 +566,38 @@ export const classPlugins: ClassPlugins = {
 		supportsNegativeValues: true,
 	})),
 	fontFamily: plugin("fontFamily", ({ matchUtilities, themeObject }) => {
+		interface Template {
+			fontFeatureSettings?: CSSValue
+		}
+		const values = Object.fromEntries(
+			Object.entries(themeObject.fontFamily)
+				.map(([key, value]) => {
+					const valueArray = Array.isArray(value) ? value : [value]
+					const [fontFamily, options = {}] = valueArray
+					if (!isCSSValue(fontFamily)) {
+						return undefined
+					}
+					if (isCSSValue(options)) {
+						return [key, { fontFamily: valueArray.join(", ") }] as [string, CSSProperties]
+					}
+					const tmp: Template = options
+
+					return [
+						key,
+						{
+							fontFamily: Array.isArray(fontFamily) ? fontFamily.join(", ") : fontFamily,
+							...tmp,
+						},
+					] as [string, CSSProperties]
+				})
+				.filter((t): t is [string, CSSProperties] => !!t),
+		)
 		matchUtilities(
 			{
 				font(value) {
-					const values = themeObject.fontFamily[value]
-					return {
-						fontFamily: Array.isArray(values) ? values.join(", ") : "",
-					}
+					const css = values[value]
+					if (css) return css
+					return { fontFamily: value }
 				},
 			},
 			{
@@ -616,7 +640,7 @@ export const classPlugins: ClassPlugins = {
 	),
 
 	fontSize: plugin("fontSize", ({ matchUtilities, themeObject }) => {
-		interface Settings {
+		interface Template {
 			fontSize?: CSSValue
 			lineHeight?: CSSValue
 			letterSpacing?: CSSValue
@@ -624,8 +648,7 @@ export const classPlugins: ClassPlugins = {
 		}
 		const values = Object.fromEntries(
 			Object.entries(themeObject.fontSize)
-				.map(([key, c]) => {
-					const value = c as FontSizeValue
+				.map(([key, value]) => {
 					const [fontSize, options = {}] = Array.isArray(value) ? value : [value]
 					if (!isCSSValue(fontSize)) {
 						return undefined
@@ -633,8 +656,8 @@ export const classPlugins: ClassPlugins = {
 					if (!isCSSValue(options) && !isObject(options)) {
 						return undefined
 					}
-					const ext: Settings = isCSSValue(options) ? { lineHeight: options } : options
-					if (Object.values(ext).some(v => !isCSSValue(v))) {
+					const tmp: Template = isCSSValue(options) ? { lineHeight: options } : options
+					if (Object.values(tmp).some(v => !isCSSValue(v))) {
 						return undefined
 					}
 
@@ -642,11 +665,11 @@ export const classPlugins: ClassPlugins = {
 						key,
 						{
 							fontSize: fontSize,
-							...ext,
+							...tmp,
 						},
-					] as [string, CSSProperties | undefined]
+					] as [string, CSSProperties]
 				})
-				.filter((t): t is [string, CSSProperties | undefined] => !!t),
+				.filter((t): t is [string, CSSProperties] => !!t),
 		)
 		matchUtilities(
 			{

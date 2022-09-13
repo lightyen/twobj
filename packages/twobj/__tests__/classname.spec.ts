@@ -1,3 +1,4 @@
+import { createContext, resolveConfig } from "../src"
 import { tw } from "./context"
 
 test("content", async () => {
@@ -118,8 +119,38 @@ test("textColor", async () => {
 })
 
 test("fontSize", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			theme: {
+				extend: { fontSize: { custom: ["5rem", { lineHeight: 1.2, fontWeight: 900, letterSpacing: "5px" }] } },
+			},
+		}),
+	)
 	expect(tw`text-lg`).toEqual({ fontSize: "1.125rem", lineHeight: "1.75rem" })
 	expect(tw`text-[22px]`).toEqual({ fontSize: "22px" })
+	expect(ctx.css`text-custom`).toEqual({ fontSize: "5rem", fontWeight: 900, letterSpacing: "5px", lineHeight: 1.2 })
+})
+
+test("fontFamily", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			theme: {
+				extend: {
+					fontFamily: {
+						sans: ["'Exo 2'", "sans-serif"],
+						custom: ["Helvetica, Arial, sans-serif", { fontFeatureSettings: '"cv11", "ss01"' }],
+					},
+				},
+			},
+		}),
+	)
+	expect(ctx.css`font-sans`).toEqual({
+		fontFamily: "'Exo 2', sans-serif",
+	})
+	expect(ctx.css`font-custom`).toEqual({
+		fontFamily: "Helvetica, Arial, sans-serif",
+		fontFeatureSettings: '"cv11", "ss01"',
+	})
 })
 
 test("float", async () => {

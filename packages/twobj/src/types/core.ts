@@ -89,7 +89,7 @@ export interface UserPluginOptions {
 	/** Register new components. */
 	addComponents(components: CSSProperties | CSSProperties[], options?: AddOption): void
 
-	/** Register new utilities */
+	/** Register new utilities. */
 	matchUtilities(
 		utilities: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
 		options?: MatchOption,
@@ -101,7 +101,7 @@ export interface UserPluginOptions {
 		options?: MatchOption,
 	): void
 
-	/** Register a custom variant */
+	/** Register a custom variant. */
 	addVariant(
 		variantName: string,
 		variantDesc: string | string[],
@@ -119,7 +119,7 @@ export interface UserPluginOptions {
 		},
 	): void
 
-	/** Look up values in the user's theme configuration */
+	/** Look up values in the user's theme configuration. */
 	theme: ResolvePath
 
 	/** Look up values in the user's Tailwind configuration. */
@@ -164,18 +164,18 @@ export interface Context extends UserPluginOptions {
 	arbitraryUtilities: Map<string, Set<ValueType | "any">>
 	features: Set<string>
 
-	/** Transfrom tailwind declarations to css object */
+	/** Transfrom tailwind declarations to css object. */
 	css(strings: string): CSSProperties
 	css(strings: TemplateStringsArray): CSSProperties
 	css(strings: string | TemplateStringsArray): CSSProperties
 
-	/** Compose all variants */
+	/** Compose all variants. */
 	cssVariant(...variants: Array<parser.Variant | string>): VariantSpec
 
-	/** Reverse utilities mapping */
+	/** Reverse utilities mapping. */
 	getPluginName(value: string): string | undefined
 
-	/** Look up values in the user's Tailwind configuration */
+	/** Look up values in the user's Tailwind configuration. */
 	config(path: string, defaultValue?: unknown): any
 
 	/** Signature: `theme(colors.red.500, <default-value>)` */
@@ -184,27 +184,27 @@ export interface Context extends UserPluginOptions {
 	/** Signature: `colors.red.500` */
 	renderTheme(value: string): string
 
-	/** List all utilities */
+	/** List all utilities. */
 	getClassList(): string[]
 
-	/** List all color's utilities */
+	/** List all color's utilities. */
 	getColorClasses(): Map<string, string[]>
 
 	getAmbiguous(): Map<string, LookupSpec[]>
 
-	/** Escape CSS */
+	/** Escape css. */
 	e(classname: string): string
 	/**
-	 * Do nothing
+	 * Do nothing.
 	 * @deprecated
 	 */
 	prefix(classname: string): string
 	/**
-	 * Do nothing
+	 * Do nothing.
 	 * @deprecated
 	 */
 	variants(corePlugin: string): string[]
 
-	/** Test a feature exists whether or not */
+	/** Test a feature exists whether or not. */
 	corePlugins(feature: keyof CorePluginFeatures): boolean
 }

@@ -1,4 +1,5 @@
 import colors from "../config/defaultColors"
+import { CSSProperties, CSSValue } from "./base"
 import { UserPluginOptions } from "./core"
 import { CorePluginFeatures } from "./features"
 
@@ -47,7 +48,7 @@ export type ColorValueFunc = (options: { opacityValue?: string }) => string
 export type ColorValue = ColorValueFunc | CustomPalette | string
 
 export interface UserPluginFunction {
-	(options: UserPluginOptions): void
+	(options: UserPluginOptions)
 }
 
 export interface UserPluginObject {
@@ -134,35 +135,40 @@ export type Palette<T extends Record<string | symbol, unknown> = {}> = {
 } & { [P in keyof T]?: ColorValue }
 
 /** For better developer experience */
-type CoreThemeObject<T extends Record<string | symbol, unknown> = {}> = WithResolveThemePath<
+type CoreThemeObject<T extends Record<string | symbol, unknown> = {}, V = ConfigEntry> = WithResolveThemePath<
 	{
-		[key: string | symbol]: ConfigEntry
+		[key: string | symbol]: V
 	} & {
-		[P in keyof T]?: ConfigEntry
+		[P in keyof T]?: V
 	}
 >
 
-type ResolvedThemeObject<T extends Record<string | symbol, unknown> = {}> = {
-	[key: string | symbol]: ConfigEntry
-} & {
-	[P in keyof T]?: ConfigEntry
+type ResolvedThemeObject<V = ConfigEntry> = {
+	[key: string | symbol]: V
 }
 
-export interface FontSizeValueExtension {
-	lineHeight?: ConfigValue
-	letterSpacing?: ConfigValue
-	fontWeight?: ConfigValue
+export interface FontSizeValueExtension extends Customized {
+	/** @link https://developer.mozilla.org/en-US/docs/Web/CSS/line-height */
+	lineHeight?: CSSValue
+	/** @link https://developer.mozilla.org/en-US/docs/Web/CSS/letter-spacing */
+	letterSpacing?: CSSValue
+	/** @link https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight */
+	fontWeight?: CSSValue
 }
 
 export type FontSizeValue =
-	| ConfigValue
-	| [fontSize: ConfigValue, lineHeight: ConfigValue]
-	| [fontSize: ConfigValue, options: FontSizeValueExtension]
+	| CSSValue
+	| [fontSize: CSSValue, lineHeight: CSSValue]
+	| [fontSize: CSSValue, options: FontSizeValueExtension]
 
-export type ScreenConfigValue =
-	| ConfigValue
-	| [min?: ConfigValue, max?: ConfigValue]
-	| { min?: ConfigValue; max?: ConfigValue }
+export type ScreenConfigValue = CSSValue | [min?: CSSValue, max?: CSSValue] | { min?: CSSValue; max?: CSSValue }
+
+export interface FontFamilyValueExtension extends Customized {
+	/** @link https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings */
+	fontFeatureSettings?: CSSValue
+}
+
+export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValue[], options: FontFamilyValueExtension]
 
 export type CustomTheme = {
 	[key: string | symbol]: WithResolveThemePath<ConfigEntry>
@@ -191,9 +197,9 @@ export interface Theme {
 	 * {@link https://tailwindcss.com/docs/container Reference}
 	 */
 	container?: CoreThemeObject<{
-		screens?: ConfigEntry
-		padding?: ConfigEntry
-		center?: ConfigEntry
+		screens?: unknown
+		padding?: unknown
+		center?: unknown
 	}>
 
 	/** Customizing the default color palette for your project.
@@ -627,55 +633,37 @@ export interface Theme {
 	 *
 	 * {@link https://tailwindcss.com/docs/font-family Reference}
 	 */
-	fontFamily?: CoreThemeObject<{
-		sans: [
-			"ui-sans-serif",
-			"system-ui",
-			"-apple-system",
-			"BlinkMacSystemFont",
-			'"Segoe UI"',
-			"Roboto",
-			'"Helvetica Neue"',
-			"Arial",
-			'"Noto Sans"',
-			"sans-serif",
-			'"Apple Color Emoji"',
-			'"Segoe UI Emoji"',
-			'"Segoe UI Symbol"',
-			'"Noto Color Emoji"',
-		]
-		serif: ["ui-serif", "Georgia", "Cambria", '"Times New Roman"', "Times", "serif"]
-		mono: [
-			"ui-monospace",
-			"SFMono-Regular",
-			"Menlo",
-			"Monaco",
-			"Consolas",
-			'"Liberation Mono"',
-			'"Courier New"',
-			"monospace",
-		]
-	}>
+	fontFamily?: CoreThemeObject<
+		{
+			sans: FontFamilyValue
+			serif: FontFamilyValue
+			mono: FontFamilyValue
+		},
+		FontFamilyValue
+	>
 
 	/** Utilities for controlling the font size of an element.
 	 *
 	 * {@link https://tailwindcss.com/docs/font-size Reference}
 	 */
-	fontSize?: CoreThemeObject<{
-		xs: ["0.75rem", { lineHeight: "1rem" }]
-		sm: ["0.875rem", { lineHeight: "1.25rem" }]
-		base: ["1rem", { lineHeight: "1.5rem" }]
-		lg: ["1.125rem", { lineHeight: "1.75rem" }]
-		xl: ["1.25rem", { lineHeight: "1.75rem" }]
-		"2xl": ["1.5rem", { lineHeight: "2rem" }]
-		"3xl": ["1.875rem", { lineHeight: "2.25rem" }]
-		"4xl": ["2.25rem", { lineHeight: "2.5rem" }]
-		"5xl": ["3rem", { lineHeight: "1" }]
-		"6xl": ["3.75rem", { lineHeight: "1" }]
-		"7xl": ["4.5rem", { lineHeight: "1" }]
-		"8xl": ["6rem", { lineHeight: "1" }]
-		"9xl": ["8rem", { lineHeight: "1" }]
-	}>
+	fontSize?: CoreThemeObject<
+		{
+			xs: FontSizeValue
+			sm: FontSizeValue
+			base: FontSizeValue
+			lg: FontSizeValue
+			xl: FontSizeValue
+			"2xl": FontSizeValue
+			"3xl": FontSizeValue
+			"4xl": FontSizeValue
+			"5xl": FontSizeValue
+			"6xl": FontSizeValue
+			"7xl": FontSizeValue
+			"8xl": FontSizeValue
+			"9xl": FontSizeValue
+		},
+		FontSizeValue
+	>
 
 	/** Utilities for controlling the font weight of an element.
 	 *
@@ -971,32 +959,10 @@ export interface Theme {
 	 * {@link https://tailwindcss.com/docs/animation Reference}
 	 */
 	keyframes?: CoreThemeObject<{
-		spin: {
-			to: {
-				transform: "rotate(360deg)"
-			}
-		}
-		ping: {
-			"75%, 100%": {
-				transform: "scale(2)"
-				opacity: "0"
-			}
-		}
-		pulse: {
-			"50%": {
-				opacity: "0.5"
-			}
-		}
-		bounce: {
-			"0%, 100%": {
-				transform: "translateY(-25%)"
-				animationTimingFunction: "cubic-bezier(0.8,0,1,1)"
-			}
-			"50%": {
-				transform: "none"
-				animationTimingFunction: "cubic-bezier(0,0,0.2,1)"
-			}
-		}
+		spin: CSSProperties
+		ping: CSSProperties
+		pulse: CSSProperties
+		bounce: CSSProperties
 	}>
 
 	/** Utilities for controlling the tracking (letter spacing) of an element.
@@ -1571,9 +1537,11 @@ export interface Theme {
 	}>
 }
 
-export interface ConfigJS extends StrictConfigJS {
+export interface Customized {
 	[key: string | symbol]: ConfigEntry
 }
+
+export interface ConfigJS extends StrictConfigJS, Customized {}
 
 export interface PresetFunction {
 	(): ConfigJS
@@ -1590,8 +1558,114 @@ export interface StrictConfigJS {
 	important?: boolean | string
 }
 
-export interface ResolvedConfigJS extends StrictResolvedConfigJS {
-	[key: string | symbol]: ConfigEntry
+export interface ResolvedConfigJS extends StrictResolvedConfigJS, Customized {}
+
+export interface ResolvedTheme {
+	screens: ResolvedThemeObject
+	colors: Palette
+	borderColor: Palette
+	boxShadowColor: Palette
+	caretColor: Palette
+	accentColor: Palette
+	divideColor: Palette
+	fill: Palette
+	gradientColorStops: Palette
+	outlineColor: Palette
+	placeholderColor: Palette
+	ringColor: Palette
+	ringOffsetColor: Palette
+	stroke: Palette
+	textColor: Palette
+	textDecorationColor: Palette
+	spacing: ResolvedThemeObject
+	animation: ResolvedThemeObject
+	backdropBlur: ResolvedThemeObject
+	backdropBrightness: ResolvedThemeObject
+	backdropContrast: ResolvedThemeObject
+	backdropGrayscale: ResolvedThemeObject
+	backdropHueRotate: ResolvedThemeObject
+	backdropInvert: ResolvedThemeObject
+	backdropOpacity: ResolvedThemeObject
+	backdropSaturate: ResolvedThemeObject
+	backdropSepia: ResolvedThemeObject
+	backgroundImage: ResolvedThemeObject
+	backgroundPosition: ResolvedThemeObject
+	backgroundSize: ResolvedThemeObject
+	blur: ResolvedThemeObject
+	brightness: ResolvedThemeObject
+	borderRadius: ResolvedThemeObject
+	borderSpacing: ResolvedThemeObject
+	borderWidth: ResolvedThemeObject
+	boxShadow: ResolvedThemeObject
+	contrast: ResolvedThemeObject
+	container: ResolvedThemeObject
+	content: ResolvedThemeObject
+	cursor: ResolvedThemeObject
+	divideWidth: ResolvedThemeObject
+	dropShadow: ResolvedThemeObject
+	grayscale: ResolvedThemeObject
+	hueRotate: ResolvedThemeObject
+	invert: ResolvedThemeObject
+	flex: ResolvedThemeObject
+	flexBasis: ResolvedThemeObject
+	flexGrow: ResolvedThemeObject
+	flexShrink: ResolvedThemeObject
+	fontFamily: ResolvedThemeObject<FontFamilyValue>
+	fontSize: ResolvedThemeObject<FontSizeValue>
+	fontWeight: ResolvedThemeObject
+	gap: ResolvedThemeObject
+	gridAutoColumns: ResolvedThemeObject
+	gridAutoRows: ResolvedThemeObject
+	gridColumn: ResolvedThemeObject
+	gridColumnEnd: ResolvedThemeObject
+	gridColumnStart: ResolvedThemeObject
+	gridRow: ResolvedThemeObject
+	gridRowStart: ResolvedThemeObject
+	gridRowEnd: ResolvedThemeObject
+	gridTemplateColumns: ResolvedThemeObject
+	gridTemplateRows: ResolvedThemeObject
+	height: ResolvedThemeObject
+	inset: ResolvedThemeObject
+	keyframes: ResolvedThemeObject<CSSProperties>
+	letterSpacing: ResolvedThemeObject
+	lineHeight: ResolvedThemeObject
+	listStyleType: ResolvedThemeObject
+	margin: ResolvedThemeObject
+	maxHeight: ResolvedThemeObject
+	maxWidth: ResolvedThemeObject
+	minHeight: ResolvedThemeObject
+	minWidth: ResolvedThemeObject
+	objectPosition: ResolvedThemeObject
+	opacity: ResolvedThemeObject
+	order: ResolvedThemeObject
+	outlineOffset: ResolvedThemeObject
+	outlineWidth: ResolvedThemeObject
+	padding: ResolvedThemeObject
+	ringOffsetWidth: ResolvedThemeObject
+	ringWidth: ResolvedThemeObject
+	rotate: ResolvedThemeObject
+	saturate: ResolvedThemeObject
+	scale: ResolvedThemeObject
+	sepia: ResolvedThemeObject
+	skew: ResolvedThemeObject
+	space: ResolvedThemeObject
+	strokeWidth: ResolvedThemeObject
+	textDecorationThickness: ResolvedThemeObject
+	textUnderlineOffset: ResolvedThemeObject
+	textIndent: ResolvedThemeObject
+	transformOrigin: ResolvedThemeObject
+	transitionDelay: ResolvedThemeObject
+	transitionDuration: ResolvedThemeObject
+	transitionProperty: ResolvedThemeObject
+	transitionTimingFunction: ResolvedThemeObject
+	translate: ResolvedThemeObject
+	width: ResolvedThemeObject
+	zIndex: ResolvedThemeObject
+	aspectRatio: ResolvedThemeObject
+	columns: ResolvedThemeObject
+	scrollMargin: ResolvedThemeObject
+	scrollPadding: ResolvedThemeObject
+	willChange: ResolvedThemeObject
 }
 
 export interface StrictResolvedConfigJS {
@@ -1601,126 +1675,5 @@ export interface StrictResolvedConfigJS {
 	important: boolean
 	darkMode: boolean | "media" | "class" | ["class", string]
 	plugins: UserPlugin[]
-	theme: {
-		[key: string | symbol]: ConfigEntry
-		screens: ResolvedThemeObject
-		colors: Palette
-		borderColor: Palette
-		boxShadowColor: Palette
-		caretColor: Palette
-		accentColor: Palette
-		divideColor: Palette
-		fill: Palette
-		gradientColorStops: Palette
-		outlineColor: Palette
-		placeholderColor: Palette
-		ringColor: Palette
-		ringOffsetColor: Palette
-		stroke: Palette
-		textColor: Palette
-		textDecorationColor: Palette
-		spacing: ResolvedThemeObject
-		animation: ResolvedThemeObject
-		backdropBlur: ResolvedThemeObject
-		backdropBrightness: ResolvedThemeObject
-		backdropContrast: ResolvedThemeObject
-		backdropGrayscale: ResolvedThemeObject
-		backdropHueRotate: ResolvedThemeObject
-		backdropInvert: ResolvedThemeObject
-		backdropOpacity: ResolvedThemeObject
-		backdropSaturate: ResolvedThemeObject
-		backdropSepia: ResolvedThemeObject
-		backgroundImage: ResolvedThemeObject
-		backgroundPosition: ResolvedThemeObject
-		backgroundSize: ResolvedThemeObject
-		blur: ResolvedThemeObject
-		brightness: ResolvedThemeObject
-		borderRadius: ResolvedThemeObject
-		borderSpacing: ResolvedThemeObject
-		borderWidth: ResolvedThemeObject
-		boxShadow: ResolvedThemeObject
-		contrast: ResolvedThemeObject
-		container: ResolvedThemeObject
-		content: ResolvedThemeObject
-		cursor: ResolvedThemeObject
-		divideWidth: ResolvedThemeObject
-		dropShadow: ResolvedThemeObject
-		grayscale: ResolvedThemeObject
-		hueRotate: ResolvedThemeObject
-		invert: ResolvedThemeObject
-		flex: ResolvedThemeObject
-		flexBasis: ResolvedThemeObject
-		flexGrow: ResolvedThemeObject
-		flexShrink: ResolvedThemeObject
-		fontFamily: ResolvedThemeObject
-		fontSize: ResolvedThemeObject<{
-			xs: FontSizeValue
-			sm: FontSizeValue
-			base: FontSizeValue
-			lg: FontSizeValue
-			xl: FontSizeValue
-			"2xl": FontSizeValue
-			"3xl": FontSizeValue
-			"4xl": FontSizeValue
-			"5xl": FontSizeValue
-			"6xl": FontSizeValue
-			"7xl": FontSizeValue
-			"8xl": FontSizeValue
-			"9xl": FontSizeValue
-		}>
-		fontWeight: ResolvedThemeObject
-		gap: ResolvedThemeObject
-		gridAutoColumns: ResolvedThemeObject
-		gridAutoRows: ResolvedThemeObject
-		gridColumn: ResolvedThemeObject
-		gridColumnEnd: ResolvedThemeObject
-		gridColumnStart: ResolvedThemeObject
-		gridRow: ResolvedThemeObject
-		gridRowStart: ResolvedThemeObject
-		gridRowEnd: ResolvedThemeObject
-		gridTemplateColumns: ResolvedThemeObject
-		gridTemplateRows: ResolvedThemeObject
-		height: ResolvedThemeObject
-		inset: ResolvedThemeObject
-		keyframes: ResolvedThemeObject
-		letterSpacing: ResolvedThemeObject
-		lineHeight: ResolvedThemeObject
-		listStyleType: ResolvedThemeObject
-		margin: ResolvedThemeObject
-		maxHeight: ResolvedThemeObject
-		maxWidth: ResolvedThemeObject
-		minHeight: ResolvedThemeObject
-		minWidth: ResolvedThemeObject
-		objectPosition: ResolvedThemeObject
-		opacity: ResolvedThemeObject
-		order: ResolvedThemeObject
-		outlineOffset: ResolvedThemeObject
-		outlineWidth: ResolvedThemeObject
-		padding: ResolvedThemeObject
-		ringOffsetWidth: ResolvedThemeObject
-		ringWidth: ResolvedThemeObject
-		rotate: ResolvedThemeObject
-		saturate: ResolvedThemeObject
-		scale: ResolvedThemeObject
-		sepia: ResolvedThemeObject
-		skew: ResolvedThemeObject
-		space: ResolvedThemeObject
-		strokeWidth: ResolvedThemeObject
-		textDecorationThickness: ResolvedThemeObject
-		textUnderlineOffset: ResolvedThemeObject
-		textIndent: ResolvedThemeObject
-		transformOrigin: ResolvedThemeObject
-		transitionDelay: ResolvedThemeObject
-		transitionDuration: ResolvedThemeObject
-		transitionProperty: ResolvedThemeObject
-		transitionTimingFunction: ResolvedThemeObject
-		translate: ResolvedThemeObject
-		width: ResolvedThemeObject
-		zIndex: ResolvedThemeObject
-		aspectRatio: ResolvedThemeObject
-		columns: ResolvedThemeObject
-		scrollMargin: ResolvedThemeObject
-		scrollPadding: ResolvedThemeObject
-		willChange: ResolvedThemeObject
-	}
+	theme: ResolvedTheme & Customized
 }

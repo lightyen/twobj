@@ -1,6 +1,6 @@
 import defaultConfig from "../../config/defaultConfig"
 import { resolveConfig } from "../../config/resolveConfig"
-import { ConfigJS, ConfigObject } from "./../config"
+import { ConfigJS, ConfigObject, FontSizeValueExtension } from "./../config"
 
 const a: ConfigJS = defaultConfig
 a
@@ -13,6 +13,12 @@ c
 
 resolveConfig({
 	theme: {
+		fontFamily: {
+			sans: ["sdf", { fontFeatureSettings: '"sdsd"sdf' }],
+		},
+		fontSize: {
+			xxx: ["sdf", 123],
+		},
 		stroke: {
 			black: "#000",
 		},
@@ -26,3 +32,6 @@ resolveConfig({
 		},
 	],
 })
+
+const v: ConfigObject = {} as FontSizeValueExtension
+v
