@@ -6,7 +6,7 @@ import type {
 	ConfigObject,
 	CorePluginFeatures,
 	MatchOption,
-	ScreenConfigValue,
+	ScreenValue,
 	StrictResolvedConfigJS,
 	UnnamedPlugin,
 } from "./types"
@@ -230,7 +230,7 @@ export const classPlugins: ClassPlugins = {
 	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
 		const screens = Object.keys(themeObject.screens).reduce((breakpoints, key) => {
 			let value: string | number | undefined
-			const v = themeObject.screens[key] as ScreenConfigValue
+			const v = themeObject.screens[key] as ScreenValue
 			if (isCSSValue(v)) {
 				value = v
 			} else if (isObject(v)) {
@@ -972,6 +972,7 @@ export const classPlugins: ClassPlugins = {
 
 		const others = screens.map<CSSProperties>(([key, { min, max }]) => {
 			if (typeof min === "number") min = min + "px"
+			if (typeof max === "number") max = max + "px"
 			let mediaQuery = ""
 			if (min != undefined && max != undefined) {
 				mediaQuery = `@media (min-width: ${min}) and (max-width: ${max})`

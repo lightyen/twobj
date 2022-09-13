@@ -161,7 +161,7 @@ export type FontSizeValue =
 	| [fontSize: CSSValue, lineHeight: CSSValue]
 	| [fontSize: CSSValue, options: FontSizeValueExtension]
 
-export type ScreenConfigValue = CSSValue | [min?: CSSValue, max?: CSSValue] | { min?: CSSValue; max?: CSSValue }
+export type ScreenValue = CSSValue | [min?: CSSValue, max?: CSSValue] | { min?: CSSValue; max?: CSSValue }
 
 export interface FontFamilyValueExtension extends Customized {
 	/** @link https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings */
@@ -169,6 +169,12 @@ export interface FontFamilyValueExtension extends Customized {
 }
 
 export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValue[], options: FontFamilyValueExtension]
+
+export interface ContainerConfig {
+	center?: boolean
+	padding?: CSSValue | { [key: string]: CSSValue }
+	screens?: { [key: string]: ScreenValue }
+}
 
 export type CustomTheme = {
 	[key: string | symbol]: WithResolveThemePath<ConfigEntry>
@@ -185,22 +191,18 @@ export interface Theme {
 	 * {@link https://tailwindcss.com/docs/responsive-design Reference}
 	 */
 	screens?: CoreThemeObject<{
-		sm: ScreenConfigValue
-		md: ScreenConfigValue
-		lg: ScreenConfigValue
-		xl: ScreenConfigValue
-		"2xl": ScreenConfigValue
+		sm: ScreenValue
+		md: ScreenValue
+		lg: ScreenValue
+		xl: ScreenValue
+		"2xl": ScreenValue
 	}>
 
 	/** A component for fixing an element's width to the current breakpoint.
 	 *
 	 * {@link https://tailwindcss.com/docs/container Reference}
 	 */
-	container?: CoreThemeObject<{
-		screens?: unknown
-		padding?: unknown
-		center?: unknown
-	}>
+	container?: ContainerConfig
 
 	/** Customizing the default color palette for your project.
 	 *
@@ -1564,7 +1566,8 @@ export interface StrictConfigJS {
 export interface ResolvedConfigJS extends StrictResolvedConfigJS, Customized {}
 
 export interface ResolvedTheme {
-	screens: ResolvedThemeObject
+	screens: ResolvedThemeObject<ScreenValue>
+	container: ContainerConfig
 	colors: Palette
 	borderColor: Palette
 	boxShadowColor: Palette
@@ -1601,7 +1604,6 @@ export interface ResolvedTheme {
 	borderWidth: ResolvedThemeObject
 	boxShadow: ResolvedThemeObject<string | string[]>
 	contrast: ResolvedThemeObject
-	container: ResolvedThemeObject
 	content: ResolvedThemeObject
 	cursor: ResolvedThemeObject
 	divideWidth: ResolvedThemeObject

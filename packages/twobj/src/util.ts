@@ -200,17 +200,12 @@ export function toArray<T>(target: T | T[]): T[] {
 
 // => ['sm', { min: '100px', max: '200px' }, 'md', { min: '300px', max: '400px' } }]
 
-interface NormalizedScreen {
-	min?: CSSValue
-	max?: CSSValue
-}
-
-export function normalizeScreens(screens: any) {
+export function normalizeScreens(screens: unknown) {
 	if (!screens || typeof screens !== "object" || Array.isArray(screens)) {
 		return []
 	}
 
-	const ret: Array<[breakingPoint: string, minmax: NormalizedScreen]> = []
+	const ret: Array<[breakingPoint: string, minmax: { min?: CSSValue; max?: CSSValue }]> = []
 
 	for (const key in screens) {
 		const value = screens[key]
