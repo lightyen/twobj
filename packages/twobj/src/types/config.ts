@@ -22,10 +22,6 @@ export type ThemeConfig = {
 	[key: string]: ConfigEntry
 }
 
-export type CustomTheme = {
-	[key: string | symbol]: ConfigEntry
-}
-
 export interface ResolvePath {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	(path: string, defaultValue?: unknown): any
@@ -168,13 +164,15 @@ export type ScreenConfigValue =
 	| [min?: ConfigValue, max?: ConfigValue]
 	| { min?: ConfigValue; max?: ConfigValue }
 
-export interface Theme {
-	[key: string | symbol]: WithResolveThemePath<ConfigEntry> | undefined
+export type CustomTheme = {
+	[key: string | symbol]: WithResolveThemePath<ConfigEntry>
+}
 
+export interface Theme {
 	/**
 	 * {@link https://tailwindcss.com/docs/configuration Reference}
 	 */
-	extend?: Omit<Theme, "extend">
+	extend?: Omit<Theme, "extend"> & CustomTheme
 
 	/** Using responsive utility variants to build adaptive user interfaces.
 	 *
@@ -1583,7 +1581,7 @@ export interface PresetFunction {
 
 export interface StrictConfigJS {
 	presets?: (ConfigJS | PresetFunction)[]
-	theme?: Theme
+	theme?: Theme & CustomTheme
 	plugins?: Plugin[]
 	darkMode?: boolean | "media" | "class" | ["class", string]
 	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures> | boolean

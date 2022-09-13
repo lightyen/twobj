@@ -81,7 +81,7 @@ const config: ConfigJS = {
 				{ values: theme("colors.cyan") },
 			)
 			matchComponents({
-				card: value => {
+				card: (value): CSSProperties[] => {
 					return [
 						{ color: value },
 						{
