@@ -932,7 +932,7 @@ export const classPlugins: ClassPlugins = {
 
 			if (isCSSValue(padding)) {
 				value = padding
-			} else if (typeof padding === "object" && padding != null) {
+			} else if (typeof padding === "object") {
 				const p = padding[key]
 				if (isCSSValue(p)) {
 					value = p

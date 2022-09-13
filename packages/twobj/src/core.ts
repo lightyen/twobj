@@ -374,7 +374,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 					for (const [key, rest] of selectors) {
 						if (rest !== "&") {
 							ret.push([key, { [rest]: value }])
-						} else if (value !== undefined && !isCSSValue(value)) {
+						} else if (!isCSSValue(value)) {
 							ret.push([key, value])
 						}
 					}

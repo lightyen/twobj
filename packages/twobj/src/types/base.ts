@@ -1,7 +1,7 @@
 export type CSSValue = string | number
 
 export type CSSProperties = {
-	[key: string]: CSSProperties | CSSValue | undefined
+	[key: string]: CSSProperties | CSSValue
 }
 
 export interface PlainCSSProperties {

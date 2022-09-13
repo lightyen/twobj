@@ -105,7 +105,7 @@ test("diff tailwindcss", async () => {
 			const value = c[k]
 
 			if (!isCSSValue(value)) {
-				if (value != undefined) stringProperties(value)
+				stringProperties(value)
 			} else {
 				c[k] = `${c[k]}`
 			}
