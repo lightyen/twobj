@@ -8,6 +8,7 @@ const source = [
 	"pointer-events-auto",
 	"visible",
 	"invisible",
+	"collapse",
 	"static",
 	"fixed",
 	"absolute",

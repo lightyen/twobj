@@ -35,6 +35,6 @@
 		"cssesc": "3.0.0",
 		"parsel-js": "1.0.2",
 		"postcss": "8.4.16",
-		"tailwindcss": "3.1.8"
+		"tailwindcss": "0.0.0-insiders.3e6b8ac"
 	}
 }

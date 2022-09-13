@@ -8,6 +8,7 @@ import resolveConfig from "tailwindcss/resolveConfig"
 import { Config } from "tailwindcss/types/config"
 import { escapeRegexp } from "../src/parser"
 import { CSSProperties } from "../src/types"
+import { isCSSValue } from "../src/util"
 import { context } from "./context"
 
 test("diff tailwindcss", async () => {
@@ -103,8 +104,8 @@ test("diff tailwindcss", async () => {
 		for (const k in c) {
 			const value = c[k]
 
-			if (typeof value !== "string" && typeof value !== "number") {
-				stringProperties(value)
+			if (!isCSSValue(value)) {
+				if (value != undefined) stringProperties(value)
 			} else {
 				c[k] = `${c[k]}`
 			}

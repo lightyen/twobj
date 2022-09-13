@@ -24348,6 +24348,12 @@ Object {
 }
 `;
 
+exports[`snapshots: collapse 1`] = `
+Object {
+  "visibility": "collapse",
+}
+`;
+
 exports[`snapshots: columns-1 1`] = `
 Object {
   "columns": "1",

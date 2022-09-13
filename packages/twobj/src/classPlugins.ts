@@ -2099,6 +2099,7 @@ export const classPlugins: ClassPlugins = {
 		addUtilities({
 			".visible": { visibility: "visible" },
 			".invisible": { visibility: "hidden" },
+			".collapse": { visibility: "collapse" },
 		})
 	}),
 	whitespace: plugin("whitespace", ({ addUtilities }) => {
