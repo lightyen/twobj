@@ -1,3 +1,4 @@
+import { createContext, resolveConfig } from "../src"
 import { parseBoxShadowValues } from "../src/parser"
 import { tw } from "./context"
 
@@ -37,6 +38,22 @@ test("boxShadow", async () => {
 	expect(tw`shadow-[10px 10px 5px theme(colors.red.500 / 50%)]`).toEqual({
 		"--tw-shadow-default-color-0": "rgb(239 68 68 / 50%)",
 		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, var(--tw-shadow-default-color-0))",
+		"--tw-shadow": "var(--tw-shadow-colored)",
+		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+	})
+})
+
+test("boxShadow array value", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			theme: { boxShadow: { DEFAULT: ["0 1px 3px 0 rgb(0 0 0 / 0.3)", "0 1px 2px -1px rgb(0 0 0 / 0.3)"] } },
+		}),
+	)
+	expect(ctx.css`shadow`).toEqual({
+		"--tw-shadow-default-color-0": "rgb(0 0 0 / 0.3)",
+		"--tw-shadow-default-color-1": "rgb(0 0 0 / 0.3)",
+		"--tw-shadow-colored":
+			"0 1px 3px 0 var(--tw-shadow-color, var(--tw-shadow-default-color-0)), 0 1px 2px -1px var(--tw-shadow-color, var(--tw-shadow-default-color-1))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
 	})

@@ -585,7 +585,7 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 	}
 })()
 
-const shadow: ValueTypeSpec<string | number | null | undefined> = (function () {
+const shadow: ValueTypeSpec<string | string[] | number | null | undefined> = (function () {
 	return {
 		type: "shadow",
 		isTag(tag) {
@@ -593,6 +593,9 @@ const shadow: ValueTypeSpec<string | number | null | undefined> = (function () {
 		},
 		handleConfig(config, { negative }) {
 			if (negative) return ""
+			if (Array.isArray(config)) {
+				return config.join(", ")
+			}
 			return config ?? ""
 		},
 		handleValue(value, { unambiguous } = {}) {
