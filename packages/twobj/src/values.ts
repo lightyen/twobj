@@ -849,7 +849,7 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 	}
 })()
 
-const image: ValueTypeSpec<string | number | null | undefined> = (function () {
+const imageFunction: ValueTypeSpec<string | number | null | undefined> = (function () {
 	const imageFunctions = [
 		"image",
 		"-webkit-image-set",
@@ -920,7 +920,7 @@ export const __types: Types = {
 	"absolute-size": absoluteSize,
 	"relative-size": relativeSize,
 	url,
-	image,
+	image: imageFunction,
 	shadow,
 	"generic-name": genericName,
 	"family-name": familyName,
