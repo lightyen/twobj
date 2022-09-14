@@ -27,8 +27,10 @@ function guessValue(typ: ValueType | "any") {
 			return "1"
 		case "percentage":
 			return "1%"
-		case "position":
+		case "background-position":
 			return "center"
+		case "background-size":
+			return "auto 100%"
 		case "length":
 			return "1px"
 		case "color":
