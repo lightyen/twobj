@@ -62,9 +62,9 @@ importers:
 
   examples/node:
     specifiers:
-      twobj: 1.2.0
+      twobj: ../../packages/twobj
     dependencies:
-      twobj: 1.2.0
+      twobj: link:../../packages/twobj
 
   examples/react-emotion:
     specifiers:

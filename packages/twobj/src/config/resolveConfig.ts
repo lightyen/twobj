@@ -1,14 +1,6 @@
-import type {
-	ConfigJS,
-	ConfigUtils,
-	PresetFunction,
-	ResolvedConfigJS,
-	ResolveThemePath,
-	UserPlugin,
-	UserPluginFunctionWithOption,
-	UserPluginObject,
-} from "../types"
-import type { ConfigEntry, ConfigObject, ConfigValue } from "../types/config"
+import { isPluginWithOptions } from "../plugin"
+import type { ConfigJS, ConfigUtils, Plugin, PresetFunction, ResolvedConfigJS, ResolveThemePath } from "../types"
+import type { ConfigArray, ConfigEntry, ConfigObject } from "../types/config"
 import { isFunction } from "../util"
 import defaultConfig from "./defaultConfig"
 import { resolveFunctionKeys } from "./resolveFuncionKey"
@@ -31,13 +23,6 @@ export function resolveConfig(...args: Array<ConfigJS | null | undefined>) {
 	return resolveConfigObjects([...configs, ...presets])
 }
 
-function normalizeConfig(config: ResolvedConfigJS) {
-	if (typeof config.prefix !== "string") {
-		config.prefix = ""
-	}
-	return config
-}
-
 function extractPluginConfigs(configs: ConfigJS[]) {
 	let allConfigs: ConfigJS[] = []
 
@@ -51,12 +36,17 @@ function extractPluginConfigs(configs: ConfigJS[]) {
 		}
 
 		plugins.forEach(plugin => {
-			if ((plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
-				plugin = (plugin as UserPluginFunctionWithOption)()
+			// Must check the type of plugin
+			if (isPluginWithOptions(plugin)) {
+				plugin = plugin()
 			}
-			const pluginConfig = (plugin as UserPluginObject).config
-			if (pluginConfig) {
-				allConfigs = [...allConfigs, ...extractPluginConfigs([pluginConfig])]
+
+			if (isFunction(plugin)) {
+				return
+			}
+
+			if (plugin.config) {
+				allConfigs = [...allConfigs, ...extractPluginConfigs([plugin.config])]
 			}
 		})
 	})
@@ -64,7 +54,7 @@ function extractPluginConfigs(configs: ConfigJS[]) {
 	return allConfigs
 }
 
-function resolvePluginLists(pluginLists: Array<UserPlugin>[]) {
+function resolvePluginLists(pluginLists: Array<Plugin>[]) {
 	return pluginLists.reduceRight((resolved, pluginList) => {
 		return [...resolved, ...pluginList]
 	}, [])
@@ -88,69 +78,44 @@ function defaults(target: Record<string | symbol, ConfigEntry>, ...sources: Reco
 	return target
 }
 
-function value(valueToResolve: unknown, ...args: unknown[]) {
-	return isFunction(valueToResolve) ? valueToResolve(...args) : valueToResolve
+function isObject(value: ConfigEntry): value is ConfigArray | ConfigObject {
+	return typeof value === "object" && value !== null
 }
 
-export function mergeWith<Item extends Array<ConfigEntry | ConfigObject> | ConfigObject, Return>(
-	customizer: (objValue: Array<ConfigEntry | ConfigObject> | ConfigObject, srcValue: Item) => ConfigEntry,
-	target: Return,
-	...sources: (Item | undefined)[]
-) {
+export function mergeWith<T extends ConfigArray | ConfigObject>(
+	customizer: (objValue: ConfigEntry, srcValue: ConfigEntry) => ConfigEntry,
+	target: T,
+	...sources: ConfigEntry[]
+): T {
 	for (const source of sources) {
 		if (!isObject(source)) {
 			continue
 		}
-		for (const k in source) {
-			const merged = customizer(target[k], source[k])
 
-			if (merged === undefined) {
-				const t = target[k]
-				const s = source[k]
-				if (isObject(t) && isObject(s)) {
-					target[k] = mergeWith(customizer, {}, t, s)
-				} else {
-					target[k] = source[k]
-				}
-			} else {
-				target[k] = merged
+		for (const key in source) {
+			const t = target[key]
+			const s = source[key]
+
+			const merged = customizer(t, s)
+
+			if (merged !== undefined) {
+				target[key] = merged
+				continue
 			}
+
+			if (isObject(t)) {
+				target[key] = mergeWith(customizer, {}, t, s)
+				continue
+			}
+
+			target[key] = s
 		}
 	}
 
 	return target
-
-	function isObject(value: unknown): value is Array<ConfigEntry | ConfigObject> | ConfigObject {
-		return typeof value === "object" && value !== null
-	}
 }
 
-// function collectExtends(themes: ThemeConfig[]) {
-// 	const init: ConfigObject[] = []
-// 	return themes.reduce((merged, { extend }) => {
-// 		return mergeWith(
-// 			(mergedValue, extendValue) => {
-// 				if (Array.isArray(mergedValue)) {
-// 					return [extendValue, ...mergedValue] as ConfigObject[]
-// 				}
-// 				return [extendValue, mergedValue] as ConfigObject[]
-// 			},
-// 			merged,
-// 			extend,
-// 		)
-// 	}, init)
-// }
-
-export type ExtendConfigArray = Array<ExtendConfigEntry>
-
-export type ExtendConfigEntry = ConfigValue | ExtendConfigArray | ExtendConfigObject
-
-type ExtendConfigObject = {
-	[key: string]: ConfigValue | ExtendConfigArray | ExtendConfigObject
-}
-
-export function collectExtends(themes: ThemeConfig[]) {
-	const init: ExtendConfigObject = {}
+export function collectExtends(themes: ConfigObject[]) {
 	return themes.reduce((merged, { extend }) => {
 		return mergeWith(
 			(mergedValue, extendValue) => {
@@ -158,36 +123,44 @@ export function collectExtends(themes: ThemeConfig[]) {
 					return [extendValue]
 				}
 				if (Array.isArray(mergedValue)) {
-					return [extendValue, ...mergedValue] as ConfigObject[]
+					return [extendValue, ...mergedValue]
 				}
-				return [extendValue, mergedValue] as ConfigObject[]
+				return [extendValue, mergedValue]
 			},
 			merged,
 			extend,
 		)
-	}, init)
+	}, {})
 }
 
-export type ThemeConfig = {
-	extend?: ConfigObject
-	[key: string]: ConfigEntry
-}
-
-function collectThemes(themes: ThemeConfig[]): { extend: ExtendConfigObject; theme: ThemeConfig } {
+function collectThemes(themes: ConfigObject[]): { extend: ConfigObject; theme: ConfigObject } {
 	return {
 		theme: themes.reduce((merged, theme) => defaults(merged, theme), {}),
 		extend: collectExtends(themes),
 	}
 }
 
-function mergeExtensions({ theme, extend }: ReturnType<typeof collectThemes>) {
+function mergeExtensions({ theme, extend }: { extend: ConfigObject; theme: ConfigObject }) {
 	return mergeWith(
 		(themeValue, extensions) => {
 			if (!Array.isArray(extensions)) {
 				return undefined
 			}
 
-			// The `extend` property is an array, so we need to check if it contains any functions
+			if (isFunction(themeValue) || extensions.some(isFunction)) {
+				return (theme: ResolveThemePath, configUtils: ConfigUtils) =>
+					mergeWith(
+						mergeExtensionCustomizer,
+						{},
+						...[themeValue, ...extensions].map(funcOrValue => {
+							if (isFunction(funcOrValue)) {
+								return funcOrValue(theme, configUtils)
+							}
+							return funcOrValue
+						}),
+					)
+			}
+
 			if (!isFunction(themeValue) && !extensions.some(isFunction)) {
 				return mergeWith(mergeExtensionCustomizer, {}, themeValue, ...extensions)
 			}
@@ -196,7 +169,12 @@ function mergeExtensions({ theme, extend }: ReturnType<typeof collectThemes>) {
 				mergeWith(
 					mergeExtensionCustomizer,
 					{},
-					...[themeValue, ...extensions].map(funcOrValue => value(funcOrValue, theme, configUtils)),
+					...[themeValue, ...extensions].map(funcOrValue => {
+						if (isFunction(funcOrValue)) {
+							return funcOrValue(theme, configUtils)
+						}
+						return funcOrValue
+					}),
 				)
 		},
 		theme,
@@ -207,10 +185,7 @@ function mergeExtensions({ theme, extend }: ReturnType<typeof collectThemes>) {
 		return typeof value === "object" && value !== null
 	}
 
-	function mergeExtensionCustomizer(
-		merged: Array<ConfigEntry | ConfigObject> | ConfigObject,
-		value: Array<ConfigEntry | ConfigObject> | ConfigObject,
-	) {
+	function mergeExtensionCustomizer(merged: ConfigArray | ConfigObject, value: ConfigArray | ConfigObject) {
 		// When we have an array of objects, we do want to merge it
 		if (Array.isArray(merged) && isObject(merged[0])) {
 			return merged.concat(value)
@@ -225,9 +200,6 @@ function mergeExtensions({ theme, extend }: ReturnType<typeof collectThemes>) {
 		if (Array.isArray(value)) {
 			return value
 		}
-
-		// Execute default behaviour
-		return undefined
 	}
 }
 
@@ -245,4 +217,11 @@ function resolveConfigObjects(configs: ConfigJS[]) {
 			...allConfigs,
 		) as unknown as ResolvedConfigJS,
 	)
+
+	function normalizeConfig(config: ResolvedConfigJS) {
+		if (typeof config.prefix !== "string") {
+			config.prefix = ""
+		}
+		return config
+	}
 }

@@ -11,6 +11,7 @@ import {
 	Variant,
 } from "./parser/nodes"
 import * as theme from "./parser/theme"
+import { isPluginWithOptions } from "./plugin"
 import { escapeCss, findClasses } from "./postcss"
 import type {
 	ConfigObject,
@@ -21,11 +22,9 @@ import type {
 	CSSValue,
 	LookupSpec,
 	Palette,
-	Plugin,
 	PostModifier,
 	ResolvedConfigJS,
 	StaticSpec,
-	UserPluginFunctionWithOption,
 	UserPluginOptions,
 	ValueType,
 	VariantSpec,
@@ -144,12 +143,11 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	for (let i = 0; i < config.plugins.length; i++) {
-		let _plugin = config.plugins[i]
-		if (isFunction(_plugin) && (_plugin as UserPluginFunctionWithOption).__isOptionsFunction) {
-			_plugin = _plugin()
+		let plugin = config.plugins[i]
+		if (isPluginWithOptions(plugin)) {
+			plugin = plugin()
 		}
 
-		const plugin: Plugin = _plugin
 		const pluginName = plugin["name"]
 		if (isString(pluginName) && isNotEmpty(pluginName)) {
 			currentPluginName = pluginName

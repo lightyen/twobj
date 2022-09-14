@@ -123,6 +123,16 @@ const config: ConfigJS = {
 				},
 			})
 		},
+		plugin.withOptions<unknown>(() => {
+			return function ({ addUtilities }) {
+				//
+			}
+		})(),
+		plugin.withOptions<unknown>(() => {
+			return function ({ addUtilities }) {
+				//
+			}
+		}),
 	],
 }
 config

@@ -20,6 +20,11 @@ const ctx = createContext(
 					},
 				},
 			},
+			custom: {
+				helloworld(theme, utils) {
+					console.log(theme("colors.black"))
+				},
+			},
 		},
 		plugins: [
 			function ({ matchUtilities, matchComponents, matchVariant, theme, e }) {
@@ -58,4 +63,4 @@ const ctx = createContext(
 	}),
 )
 
-console.log(ctx.getColorClasses())
+// console.log(ctx.getColorClasses())

@@ -60,13 +60,9 @@ export interface UserPluginObject {
 
 export interface UserPluginFunctionWithOption<Options = unknown> {
 	(options?: Options): UserPluginObject
-	__isOptionsFunction: boolean
-	__pluginFunction: (options?: Options) => UserPluginFunction
-	__configFunction: (options?: Options) => ConfigJS
 }
 
 export type Plugin = UserPluginObject | UserPluginFunction
-export type UserPlugin = UserPluginObject | UserPluginFunction | UserPluginFunctionWithOption
 
 type WithResolvePathPalette<T extends Record<string | symbol, unknown> = {}> = WithResolveThemePath<
 	{
@@ -1679,6 +1675,6 @@ export interface StrictResolvedConfigJS {
 	prefix: string
 	important: boolean
 	darkMode: boolean | "media" | "class" | ["class", string]
-	plugins: UserPlugin[]
+	plugins: (UserPluginObject | UserPluginFunction | UserPluginFunctionWithOption)[]
 	theme: ResolvedTheme & Customized
 }
