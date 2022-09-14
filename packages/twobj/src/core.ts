@@ -746,7 +746,9 @@ export function createContext(config: ResolvedConfigJS): Context {
 		const { spec, negative, restInput } = parseInput(value)
 
 		if (spec) {
-			for (const c of toArray(spec)) {
+			const arr = toArray(spec)
+			if (arr.length === 1) {
+				const c = arr[0]
 				if (c.type === "lookup") {
 					const css = c.represent(restInput, node, negative)
 					if (css) {
@@ -754,6 +756,39 @@ export function createContext(config: ResolvedConfigJS): Context {
 					}
 				} else {
 					return [c.css, c]
+				}
+			} else if (arr.filter(c => c.type === "lookup").length > 1) {
+				const lookup = arr.filter((c): c is LookupSpec => c.type === "lookup")
+				const result = lookup
+					.map(c => {
+						const css = c.represent(restInput, node, negative)
+						if (css) {
+							return [css, c]
+						}
+						return undefined
+					})
+					.filter((t): t is [CSSProperties, LookupSpec] => !!t)
+				if (result.length > 1) {
+					return []
+				} else if (result.length === 1) {
+					return result[0]
+				}
+
+				const statik = arr.filter((c): c is StaticSpec => c.type === "static")
+				if (statik.length > 0) {
+					const c = statik[0]
+					return [c.css, c]
+				}
+			} else {
+				for (const c of arr) {
+					if (c.type === "lookup") {
+						const css = c.represent(restInput, node, negative)
+						if (css) {
+							return [css, c]
+						}
+					} else {
+						return [c.css, c]
+					}
 				}
 			}
 		}

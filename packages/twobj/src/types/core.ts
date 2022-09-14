@@ -11,7 +11,6 @@ export type ValueType =
 	| "angle"
 	| "url"
 	| "color"
-	| "position" // backgroundPosition
 	| "image" // backgroundImage
 	| "line-width" // borderWidth
 	| "absolute-size" // fontSize
@@ -19,6 +18,8 @@ export type ValueType =
 	| "shadow" // boxShadow
 	| "generic-name" // fontFamily
 	| "family-name" // fontFamily
+	| "background-position" // backgroundPosition
+	| "background-size" // backgroundSize
 
 export interface Template {
 	(value: CSSValue): CSSProperties

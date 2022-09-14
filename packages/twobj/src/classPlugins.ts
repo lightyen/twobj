@@ -512,11 +512,11 @@ export const classPlugins: ClassPlugins = {
 		values: theme.backgroundImage,
 	})),
 	backgroundSize: createUtilityPlugin("backgroundSize", [["bg", "backgroundSize"]], theme => ({
-		type: ["length", "percentage"],
+		type: "background-size",
 		values: theme.backgroundSize,
 	})),
 	backgroundPosition: createUtilityPlugin("backgroundPosition", [["bg", "backgroundPosition"]], theme => ({
-		type: "position",
+		type: "background-position",
 		values: theme.backgroundPosition,
 	})),
 	strokeWidth: createUtilityPlugin("strokeWidth", [["stroke", "strokeWidth"]], theme => ({

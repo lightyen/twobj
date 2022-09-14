@@ -104,16 +104,16 @@ test("color", () => {
 })
 
 test("background position", () => {
-	expect(__types.position.handleValue("center")).not.toBeUndefined()
-	expect(__types.position.handleValue("left")).not.toBeUndefined()
-	expect(__types.position.handleValue("25% 75%")).not.toBeUndefined()
-	expect(__types.position.handleValue("bottom 50px right 100px")).not.toBeUndefined()
-	expect(__types.position.handleValue("right 35% bottom 45%")).not.toBeUndefined()
-	expect(__types.position.handleValue("bottom 10px right")).not.toBeUndefined()
-	expect(__types.position.handleValue("bottom right")).not.toBeUndefined()
-	expect(__types.position.handleValue("bottom center")).not.toBeUndefined()
-	expect(__types.position.handleValue("right 35% center 45%")).toBeUndefined()
-	expect(__types.position.handleValue("10% top right")).toBeUndefined()
+	expect(__types["background-position"].handleValue("center")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("left")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("25% 75%")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("bottom 50px right 100px")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("right 35% bottom 45%")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("bottom 10px right")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("bottom right")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("bottom center")).not.toBeUndefined()
+	expect(__types["background-position"].handleValue("right 35% center 45%")).toBeUndefined()
+	expect(__types["background-position"].handleValue("10% top right")).toBeUndefined()
 })
 
 test("url", () => {

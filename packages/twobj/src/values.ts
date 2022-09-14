@@ -610,11 +610,11 @@ const shadow: ValueTypeSpec<string | string[] | number | null | undefined> = (fu
 	}
 })()
 
-const position: ValueTypeSpec<string | number | null | undefined> = (function () {
+const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (function () {
 	return {
-		type: "position",
+		type: "background-position",
 		isTag(tag) {
-			return tag === "position"
+			return tag === "position" || tag === "background-position"
 		},
 		handleConfig(config, { negative }) {
 			if (negative) return ""
@@ -627,7 +627,7 @@ const position: ValueTypeSpec<string | number | null | undefined> = (function ()
 			const arr = parser.splitAtTopLevelOnly(value)
 
 			if (
-				!arr.every(v => {
+				arr.every(v => {
 					const params = parser.splitCssParams(v.value)
 					const parameters = params.filter((p: string): p is string => typeof p === "string")
 					if (params.length !== parameters.length) {
@@ -647,9 +647,9 @@ const position: ValueTypeSpec<string | number | null | undefined> = (function ()
 					}
 				})
 			) {
-				return undefined
+				return value
 			}
-			return value
+			return undefined
 		},
 	}
 
@@ -766,6 +766,89 @@ const position: ValueTypeSpec<string | number | null | undefined> = (function ()
 	}
 })()
 
+const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (function () {
+	return {
+		type: "background-size",
+		isTag(tag) {
+			return tag === "size" || tag === "background-size"
+		},
+		handleConfig(config, { negative }) {
+			if (negative) return ""
+			return config ?? ""
+		},
+		handleValue(value, { unambiguous } = {}) {
+			if (value === "") {
+				return undefined
+			}
+			const arr = parser.splitAtTopLevelOnly(value)
+			if (arr.length === 0) {
+				return undefined
+			}
+
+			if (
+				arr.every(v => {
+					const params = parser.splitCssParams(v.value)
+					const parameters = params.filter((p: string): p is string => typeof p === "string")
+					if (params.length !== parameters.length) {
+						return false
+					}
+					switch (parameters.length) {
+						case 1:
+							return one(parameters[0])
+						case 2:
+							return two(parameters[0], parameters[1])
+						default:
+							return false
+					}
+				})
+			) {
+				return value
+			}
+			return undefined
+		},
+	}
+
+	function isAuto(value: string) {
+		return value === "auto"
+	}
+
+	function isKeyword(value: string) {
+		return value === "contain" || value === "cover"
+	}
+
+	function isValue(value: string) {
+		return length.handleValue(value) != undefined || percentage.handleValue(value) != undefined
+	}
+
+	function type(value: string): "auto" | "keyword" | "value" | "unknown" {
+		if (isAuto(value)) {
+			return "auto"
+		}
+		if (isKeyword(value)) {
+			return "keyword"
+		}
+		if (isValue(value)) {
+			return "value"
+		}
+		return "unknown"
+	}
+
+	function one(value: string): boolean {
+		return type(value) !== "unknown"
+	}
+
+	function two(a: string, b: string): boolean {
+		const [first, second] = [type(a), type(b)]
+		if (first === "unknown" || second === "unknown") {
+			return false
+		}
+		if (first === "keyword" || second === "keyword") {
+			return false
+		}
+		return true
+	}
+})()
+
 const image: ValueTypeSpec<string | number | null | undefined> = (function () {
 	const imageFunctions = [
 		"image",
@@ -841,7 +924,8 @@ export const __types: Types = {
 	shadow,
 	"generic-name": genericName,
 	"family-name": familyName,
-	position,
+	"background-position": backgroundPosition,
+	"background-size": backgroundSize,
 }
 
 export function representTypes({

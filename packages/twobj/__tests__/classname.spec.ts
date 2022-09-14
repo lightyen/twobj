@@ -85,19 +85,28 @@ test("backgroundImage", async () => {
 test("backgroundPosition", async () => {
 	expect(tw`bg-top`).toEqual({ backgroundPosition: "top" })
 	expect(tw`bg-right-bottom`).toEqual({ backgroundPosition: "right bottom" })
-	expect(tw`bg-[25% 75%]`).toEqual({ backgroundPosition: "25% 75%" })
+	expect(tw`bg-[background-position:25% 75%]`).toEqual({ backgroundPosition: "25% 75%" })
+	expect(tw`bg-[position:25% 75%]`).toEqual({ backgroundPosition: "25% 75%" })
+	expect(tw`bg-[background-position:theme(width.1/2)]`).toEqual({ backgroundPosition: "50%" })
+	expect(tw`bg-[position:theme(width.1/2)]`).toEqual({ backgroundPosition: "50%" })
 	expect(tw`bg-[bottom 50px right 100px]`).toEqual({ backgroundPosition: "bottom 50px right 100px" })
 	expect(tw`bg-[bottom 10px right]`).toEqual({ backgroundPosition: "bottom 10px right" })
+	expect(tw`bg-[background-position:var(--position)]`).toEqual({ backgroundPosition: "var(--position)" })
 	expect(tw`bg-[position:var(--position)]`).toEqual({ backgroundPosition: "var(--position)" })
+	expect(tw`bg-[25% 75%]`).toEqual({})
 })
 
 test("backgroundSize", async () => {
 	expect(tw`bg-auto`).toEqual({ backgroundSize: "auto" })
 	expect(tw`bg-contain`).toEqual({ backgroundSize: "contain" })
 	expect(tw`bg-cover`).toEqual({ backgroundSize: "cover" })
-	expect(tw`bg-[12%]`).toEqual({ backgroundSize: "12%" })
-	expect(tw`bg-[length:200px 20%]`).toEqual({ backgroundSize: "200px 20%" })
-	expect(tw`bg-[length:var(--size)]`).toEqual({ backgroundSize: "var(--size)" })
+	expect(tw`bg-[12%]`).toEqual({})
+	expect(tw`bg-[background-size:12%]`).toEqual({ backgroundSize: "12%" })
+	expect(tw`bg-[size:12%]`).toEqual({ backgroundSize: "12%" })
+	expect(tw`bg-[200px 20%]`).toEqual({})
+	expect(tw`bg-[background-size:var(--size)]`).toEqual({ backgroundSize: "var(--size)" })
+	expect(tw`bg-[size:var(--size)]`).toEqual({ backgroundSize: "var(--size)" })
+	expect(tw`bg-[auto 100%]`).toEqual({ backgroundSize: "auto 100%" })
 })
 
 test("textColor", async () => {
