@@ -11,6 +11,9 @@ b
 const c: ConfigObject = b
 c
 
+resolveConfig({}, { theme: defaultConfig.theme }, { separator: "abc" })
+resolveConfig(resolveConfig({}, { theme: defaultConfig.theme }, { separator: "abc" }))
+
 resolveConfig({
 	theme: {
 		fontFamily: {

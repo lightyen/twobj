@@ -1,27 +1,17 @@
 import colors from "../config/defaultColors"
-import { CSSProperties, CSSValue } from "./base"
+import { CSSProperties, CSSValue, Func, Primitive } from "./base"
 import { UserPluginOptions } from "./core"
 import { CorePluginFeatures } from "./features"
 
-export type Primitive = string | bigint | number | boolean | symbol | null | undefined
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Func = (...args: any) => any
-
 export type ConfigValue = Func | Primitive
 
-export type ConfigObject = {
-	[key: string]: ConfigEntry
+export interface ConfigObject {
+	[key: string | symbol]: ConfigEntry
 }
 
 export type ConfigArray = Array<ConfigEntry>
 
 export type ConfigEntry = ConfigValue | ConfigArray | ConfigObject
-
-export type ThemeConfig = {
-	extend?: ConfigObject
-	[key: string]: ConfigEntry
-}
 
 export interface ResolvePath {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,16 +29,18 @@ export interface ResolveThemePath extends ResolvePath, ConfigUtils {
 
 type WithResolveThemePath<T> = T | ((theme: ResolveThemePath, utils: ConfigUtils) => T)
 
-export type CustomPalette = {
+export interface CustomPalette {
 	[key: string | symbol]: ColorValue
 }
 
-export type ColorValueFunc = (options: { opacityValue?: string }) => string
+export interface ColorValueFunc {
+	(options: { opacityValue?: string }): string
+}
 
 export type ColorValue = ColorValueFunc | CustomPalette | string
 
 export interface UserPluginFunction {
-	(options: UserPluginOptions)
+	(options: UserPluginOptions): void
 }
 
 export interface UserPluginObject {
@@ -64,43 +56,7 @@ export interface UserPluginFunctionWithOption<Options = unknown> {
 
 export type Plugin = UserPluginObject | UserPluginFunction
 
-type WithResolvePathPalette<T extends Record<string | symbol, unknown> = {}> = WithResolveThemePath<
-	{
-		[key: string | symbol]: ColorValue
-	} & {
-		inherit?: ColorValue
-		current?: ColorValue
-		transparent?: ColorValue
-		black?: ColorValue
-		white?: ColorValue
-		slate?: ColorValue
-		gray?: ColorValue
-		zinc?: ColorValue
-		neutral?: ColorValue
-		stone?: ColorValue
-		red?: ColorValue
-		orange?: ColorValue
-		amber?: ColorValue
-		yellow?: ColorValue
-		lime?: ColorValue
-		green?: ColorValue
-		emerald?: ColorValue
-		teal?: ColorValue
-		cyan?: ColorValue
-		sky?: ColorValue
-		blue?: ColorValue
-		indigo?: ColorValue
-		violet?: ColorValue
-		purple?: ColorValue
-		fuchsia?: ColorValue
-		pink?: ColorValue
-		rose?: ColorValue
-	} & { [P in keyof T]?: ColorValue }
->
-
-export type Palette<T extends Record<string | symbol, unknown> = {}> = {
-	[key: string | symbol]: ColorValue
-} & {
+interface BaseColors {
 	inherit?: ColorValue
 	current?: ColorValue
 	transparent?: ColorValue
@@ -128,7 +84,17 @@ export type Palette<T extends Record<string | symbol, unknown> = {}> = {
 	fuchsia?: ColorValue
 	pink?: ColorValue
 	rose?: ColorValue
-} & { [P in keyof T]?: ColorValue }
+}
+
+export type Palette<T extends Record<string | symbol, unknown> = {}> = {
+	[key: string | symbol]: ColorValue
+} & BaseColors & { [P in keyof T]?: ColorValue }
+
+type WithResolvePathPalette<T extends Record<string | symbol, unknown> = {}> = WithResolveThemePath<
+	{
+		[key: string | symbol]: ColorValue
+	} & BaseColors & { [P in keyof T]?: ColorValue }
+>
 
 /** For better developer experience */
 type CoreThemeObject<T extends Record<string | symbol, unknown> = {}, V = ConfigEntry> = WithResolveThemePath<
@@ -139,7 +105,7 @@ type CoreThemeObject<T extends Record<string | symbol, unknown> = {}, V = Config
 	}
 >
 
-type ResolvedThemeObject<V = ConfigEntry> = {
+interface ResolvedThemeObject<V = ConfigEntry> {
 	[key: string | symbol]: V
 }
 
@@ -172,7 +138,7 @@ export interface ContainerConfig {
 	screens?: { [key: string]: ScreenValue }
 }
 
-export type CustomTheme = {
+export interface CustomTheme {
 	[key: string | symbol]: WithResolveThemePath<ConfigEntry>
 }
 
@@ -1627,7 +1593,7 @@ export interface ResolvedTheme {
 	gridTemplateRows: ResolvedThemeObject
 	height: ResolvedThemeObject
 	inset: ResolvedThemeObject
-	keyframes: ResolvedThemeObject<CSSProperties>
+	keyframes: ResolvedThemeObject<CSSProperties> & Customized
 	letterSpacing: ResolvedThemeObject
 	lineHeight: ResolvedThemeObject
 	listStyleType: ResolvedThemeObject

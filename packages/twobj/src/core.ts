@@ -239,7 +239,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		merge(globalStyles, ...bases)
 	}
 
-	function addDefaults(pluginName: string, properties: Record<string, string>): void {
+	function addDefaults(pluginName: string, properties: Record<string, string | string[]>): void {
 		properties = Object.fromEntries(Object.entries(properties).map(([key, value]) => [camelCase(key), value]))
 		for (let i = 0; i < defaults.length; i++) {
 			merge(defaults[i], properties)

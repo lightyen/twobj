@@ -1,6 +1,6 @@
 import * as parser from "../parser"
 import { ConfigUtils } from "../types"
-import { ConfigEntry, ResolveThemePath, ThemeConfig } from "../types/config"
+import { ConfigEntry, ConfigObject, ResolveThemePath } from "../types/config"
 import { isPlainArray, isPlainObject } from "../util"
 import defaultColors from "./defaultColors"
 
@@ -18,7 +18,7 @@ export const configUtils: ConfigUtils = {
 	colors: defaultColors,
 }
 
-export function resolveFunctionKeys(themeObject: ThemeConfig): ThemeConfig {
+export function resolveFunctionKeys(themeObject: ConfigObject): ConfigObject {
 	const resolveThemePath: ResolveThemePath = (path, defaultValue) => {
 		const node = parser.parse_theme_val(path)
 
@@ -29,7 +29,7 @@ export function resolveFunctionKeys(themeObject: ThemeConfig): ThemeConfig {
 		for (let i = 0; i < paths.length; i++) {
 			const path = paths[i].value
 			if (Object.prototype.hasOwnProperty.call(target, path)) {
-				target = (target as ThemeConfig)[path]
+				target = (target as ConfigObject)[path]
 			} else {
 				const result = parser.tryOpacity(paths)
 				if (!result.opacity) {
@@ -39,7 +39,7 @@ export function resolveFunctionKeys(themeObject: ThemeConfig): ThemeConfig {
 					paths = result.path
 
 					if (i < paths.length && Object.prototype.hasOwnProperty.call(target, paths[i].value)) {
-						target = (target as ThemeConfig)[paths[i].value]
+						target = (target as ConfigObject)[paths[i].value]
 					} else {
 						target = undefined
 					}

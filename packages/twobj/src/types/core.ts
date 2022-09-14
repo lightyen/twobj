@@ -81,7 +81,7 @@ export interface UserPluginOptions {
 	addBase(bases: CSSProperties | CSSProperties[]): void
 
 	/** Add global css variables. */
-	addDefaults(pluginName: string, properties: Record<string, string>): void
+	addDefaults(pluginName: string, properties: Record<string, string | string[]>): void
 
 	/** Register new utilities. */
 	addUtilities(utilities: CSSProperties | CSSProperties[], options?: AddOption): void
