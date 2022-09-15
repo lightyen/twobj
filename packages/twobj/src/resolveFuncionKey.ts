@@ -1,8 +1,7 @@
-import * as parser from "../parser"
-import { ConfigUtils } from "../types"
-import { ConfigEntry, ConfigObject, ResolveThemePath } from "../types/config"
-import { isPlainArray, isPlainObject } from "../util"
-import defaultColors from "./defaultColors"
+import { defaultColors } from "./defaultColors"
+import * as parser from "./parser"
+import { ConfigEntry, ConfigObject, ConfigUtils, ResolveThemePath } from "./types"
+import { isPlainArray, isPlainObject } from "./util"
 
 function cloneDeep(value: unknown): unknown {
 	if (Array.isArray(value)) {

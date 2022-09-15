@@ -1,7 +1,6 @@
-import colors from "../../config/defaultColors"
+import { ConfigJS, CSSProperties, CSSValue } from ".."
+import { defaultColors } from "../../defaultColors"
 import { plugin } from "../../plugin"
-import { CSSProperties, CSSValue } from "./../base"
-import { ConfigJS } from "./../config"
 
 const config: ConfigJS = {
 	theme: {
@@ -10,7 +9,7 @@ const config: ConfigJS = {
 				padding: { sm: 123 },
 			},
 			colors: {
-				...colors,
+				...defaultColors,
 				custom: ({ opacityValue }) => {
 					return `rgba(217, 245, 56, ${opacityValue})`
 				},

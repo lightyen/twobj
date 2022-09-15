@@ -1,12 +1,21 @@
-import { isPluginWithOptions } from "../plugin"
-import type { ConfigJS, ConfigUtils, Plugin, PresetFunction, ResolvedConfigJS, ResolveThemePath } from "../types"
-import type { ConfigArray, ConfigEntry, ConfigObject } from "../types/config"
-import { isFunction } from "../util"
-import defaultConfig from "./defaultConfig"
+import { defaultConfig } from "./defaultConfig"
+import { isPluginWithOptions } from "./plugin"
 import { resolveFunctionKeys } from "./resolveFuncionKey"
+import type {
+	ConfigArray,
+	ConfigEntry,
+	ConfigJS,
+	ConfigObject,
+	ConfigUtils,
+	Plugin,
+	PresetFunction,
+	ResolvedConfigJS,
+	ResolveThemePath,
+} from "./types"
+import { isFunction } from "./util"
 
 function getAllConfigs(config: ConfigJS): ConfigJS[] {
-	const presets = (config.presets ?? [defaultConfig as ConfigJS])
+	const presets = (config.presets ?? [defaultConfig])
 		.slice()
 		.reverse()
 		.flatMap((preset: PresetFunction | ConfigJS) => getAllConfigs(preset instanceof Function ? preset() : preset))
@@ -17,7 +26,7 @@ function getAllConfigs(config: ConfigJS): ConfigJS[] {
 export function resolveConfig(...args: Array<ConfigJS | null | undefined>) {
 	let configs = args.filter((c): c is ConfigJS => Boolean(c))
 	if (configs.length === 0) {
-		configs = [defaultConfig as ConfigJS]
+		configs = [defaultConfig]
 	}
 	const [, ...presets] = getAllConfigs(configs[0])
 	return resolveConfigObjects([...configs, ...presets])

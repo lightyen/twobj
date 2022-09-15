@@ -1,6 +1,6 @@
-import type { ConfigJS } from "../types"
+import type { ConfigJS } from "./types"
 
-export default {
+export const defaultConfig: ConfigJS = {
 	presets: [],
 	plugins: [],
 	prefix: "",
@@ -906,4 +906,4 @@ export default {
 			50: "50",
 		},
 	},
-} as ConfigJS
+}

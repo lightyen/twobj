@@ -10,7 +10,7 @@
 	"parserOptions": {
 		"project": "./tsconfig.json"
 	},
-	"ignorePatterns": ["jest.config.js"],
+	"ignorePatterns": ["jest.config.js", "index.d.ts"],
 	"rules": {
 		"spaced-comment": ["error", "always", { "markers": ["/"] }],
 		"no-var": "error",

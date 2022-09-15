@@ -1,41 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
-	ConfigJS,
+	ConfigFunction,
 	CorePlugin,
+	CreatePlugin,
 	Plugin,
+	PluginFunction,
 	UnnamedPlugin,
 	UserPluginFunctionWithOption,
 	UserPluginObject,
 } from "./types"
-
-interface PluginFunction<Options> {
-	(options: Options): UnnamedPlugin
-}
-interface ConfigFunction<Options> {
-	(options: Options): ConfigJS
-}
-
-interface CreatePlugin {
-	(handler: UnnamedPlugin): CorePlugin
-	(pluginName: string, handler: UnnamedPlugin): CorePlugin
-	(handler: UnnamedPlugin, config: ConfigJS): CorePlugin
-	/** Create a tailwind plugin with options. */
-	withOptions: CreatePluginWithOptions
-}
-
-interface CreatePluginWithOptions {
-	/** Create a tailwind plugin with options. */
-	<Options = unknown>(
-		pluginFunction: PluginFunction<Options>,
-		configFunction?: ConfigFunction<Options>,
-	): UserPluginFunctionWithOption<Options>
-	/** Create a tailwind plugin with options. */
-	<Options = unknown>(
-		pluginName: string,
-		pluginFunction: PluginFunction<Options>,
-		configFunction?: ConfigFunction<Options>,
-	): UserPluginFunctionWithOption<Options>
-}
 
 /** Create a tailwind plugin. */
 export const plugin: CreatePlugin = (first: string | UnnamedPlugin, second?: unknown, third?: unknown) => {

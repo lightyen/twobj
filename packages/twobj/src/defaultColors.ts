@@ -1,4 +1,6 @@
-export default {
+import { BaseColors } from "./types"
+
+export const defaultColors: BaseColors = {
 	inherit: "inherit",
 	current: "currentColor",
 	transparent: "transparent",

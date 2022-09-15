@@ -1,4 +1,6 @@
-export const preflight = {
+import { CSSProperties } from "./types"
+
+export const preflight: CSSProperties = {
 	"*,::before,::after": {
 		boxSizing: "border-box",
 		borderWidth: "0",

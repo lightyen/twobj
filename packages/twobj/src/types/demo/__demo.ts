@@ -1,6 +1,6 @@
-import defaultConfig from "../../config/defaultConfig"
-import { resolveConfig } from "../../config/resolveConfig"
-import { ConfigJS, ConfigObject, FontSizeValueExtension } from "./../config"
+import { ConfigJS, ConfigObject, FontSizeValueExtension } from ".."
+import { defaultConfig } from "../../defaultConfig"
+import { resolveConfig } from "../../resolveConfig"
 
 const a: ConfigJS = defaultConfig
 a
@@ -22,11 +22,11 @@ resolveConfig({
 		fontSize: {
 			xxx: ["sdf", 123],
 		},
-		stroke: {
-			black: "#000",
-		},
 		extend: {
 			//
+			stroke: {
+				black: "#000",
+			},
 		},
 	},
 	plugins: [
