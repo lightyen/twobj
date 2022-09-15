@@ -2,13 +2,23 @@ import * as culori from "culori"
 import { sha1 } from "object-hash"
 import type { AtRule, Root, Rule } from "postcss"
 import postcss from "postcss"
+import postcssJs from "postcss-js"
+import cssPrettier from "prettier/parser-postcss"
+import prettier from "prettier/standalone"
 import type { CSSProperties, ResolvedConfigJS, ValueType } from "twobj"
 import { createContext } from "twobj"
 import * as parser from "twobj/parser"
 import { isColorFunction, isColorHexValue, isColorIdentifier, parse as parseColors } from "~/common/color"
 import { defaultLogger as console } from "~/common/logger"
 
-import postcssJs from "postcss-js"
+function beautify(code: string, tabWidth = 4) {
+	return prettier.format(code, {
+		parser: "scss",
+		plugins: [cssPrettier],
+		useTabs: false,
+		tabWidth,
+	})
+}
 
 export type ColorDesc = {
 	color?: string
@@ -121,6 +131,8 @@ export function createTwContext(config: ResolvedConfigJS) {
 		}
 	}
 
+	let globalStyles = ""
+
 	return {
 		context,
 		tailwindConfig: config,
@@ -132,6 +144,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 		renderVariantScope,
 		renderClassname,
 		renderDecls,
+		renderGlobalStyles,
 		decorationColors,
 		completionColors,
 		prefix: config.prefix,
@@ -171,7 +184,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 					break
 			}
 		})
-		return root.toString()
+		return beautify(root.toString())
 	}
 
 	function renderVariantScope(...variants: parser.Variant[]): string {
@@ -306,7 +319,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 				decl.value = toPixelUnit(decl.value, rootFontSize)
 			})
 		}
-		return root.toString()
+		return beautify(root.toString())
 	}
 
 	function getDecorationColor(values: string[]): string | undefined {
@@ -393,6 +406,38 @@ export function createTwContext(config: ResolvedConfigJS) {
 		const ret = { decls, scope, rules }
 		declsCache.set(classname, ret)
 		return ret
+	}
+
+	function renderGlobalStyles({
+		rootFontSize = 0,
+		tabSize = 4,
+		colorHint = "none",
+	}: {
+		rootFontSize?: number
+		tabSize?: number
+		colorHint?: "none" | "hex" | "rgb" | "hsl"
+	}) {
+		if (globalStyles) {
+			return beautify(globalStyles)
+		}
+
+		const result = postcss().process(context.globalStyles, {
+			from: undefined,
+			parser: postcssJs,
+		})
+		const root = result.root
+		const raws = root.raws as { indent: string }
+		raws.indent = "".padStart(tabSize)
+
+		if (rootFontSize) {
+			root.walkDecls(decl => {
+				if (colorHint && colorHint !== "none") decl.value = extendColorValue(decl.value, colorHint)
+				decl.value = toPixelUnit(decl.value, rootFontSize)
+			})
+		}
+
+		globalStyles = root.toString()
+		return beautify(globalStyles)
 	}
 
 	function isVariant(value: string) {

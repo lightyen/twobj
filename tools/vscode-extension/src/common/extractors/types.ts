@@ -13,7 +13,7 @@ export interface TextDocument<Position = vscode.Position> {
 	uri: URI
 }
 
-export type ExtractedTokenKind = "tw" | "wrap" | "theme"
+export type ExtractedTokenKind = "tw" | "wrap" | "theme" | "globalStyles"
 
 export interface Token {
 	start: number

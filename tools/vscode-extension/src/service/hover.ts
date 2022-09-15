@@ -1,5 +1,3 @@
-import postcss from "prettier/parser-postcss"
-import prettier from "prettier/standalone"
 import { NodeType, parse_theme_val, renderThemePath, ThemeValueNode } from "twobj/parser"
 import vscode from "vscode"
 import { getEntryDescription } from "vscode-css-languageservice/lib/esm/languageFacts/entry"
@@ -32,6 +30,22 @@ export default async function hover(
 					document.positionAt(token.start + node.range[1]),
 				)
 				return resolveThemeValue({ kind, range, node, state, options })
+			} else if (kind === "globalStyles") {
+				const range = new vscode.Range(document.positionAt(token.start), document.positionAt(token.end))
+				const codes = new vscode.MarkdownString()
+				codes.appendCodeblock(
+					state.tw.renderGlobalStyles({
+						rootFontSize: options.rootFontSize,
+						colorHint: options.hoverColorHint,
+						tabSize,
+					}),
+					"scss",
+				)
+				codes.appendMarkdown("---")
+				return {
+					range,
+					contents: [codes],
+				}
 			} else {
 				const hoverResult = state.tw.context.parser.hover(
 					token.value,
@@ -68,7 +82,7 @@ export default async function hover(
 						header.appendMarkdown("**arbitrary variant**")
 					}
 
-					const code = beautify(state.tw.renderVariant(hoverResult.target, tabSize))
+					const code = state.tw.renderVariant(hoverResult.target, tabSize)
 					const codes = new vscode.MarkdownString()
 					if (code) codes.appendCodeblock(code, "scss")
 					if (!header.value && !codes.value) return undefined
@@ -136,7 +150,7 @@ export default async function hover(
 					tabSize,
 				})
 				const codes = new vscode.MarkdownString()
-				if (code) codes.appendCodeblock(beautify(code), "scss")
+				if (code) codes.appendCodeblock(code, "scss")
 
 				if (!header.value && !codes.value) return undefined
 
@@ -151,15 +165,6 @@ export default async function hover(
 		}
 
 		return undefined
-	}
-
-	function beautify(code: string) {
-		return prettier.format(code, {
-			parser: "scss",
-			plugins: [postcss],
-			useTabs: false,
-			tabWidth: tabSize,
-		})
 	}
 }
 

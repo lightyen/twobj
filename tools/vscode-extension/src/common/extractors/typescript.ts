@@ -2,9 +2,10 @@ import ts from "typescript"
 import type { ExtractedToken, ExtractedTokenKind, Extractor } from "./types"
 
 interface Features {
-	twTemplate: Set<string>
-	themeTemplate: Set<string>
-	wrapTemplate: Set<string>
+	twIds: Set<string>
+	themeIds: Set<string>
+	wrapIds: Set<string>
+	globalStyles: ExtractedToken | undefined
 }
 
 function transfromToken(
@@ -60,22 +61,21 @@ function findNode(
 				id = e
 			}
 			if (id) {
-				if (features.twTemplate.has(id.text)) {
+				if (features.twIds.has(id.text)) {
 					if (position < template.getStart(source) + 1 || greaterThenEnd(template)) {
 						return undefined
 					}
 					return { token: template, kind: "tw" }
-				}
-				if (features.wrapTemplate.has(id.text)) {
-					if (position < template.getStart(source) + 1 || greaterThenEnd(template)) {
-						return undefined
-					}
-					return { token: template, kind: "wrap" }
-				} else if (features.themeTemplate.has(id.text)) {
+				} else if (features.themeIds.has(id.text)) {
 					if (position < template.getStart(source) + 1 || greaterThenEnd(template)) {
 						return undefined
 					}
 					return { token: template, kind: "theme" }
+				} else if (features.wrapIds.has(id.text)) {
+					if (position < template.getStart(source) + 1 || greaterThenEnd(template)) {
+						return undefined
+					}
+					return { token: template, kind: "wrap" }
 				}
 			}
 		}
@@ -125,11 +125,11 @@ function findAllNode(
 				id = e
 			}
 			if (id) {
-				if (features.twTemplate.has(id.text)) {
+				if (features.twIds.has(id.text)) {
 					return [{ token: template, kind: "tw" }]
-				} else if (features.wrapTemplate.has(id.text)) {
+				} else if (features.wrapIds.has(id.text)) {
 					return [{ token: template, kind: "wrap" }]
-				} else if (features.themeTemplate.has(id.text)) {
+				} else if (features.themeIds.has(id.text)) {
 					return [{ token: template, kind: "theme" }]
 				}
 			}
@@ -143,9 +143,10 @@ function findAllNode(
 }
 
 function checkImportTw(source: ts.SourceFile, importLabels: string[]): Features {
-	const twTemplate = new Set<string>()
-	const themeTemplate = new Set<string>()
-	const wrapTemplate = new Set<string>()
+	const twIds = new Set<string>()
+	const themeIds = new Set<string>()
+	const wrapIds = new Set<string>()
+	let globalStyles: ExtractedToken | undefined
 
 	source.forEachChild(node => {
 		if (ts.isImportDeclaration(node)) {
@@ -162,14 +163,23 @@ function checkImportTw(source: ts.SourceFile, importLabels: string[]): Features 
 							const importedName = node.propertyName?.text ?? localName
 							switch (importedName) {
 								case "theme":
-									themeTemplate.add(localName)
+									themeIds.add(localName)
 									break
 								case "tw":
-									twTemplate.add(localName)
+									twIds.add(localName)
 									break
 								case "wrap":
-									wrapTemplate.add(localName)
+									wrapIds.add(localName)
 									break
+								case "globalStyles": {
+									globalStyles = {
+										kind: "globalStyles",
+										start: node.name.getStart(source),
+										end: node.name.getEnd(),
+										value: "globalStyles",
+									}
+									break
+								}
 							}
 						})
 					}
@@ -177,7 +187,7 @@ function checkImportTw(source: ts.SourceFile, importLabels: string[]): Features 
 			}
 		}
 	})
-	return { twTemplate, themeTemplate, wrapTemplate } as const
+	return { twIds, themeIds, wrapIds, globalStyles } as const
 }
 
 export function findToken(
@@ -187,6 +197,12 @@ export function findToken(
 	importLabels: string[],
 ): ExtractedToken | undefined {
 	const features = checkImportTw(source, importLabels)
+	if (!includeEnd && features.globalStyles) {
+		if (position >= features.globalStyles.start && position < features.globalStyles.end) {
+			return features.globalStyles
+		}
+	}
+
 	const node = findNode(source, source, position, features, includeEnd)
 	if (node == undefined) {
 		return undefined
