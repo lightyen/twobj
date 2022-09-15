@@ -4,7 +4,7 @@ import type * as parser from "../parser"
 import { CSSProperties } from "./base"
 import { CorePluginFeatures } from "./features"
 import { UserPluginOptions, ValueType } from "./plugin"
-import { LookupSpec, StaticSpec, VariantSpec } from "./spec"
+import { LookupSpec, StaticSpec, VariantSpec } from "./specification"
 
 export interface Context extends UserPluginOptions {
 	/** core parser */

@@ -6,7 +6,6 @@ import type {
 	ConfigObject,
 	CorePluginFeatures,
 	MatchOption,
-	ScreenValue,
 	StrictResolvedConfigJS,
 	UnnamedPlugin,
 } from "./types"
@@ -228,26 +227,18 @@ export const classPlugins: ClassPlugins = {
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
 	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
-		const screens = Object.keys(themeObject.screens).reduce((breakpoints, key) => {
-			let value: string | number | undefined
-			const v = themeObject.screens[key] as ScreenValue
-			if (isCSSValue(v)) {
-				value = v
-			} else if (isObject(v)) {
-				if (Array.isArray(v)) {
-					const [, max] = v
-					if (isCSSValue(max)) {
-						value = max
-					}
-				} else if (isCSSValue(v.max)) {
-					value = v.max
+		const screens = Object.entries(normalizeScreens(themeObject.screens)).reduce(
+			(breakpoints, [key, { raw, min, max }]) => {
+				let value = max ?? min
+				if (typeof value === "number") value = value + "px"
+				if (value) {
+					return Object.assign(breakpoints, { [`screen-${key}`]: value })
 				}
-			}
-			if (value) {
-				return Object.assign(breakpoints, { [`screen-${key}`]: value })
-			}
-			return breakpoints
-		}, {})
+				return breakpoints
+			},
+			{},
+		)
+
 		const values = Object.assign({}, themeObject.maxWidth, screens)
 		matchUtilities(
 			{
@@ -970,7 +961,11 @@ export const classPlugins: ClassPlugins = {
 			}
 		}
 
-		const others = screens.map<CSSProperties>(([key, { min, max }]) => {
+		const others = Object.entries(screens).map<CSSProperties>(([key, { raw, min, max }]) => {
+			if (raw) {
+				return {}
+			}
+
 			if (typeof min === "number") min = min + "px"
 			if (typeof max === "number") max = max + "px"
 			let mediaQuery = ""

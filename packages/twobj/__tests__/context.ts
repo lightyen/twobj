@@ -1,5 +1,5 @@
-import { resolveConfig } from "../src/config/resolveConfig"
 import { createContext } from "../src/core"
+import { resolveConfig } from "../src/resolveConfig"
 import type { Context, CSSProperties } from "../src/types"
 
 export const context = createContext(resolveConfig())

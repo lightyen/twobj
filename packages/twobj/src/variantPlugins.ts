@@ -26,8 +26,12 @@ export const variantPlugins: VariantPlugins = {
 
 	screenVariants: plugin("screenVariants", ({ themeObject, addVariant }) => {
 		const screens = normalizeScreens(themeObject.screens)
-		for (const [key, value] of screens) {
+		for (const [key, value] of Object.entries(screens)) {
 			let { min, max } = value
+			if (value.raw) {
+				addVariant(key, `@media ${value.raw}`)
+				return
+			}
 			if (typeof min === "number") min = min + "px"
 			if (typeof max === "number") max = max + "px"
 			if (min != undefined && max != undefined) {

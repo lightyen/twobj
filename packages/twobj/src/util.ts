@@ -195,38 +195,50 @@ export function toArray<T>(target: T | T[]): T[] {
 // Data types:
 //
 // { sm: '100px', md: '300px' }
-// { sm: ['100px', '200px'], md: ['300px', '400px']  }
+// { sm: ['100px', '200px'], md: ['300px', '400px'] }
 // { sm: { min: '100px', max: '200px' }, md: { min: '300px', max: '400px' } }
 
 // => ['sm', { min: '100px', max: '200px' }, 'md', { min: '300px', max: '400px' } }]
 
 export function normalizeScreens(screens: unknown) {
-	if (!screens || typeof screens !== "object" || Array.isArray(screens)) {
-		return []
+	if (!isPlainObject(screens)) {
+		return {}
 	}
 
-	const ret: Array<[breakingPoint: string, minmax: { min?: CSSValue; max?: CSSValue }]> = []
+	const result: Record<string, { raw?: CSSValue; min?: CSSValue; max?: CSSValue }> = {}
 
 	for (const key in screens) {
 		const value = screens[key]
 		if (typeof value === "string") {
-			ret.push([key, { min: value }])
-		} else if (Array.isArray(value)) {
+			result[key] = { min: value }
+		} else if (isPlainArray(value)) {
 			const [min, max] = value
-			if ((min == null || isCSSValue(min)) && (max == null || isCSSValue(max))) {
-				ret.push([key, { min, max }])
+			if (isCSSValue(min) || isCSSValue(max)) {
+				result[key] = {}
+				if (isCSSValue(min)) {
+					result[key].min = min
+				}
+				if (isCSSValue(max)) {
+					result[key].max = max
+				}
 			}
-		} else {
-			ret.push([
-				key,
-				{
-					min: isCSSValue(value.min) ? value.min : undefined,
-					max: isCSSValue(value.max) ? value.max : undefined,
-				},
-			])
+		} else if (isPlainObject(value)) {
+			const { raw, min, max } = value as Record<string, string>
+			if (isCSSValue(raw) || isCSSValue(min) || isCSSValue(max)) {
+				result[key] = {}
+				if (isCSSValue(raw)) {
+					result[key].raw = raw
+				}
+				if (isCSSValue(min)) {
+					result[key].min = min
+				}
+				if (isCSSValue(max)) {
+					result[key].max = max
+				}
+			}
 		}
 	}
-	return ret
+	return result
 }
 
 const colorProps = new Set<string>([

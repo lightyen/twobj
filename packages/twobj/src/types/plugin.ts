@@ -1,7 +1,7 @@
 import { ConfigObject, CSSProperties, CSSValue, PostModifier } from "./base"
 import { ConfigJS, ResolvedConfigJS } from "./config"
 import { CorePluginFeatures } from "./features"
-import { VariantSpec } from "./spec"
+import { VariantSpec } from "./specification"
 import { ResolvePath } from "./theme"
 
 export type ValueType =

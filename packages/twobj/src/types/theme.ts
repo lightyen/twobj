@@ -76,7 +76,11 @@ export type FontSizeValue =
 	| [fontSize: CSSValue, lineHeight: CSSValue]
 	| [fontSize: CSSValue, options: FontSizeValueExtension]
 
-export type ScreenValue = CSSValue | [min?: CSSValue, max?: CSSValue] | { min?: CSSValue; max?: CSSValue }
+export type ScreenValue =
+	| CSSValue
+	| [min?: CSSValue, max?: CSSValue]
+	| { min?: CSSValue; max?: CSSValue }
+	| { raw?: CSSValue }
 
 export interface FontFamilyValueExtension extends ConfigObject {
 	/** https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings */

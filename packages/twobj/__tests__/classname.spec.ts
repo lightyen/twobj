@@ -202,6 +202,10 @@ test("container", async () => {
 		resolveConfig({
 			theme: {
 				extend: {
+					screens: {
+						raw: { raw: "(min-width: 200rem)" },
+						custom: { min: 3000, max: 6000 },
+					},
 					container: {
 						padding: {
 							lg: "30px",
@@ -233,8 +237,15 @@ test("container", async () => {
 		"@media (min-width: 1536px)": {
 			maxWidth: "1536px",
 		},
+		"@media (min-width: 3000px) and (max-width: 6000px)": {
+			maxWidth: "3000px",
+		},
 	})
-
+	expect(ctx.css`raw:text-black`).toEqual({
+		"@media (min-width: 200rem)": {
+			color: "#000",
+		},
+	})
 	ctx = createContext(
 		resolveConfig({
 			theme: {
