@@ -31,6 +31,7 @@ export enum NodeType {
 	SimpleVariant = "SimpleVariant",
 	ArbitraryClassname = "ArbitraryClassname",
 	ArbitraryVariant = "ArbitraryVariant",
+	GroupVariant = "GroupVariant",
 	ArbitraryProperty = "ArbitraryProperty",
 	ArbitrarySelector = "ArbitrarySelector",
 	ShortCss = "ShortCss",
@@ -82,7 +83,13 @@ export interface ArbitraryVariant extends BaseNode {
 	selector: CssSelector
 }
 
-export type Variant = SimpleVariant | ArbitrarySelector | ArbitraryVariant
+export interface GroupVariant extends BaseNode {
+	type: NodeType.GroupVariant
+	important: boolean
+	expressions: Expression[]
+}
+
+export type Variant = SimpleVariant | ArbitrarySelector | ArbitraryVariant | GroupVariant
 
 export interface CssSelector extends BaseNode {
 	type: NodeType.CssSelector
@@ -130,7 +137,7 @@ export interface ShortCss extends BaseNode, Important, Closed {
 
 export interface VariantSpan extends BaseNode {
 	type: NodeType.VariantSpan
-	variant: SimpleVariant | ArbitrarySelector | ArbitraryVariant
+	variant: Variant
 	child?: Expression
 }
 
@@ -152,6 +159,7 @@ export type Node =
 	| SimpleVariant
 	| ArbitrarySelector
 	| ArbitraryVariant
+	| GroupVariant
 	| CssSelector
 	| CssExpression
 	| WithOpacity
@@ -165,6 +173,45 @@ export type BracketNode =
 	| ArbitraryProperty
 	| ShortCss
 	| WithOpacity
+
+export function isVariantSpan(node: Expression): node is VariantSpan {
+	switch (node.type) {
+		case NodeType.VariantSpan:
+			return true
+		default:
+			return false
+	}
+}
+
+export function isVariant(node: Node): node is Variant {
+	switch (node.type) {
+		case NodeType.SimpleVariant:
+		case NodeType.ArbitrarySelector:
+		case NodeType.ArbitraryVariant:
+		case NodeType.GroupVariant:
+			return true
+		default:
+			return false
+	}
+}
+
+export function fromVariantSpan(node: VariantSpan): Variant[] {
+	let t: Expression | undefined = node
+	const ret: Variant[] = []
+	while (t) {
+		if (isVariantSpan(t)) {
+			ret.push(t.variant)
+			t = t.child
+			continue
+		}
+		if (isVariant(t)) {
+			ret.push(t)
+			break
+		}
+		break
+	}
+	return ret
+}
 
 export interface ThemeFunctionNode extends BaseNode, Closed {
 	type: NodeType.ThemeFunction

@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parse the group of variants 1`] = `
+Object {
+  "expressions": Array [
+    Object {
+      "child": Object {
+        "getText": [Function],
+        "important": false,
+        "range": Array [
+          48,
+          56,
+        ],
+        "type": "ClassName",
+      },
+      "getText": [Function],
+      "range": Array [
+        0,
+        56,
+      ],
+      "type": "VariantSpan",
+      "variant": Object {
+        "expressions": Array [
+          Object {
+            "getText": [Function],
+            "range": Array [
+              2,
+              11,
+            ],
+            "type": "VariantSpan",
+            "variant": Object {
+              "getText": [Function],
+              "id": Object {
+                "getText": [Function],
+                "range": Array [
+                  2,
+                  10,
+                ],
+                "type": "Identifier",
+              },
+              "range": Array [
+                2,
+                11,
+              ],
+              "type": "SimpleVariant",
+            },
+          },
+          Object {
+            "getText": [Function],
+            "range": Array [
+              12,
+              21,
+            ],
+            "type": "VariantSpan",
+            "variant": Object {
+              "getText": [Function],
+              "id": Object {
+                "getText": [Function],
+                "range": Array [
+                  12,
+                  20,
+                ],
+                "type": "Identifier",
+              },
+              "range": Array [
+                12,
+                21,
+              ],
+              "type": "SimpleVariant",
+            },
+          },
+          Object {
+            "getText": [Function],
+            "important": false,
+            "range": Array [
+              22,
+              29,
+            ],
+            "type": "ClassName",
+          },
+          Object {
+            "closed": true,
+            "decl": Object {
+              "getText": [Function],
+              "range": Array [
+                31,
+                45,
+              ],
+              "type": "CssDeclaration",
+            },
+            "getText": [Function],
+            "important": false,
+            "range": Array [
+              30,
+              46,
+            ],
+            "type": "ArbitraryProperty",
+          },
+        ],
+        "getText": [Function],
+        "important": true,
+        "range": Array [
+          2,
+          46,
+        ],
+        "type": "GroupVariant",
+      },
+    },
+  ],
+  "getText": [Function],
+  "range": Array [
+    0,
+    56,
+  ],
+  "type": "Program",
+}
+`;

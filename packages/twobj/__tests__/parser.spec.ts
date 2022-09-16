@@ -445,3 +445,12 @@ test("hover and suggest", async () => {
 	expect(removeComments(`[color: url(http://example)]`, true)).toEqual(`[color: url(http://example)]`)
 	expect(removeComments(`[// comments\n]:bg-black`, true)).toEqual(`[           \n]:bg-black`)
 })
+
+test("parse the group of variants", async () => {
+	const code1 = `!(variant1: variant2: unknown [unknown: value]):bg-black`
+	const parser1 = createParser()
+	const result1 = parser1.parse(code1)
+	expect(result1).toMatchSnapshot()
+	expect(result1.expressions[0])
+	// const code2 = `!(variant1: variant2: unknown [unknown: value]):bg-black`
+})

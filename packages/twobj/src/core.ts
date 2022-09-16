@@ -6,9 +6,13 @@ import {
 	ArbitraryVariant,
 	Classname,
 	Expression,
+	GroupVariant,
+	isVariant,
+	isVariantSpan,
 	NodeType,
 	SimpleVariant,
 	Variant,
+	VariantSpan,
 } from "./parser/nodes"
 import * as theme from "./parser/theme"
 import { isPluginWithOptions } from "./plugin"
@@ -190,7 +194,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		getAmbiguous() {
 			return getAmbiguousFrom(utilityMap)
 		},
-		cssVariant,
+		wrap,
 		...options,
 	}
 
@@ -283,7 +287,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 			const reg = /{/gs
 			const match = reg.exec(desc)
 			if (!match) {
-				return (css = {}) => ({ [desc]: typeof css === "object" ? { ...css } : css })
+				return (css = {}) => ({ [desc]: css })
 			} else {
 				const rb = findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
 				if (rb == undefined) {
@@ -407,7 +411,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 
 			if (AT_SCREEN.test(key)) {
 				const input = key.replace(AT_SCREEN, "")
-				const fn = compose(variantMap.get(input), expandAtRules)
+				const fn = composeVariants(variantMap.get(input), expandAtRules)
 				merge(target, fn(value))
 				continue
 			}
@@ -563,15 +567,36 @@ export function createContext(config: ResolvedConfigJS): Context {
 		}
 	}
 
-	function compose(...variants: (VariantSpec | undefined)[]): VariantSpec {
-		let wrap: VariantSpec = (css = {}) => css
+	function composeVariants(...variants: (VariantSpec | undefined)[]): VariantSpec {
+		let spec: VariantSpec = (css = {}) => css
 		for (const f of variants.reverse()) {
 			if (f) {
-				const g = wrap
-				wrap = (css = {}) => f(g(css))
+				const g = spec
+				spec = (css = {}) => f(g(css))
 			}
 		}
-		return wrap
+		return spec
+	}
+
+	function mergeVariants(...variants: (VariantSpec | undefined)[]): VariantSpec {
+		return (css = {}) => {
+			const startsWithAt = /^\s*@\w/
+			const result = Object.assign({}, ...variants.filter(isNotEmpty).map(variant => variant(css)))
+			const keys: string[] = []
+			for (const k in result) {
+				if (!startsWithAt.test(k)) {
+					keys.push(k)
+				}
+			}
+
+			let value: unknown
+			for (const k of keys) {
+				if (value == undefined) value = result[k]
+				delete result[k]
+			}
+			result[keys.join(", ")] = value
+			return result
+		}
 	}
 
 	function getPluginName(value: string): string | undefined {
@@ -624,28 +649,23 @@ export function createContext(config: ResolvedConfigJS): Context {
 	) {
 		switch (node.type) {
 			case NodeType.VariantSpan: {
+				let variant: VariantSpec | undefined
 				switch (node.variant.type) {
-					case NodeType.SimpleVariant: {
-						const variant = simpleVariant(node.variant)
-						if (node.child) {
-							process(node.child, root, importantRoot, compose(variantCtx, variant), important)
-						}
+					case NodeType.SimpleVariant:
+						variant = simpleVariant(node.variant)
 						break
-					}
-					case NodeType.ArbitraryVariant: {
-						const variant = arbitraryVariant(node.variant)
-						if (node.child) {
-							process(node.child, root, importantRoot, compose(variantCtx, variant), important)
-						}
+					case NodeType.ArbitraryVariant:
+						variant = arbitraryVariant(node.variant)
 						break
-					}
-					case NodeType.ArbitrarySelector: {
-						const variant = arbitrarySelector(node.variant)
-						if (node.child) {
-							process(node.child, root, importantRoot, compose(variantCtx, variant), important)
-						}
+					case NodeType.ArbitrarySelector:
+						variant = arbitrarySelector(node.variant)
 						break
-					}
+					case NodeType.GroupVariant:
+						variant = groupVariant(node.variant)
+						break
+				}
+				if (node.child) {
+					process(node.child, root, importantRoot, composeVariants(variantCtx, variant), important)
 				}
 				break
 			}
@@ -716,6 +736,27 @@ export function createContext(config: ResolvedConfigJS): Context {
 			}
 		}
 		return variant
+	}
+
+	function groupVariant(node: GroupVariant): VariantSpec {
+		return mergeVariants(...node.expressions.map(expression))
+	}
+
+	function variantSpan({ variant, child }: VariantSpan): VariantSpec {
+		if (!child) {
+			return wrap(variant)
+		}
+		return composeVariants(wrap(variant), expression(child))
+	}
+
+	function expression(expr: Expression) {
+		if (isVariantSpan(expr)) {
+			return variantSpan(expr)
+		}
+		if (isVariant(expr)) {
+			return wrap(expr)
+		}
+		return undefined
 	}
 
 	function arbitrarySelector(node: ArbitrarySelector) {
@@ -840,35 +881,21 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return result
 	}
 
-	function cssVariant(...variants: Array<Variant | string>) {
-		return compose(
+	function wrap(...variants: Array<Variant | string>) {
+		return composeVariants(
 			...variants.map(value => {
 				if (typeof value === "string") {
-					const variant = variantMap.get(value)
-					if (variant) {
-						return variant
-					}
-
-					const program = parser.parse(value + config.separator)
-					if (program.expressions.length !== 1) {
-						return undefined
-					}
-
-					const node = program.expressions[0]
-					if (node.type !== NodeType.VariantSpan || node.variant.type === NodeType.SimpleVariant) {
-						return undefined
-					}
-
-					if (node.variant.type === NodeType.ArbitrarySelector) {
-						return arbitrarySelector(node.variant)
-					}
-
-					return arbitraryVariant(node.variant)
+					const program = parser.parse(value)
+					return mergeVariants(...program.expressions.map(expression))
 				}
 
 				const node = value
 				if (node.type === NodeType.SimpleVariant) {
 					return variantMap.get(node.id.getText())
+				}
+
+				if (node.type === NodeType.GroupVariant) {
+					return groupVariant(node)
 				}
 
 				if (node.type === NodeType.ArbitrarySelector) {

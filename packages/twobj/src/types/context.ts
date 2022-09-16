@@ -24,8 +24,8 @@ export interface Context extends UserPluginOptions {
 	css(strings: TemplateStringsArray): CSSProperties
 	css(strings: string | TemplateStringsArray): CSSProperties
 
-	/** Compose all variants. */
-	cssVariant(...variants: Array<parser.Variant | string>): VariantSpec
+	/** Get one variant spec form strings or nodes. */
+	wrap(...variants: Array<parser.Variant | string>): VariantSpec
 
 	/** Reverse utilities mapping. */
 	getPluginName(value: string): string | undefined

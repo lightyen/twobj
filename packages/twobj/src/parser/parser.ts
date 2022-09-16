@@ -644,8 +644,62 @@ export function createParser(separator = ":") {
 			}
 
 			if (group) {
-				let exclamationRight = false
 				const rb = findRightBracket({ text: source, start, end })
+				let hasSeparator = rb != undefined
+				if (rb != undefined) {
+					for (let i = 0; i < separator.length; i++) {
+						if (source.charCodeAt(rb + 1 + i) !== separator.charCodeAt(i)) {
+							hasSeparator = false
+							break
+						}
+					}
+
+					// (variant1: variant2:):
+					if (hasSeparator) {
+						const expressions = parseExpressions(source, [start + 1, rb])
+						const variant: nodes.GroupVariant = {
+							type: nodes.NodeType.GroupVariant,
+							important: exclamationLeft,
+							range: [start + 1, rb],
+							getText() {
+								return source.slice(this.range[0], this.range[1])
+							},
+							expressions,
+						}
+
+						regexp.lastIndex = rb + 1 + separator.length
+
+						if (isSpace(source.charCodeAt(regexp.lastIndex)) || isComment(regexp.lastIndex)) {
+							const span: nodes.VariantSpan = {
+								type: nodes.NodeType.VariantSpan,
+								variant,
+								range: [start, regexp.lastIndex],
+								getText() {
+									return source.slice(this.range[0], this.range[1])
+								},
+							}
+							return { expr: span, lastIndex: regexp.lastIndex }
+						}
+
+						start = regexp.lastIndex
+
+						const { expr, lastIndex } = parseExpression(source, [start])
+						const span: nodes.VariantSpan = {
+							type: nodes.NodeType.VariantSpan,
+							variant: variant,
+							range: [match.index, lastIndex],
+							child: expr,
+							getText() {
+								return source.slice(this.range[0], this.range[1])
+							},
+						}
+
+						return { expr: span, lastIndex }
+					}
+				}
+
+				let exclamationRight = false
+
 				if (rb != undefined) {
 					regexp.lastIndex = rb + 1
 					if (source.charCodeAt(rb + 1) === 33) {
@@ -882,7 +936,22 @@ export function createParser(separator = ":") {
 				if (nodes.NodeType.VariantSpan === node.type) {
 					const variants = ctx.variants.slice()
 					if (inRange(node.variant)) {
-						if (position === node.variant.range[1]) variants.push(node.variant)
+						if (nodes.NodeType.GroupVariant === node.variant.type) {
+							return travel(
+								{
+									type: nodes.NodeType.Program,
+									expressions: node.variant.expressions,
+									range: node.variant.range,
+									getText() {
+										return text.slice(this.range[0], this.range[1])
+									},
+								},
+								{ ...ctx },
+							)
+						}
+						if (position === node.variant.range[1]) {
+							variants.push(node.variant)
+						}
 						return { target: node.variant, variants }
 					}
 					if (!node.child) return { variants: [] }
