@@ -11,32 +11,60 @@ Convert tailwind declarations to a style object
 - Not support [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
 - Drop all deprecated features and opacity, you can NOT use `flex-grow`, `text-opacity-0` ...
 
-### Features
+### Syntaxes
 
-- Color opacity: `text-black/50`, `text-black/52`, `text-black/[0.52]`, `text-black/[52%]`
-- Important decorator: `text-black!`, `!text-black`, `sm:(text-gray-800 bg-blue-50)!`
-- Variant group:
+- Utilities:
 
-	```js
-	tw`sm:(text-gray-800 bg-blue-50)`
-	tw`
-	  flex
-	  lg:(
-	    justify-center
-	    hover:(
-	      bg-gray-100
-	    )
-	  )
-	`
-	```
+```txt
+bg-gray-300 text-white border-4 border-cyan-200
+```
 
-- Arbitrary utility/variant/property/selector
+- Variants:
 
-	```js
-	tw`bg-[rgb(202 101 220)]`
-	tw`tab-[abc]:bg-black`
-	tw`[inset: 0 30px 10rem 0]`
-	tw`[.group:active &]:bg-black`
-	```
+```txt
+hover:bg-gray-300 text-white focus:border-4 focus:border-cyan-200
+```
 
-- Support tailwind plugin system (if the plugin not depends on postcss)
+- Group:
+
+```txt
+(text-gray-800 bg-blue-50)
+lg:(
+  justify-center
+  hover:(bg-gray-100)
+)
+```
+
+- Important decorator:
+
+Add `!important`.
+
+```txt
+bg-gray-300/51! text-white/82% border-4 !border-cyan-200/[0.52]
+```
+
+- Color opacity:
+
+```txt
+bg-gray-300/51 text-white/82% border-4 border-cyan-200/[0.52]
+```
+
+- Arbitrary value:
+
+```txt
+bg-[rgb(202 101 220)]        // utility
+tab-[abc]:bg-black           // variant
+[inset: 0 30px 10rem 0]      // css property
+[.group:active &]:bg-black   // css selector
+```
+
+### Tailwind Plugins
+
+```js
+const ctx = createContext(
+  resolveConfig({
+    plugins: [({ addDefaults, addBase, addUtilities, addComponents, addVariant,  matchUtilities, matchComponents, matchVariant, theme, config }) => {
+      // ...
+    }],
+  }),
+)
