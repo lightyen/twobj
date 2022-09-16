@@ -25,7 +25,10 @@ export interface Context extends UserPluginOptions {
 	css(strings: string | TemplateStringsArray): CSSProperties
 
 	/** Get one variant spec form strings or nodes. */
-	wrap(...variants: Array<parser.Variant | string>): VariantSpec
+	wrap(variants: string): VariantSpec | undefined
+	wrap(variants: TemplateStringsArray): VariantSpec | undefined
+	wrap(...variants: parser.Variant[]): VariantSpec | undefined
+	wrap(variants: string | TemplateStringsArray | parser.Variant, ...args: parser.Variant[]): VariantSpec | undefined
 
 	/** Reverse utilities mapping. */
 	getPluginName(value: string): string | undefined

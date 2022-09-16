@@ -183,8 +183,11 @@ export function isVariantSpan(node: Expression): node is VariantSpan {
 	}
 }
 
-export function isVariant(node: Node): node is Variant {
-	switch (node.type) {
+export function isVariant(node: unknown): node is Variant {
+	if (!node) {
+		return false
+	}
+	switch (node["type"]) {
 		case NodeType.SimpleVariant:
 		case NodeType.ArbitrarySelector:
 		case NodeType.ArbitraryVariant:

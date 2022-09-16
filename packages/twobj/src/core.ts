@@ -579,23 +579,30 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function mergeVariants(...variants: (VariantSpec | undefined)[]): VariantSpec {
+		const v = variants.filter(isNotEmpty)
+		if (v.length === 0) {
+			return (css = {}) => css
+		}
 		return (css = {}) => {
-			const startsWithAt = /^\s*@\w/
-			const result = Object.assign({}, ...variants.filter(isNotEmpty).map(variant => variant(css)))
+			const style = Object.assign({}, ...v.map(variant => variant(css)))
 			const keys: string[] = []
-			for (const k in result) {
-				if (!startsWithAt.test(k)) {
+			const startsWithAtRule = /^\s*@\w/
+			for (const k in style) {
+				if (!startsWithAtRule.test(k)) {
 					keys.push(k)
 				}
 			}
 
-			let value: unknown
-			for (const k of keys) {
-				if (value == undefined) value = result[k]
-				delete result[k]
+			if (keys.length > 0) {
+				let value: unknown
+				for (const k of keys) {
+					if (value == undefined) value = style[k]
+					delete style[k]
+				}
+				style[keys.join(", ")] = value
 			}
-			result[keys.join(", ")] = value
-			return result
+
+			return style
 		}
 	}
 
@@ -775,9 +782,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 		let value: string
 		if (node.type === NodeType.ClassName) {
 			value = node.getText()
-			if (value === "$e") {
-				return [Math.E as unknown as CSSProperties]
-			}
 		} else {
 			value = node.prefix.getText()
 			if (node.expr) {
@@ -881,9 +885,20 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return result
 	}
 
-	function wrap(...variants: Array<Variant | string>) {
+	function wrap(variants: string | TemplateStringsArray | Variant, ...args: Variant[]): VariantSpec {
+		if (typeof variants === "string") {
+			return mergeVariants(...parser.parse(variants).expressions.map(expression))
+		}
+
+		if (!isVariant(variants)) {
+			variants = variants[0]
+			return mergeVariants(...parser.parse(variants).expressions.map(expression))
+		}
+
+		args.unshift(variants)
+
 		return composeVariants(
-			...variants.map(value => {
+			...args.map(value => {
 				if (typeof value === "string") {
 					const program = parser.parse(value)
 					return mergeVariants(...program.expressions.map(expression))
