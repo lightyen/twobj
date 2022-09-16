@@ -4,6 +4,7 @@
 		"jsx": "preserve",
 		"allowJs": true,
 		"skipLibCheck": true,
+		"isolatedModules": true,
 		"types": ["@types/node", "@emotion/react/types/css-prop", "../../types/emotion"]
 	}
 }

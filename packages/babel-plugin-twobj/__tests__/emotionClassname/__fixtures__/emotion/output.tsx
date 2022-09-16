@@ -14,8 +14,7 @@
 		content: "var(--tw-content)",
 	},
 })
-
-function Header(props) {
+export function Header(props) {
 	return (
 		<h1
 			className="border-y-4 border-indigo-400 sm:(rounded-2xl border-l-indigo-300 flex justify-around)"
@@ -36,8 +35,7 @@ function Header(props) {
 		/>
 	)
 }
-
-function A() {
+export function A() {
 	return (
 		<div
 			className="flex justify-center mx-auto"

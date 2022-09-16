@@ -14,8 +14,7 @@
 		content: "var(--tw-content)",
 	},
 })
-
-function Header(props) {
+export function Header(props) {
 	return (
 		<h1
 			css={[
@@ -35,8 +34,7 @@ function Header(props) {
 		/>
 	)
 }
-
-function A() {
+export function A() {
 	return (
 		<div
 			css={[

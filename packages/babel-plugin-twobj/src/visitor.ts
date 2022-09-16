@@ -1,5 +1,6 @@
 import type { NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
+import type { CSSProperties } from "twobj"
 import { createContext, resolveConfig } from "twobj"
 import * as plugins from "./plugins"
 import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
@@ -186,7 +187,7 @@ export function createVisitor({
 	}
 
 	function buildWrap(input: string) {
-		return buildWrapObjectExpression(t, ctx.css(input))
+		return buildWrapObjectExpression(t, ctx.wrap(input)(Math.E as unknown as CSSProperties))
 	}
 }
 

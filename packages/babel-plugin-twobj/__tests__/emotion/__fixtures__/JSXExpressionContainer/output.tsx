@@ -1,4 +1,4 @@
-function Test() {
+export function Test() {
 	return (
 		<div>
 			<span
