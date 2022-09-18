@@ -6,17 +6,17 @@ Object {
     Object {
       "child": Object {
         "getText": [Function],
-        "important": false,
+        "important": true,
         "range": Array [
-          48,
-          56,
+          85,
+          93,
         ],
         "type": "ClassName",
       },
       "getText": [Function],
       "range": Array [
         0,
-        56,
+        93,
       ],
       "type": "VariantSpan",
       "variant": Object {
@@ -46,10 +46,70 @@ Object {
             },
           },
           Object {
+            "child": Object {
+              "closed": true,
+              "expressions": Array [
+                Object {
+                  "getText": [Function],
+                  "range": Array [
+                    22,
+                    31,
+                  ],
+                  "type": "VariantSpan",
+                  "variant": Object {
+                    "getText": [Function],
+                    "id": Object {
+                      "getText": [Function],
+                      "range": Array [
+                        22,
+                        30,
+                      ],
+                      "type": "Identifier",
+                    },
+                    "range": Array [
+                      22,
+                      31,
+                    ],
+                    "type": "SimpleVariant",
+                  },
+                },
+                Object {
+                  "getText": [Function],
+                  "range": Array [
+                    47,
+                    56,
+                  ],
+                  "type": "VariantSpan",
+                  "variant": Object {
+                    "getText": [Function],
+                    "id": Object {
+                      "getText": [Function],
+                      "range": Array [
+                        47,
+                        55,
+                      ],
+                      "type": "Identifier",
+                    },
+                    "range": Array [
+                      47,
+                      56,
+                    ],
+                    "type": "SimpleVariant",
+                  },
+                },
+              ],
+              "getText": [Function],
+              "important": false,
+              "range": Array [
+                21,
+                57,
+              ],
+              "type": "Group",
+            },
             "getText": [Function],
             "range": Array [
               12,
-              21,
+              57,
             ],
             "type": "VariantSpan",
             "variant": Object {
@@ -73,8 +133,8 @@ Object {
             "getText": [Function],
             "important": false,
             "range": Array [
-              22,
-              29,
+              58,
+              65,
             ],
             "type": "ClassName",
           },
@@ -83,16 +143,16 @@ Object {
             "decl": Object {
               "getText": [Function],
               "range": Array [
-                31,
-                45,
+                67,
+                81,
               ],
               "type": "CssDeclaration",
             },
             "getText": [Function],
             "important": false,
             "range": Array [
-              30,
-              46,
+              66,
+              82,
             ],
             "type": "ArbitraryProperty",
           },
@@ -101,7 +161,7 @@ Object {
         "important": true,
         "range": Array [
           2,
-          46,
+          82,
         ],
         "type": "GroupVariant",
       },
@@ -110,8 +170,11 @@ Object {
   "getText": [Function],
   "range": Array [
     0,
-    56,
+    93,
   ],
+  "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):!bg-black",
   "type": "Program",
 }
 `;

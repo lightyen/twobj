@@ -98,3 +98,12 @@ test("separator", async () => {
 		})
 	}
 })
+
+test("parse the group of variants", async () => {
+	const code1 = `!(variant1: variant2:(variant3:
+		// comment
+		variant4:) unknown [unknown: value]):!bg-black`
+	const parser1 = createParser()
+	const program = parser1.createProgram(code1)
+	expect(program).toMatchSnapshot()
+})

@@ -58,7 +58,9 @@ export function A() {
 			<Header
 				css={[
 					{
-						backgroundColor: "#fca5a5",
+						"&:active, &:first-of-type": {
+							backgroundColor: "#fca5a5",
+						},
 					},
 				]}
 			>

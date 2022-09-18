@@ -1,6 +1,6 @@
 {
 	"name": "twobj",
-	"version": "2.0.0-next.8",
+	"version": "2.0.0",
 	"homepage": "https://github.com/lightyen/twobj",
 	"author": {
 		"name": "lightyen",
@@ -36,6 +36,6 @@
 		"csstype": "^3.1.1",
 		"parsel-js": "1.0.2",
 		"postcss": "8.4.16",
-		"tailwindcss": "0.0.0-insiders.be429b7"
+		"tailwindcss": "0.0.0-insiders.4fddd2d"
 	}
 }

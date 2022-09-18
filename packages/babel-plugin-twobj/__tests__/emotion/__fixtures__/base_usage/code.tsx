@@ -11,7 +11,7 @@ export function A() {
 	return (
 		<div tw="flex justify-center mx-auto" css={wrap`md:`({ borderTopWith: "1px", ...tw`bg-red-500` })}>
 			<span>{theme`colors.blue.500 / 30%` as string}</span>
-			<Header tw="bg-red-300">Header</Header>
+			<Header tw="(active: first-of-type:):bg-red-300">Header</Header>
 		</div>
 	)
 }
