@@ -8,6 +8,43 @@ import { defaultLogger as console } from "~/common/logger"
 import type { ServiceOptions } from "~/shared"
 import { ColorDesc, createTwContext, TwContext } from "./tailwind/tw"
 
+function walk(program: parser.Program, check: (node: parser.Leaf) => boolean | void) {
+	for (const expr of program.expressions) {
+		if (walkExpr(expr, check) === false) {
+			break
+		}
+	}
+
+	return
+
+	function walkExpr(expr: parser.Expression, check: (node: parser.Leaf) => boolean | void): boolean | void {
+		if (expr.type === parser.NodeType.Group) {
+			for (const e of expr.expressions) {
+				if (walkExpr(e, check) === false) {
+					return false
+				}
+			}
+			return
+		}
+
+		if (expr.type === parser.NodeType.VariantSpan) {
+			const { variant, child } = expr
+			switch (variant.type) {
+				case parser.NodeType.GroupVariant:
+					break
+				default:
+					break
+			}
+			if (child) {
+				return walkExpr(child, check)
+			}
+			return
+		}
+
+		return check(expr)
+	}
+}
+
 export function createColorProvider(tw: TwContext, separator: string) {
 	const colors = new Map<string, vscode.TextEditorDecorationType>()
 	const rgb = culori.converter("rgb")
@@ -70,35 +107,39 @@ export function createColorProvider(tw: TwContext, separator: string) {
 			const { start: offset, kind } = token
 			switch (kind) {
 				case "tw": {
-					const result = tw.context.parser.spread(token.value)
-					for (const item of result.items) {
-						if (item.target.type === parser.NodeType.ClassName) {
-							const color = tw.decorationColors.get(item.value)
+					const program = tw.context.parser.createProgram(token.value)
+					const items: parser.Leaf[] = []
+					walk(program, node => {
+						items.push(node)
+					})
+					for (const node of items) {
+						if (node.type === parser.NodeType.ClassName) {
+							const color = tw.decorationColors.get(node.getText())
 							if (!color) {
-								const i = item.target.getText().lastIndexOf("/")
+								const i = node.getText().lastIndexOf("/")
 								if (i === -1) continue
 							}
 							if (color) {
 								const range = new vscode.Range(
-									document.positionAt(offset + item.target.range[0]),
-									document.positionAt(offset + item.target.range[1]),
+									document.positionAt(offset + node.range[0]),
+									document.positionAt(offset + node.range[1]),
 								)
 								colors.push([color, range])
 							} else {
-								const i = item.value.lastIndexOf("/")
+								const i = node.getText().lastIndexOf("/")
 								if (i === -1) continue
-								const value = item.value.slice(0, i)
+								const value = node.getText().slice(0, i)
 								const color = tw.decorationColors.get(value)
 								if (color) {
-									const start = offset + item.target.range[0]
+									const start = offset + node.range[0]
 									const end = start + value.length
 									const range = new vscode.Range(document.positionAt(start), document.positionAt(end))
 									colors.push([color, range])
 								}
 							}
-						} else if (item.target.type === parser.NodeType.ArbitraryClassname) {
-							const [start] = item.target.range
-							const end = start + item.target.prefix.range[1] - item.target.prefix.range[0]
+						} else if (node.type === parser.NodeType.ArbitraryClassname) {
+							const [start] = node.range
+							const end = start + node.prefix.range[1] - node.prefix.range[0]
 							const value = token.value.slice(start, end)
 							const color = tw.decorationColors.get(value)
 							if (color) {

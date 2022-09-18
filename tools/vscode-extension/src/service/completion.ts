@@ -50,18 +50,79 @@ function inComment(source: string, position: number, [start = 0, end = source.le
 	return false
 }
 
+function walk(
+	program: parser.Program,
+	check: (node: parser.Leaf) => boolean | void,
+	variantGroup: (node: parser.GroupVariant) => void,
+) {
+	for (const expr of program.expressions) {
+		if (walkExpr(expr, check, variantGroup) === false) {
+			break
+		}
+	}
+
+	return
+
+	function walkExpr(
+		expr: parser.Expression,
+		check: (node: parser.Leaf) => boolean | void,
+		variantGroup: (node: parser.GroupVariant) => void,
+	): boolean | void {
+		if (expr.type === parser.NodeType.Group) {
+			for (const e of expr.expressions) {
+				if (walkExpr(e, check, variantGroup) === false) {
+					return false
+				}
+			}
+			return
+		}
+
+		if (expr.type === parser.NodeType.VariantSpan) {
+			const { variant, child } = expr
+			switch (variant.type) {
+				case parser.NodeType.GroupVariant:
+					variantGroup(variant)
+					for (const e of variant.expressions) {
+						if (walkExpr(e, check, variantGroup) === false) {
+							return false
+						}
+					}
+					break
+				default:
+					if (check(variant) === false) {
+						return false
+					}
+					break
+			}
+			if (child) {
+				return walkExpr(child, check, variantGroup)
+			}
+			return
+		}
+
+		return check(expr)
+	}
+}
+
 function completeProgram(program: parser.Program, position: number) {
 	const inRange = (node: parser.Node) => position >= node.range[0] && position <= node.range[1]
 	let _node: parser.Leaf | undefined
-	let _important = false
-	program.walk((node, important) => {
-		if (inRange(node)) {
-			_node = node
-			_important = important
-			return false
-		}
-	})
-	return _node == undefined ? undefined : { target: _node, important: _important }
+	let _variantGroup = false
+	walk(
+		program,
+		node => {
+			if (inRange(node)) {
+				_node = node
+				return false
+			}
+		},
+		node => {
+			if (inRange(node)) {
+				_variantGroup = true
+			}
+		},
+	)
+	return [_node, _variantGroup] as [parser.Leaf | undefined, boolean]
 }
 
 export default function completion(
@@ -115,6 +176,7 @@ interface CompletionFeature {
 		text: string,
 		position: number,
 		target: parser.Leaf | undefined,
+		variantGroup: boolean,
 		state: TailwindLoader,
 		options: ServiceOptions,
 	): ICompletionItem[] | null | undefined
@@ -166,21 +228,31 @@ function twCompletion(
 	if (inComment(text, position)) {
 		return new vscode.CompletionList<ICompletionItem>(undefined)
 	}
-	const suggestion = completeProgram(state.tw.context.parser.createProgram(text), position)
+	const [target, variantGroup] = completeProgram(state.tw.context.parser.createProgram(text), position)
 	let items: ICompletionItem[] = []
 	applyFeatures(variantCompletion, classnameCompletion, arbitraryPropertyCompletion, arbitraryVariantValueCompletion)
 	return new vscode.CompletionList<ICompletionItem>(items)
 	function applyFeatures(...features: CompletionFeature[]) {
 		for (const fn of features) {
-			const ret = fn(document, kind, offset, text, position, suggestion?.target, state, options)
+			const ret = fn(document, kind, offset, text, position, target, variantGroup, state, options)
 			if (ret == undefined) continue
 			items = items.concat(ret)
 		}
 	}
 }
 
-const classnameCompletion: CompletionFeature = (document, kind, offset, text, position, target, state) => {
+const classnameCompletion: CompletionFeature = (
+	document,
+	kind,
+	offset,
+	text,
+	position,
+	target,
+	variantGroup,
+	state,
+) => {
 	if (kind === "wrap") return
+	if (variantGroup) return
 
 	if (!target) return state.provideClassCompletionList()
 
@@ -267,6 +339,7 @@ const variantCompletion: CompletionFeature = (
 	text,
 	position,
 	target,
+	variantGroup,
 	state,
 	{ preferVariantWithParentheses },
 ) => {
@@ -513,7 +586,6 @@ function getScssSelectorCompletionList(
 }
 
 const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offset, text, position, target) => {
-	if (kind === "wrap") return
 	if (!target) return
 	if (target.type !== parser.NodeType.ArbitrarySelector) return
 	const [a, b] = target.selector.range
@@ -522,8 +594,19 @@ const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offs
 	return getScssSelectorCompletionList(document, position, offset, a, value)
 }
 
-const arbitraryPropertyCompletion: CompletionFeature = (document, kind, offset, text, position, target, state) => {
+const arbitraryPropertyCompletion: CompletionFeature = (
+	document,
+	kind,
+	offset,
+	text,
+	position,
+	target,
+	variantGroup,
+	state,
+) => {
 	if (kind === "wrap") return
+	if (variantGroup) return
+
 	if (target) {
 		const [a, b] = target.range
 		switch (target.type) {

@@ -1,5 +1,4 @@
 import Fuse from "fuse.js"
-import type { SpreadedItem } from "twobj/parser"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -88,6 +87,8 @@ export function validate(
 					) {
 						return diagnostics
 					}
+				} else if (kind === "globalStyles") {
+					// ...
 				} else if (
 					!validateTw({
 						document,
@@ -112,6 +113,122 @@ export function validate(
 	}
 }
 
+function walk(
+	program: parser.Program,
+	check: (node: parser.Leaf, variants: parser.Variant[], important: boolean, variantGroup: boolean) => boolean | void,
+	notClose: (
+		node:
+			| parser.Group
+			| parser.ArbitraryClassname
+			| parser.ArbitraryProperty
+			| parser.WithOpacity
+			| parser.ShortCss,
+	) => boolean | void,
+) {
+	for (const expr of program.expressions) {
+		if (walkExpr(expr, check, notClose, [], false, false) === false) {
+			break
+		}
+	}
+
+	return
+
+	function walkExpr(
+		expr: parser.Expression,
+		check: (
+			node: parser.Leaf,
+			variants: parser.Variant[],
+			important: boolean,
+			variantGroup: boolean,
+		) => boolean | void,
+		notClose: (
+			node:
+				| parser.Group
+				| parser.ArbitraryClassname
+				| parser.ArbitraryProperty
+				| parser.WithOpacity
+				| parser.ShortCss,
+		) => boolean | void,
+		variants: parser.Variant[],
+		important: boolean,
+		variantGroup: boolean,
+	): boolean | void {
+		if (expr.type === parser.NodeType.Group) {
+			if (!expr.closed) {
+				if (!notClose(expr) === false) {
+					return false
+				}
+			}
+			important ||= expr.important
+			for (const e of expr.expressions) {
+				if (walkExpr(e, check, notClose, variants, important, variantGroup) === false) {
+					return false
+				}
+			}
+			return
+		}
+
+		if (expr.type === parser.NodeType.VariantSpan) {
+			const { variant, child } = expr
+			variantGroup ||= variant.type === parser.NodeType.GroupVariant
+			switch (variant.type) {
+				case parser.NodeType.GroupVariant:
+					for (const e of variant.expressions) {
+						if (walkExpr(e, check, notClose, variants, important, true) === false) {
+							return false
+						}
+					}
+					break
+				default:
+					if (check(variant, variants, important, variantGroup) === false) {
+						return false
+					}
+					break
+			}
+			if (child) {
+				return walkExpr(child, check, notClose, [...variants, variant], important, variantGroup)
+			}
+			return
+		}
+
+		important ||= expr.important
+		if (expr.type !== parser.NodeType.ClassName) {
+			if (expr.type === parser.NodeType.ArbitraryClassname) {
+				if (!expr.closed) {
+					if (!notClose(expr) === false) {
+						return false
+					}
+				}
+				if (expr.e && expr.e.type === parser.NodeType.WithOpacity) {
+					if (!expr.e.closed) {
+						if (!notClose(expr.e) === false) {
+							return false
+						}
+					}
+				}
+			} else {
+				if (!expr.closed) {
+					if (!notClose(expr) === false) {
+						return false
+					}
+				}
+			}
+		}
+
+		return check(expr, variants, important, variantGroup)
+	}
+}
+
+function isUtility(leaf: parser.Leaf): leaf is parser.Utility {
+	switch (leaf.type) {
+		case parser.NodeType.SimpleVariant:
+		case parser.NodeType.ArbitraryVariant:
+		case parser.NodeType.ArbitrarySelector:
+			return false
+	}
+	return true
+}
+
 function validateTw({
 	document,
 	text,
@@ -129,120 +246,109 @@ function validateTw({
 	diagnosticOptions: ServiceOptions["diagnostics"]
 	diagnostics: IDiagnostic[]
 }): boolean {
-	const program = state.tw.context.parser.createProgram(text)
-	program.walk((node, important, variantGroup) => {
-		// push
-	})
+	const rangeMappings: Record<string, parser.Range[]> = {}
 
-	for (const e of notClosed) {
-		if (
-			!diagnostics.push({
-				source: DIAGNOSTICS_ID,
-				message: "Bracket is not closed.",
-				range: new vscode.Range(
-					document.positionAt(offset + e.range[0]),
-					document.positionAt(offset + e.range[1]),
-				),
-				severity: vscode.DiagnosticSeverity.Error,
-			})
-		) {
-			return false
-		}
-	}
-
-	if (!checkVariants(diagnostics, items, document, offset, state)) {
-		return false
-	}
-
-	for (let i = 0; i < items.length; i++) {
-		const item = items[i]
-		switch (item.target.type) {
-			case parser.NodeType.ClassName: {
-				const ans = checkTwClassName(item.target, document, text, offset, state)
-				for (let i = 0; i < ans.length; i++) {
-					if (!diagnostics.push(ans[i])) return false
-				}
-				break
-			}
-			case parser.NodeType.ArbitraryClassname: {
-				const ans = checkArbitraryClassname(item.target, document, text, offset, state)
-				for (let i = 0; i < ans.length; i++) {
-					if (!diagnostics.push(ans[i])) return false
-				}
-				break
-			}
-			case parser.NodeType.ArbitraryProperty: {
-				const ans = checkArbitraryProperty(item.target, document, offset)
-				for (let i = 0; i < ans.length; i++) {
-					if (!diagnostics.push(ans[i])) return false
-				}
-				break
-			}
-			case parser.NodeType.ShortCss: {
-				const ans = rejectShortCss(item.target, document, offset)
-				for (let i = 0; i < ans.length; i++) {
-					if (!diagnostics.push(ans[i])) return false
-				}
-				break
-			}
-		}
-	}
-
-	// Check duplicate items
-	const mappings: Record<string, parser.Range[]> = {}
-	function addItem(key: string, value: parser.Range) {
-		const target = mappings[key]
+	function addRange(key: string, value: parser.Range) {
+		const target = rangeMappings[key]
 		if (target instanceof Array) {
 			target.push(value)
 		} else {
-			mappings[key] = [value]
+			rangeMappings[key] = [value]
 		}
 	}
 
-	if (kind === "tw") {
-		for (let i = 0; i < items.length; i++) {
-			const item = items[i]
-			if (item.important) {
-				continue
-			}
+	const program = state.tw.context.parser.createProgram(text)
 
-			const hash = state.tw.renderVariantScope(...item.variants)
-			switch (item.target.type) {
-				case parser.NodeType.ArbitraryProperty: {
-					const value = item.target.decl.getText()
+	walk(
+		program,
+		(node, variants, important, variantGroup) => {
+			if (isUtility(node)) {
+				// TODO: variantGroup check
+				switch (node.type) {
+					case parser.NodeType.ClassName: {
+						const result = checkTwClassName(node, document, text, offset, state)
+						for (const r of result) {
+							if (!diagnostics.push(r)) return false
+						}
+						break
+					}
+					case parser.NodeType.ArbitraryClassname: {
+						const result = checkArbitraryClassname(node, document, text, offset, state)
+						for (const r of result) {
+							if (!diagnostics.push(r)) return false
+						}
+						break
+					}
+					case parser.NodeType.ArbitraryProperty: {
+						const result = checkArbitraryProperty(node, document, offset)
+						for (const r of result) {
+							if (!diagnostics.push(r)) return false
+						}
+						break
+					}
+					case parser.NodeType.ShortCss: {
+						const result = rejectShortCss(node, document, offset)
+						for (const r of result) {
+							if (!diagnostics.push(r)) return false
+						}
+						break
+					}
+				}
+
+				// Check duplicate items
+				const hash = state.tw.renderVariantScope(...variants)
+				if (node.type === parser.NodeType.ArbitraryProperty) {
+					const value = node.decl.getText()
 					const i = value.indexOf(":")
-					if (i < 0) continue
+					if (i < 0) {
+						return
+					}
 					const prop = value.slice(0, i).trim()
 					if (isLooseProperty(prop)) {
 						const key = [hash, prop].join(".")
-						addItem(key, item.target.range)
-						continue
+						addRange(key, node.range)
+						return
 					}
 					const key = [undefined, hash, prop].join(".")
-					addItem(key, item.target.range)
-					continue
-				}
-				default: {
-					const label = text.slice(item.target.range[0], item.target.range[1])
-					const { decls, scope } = state.tw.renderDecls(label)
-					if (decls.size === 0) continue
-					if (isLoose(state, label, decls)) {
+					addRange(key, node.range)
+				} else {
+					const classname = node.getText()
+					const { decls, scope } = state.tw.renderDecls(classname)
+					if (decls.size === 0) {
+						return
+					}
+					if (isLoose(state, classname, decls)) {
 						const key = [hash, scope, Array.from(decls.keys()).sort().join(":")].join(".")
-						addItem(key, item.target.range)
+						addRange(key, node.range)
 					} else {
 						for (const [prop] of decls) {
 							const key = [undefined, hash, scope, prop].join(".")
-							addItem(key, item.target.range)
+							addRange(key, node.range)
 						}
 					}
-					break
+				}
+			} else {
+				const result = checkVariants(node, document, offset, state)
+				if (result) {
+					if (!diagnostics.push(result)) return false
 				}
 			}
-		}
-	}
+		},
+		node => {
+			return !!diagnostics.push({
+				source: DIAGNOSTICS_ID,
+				message: "Bracket is not closed.",
+				range: new vscode.Range(
+					document.positionAt(offset + node.range[0]),
+					document.positionAt(offset + node.range[1]),
+				),
+				severity: vscode.DiagnosticSeverity.Error,
+			})
+		},
+	)
 
-	for (const payload in mappings) {
-		const items = mappings[payload]
+	for (const payload in rangeMappings) {
+		const items = rangeMappings[payload]
 		if (items.length > 1) {
 			const parts = payload.split(".")
 			const prop = parts[parts.length - 1]
@@ -266,67 +372,44 @@ function validateTw({
 }
 
 function checkVariants(
-	diagnostics: IDiagnostic[],
-	items: SpreadedItem[],
+	node: parser.SimpleVariant | parser.ArbitrarySelector | parser.ArbitraryVariant,
 	document: TextDocument,
 	offset: number,
 	state: TailwindLoader,
 ) {
-	for (const node of getVariantMap(items).values()) {
-		if (node.type === parser.NodeType.ArbitrarySelector || node.type === parser.NodeType.ArbitraryVariant) {
-			continue
-		}
-
-		if (node.type === parser.NodeType.GroupVariant) {
-			node.expressions.filter(parser.isVariant)
-
-			continue
-		}
-
-		const {
-			id,
-			range: [a, b],
-		} = node
-		const variant = id.getText()
-		if (state.tw.isVariant(variant)) {
-			continue
-		}
-		const ret = state.variants.search(variant)
-		const ans = ret?.[0]?.item
-		const range = new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))
-		const diagnostic: IDiagnostic = {
-			message: "",
-			source: DIAGNOSTICS_ID,
-			range,
-			severity: vscode.DiagnosticSeverity.Error,
-		}
-		if (ans) {
-			const action = new vscode.CodeAction(`Replace '${variant}' with '${ans}'`, vscode.CodeActionKind.QuickFix)
-			action.edit = new vscode.WorkspaceEdit()
-			action.edit.replace(document.uri, range, ans)
-			diagnostic.message = `'${variant}' is an unknown variant, did you mean '${ans}'?`
-			diagnostic.codeActions = [action]
-		} else {
-			diagnostic.message = `'${variant}' is an unknown variant.`
-		}
-		if (!diagnostics.push(diagnostic)) {
-			return false
-		}
+	if (node.type === parser.NodeType.ArbitrarySelector || node.type === parser.NodeType.ArbitraryVariant) {
+		return
 	}
-	return true
 
-	function getVariantMap(items: SpreadedItem[]) {
-		const s = new Map<string, SpreadedItem["variants"][0]>()
-		for (const item of items) {
-			for (const node of item.variants) {
-				const [a, b] = node.range
-				const key = `${a}+${b}`
-				if (s.has(key)) continue
-				s.set(key, node)
-			}
-		}
-		return s
+	const {
+		id,
+		range: [a, b],
+	} = node
+	const variant = id.getText()
+	if (state.tw.isVariant(variant)) {
+		return
 	}
+	const ret = state.variants.search(variant)
+	const ans = ret?.[0]?.item
+	const range = new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))
+	const diagnostic: IDiagnostic = {
+		message: "",
+		source: DIAGNOSTICS_ID,
+		range,
+		severity: vscode.DiagnosticSeverity.Error,
+	}
+
+	if (ans) {
+		const action = new vscode.CodeAction(`Replace '${variant}' with '${ans}'`, vscode.CodeActionKind.QuickFix)
+		action.edit = new vscode.WorkspaceEdit()
+		action.edit.replace(document.uri, range, ans)
+		diagnostic.message = `'${variant}' is an unknown variant, did you mean '${ans}'?`
+		diagnostic.codeActions = [action]
+	} else {
+		diagnostic.message = `'${variant}' is an unknown variant.`
+	}
+
+	return diagnostic
 }
 
 function checkArbitraryClassname(

@@ -70,58 +70,6 @@ export function createParser(separator = ":") {
 			getText() {
 				return source.slice(this.range[0], this.range[1])
 			},
-			walk(accept) {
-				for (const expr of this.expressions) {
-					if (walkExpr(expr, accept, false, false) === false) {
-						break
-					}
-				}
-
-				return
-
-				function walkExpr(
-					expr: nodes.Expression,
-					accept: (node: nodes.Leaf, important: boolean, variantGroup: boolean) => boolean | void,
-					important: boolean,
-					variantGroup: boolean,
-				): boolean | void {
-					if (expr.type === nodes.NodeType.Group) {
-						important ||= expr.important
-						for (const e of expr.expressions) {
-							if (walkExpr(e, accept, important, variantGroup) === false) {
-								return false
-							}
-						}
-						return
-					}
-
-					if (expr.type === nodes.NodeType.VariantSpan) {
-						const { variant, child } = expr
-						variantGroup ||= variant.type === nodes.NodeType.GroupVariant
-						switch (variant.type) {
-							case nodes.NodeType.GroupVariant:
-								for (const e of variant.expressions) {
-									if (walkExpr(e, accept, important, true) === false) {
-										return false
-									}
-								}
-								break
-							default:
-								if (accept(variant, important, variantGroup) === false) {
-									return false
-								}
-								break
-						}
-						if (child) {
-							walkExpr(child, accept, important, variantGroup)
-						}
-						return
-					}
-
-					important ||= expr.important
-					accept(expr, important, variantGroup)
-				}
-			},
 		}
 	}
 

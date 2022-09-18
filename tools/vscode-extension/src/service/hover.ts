@@ -1,15 +1,4 @@
-import {
-	ArbitrarySelector,
-	ArbitraryVariant,
-	Leaf,
-	Node,
-	NodeType,
-	parse_theme_val,
-	Program,
-	renderThemePath,
-	SimpleVariant,
-	ThemeValueNode,
-} from "twobj/parser"
+import * as parser from "twobj/parser"
 import vscode from "vscode"
 import { getEntryDescription } from "vscode-css-languageservice/lib/esm/languageFacts/entry"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -18,6 +7,83 @@ import { cssDataManager } from "~/common/vscode-css-languageservice"
 import type { ServiceOptions } from "~/shared"
 import { getDescription, getReferenceLinks } from "./referenceLink"
 import type { TailwindLoader } from "./tailwind"
+
+function walk(program: parser.Program, check: (node: parser.Leaf, important: boolean) => boolean | void) {
+	for (const expr of program.expressions) {
+		if (walkExpr(expr, check, false) === false) {
+			break
+		}
+	}
+
+	return
+
+	function walkExpr(
+		expr: parser.Expression,
+		check: (node: parser.Leaf, important: boolean) => boolean | void,
+		important: boolean,
+	): boolean | void {
+		if (expr.type === parser.NodeType.Group) {
+			important ||= expr.important
+			for (const e of expr.expressions) {
+				if (walkExpr(e, check, important) === false) {
+					return false
+				}
+			}
+			return
+		}
+
+		if (expr.type === parser.NodeType.VariantSpan) {
+			const { variant, child } = expr
+			switch (variant.type) {
+				case parser.NodeType.GroupVariant:
+					for (const e of variant.expressions) {
+						if (walkExpr(e, check, true) === false) {
+							return false
+						}
+					}
+					break
+				default:
+					if (check(variant, important) === false) {
+						return false
+					}
+					break
+			}
+			if (child) {
+				return walkExpr(child, check, important)
+			}
+			return
+		}
+
+		important ||= expr.important
+		return check(expr, important)
+	}
+}
+
+function isVariant(
+	node: parser.Leaf,
+): node is parser.SimpleVariant | parser.ArbitraryVariant | parser.ArbitrarySelector {
+	switch (node.type) {
+		case parser.NodeType.SimpleVariant:
+		case parser.NodeType.ArbitraryVariant:
+		case parser.NodeType.ArbitrarySelector:
+			return true
+	}
+	return false
+}
+
+function hoverProgram(program: parser.Program, position: number) {
+	const inRange = (node: parser.Node) => position >= node.range[0] && position < node.range[1]
+	let _node: parser.Leaf | undefined
+	let _important = false
+	walk(program, (node, important) => {
+		if (inRange(node)) {
+			_node = node
+			_important = important
+			return false
+		}
+	})
+	return [_node, _important] as [parser.Leaf | undefined, boolean]
+}
 
 export default async function hover(
 	result: ExtractedToken | undefined,
@@ -35,7 +101,7 @@ export default async function hover(
 		try {
 			const { kind, ...token } = result
 			if (kind === "theme") {
-				const node = parse_theme_val(token.value)
+				const node = parser.parse_theme_val(token.value)
 				const range = new vscode.Range(
 					document.positionAt(token.start + node.range[0]),
 					document.positionAt(token.start + node.range[1]),
@@ -60,20 +126,20 @@ export default async function hover(
 			} else {
 				const program = state.tw.context.parser.createProgram(token.value)
 
-				const hoverResult = hoverProgram(program, document.offsetAt(position) - token.start)
-				if (!hoverResult) return undefined
+				const [target, important] = hoverProgram(program, document.offsetAt(position) - token.start)
+				if (!target) return undefined
 
-				const [start, end] = hoverResult.target.range
+				const [start, end] = target.range
 
 				const range = new vscode.Range(
 					document.positionAt(token.start + start),
 					document.positionAt(token.start + end),
 				)
 
-				if (isVariant(hoverResult.target)) {
+				if (isVariant(target)) {
 					const header = new vscode.MarkdownString()
-					if (hoverResult.target.type === NodeType.SimpleVariant) {
-						const variant = hoverResult.target.id.getText()
+					if (target.type === parser.NodeType.SimpleVariant) {
+						const variant = target.id.getText()
 						if (options.references) {
 							const isScreens = state.tw.screens.indexOf(variant) === -1
 							const desc = isScreens ? getDescription(variant) : getDescription("screens")
@@ -92,7 +158,7 @@ export default async function hover(
 						header.appendMarkdown("**arbitrary variant**")
 					}
 
-					const code = state.tw.renderVariant(hoverResult.target, tabSize)
+					const code = state.tw.renderVariant(target, tabSize)
 					const codes = new vscode.MarkdownString()
 					if (code) codes.appendCodeblock(code, "scss")
 					if (!header.value && !codes.value) return undefined
@@ -103,8 +169,8 @@ export default async function hover(
 				}
 
 				if (kind === "wrap") {
-					if (hoverResult.target.type === NodeType.ClassName) {
-						const value = hoverResult.target.getText()
+					if (target.type === parser.NodeType.ClassName) {
+						const value = target.getText()
 						if (value === "$e") {
 							return {
 								range,
@@ -116,8 +182,8 @@ export default async function hover(
 				}
 
 				const header = new vscode.MarkdownString()
-				if (hoverResult.target.type === NodeType.ArbitraryProperty) {
-					const rawText = hoverResult.target.decl.getText()
+				if (target.type === parser.NodeType.ArbitraryProperty) {
+					const rawText = target.decl.getText()
 					let prop = rawText.trim()
 					const i = rawText.indexOf(":")
 					if (i >= 0) {
@@ -134,7 +200,7 @@ export default async function hover(
 					}
 				}
 
-				const value = hoverResult.target.getText()
+				const value = target.getText()
 
 				if (options.references) {
 					const pluginName = state.tw.context.getPluginName(value)
@@ -154,7 +220,7 @@ export default async function hover(
 
 				const code = state.tw.renderClassname({
 					classname: value,
-					important: hoverResult.important,
+					important,
 					rootFontSize: options.rootFontSize,
 					colorHint: options.hoverColorHint,
 					tabSize,
@@ -176,30 +242,6 @@ export default async function hover(
 
 		return undefined
 	}
-
-	function hoverProgram(program: Program, position: number) {
-		const inRange = (node: Node) => position >= node.range[0] && position < node.range[1]
-		let _node: Leaf | undefined
-		let _important = false
-		program.walk((node, important) => {
-			if (inRange(node)) {
-				_node = node
-				_important = important
-				return false
-			}
-		})
-		return _node == undefined ? undefined : { target: _node, important: _important }
-	}
-
-	function isVariant(node: Leaf): node is SimpleVariant | ArbitraryVariant | ArbitrarySelector {
-		switch (node.type) {
-			case NodeType.SimpleVariant:
-			case NodeType.ArbitraryVariant:
-			case NodeType.ArbitrarySelector:
-				return true
-		}
-		return false
-	}
 }
 
 function resolveThemeValue({
@@ -209,11 +251,11 @@ function resolveThemeValue({
 }: {
 	kind: ExtractedTokenKind
 	range: vscode.Range
-	node: ThemeValueNode
+	node: parser.ThemeValueNode
 	state: TailwindLoader
 	options: ServiceOptions
 }): vscode.Hover | undefined {
-	const text = renderThemePath(state.config, node.path)
+	const text = parser.renderThemePath(state.config, node.path)
 	if (text === "[undefined]") return
 	const markdown = new vscode.MarkdownString()
 	markdown.value = `\`\`\`txt\n${text}\n\`\`\``

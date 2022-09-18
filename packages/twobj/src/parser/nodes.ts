@@ -152,7 +152,6 @@ export interface Program extends BaseNode {
 	type: NodeType.Program
 	source: string
 	expressions: Expression[]
-	walk(accept: (node: Leaf, important: boolean, variantGroup: boolean) => boolean | void): void
 }
 
 export type Node =
@@ -200,20 +199,6 @@ export function isVariant(node: unknown): node is Variant {
 		default:
 			return false
 	}
-}
-
-export function fromVariantSpan(node: VariantSpan): Variant[] {
-	let e: Expression | undefined = node
-	const ret: Variant[] = []
-	while (e) {
-		if (e.type === NodeType.VariantSpan) {
-			ret.push(e.variant)
-			e = e.child
-			continue
-		}
-		break
-	}
-	return ret
 }
 
 export interface ThemeFunctionNode extends BaseNode, Closed {
