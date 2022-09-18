@@ -40,7 +40,6 @@ pnpm install && pnpm package
   "twobj.preferVariantWithParentheses": false,
   "twobj.fallbackDefaultConfig": true,
   "twobj.enabled": true,
-  "twobj.jsxPropImportChecking": true,
   "twobj.rootFontSize": 16,
   "twobj.logLevel": "info",
   "twobj.hoverColorHint": "none",
