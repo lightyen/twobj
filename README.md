@@ -74,23 +74,23 @@ sm:(hover: focus:):bg-black
 
 ```js
 const ctx = createContext(
-	resolveConfig({
-		plugins: [
-			({
-				addDefaults,
-				addBase,
-				addUtilities,
-				addComponents,
-				addVariant,
-				matchUtilities,
-				matchComponents,
-				matchVariant,
-				theme,
-				config,
-			}) => {
-				// ...
-			},
-		],
-	}),
+  resolveConfig({
+    plugins: [
+      ({
+        addDefaults,
+        addBase,
+        addUtilities,
+        addComponents,
+        addVariant,
+        matchUtilities,
+        matchComponents,
+        matchVariant,
+        theme,
+        config,
+      }) => {
+        // ...
+      },
+    ],
+  }),
 )
 ```
