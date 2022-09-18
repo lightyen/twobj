@@ -74,8 +74,7 @@ function resolve(
 	}
 
 	if (type === "variant" || type === "screen") {
-		const key = item.label.replace(new RegExp(`${state.separator}$`), "")
-		const code = state.tw.renderVariant(key, tabSize)
+		const code = state.tw.renderVariant(item.label, tabSize)
 		if (!code) return item
 
 		const fencedCodeBlock = createFencedCodeBlock(code, CodeKind.SCSS)

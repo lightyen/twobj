@@ -8,7 +8,6 @@ import {
 	Expression,
 	GroupVariant,
 	isVariant,
-	isVariantSpan,
 	NodeType,
 	SimpleVariant,
 	Variant,
@@ -607,7 +606,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function getPluginName(value: string): string | undefined {
-		const program = parser.parse(value)
+		const program = parser.createProgram(value)
 		if (program.expressions.length !== 1) {
 			return undefined
 		}
@@ -640,7 +639,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		}
 
 		const rootFn: VariantSpec = (css = {}) => css
-		const program = parser.parse(value)
+		const program = parser.createProgram(value)
 		for (let i = 0; i < program.expressions.length; i++) {
 			process(program.expressions[i], rootStyle, importantRootStyle, rootFn, false)
 		}
@@ -757,7 +756,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function expression(expr: Expression) {
-		if (isVariantSpan(expr)) {
+		if (expr.type === NodeType.VariantSpan) {
 			return variantSpan(expr)
 		}
 		if (isVariant(expr)) {
@@ -886,24 +885,22 @@ export function createContext(config: ResolvedConfigJS): Context {
 	}
 
 	function wrap(variants: string | TemplateStringsArray | Variant, ...args: Variant[]): VariantSpec {
-		if (typeof variants === "string") {
-			return mergeVariants(...parser.parse(variants).expressions.map(expression))
+		if (variants == undefined) {
+			return (css = {}) => css
 		}
-
+		if (typeof variants === "string") {
+			return mergeVariants(...parser.createProgram(variants).expressions.map(expression))
+		}
 		if (!isVariant(variants)) {
 			variants = variants[0]
-			return mergeVariants(...parser.parse(variants).expressions.map(expression))
+			return mergeVariants(...parser.createProgram(variants).expressions.map(expression))
 		}
 
 		args.unshift(variants)
+		args = args.filter(isNotEmpty)
 
 		return composeVariants(
 			...args.map(value => {
-				if (typeof value === "string") {
-					const program = parser.parse(value)
-					return mergeVariants(...program.expressions.map(expression))
-				}
-
 				const node = value
 				if (node.type === NodeType.SimpleVariant) {
 					return variantMap.get(node.id.getText())

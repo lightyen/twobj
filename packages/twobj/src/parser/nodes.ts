@@ -150,7 +150,13 @@ export interface Group extends BaseNode, Important, Closed {
 
 export interface Program extends BaseNode {
 	type: NodeType.Program
+	source: string
 	expressions: Expression[]
+	walk(callback: (node: Leaf) => void): void
+	walkVariants(callback: (node: Exclude<Variant, GroupVariant>) => void): void
+	walkUtilities(callback: (node: Exclude<Expression, Group | VariantSpan>, important: boolean) => void): {
+		notClosed: BracketNode[]
+	}
 }
 
 export type Node =
@@ -165,6 +171,17 @@ export type Node =
 	| WithOpacity
 	| EndOpacity
 
+export type Utility = Classname | ArbitraryClassname | ArbitraryProperty | ShortCss
+
+export type Leaf =
+	| Classname
+	| ArbitraryClassname
+	| ArbitraryProperty
+	| ShortCss
+	| SimpleVariant
+	| ArbitrarySelector
+	| ArbitraryVariant
+
 export type BracketNode =
 	| Group
 	| ArbitrarySelector
@@ -174,17 +191,8 @@ export type BracketNode =
 	| ShortCss
 	| WithOpacity
 
-export function isVariantSpan(node: Expression): node is VariantSpan {
-	switch (node.type) {
-		case NodeType.VariantSpan:
-			return true
-		default:
-			return false
-	}
-}
-
 export function isVariant(node: unknown): node is Variant {
-	if (!node) {
+	if (typeof node !== "object" || node === null) {
 		return false
 	}
 	switch (node["type"]) {
@@ -199,17 +207,13 @@ export function isVariant(node: unknown): node is Variant {
 }
 
 export function fromVariantSpan(node: VariantSpan): Variant[] {
-	let t: Expression | undefined = node
+	let e: Expression | undefined = node
 	const ret: Variant[] = []
-	while (t) {
-		if (isVariantSpan(t)) {
-			ret.push(t.variant)
-			t = t.child
+	while (e) {
+		if (e.type === NodeType.VariantSpan) {
+			ret.push(e.variant)
+			e = e.child
 			continue
-		}
-		if (isVariant(t)) {
-			ret.push(t)
-			break
 		}
 		break
 	}

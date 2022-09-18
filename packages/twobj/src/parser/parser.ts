@@ -86,10 +86,7 @@ export function createParser(separator = ":") {
 			separator = sep
 		},
 		validSeparator,
-		parse,
-		hover,
-		suggest,
-		spread,
+		createProgram,
 		tokenize,
 	}
 
@@ -104,14 +101,129 @@ export function createParser(separator = ":") {
 		)
 	}
 
-	function parse(source: string, [start = 0, end = source.length, breac = Infinity] = []): nodes.Program {
+	function createProgram(source: string, [start = 0, end = source.length, breac = Infinity] = []): nodes.Program {
 		source = source.slice(0, start) + removeComments(source.slice(start, end), true) + source.slice(end)
 		return {
 			type: nodes.NodeType.Program,
+			source,
 			range: [start, end],
 			expressions: parseExpressions(source, [start, end, breac]),
 			getText() {
 				return source.slice(this.range[0], this.range[1])
+			},
+			walk(callback) {
+				// hover: const inRange = (node: nodes.Node) => position >= node.range[0] && position < node.range[1]
+				// complete: const inRange = (node: nodes.Node) => position >= node.range[0] && position <= node.range[1]
+				this.expressions.forEach(expr => {
+					walkExpr(expr, callback)
+				})
+
+				return
+
+				function walkExpr(expr: nodes.Expression, callback: (node: nodes.Leaf) => void) {
+					if (expr.type === nodes.NodeType.Group) {
+						expr.expressions.forEach(expr => {
+							walkExpr(expr, callback)
+						})
+						return
+					}
+
+					if (expr.type === nodes.NodeType.VariantSpan) {
+						const { variant, child } = expr
+						switch (variant.type) {
+							case nodes.NodeType.GroupVariant:
+								variant.expressions.forEach(expr => {
+									walkExpr(expr, callback)
+								})
+								break
+							default:
+								callback(variant)
+								break
+						}
+						if (child) {
+							walkExpr(child, callback)
+						}
+						return
+					}
+
+					callback(expr)
+				}
+			},
+			walkVariants(callback) {
+				this.expressions.forEach(expr => {
+					walkExpr(expr, callback)
+				})
+
+				return
+
+				function walkExpr(
+					expr: nodes.Expression,
+					callback: (node: Exclude<nodes.Leaf, nodes.Utility>) => void,
+				) {
+					if (expr.type === nodes.NodeType.Group) {
+						expr.expressions.forEach(expr => {
+							walkExpr(expr, callback)
+						})
+						return
+					}
+
+					if (expr.type === nodes.NodeType.VariantSpan) {
+						const { variant, child } = expr
+						switch (variant.type) {
+							case nodes.NodeType.GroupVariant:
+								variant.expressions.forEach(expr => {
+									walkExpr(expr, callback)
+								})
+								break
+							default:
+								callback(variant)
+								break
+						}
+						if (child) {
+							walkExpr(child, callback)
+						}
+					}
+				}
+			},
+			walkUtilities(callback) {
+				const notClosed: nodes.BracketNode[] = []
+				this.expressions.forEach(expr => walkExpr(expr, callback, notClosed))
+				return { notClosed }
+
+				function walkExpr(
+					expr: nodes.Expression,
+					callback: (node: nodes.Utility, important: boolean) => void,
+					notClosed: nodes.BracketNode[],
+					important = false,
+				) {
+					const type = expr.type
+					switch (type) {
+						case nodes.NodeType.ClassName:
+							important ||= expr.important
+							callback(expr, important)
+							break
+						case nodes.NodeType.ArbitraryClassname:
+						case nodes.NodeType.ArbitraryProperty:
+						case nodes.NodeType.ShortCss:
+							important ||= expr.important
+							if (!expr.closed) {
+								notClosed.push(expr)
+							}
+							callback(expr, important)
+							break
+						case nodes.NodeType.VariantSpan:
+							if (expr.child) {
+								walkExpr(expr.child, callback, notClosed, important)
+							}
+							break
+						case nodes.NodeType.Group:
+							important ||= expr.important
+							expr.expressions.forEach(expr => {
+								walkExpr(expr, callback, notClosed, important)
+							})
+							break
+					}
+				}
 			},
 		}
 	}
@@ -750,331 +862,6 @@ export function createParser(separator = ":") {
 			}
 			return false
 		}
-	}
-
-	function hover(text: string, position: number): HoverResult | undefined {
-		interface Context {
-			important: boolean
-			variants: nodes.Variant[]
-		}
-
-		const inRange = (node: nodes.Node) => position >= node.range[0] && position < node.range[1]
-
-		const travel = (node: nodes.Node, ctx: Context): HoverResult | undefined => {
-			const walk = (node: nodes.Node): HoverResult | undefined => {
-				if (nodes.NodeType.VariantSpan === node.type) {
-					const variants = ctx.variants.slice()
-					if (inRange(node.variant)) {
-						return {
-							type: "variant",
-							target: node.variant,
-						}
-					}
-					if (!node.child) return undefined
-					variants.push(node.variant)
-					return travel(node.child, { ...ctx, variants })
-				}
-
-				if (nodes.NodeType.Group === node.type) {
-					return travel(
-						{
-							type: nodes.NodeType.Program,
-							expressions: node.expressions,
-							range: node.range,
-							getText() {
-								return text.slice(this.range[0], this.range[1])
-							},
-						},
-						{ ...ctx, important: ctx.important || node.important },
-					)
-				}
-
-				if (nodes.NodeType.ClassName === node.type) {
-					return {
-						type: "classname",
-						target: node,
-						value: text.slice(node.range[0], node.range[1]),
-						important: ctx.important || node.important,
-						variants: ctx.variants,
-					}
-				}
-
-				if (nodes.NodeType.ArbitraryProperty === node.type) {
-					return {
-						type: "classname",
-						target: node,
-						value: text.slice(node.decl.range[0], node.decl.range[1]),
-						important: ctx.important || node.important,
-						variants: ctx.variants,
-					}
-				}
-
-				if (nodes.NodeType.ArbitraryClassname === node.type) {
-					return {
-						type: "classname",
-						target: node,
-						value: text.slice(node.range[0], node.range[1]),
-						important: ctx.important || node.important,
-						variants: ctx.variants,
-					}
-				}
-
-				return undefined
-			}
-
-			if (node == undefined) {
-				return undefined
-			}
-
-			if (nodes.NodeType.Program === node.type) {
-				const expr = node.expressions.find(inRange)
-				if (expr) return walk(expr)
-				return undefined
-			}
-
-			if (inRange(node)) {
-				return walk(node)
-			}
-
-			return undefined
-		}
-
-		return travel(parse(text, [undefined, undefined, position]), {
-			important: false,
-			variants: [],
-		})
-	}
-
-	function suggest(text: string, position: number): SuggestResult {
-		interface Context {
-			variants: nodes.Variant[]
-		}
-		interface TravelResult {
-			variants: nodes.Variant[]
-			target?:
-				| nodes.Classname
-				| nodes.ArbitraryClassname
-				| nodes.ArbitraryProperty
-				| nodes.SimpleVariant
-				| nodes.ArbitrarySelector
-				| nodes.ArbitraryVariant
-		}
-
-		const result = travel(parse(text, [undefined, undefined, position]), { variants: [] })
-
-		if (!result.target) {
-			return {
-				variants: result.variants,
-				inComment: inComment(text, position),
-			}
-		}
-
-		return {
-			...result,
-			inComment: inComment(text, position),
-		}
-
-		function inComment(source: string, position: number, [start = 0, end = source.length] = []): boolean {
-			const regexp = /(")|(')|(-\[)|(\/\/[^\r\n]*(?:[^\r\n]|$))|((?:\/\*).*?(?:\*\/|$))/gs
-			let match: RegExpExecArray | null
-			regexp.lastIndex = start
-			source = source.slice(0, end)
-			let strings: 1 | 2 | undefined
-
-			while ((match = regexp.exec(source))) {
-				const [, doubleQuote, singleQuote, bracket, lineComment, blockComment] = match
-				if (doubleQuote) {
-					if (!strings) {
-						strings = 1
-					} else {
-						strings = undefined
-					}
-				} else if (singleQuote) {
-					if (!strings) {
-						strings = 2
-					} else {
-						strings = undefined
-					}
-				} else if (bracket) {
-					const rb = findRightBracket({
-						text: source,
-						start: regexp.lastIndex - 1,
-						end,
-						brackets: [91, 93],
-						comments: false,
-					})
-					regexp.lastIndex = rb ? rb + 1 : end
-				} else if (!strings && (lineComment || blockComment)) {
-					if (position >= match.index && position <= regexp.lastIndex) {
-						return true
-					}
-				}
-			}
-			return false
-		}
-
-		function inRange(node: nodes.Node) {
-			return position >= node.range[0] && position <= node.range[1]
-		}
-
-		function travel(node: nodes.Node, ctx: Context): TravelResult {
-			if (node == undefined) {
-				return { variants: [] }
-			}
-
-			if (nodes.NodeType.Program === node.type) {
-				const expr = node.expressions.find(inRange)
-				if (expr) return walk(expr)
-				return { ...ctx }
-			}
-
-			if (inRange(node)) return walk(node)
-
-			return { ...ctx }
-
-			function walk(node: nodes.Node) {
-				if (nodes.NodeType.VariantSpan === node.type) {
-					const variants = ctx.variants.slice()
-					if (inRange(node.variant)) {
-						if (nodes.NodeType.GroupVariant === node.variant.type) {
-							return travel(
-								{
-									type: nodes.NodeType.Program,
-									expressions: node.variant.expressions,
-									range: node.variant.range,
-									getText() {
-										return text.slice(this.range[0], this.range[1])
-									},
-								},
-								{ ...ctx },
-							)
-						}
-						if (position === node.variant.range[1]) {
-							variants.push(node.variant)
-						}
-						return { target: node.variant, variants }
-					}
-					if (!node.child) return { variants: [] }
-					variants.push(node.variant)
-					return travel(node.child, { ...ctx, variants })
-				}
-
-				if (nodes.NodeType.Group === node.type) {
-					return travel(
-						{
-							type: nodes.NodeType.Program,
-							expressions: node.expressions,
-							range: node.range,
-							getText() {
-								return text.slice(this.range[0], this.range[1])
-							},
-						},
-						{ ...ctx },
-					)
-				}
-
-				if (nodes.NodeType.ArbitraryProperty === node.type || nodes.NodeType.ArbitraryClassname === node.type) {
-					return { target: node, variants: ctx.variants }
-				}
-
-				if (nodes.NodeType.ClassName === node.type) {
-					return { target: node, variants: ctx.variants }
-				}
-
-				return { variants: [] }
-			}
-		}
-	}
-
-	function spread(source: string): SpreadResult {
-		interface Context {
-			variants: nodes.Variant[]
-			important: boolean
-		}
-
-		const items: SpreadedItem[] = []
-		const emptyGroup: nodes.Group[] = []
-		const emptyVariants: nodes.VariantSpan[] = []
-		const notClosed: nodes.BracketNode[] = []
-
-		const walk = (node: nodes.Expression | undefined, ctx: Context): void => {
-			if (node == undefined) return
-
-			if (nodes.NodeType.VariantSpan === node.type) {
-				if (node.child == undefined) {
-					emptyVariants.push(node)
-					return
-				}
-				const variants = ctx.variants.slice()
-				variants.push(node.variant)
-				walk(node.child, { ...ctx, variants })
-			} else if (nodes.NodeType.Group === node.type) {
-				if (!node.closed) {
-					notClosed.push(node)
-					return
-				}
-
-				if (node.expressions.length === 0) {
-					emptyGroup.push(node)
-					return
-				}
-
-				node.expressions.forEach(n => walk(n, { ...ctx, important: ctx.important || node.important }))
-			} else if (nodes.NodeType.ArbitraryClassname === node.type) {
-				if (!node.closed) {
-					notClosed.push(node)
-					return
-				}
-
-				if (node.e && node.e.type === nodes.NodeType.WithOpacity && node.e.closed === false) {
-					notClosed.push(node.e)
-					return
-				}
-
-				items.push({
-					target: node,
-					value: source.slice(...node.range),
-					...ctx,
-					important: ctx.important || node.important,
-				})
-			} else if (nodes.NodeType.ArbitraryProperty === node.type) {
-				if (!node.closed) {
-					notClosed.push(node)
-					return
-				}
-
-				items.push({
-					target: node,
-					value: source.slice(...node.range),
-					...ctx,
-					important: ctx.important || node.important,
-				})
-			} else if (nodes.NodeType.ShortCss === node.type) {
-				if (!node.closed) {
-					// notClosed.push(node)
-					return
-				}
-
-				items.push({
-					target: node,
-					value: source.slice(...node.range),
-					...ctx,
-					important: ctx.important || node.important,
-				})
-			} else if (nodes.NodeType.ClassName === node.type) {
-				items.push({
-					target: node,
-					value: node.getText(),
-					...ctx,
-					important: ctx.important || node.important,
-				})
-			}
-		}
-
-		const program = parse(source)
-		program.expressions.forEach(expr => walk(expr, { variants: [], important: false }))
-
-		return { items, emptyGroup, emptyVariants, notClosed } as const
 	}
 
 	function tokenize(source: string, [start = 0, end = source.length] = []): TokenExpr[] {

@@ -179,7 +179,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 	}
 
 	function renderVariant(value: string | parser.Variant, tabSize = 4): ScssText {
-		const fn = context.cssVariant(value)
+		const fn = context.wrap(value)
 		let { root } = postcss().process(fn(), {
 			from: undefined,
 			parser: postcssJs,
@@ -202,7 +202,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 	}
 
 	function renderVariantScope(...variants: parser.Variant[]): string {
-		const fn = context.cssVariant(...variants)
+		const fn = context.wrap(...variants)
 		const hash = sha1(fn()) as string
 		return hash
 	}

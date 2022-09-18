@@ -1,5 +1,5 @@
 import Fuse from "fuse.js"
-import type { SpreadedItem, SpreadResult } from "twobj/parser"
+import type { SpreadedItem } from "twobj/parser"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -88,22 +88,18 @@ export function validate(
 					) {
 						return diagnostics
 					}
-				} else {
-					const result = state.tw.context.parser.spread(value)
-					if (
-						!validateTw({
-							document,
-							text: value,
-							offset: start,
-							kind,
-							diagnosticOptions: options.diagnostics,
-							state,
-							diagnostics,
-							...result,
-						})
-					) {
-						return diagnostics
-					}
+				} else if (
+					!validateTw({
+						document,
+						text: value,
+						offset: start,
+						kind,
+						diagnosticOptions: options.diagnostics,
+						state,
+						diagnostics,
+					})
+				) {
+					return diagnostics
 				}
 			}
 			return diagnostics
@@ -123,10 +119,7 @@ function validateTw({
 	kind,
 	state,
 	diagnosticOptions,
-	items,
-	emptyGroup,
-	emptyVariants,
-	notClosed,
+
 	diagnostics,
 }: {
 	document: TextDocument
@@ -136,7 +129,8 @@ function validateTw({
 	state: TailwindLoader
 	diagnosticOptions: ServiceOptions["diagnostics"]
 	diagnostics: IDiagnostic[]
-} & SpreadResult): boolean {
+}): boolean {
+	const { items, emptyGroup, emptyVariants, notClosed } = state.tw.context.parser.spread(text)
 	for (const e of notClosed) {
 		if (
 			!diagnostics.push({
@@ -345,6 +339,13 @@ function checkVariants(
 			}
 			continue
 		}
+
+		if (node.type === parser.NodeType.GroupVariant) {
+			node.expressions.filter(parser.isVariant)
+
+			continue
+		}
+
 		const {
 			id,
 			range: [a, b],

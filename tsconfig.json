@@ -3,6 +3,7 @@
 		"types": ["@types/node", "@types/jest"],
 		"strictNullChecks": true,
 		"noImplicitAny": false,
+		"noImplicitThis": true,
 		"allowSyntheticDefaultImports": true,
 		"isolatedModules": true,
 		"esModuleInterop": true,
