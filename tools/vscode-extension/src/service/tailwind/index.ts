@@ -103,7 +103,6 @@ export function createTailwindLoader() {
 		readTailwind,
 		provideClassCompletionList,
 		provideCssPropsCompletionList,
-		isDeprecated,
 	} as const
 
 	function dispose() {
@@ -183,9 +182,6 @@ export function createTailwindLoader() {
 				item.documentation = tw.completionColors.get(value)
 			}
 
-			if (isDeprecated(value)) {
-				item.tags = [CompletionItemTag.Deprecated]
-			}
 			return item
 		})
 		return classCompletionList
@@ -215,10 +211,5 @@ export function createTailwindLoader() {
 		}))
 
 		return cssPropsCompletionList
-	}
-
-	function isDeprecated(label: string) {
-		//
-		return false
 	}
 }

@@ -170,7 +170,6 @@ function walk(
 
 		if (expr.type === parser.NodeType.VariantSpan) {
 			const { variant, child } = expr
-			variantGroup ||= variant.type === parser.NodeType.GroupVariant
 			switch (variant.type) {
 				case parser.NodeType.GroupVariant:
 					for (const e of variant.expressions) {
@@ -263,7 +262,23 @@ function validateTw({
 		program,
 		(node, variants, important, variantGroup) => {
 			if (isUtility(node)) {
-				// TODO: variantGroup check
+				if (kind === "wrap" || variantGroup) {
+					const range = new vscode.Range(
+						document.positionAt(offset + node.range[0]),
+						document.positionAt(offset + node.range[1]),
+					)
+					if (
+						!diagnostics.push({
+							source: DIAGNOSTICS_ID,
+							message: "Unknown token",
+							range,
+							severity: vscode.DiagnosticSeverity.Error,
+						})
+					)
+						return false
+					return
+				}
+
 				switch (node.type) {
 					case parser.NodeType.ClassName: {
 						const result = checkTwClassName(node, document, text, offset, state)
@@ -547,7 +562,7 @@ function rejectShortCss(item: parser.ShortCss, document: TextDocument, offset: n
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 	result.push({
 		source: DIAGNOSTICS_ID,
-		message: `Invalid.`,
+		message: "Unknown token",
 		range,
 		severity: vscode.DiagnosticSeverity.Error,
 	})
@@ -618,17 +633,6 @@ function checkTwClassName(
 				severity: vscode.DiagnosticSeverity.Error,
 			})
 		}
-	}
-
-	// https://tailwindcss.com/docs/text-color#changing-the-opacity
-	if (result.length === 0 && state.isDeprecated(value)) {
-		result.push({
-			message: "",
-			severity: vscode.DiagnosticSeverity.Hint,
-			relatedInformation: [],
-			range,
-			tags: [vscode.DiagnosticTag.Deprecated],
-		})
 	}
 
 	return result

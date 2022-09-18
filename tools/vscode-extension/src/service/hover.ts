@@ -8,9 +8,13 @@ import type { ServiceOptions } from "~/shared"
 import { getDescription, getReferenceLinks } from "./referenceLink"
 import type { TailwindLoader } from "./tailwind"
 
-function walk(program: parser.Program, check: (node: parser.Leaf, important: boolean) => boolean | void) {
+function walk(
+	program: parser.Program,
+	check: (node: parser.Leaf, important: boolean) => boolean | void,
+	variantGroup: (node: parser.GroupVariant) => void,
+) {
 	for (const expr of program.expressions) {
-		if (walkExpr(expr, check, false) === false) {
+		if (walkExpr(expr, check, variantGroup, false) === false) {
 			break
 		}
 	}
@@ -20,12 +24,13 @@ function walk(program: parser.Program, check: (node: parser.Leaf, important: boo
 	function walkExpr(
 		expr: parser.Expression,
 		check: (node: parser.Leaf, important: boolean) => boolean | void,
+		variantGroup: (node: parser.GroupVariant) => void,
 		important: boolean,
 	): boolean | void {
 		if (expr.type === parser.NodeType.Group) {
 			important ||= expr.important
 			for (const e of expr.expressions) {
-				if (walkExpr(e, check, important) === false) {
+				if (walkExpr(e, check, variantGroup, important) === false) {
 					return false
 				}
 			}
@@ -36,8 +41,9 @@ function walk(program: parser.Program, check: (node: parser.Leaf, important: boo
 			const { variant, child } = expr
 			switch (variant.type) {
 				case parser.NodeType.GroupVariant:
+					variantGroup(variant)
 					for (const e of variant.expressions) {
-						if (walkExpr(e, check, true) === false) {
+						if (walkExpr(e, check, variantGroup, true) === false) {
 							return false
 						}
 					}
@@ -49,7 +55,7 @@ function walk(program: parser.Program, check: (node: parser.Leaf, important: boo
 					break
 			}
 			if (child) {
-				return walkExpr(child, check, important)
+				return walkExpr(child, check, variantGroup, important)
 			}
 			return
 		}
@@ -75,14 +81,23 @@ function hoverProgram(program: parser.Program, position: number) {
 	const inRange = (node: parser.Node) => position >= node.range[0] && position < node.range[1]
 	let _node: parser.Leaf | undefined
 	let _important = false
-	walk(program, (node, important) => {
-		if (inRange(node)) {
-			_node = node
-			_important = important
-			return false
-		}
-	})
-	return [_node, _important] as [parser.Leaf | undefined, boolean]
+	let variantGroup = false
+	walk(
+		program,
+		(node, important) => {
+			if (inRange(node)) {
+				_node = node
+				_important = important
+				return false
+			}
+		},
+		node => {
+			if (inRange(node)) {
+				variantGroup = true
+			}
+		},
+	)
+	return [_node, _important, variantGroup] as [parser.Leaf | undefined, boolean, boolean]
 }
 
 export default async function hover(
@@ -126,7 +141,10 @@ export default async function hover(
 			} else {
 				const program = state.tw.context.parser.createProgram(token.value)
 
-				const [target, important] = hoverProgram(program, document.offsetAt(position) - token.start)
+				const [target, important, variantGroup] = hoverProgram(
+					program,
+					document.offsetAt(position) - token.start,
+				)
 				if (!target) return undefined
 
 				const [start, end] = target.range
@@ -168,17 +186,8 @@ export default async function hover(
 					}
 				}
 
-				if (kind === "wrap") {
-					if (target.type === parser.NodeType.ClassName) {
-						const value = target.getText()
-						if (value === "$e") {
-							return {
-								range,
-								contents: [new vscode.MarkdownString("anchor")],
-							}
-						}
-					}
-					return
+				if (kind === "wrap" || variantGroup) {
+					return undefined
 				}
 
 				const header = new vscode.MarkdownString()
