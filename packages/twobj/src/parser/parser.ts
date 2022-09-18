@@ -71,10 +71,8 @@ export function createParser(separator = ":") {
 				return source.slice(this.range[0], this.range[1])
 			},
 			walk(accept) {
-				// hover: const inRange = (node: nodes.Node) => position >= node.range[0] && position < node.range[1]
-				// complete: const inRange = (node: nodes.Node) => position >= node.range[0] && position <= node.range[1]
 				for (const expr of this.expressions) {
-					if (walkExpr(expr, accept) === false) {
+					if (walkExpr(expr, accept, false, false) === false) {
 						break
 					}
 				}
@@ -83,13 +81,14 @@ export function createParser(separator = ":") {
 
 				function walkExpr(
 					expr: nodes.Expression,
-					accept: (node: nodes.Leaf, important: boolean) => boolean | void,
-					important = false,
+					accept: (node: nodes.Leaf, important: boolean, variantGroup: boolean) => boolean | void,
+					important: boolean,
+					variantGroup: boolean,
 				): boolean | void {
 					if (expr.type === nodes.NodeType.Group) {
 						important ||= expr.important
 						for (const e of expr.expressions) {
-							if (walkExpr(e, accept, important) === false) {
+							if (walkExpr(e, accept, important, variantGroup) === false) {
 								return false
 							}
 						}
@@ -98,104 +97,29 @@ export function createParser(separator = ":") {
 
 					if (expr.type === nodes.NodeType.VariantSpan) {
 						const { variant, child } = expr
+						variantGroup ||= variant.type === nodes.NodeType.GroupVariant
 						switch (variant.type) {
 							case nodes.NodeType.GroupVariant:
 								for (const e of variant.expressions) {
-									if (walkExpr(e, accept) === false) {
+									if (walkExpr(e, accept, important, true) === false) {
 										return false
 									}
 								}
 								break
 							default:
-								if (accept(variant, false) === false) {
+								if (accept(variant, important, variantGroup) === false) {
 									return false
 								}
 								break
 						}
 						if (child) {
-							walkExpr(child, accept)
+							walkExpr(child, accept, important, variantGroup)
 						}
 						return
 					}
 
 					important ||= expr.important
-					accept(expr, important)
-				}
-			},
-			walkVariants(callback) {
-				this.expressions.forEach(expr => {
-					walkExpr(expr, callback)
-				})
-
-				return
-
-				function walkExpr(
-					expr: nodes.Expression,
-					callback: (node: Exclude<nodes.Leaf, nodes.Utility>) => void,
-				) {
-					if (expr.type === nodes.NodeType.Group) {
-						expr.expressions.forEach(expr => {
-							walkExpr(expr, callback)
-						})
-						return
-					}
-
-					if (expr.type === nodes.NodeType.VariantSpan) {
-						const { variant, child } = expr
-						switch (variant.type) {
-							case nodes.NodeType.GroupVariant:
-								variant.expressions.forEach(expr => {
-									walkExpr(expr, callback)
-								})
-								break
-							default:
-								callback(variant)
-								break
-						}
-						if (child) {
-							walkExpr(child, callback)
-						}
-					}
-				}
-			},
-			walkUtilities(callback) {
-				const notClosed: nodes.BracketNode[] = []
-				this.expressions.forEach(expr => walkExpr(expr, callback, notClosed))
-				return { notClosed }
-
-				function walkExpr(
-					expr: nodes.Expression,
-					callback: (node: nodes.Utility, important: boolean) => void,
-					notClosed: nodes.BracketNode[],
-					important = false,
-				) {
-					const type = expr.type
-					switch (type) {
-						case nodes.NodeType.ClassName:
-							important ||= expr.important
-							callback(expr, important)
-							break
-						case nodes.NodeType.ArbitraryClassname:
-						case nodes.NodeType.ArbitraryProperty:
-						case nodes.NodeType.ShortCss:
-							important ||= expr.important
-							if (!expr.closed) {
-								notClosed.push(expr)
-							}
-							callback(expr, important)
-							break
-						case nodes.NodeType.VariantSpan:
-							if (expr.child) {
-								walkExpr(expr.child, callback, notClosed, important)
-							}
-							break
-						case nodes.NodeType.Group:
-							important ||= expr.important
-							expr.expressions.forEach(expr => {
-								walkExpr(expr, callback, notClosed, important)
-							})
-							break
-					}
+					accept(expr, important, variantGroup)
 				}
 			},
 		}

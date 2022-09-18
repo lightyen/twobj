@@ -119,7 +119,6 @@ function validateTw({
 	kind,
 	state,
 	diagnosticOptions,
-
 	diagnostics,
 }: {
 	document: TextDocument
@@ -130,7 +129,11 @@ function validateTw({
 	diagnosticOptions: ServiceOptions["diagnostics"]
 	diagnostics: IDiagnostic[]
 }): boolean {
-	const { items, notClosed } = state.tw.context.parser.spread(text)
+	const program = state.tw.context.parser.createProgram(text)
+	program.walk((node, important, variantGroup) => {
+		// push
+	})
+
 	for (const e of notClosed) {
 		if (
 			!diagnostics.push({
@@ -149,11 +152,6 @@ function validateTw({
 
 	if (!checkVariants(diagnostics, items, document, offset, state)) {
 		return false
-	}
-
-	if (kind === "wrap") {
-		// TODO: check item '$e'
-		return true
 	}
 
 	for (let i = 0; i < items.length; i++) {
