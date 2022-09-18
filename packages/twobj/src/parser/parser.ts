@@ -111,20 +111,27 @@ export function createParser(separator = ":") {
 			getText() {
 				return source.slice(this.range[0], this.range[1])
 			},
-			walk(callback) {
+			walk(accept) {
 				// hover: const inRange = (node: nodes.Node) => position >= node.range[0] && position < node.range[1]
 				// complete: const inRange = (node: nodes.Node) => position >= node.range[0] && position <= node.range[1]
-				this.expressions.forEach(expr => {
-					walkExpr(expr, callback)
-				})
+				for (const expr of this.expressions) {
+					if (walkExpr(expr, accept) === false) {
+						break
+					}
+				}
 
 				return
 
-				function walkExpr(expr: nodes.Expression, callback: (node: nodes.Leaf) => void) {
+				function walkExpr(
+					expr: nodes.Expression,
+					accept: (node: nodes.Leaf) => boolean | void,
+				): boolean | void {
 					if (expr.type === nodes.NodeType.Group) {
-						expr.expressions.forEach(expr => {
-							walkExpr(expr, callback)
-						})
+						for (const e of expr.expressions) {
+							if (walkExpr(e, accept) === false) {
+								return false
+							}
+						}
 						return
 					}
 
@@ -132,21 +139,25 @@ export function createParser(separator = ":") {
 						const { variant, child } = expr
 						switch (variant.type) {
 							case nodes.NodeType.GroupVariant:
-								variant.expressions.forEach(expr => {
-									walkExpr(expr, callback)
-								})
+								for (const e of variant.expressions) {
+									if (walkExpr(e, accept) === false) {
+										return false
+									}
+								}
 								break
 							default:
-								callback(variant)
+								if (accept(variant) === false) {
+									return false
+								}
 								break
 						}
 						if (child) {
-							walkExpr(child, callback)
+							walkExpr(child, accept)
 						}
 						return
 					}
 
-					callback(expr)
+					accept(expr)
 				}
 			},
 			walkVariants(callback) {

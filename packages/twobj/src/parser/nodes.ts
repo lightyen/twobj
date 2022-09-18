@@ -152,7 +152,7 @@ export interface Program extends BaseNode {
 	type: NodeType.Program
 	source: string
 	expressions: Expression[]
-	walk(callback: (node: Leaf) => void): void
+	walk(accept: (node: Leaf) => boolean | void): void
 	walkVariants(callback: (node: Exclude<Variant, GroupVariant>) => void): void
 	walkUtilities(callback: (node: Exclude<Expression, Group | VariantSpan>, important: boolean) => void): {
 		notClosed: BracketNode[]
