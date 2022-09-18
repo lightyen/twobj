@@ -124,11 +124,13 @@ export function createParser(separator = ":") {
 
 				function walkExpr(
 					expr: nodes.Expression,
-					accept: (node: nodes.Leaf) => boolean | void,
+					accept: (node: nodes.Leaf, important: boolean) => boolean | void,
+					important = false,
 				): boolean | void {
 					if (expr.type === nodes.NodeType.Group) {
+						important ||= expr.important
 						for (const e of expr.expressions) {
-							if (walkExpr(e, accept) === false) {
+							if (walkExpr(e, accept, important) === false) {
 								return false
 							}
 						}
@@ -146,7 +148,7 @@ export function createParser(separator = ":") {
 								}
 								break
 							default:
-								if (accept(variant) === false) {
+								if (accept(variant, false) === false) {
 									return false
 								}
 								break
@@ -157,7 +159,8 @@ export function createParser(separator = ":") {
 						return
 					}
 
-					accept(expr)
+					important ||= expr.important
+					accept(expr, important)
 				}
 			},
 			walkVariants(callback) {

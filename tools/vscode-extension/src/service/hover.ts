@@ -1,4 +1,4 @@
-import { NodeType, parse_theme_val, renderThemePath, ThemeValueNode } from "twobj/parser"
+import { Node, NodeType, parse_theme_val, Program, renderThemePath, ThemeValueNode } from "twobj/parser"
 import vscode from "vscode"
 import { getEntryDescription } from "vscode-css-languageservice/lib/esm/languageFacts/entry"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -47,10 +47,9 @@ export default async function hover(
 					contents: [codes],
 				}
 			} else {
-				const hoverResult = state.tw.context.parser.hover(
-					token.value,
-					document.offsetAt(position) - token.start,
-				)
+				const program = state.tw.context.parser.createProgram(token.value)
+
+				const hoverResult = hoverProgram(program, document.offsetAt(position) - token.start)
 				if (!hoverResult) return undefined
 
 				const [start, end] = hoverResult.target.range
@@ -165,6 +164,16 @@ export default async function hover(
 		}
 
 		return undefined
+	}
+
+	function hoverProgram(program: Program, position: number) {
+		const inRange = (node: Node) => position >= node.range[0] && position < node.range[1]
+		program.walk(node => {
+			if (inRange(node)) {
+				node
+				return false
+			}
+		})
 	}
 }
 
