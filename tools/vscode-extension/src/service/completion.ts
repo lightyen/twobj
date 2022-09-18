@@ -1,5 +1,4 @@
 import * as culori from "culori"
-import type { SuggestResult } from "twobj/parser"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
 import { getCSSLanguageService } from "vscode-css-languageservice"
@@ -11,6 +10,59 @@ import { defaultLogger as console } from "~/common/logger"
 import type { ServiceOptions } from "~/shared"
 import type { ICompletionItem } from "~/typings/completion"
 import type { TailwindLoader } from "./tailwind"
+
+function inComment(source: string, position: number, [start = 0, end = source.length] = []): boolean {
+	const regexp = /(")|(')|(-\[)|(\/\/[^\r\n]*(?:[^\r\n]|$))|((?:\/\*).*?(?:\*\/|$))/gs
+	let match: RegExpExecArray | null
+	regexp.lastIndex = start
+	source = source.slice(0, end)
+	let strings: 1 | 2 | undefined
+
+	while ((match = regexp.exec(source))) {
+		const [, doubleQuote, singleQuote, bracket, lineComment, blockComment] = match
+		if (doubleQuote) {
+			if (!strings) {
+				strings = 1
+			} else {
+				strings = undefined
+			}
+		} else if (singleQuote) {
+			if (!strings) {
+				strings = 2
+			} else {
+				strings = undefined
+			}
+		} else if (bracket) {
+			const rb = parser.findRightBracket({
+				text: source,
+				start: regexp.lastIndex - 1,
+				end,
+				brackets: [91, 93],
+				comments: false,
+			})
+			regexp.lastIndex = rb ? rb + 1 : end
+		} else if (!strings && (lineComment || blockComment)) {
+			if (position >= match.index && position <= regexp.lastIndex) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+function completeProgram(program: parser.Program, position: number) {
+	const inRange = (node: parser.Node) => position >= node.range[0] && position <= node.range[1]
+	let _node: parser.Leaf | undefined
+	let _important = false
+	program.walk((node, important) => {
+		if (inRange(node)) {
+			_node = node
+			_important = important
+			return false
+		}
+	})
+	return _node == undefined ? undefined : { target: _node, important: _important }
+}
 
 export default function completion(
 	result: ExtractedToken | undefined,
@@ -62,7 +114,7 @@ interface CompletionFeature {
 		offset: number,
 		text: string,
 		position: number,
-		suggestion: SuggestResult,
+		target: parser.Leaf | undefined,
 		state: TailwindLoader,
 		options: ServiceOptions,
 	): ICompletionItem[] | null | undefined
@@ -111,21 +163,23 @@ function twCompletion(
 	state: TailwindLoader,
 	options: ServiceOptions,
 ): vscode.CompletionList<ICompletionItem> {
-	const suggestion = state.tw.context.parser.suggest(text, position)
-	if (suggestion.inComment) return new vscode.CompletionList<ICompletionItem>(undefined)
+	if (inComment(text, position)) {
+		return new vscode.CompletionList<ICompletionItem>(undefined)
+	}
+	const suggestion = completeProgram(state.tw.context.parser.createProgram(text), position)
 	let items: ICompletionItem[] = []
 	applyFeatures(variantCompletion, classnameCompletion, arbitraryPropertyCompletion, arbitraryVariantValueCompletion)
 	return new vscode.CompletionList<ICompletionItem>(items)
 	function applyFeatures(...features: CompletionFeature[]) {
 		for (const fn of features) {
-			const ret = fn(document, kind, offset, text, position, suggestion, state, options)
+			const ret = fn(document, kind, offset, text, position, suggestion?.target, state, options)
 			if (ret == undefined) continue
 			items = items.concat(ret)
 		}
 	}
 }
 
-const classnameCompletion: CompletionFeature = (document, kind, offset, text, position, { target }, state) => {
+const classnameCompletion: CompletionFeature = (document, kind, offset, text, position, target, state) => {
 	if (kind === "wrap") return
 
 	if (!target) return state.provideClassCompletionList()
@@ -212,7 +266,7 @@ const variantCompletion: CompletionFeature = (
 	offset,
 	text,
 	position,
-	{ target, variants },
+	target,
 	state,
 	{ preferVariantWithParentheses },
 ) => {
@@ -297,12 +351,6 @@ const variantCompletion: CompletionFeature = (
 
 	const [a, b] = target.range
 	const nextCharacter = text.charCodeAt(position)
-	const userVariants = new Set(
-		variants
-			.filter((v): v is parser.SimpleVariant => v.type === parser.NodeType.SimpleVariant)
-			.map(v => v.id.getText()),
-	)
-	items = items.filter(item => !userVariants.has(item.label.slice(0, -state.separator.length)))
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
 		for (const item of items) callback(item)
 	}
@@ -464,7 +512,7 @@ function getScssSelectorCompletionList(
 	})
 }
 
-const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offset, text, position, { target }) => {
+const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offset, text, position, target) => {
 	if (kind === "wrap") return
 	if (!target) return
 	if (target.type !== parser.NodeType.ArbitrarySelector) return
@@ -474,7 +522,7 @@ const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offs
 	return getScssSelectorCompletionList(document, position, offset, a, value)
 }
 
-const arbitraryPropertyCompletion: CompletionFeature = (document, kind, offset, text, position, { target }, state) => {
+const arbitraryPropertyCompletion: CompletionFeature = (document, kind, offset, text, position, target, state) => {
 	if (kind === "wrap") return
 	if (target) {
 		const [a, b] = target.range

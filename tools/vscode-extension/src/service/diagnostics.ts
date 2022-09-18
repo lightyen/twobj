@@ -130,7 +130,7 @@ function validateTw({
 	diagnosticOptions: ServiceOptions["diagnostics"]
 	diagnostics: IDiagnostic[]
 }): boolean {
-	const { items, emptyGroup, emptyVariants, notClosed } = state.tw.context.parser.spread(text)
+	const { items, notClosed } = state.tw.context.parser.spread(text)
 	for (const e of notClosed) {
 		if (
 			!diagnostics.push({
@@ -147,7 +147,7 @@ function validateTw({
 		}
 	}
 
-	if (!checkVariants(diagnostics, items, document, offset, diagnosticOptions.emptyChecking, state)) {
+	if (!checkVariants(diagnostics, items, document, offset, state)) {
 		return false
 	}
 
@@ -167,21 +167,14 @@ function validateTw({
 				break
 			}
 			case parser.NodeType.ArbitraryClassname: {
-				const ans = checkArbitraryClassname(
-					item.target,
-					document,
-					text,
-					offset,
-					diagnosticOptions.emptyChecking,
-					state,
-				)
+				const ans = checkArbitraryClassname(item.target, document, text, offset, state)
 				for (let i = 0; i < ans.length; i++) {
 					if (!diagnostics.push(ans[i])) return false
 				}
 				break
 			}
 			case parser.NodeType.ArbitraryProperty: {
-				const ans = checkArbitraryProperty(item.target, document, offset, diagnosticOptions.emptyChecking)
+				const ans = checkArbitraryProperty(item.target, document, offset)
 				for (let i = 0; i < ans.length; i++) {
 					if (!diagnostics.push(ans[i])) return false
 				}
@@ -271,44 +264,6 @@ function validateTw({
 		}
 	}
 
-	for (let i = 0; i < emptyVariants.length; i++) {
-		const item = emptyVariants[i]
-		if (diagnosticOptions.emptyChecking) {
-			if (
-				!diagnostics.push({
-					source: DIAGNOSTICS_ID,
-					message: `Empty block.`,
-					range: new vscode.Range(
-						document.positionAt(offset + item.range[1]),
-						document.positionAt(offset + item.range[1] + 1),
-					),
-					severity: vscode.DiagnosticSeverity.Warning,
-				})
-			) {
-				return false
-			}
-		}
-	}
-
-	for (let i = 0; i < emptyGroup.length; i++) {
-		const item = emptyGroup[i]
-		if (diagnosticOptions.emptyChecking) {
-			if (
-				!diagnostics.push({
-					source: DIAGNOSTICS_ID,
-					message: `Empty block statement.`,
-					range: new vscode.Range(
-						document.positionAt(offset + item.range[0]),
-						document.positionAt(offset + item.range[1]),
-					),
-					severity: vscode.DiagnosticSeverity.Warning,
-				})
-			) {
-				return false
-			}
-		}
-	}
-
 	return true
 }
 
@@ -317,26 +272,10 @@ function checkVariants(
 	items: SpreadedItem[],
 	document: TextDocument,
 	offset: number,
-	emptyChecking: boolean,
 	state: TailwindLoader,
 ) {
 	for (const node of getVariantMap(items).values()) {
 		if (node.type === parser.NodeType.ArbitrarySelector || node.type === parser.NodeType.ArbitraryVariant) {
-			if (emptyChecking && node.selector.getText().trim() === "") {
-				if (
-					!diagnostics.push({
-						source: DIAGNOSTICS_ID,
-						message: `Empty block statement.`,
-						range: new vscode.Range(
-							document.positionAt(offset + node.selector.range[0] - 1),
-							document.positionAt(offset + node.selector.range[1] + 1),
-						),
-						severity: vscode.DiagnosticSeverity.Warning,
-					})
-				) {
-					return false
-				}
-			}
 			continue
 		}
 
@@ -397,23 +336,9 @@ function checkArbitraryClassname(
 	document: TextDocument,
 	text: string,
 	offset: number,
-	emptyChecking: boolean,
 	state: TailwindLoader,
 ) {
 	const result: IDiagnostic[] = []
-	if (emptyChecking) {
-		if (item.expr && item.expr.value.trim() === "") {
-			result.push({
-				source: DIAGNOSTICS_ID,
-				message: `forgot something?`,
-				range: new vscode.Range(
-					document.positionAt(offset + item.expr.range[0] - 1),
-					document.positionAt(offset + item.expr.range[1] + 1),
-				),
-				severity: vscode.DiagnosticSeverity.Warning,
-			})
-		}
-	}
 
 	let prefix = item.prefix.getText()
 	if (item.expr == undefined) {
@@ -497,26 +422,10 @@ function checkArbitraryClassname(
 	return result
 }
 
-function checkArbitraryProperty(
-	item: parser.ArbitraryProperty,
-	document: TextDocument,
-	offset: number,
-	emptyChecking: boolean,
-) {
+function checkArbitraryProperty(item: parser.ArbitraryProperty, document: TextDocument, offset: number) {
 	const result: IDiagnostic[] = []
 	let prop = item.decl.getText().trim()
 	if (!prop) {
-		if (emptyChecking) {
-			result.push({
-				source: DIAGNOSTICS_ID,
-				message: `forgot something?`,
-				range: new vscode.Range(
-					document.positionAt(offset + item.range[0]),
-					document.positionAt(offset + item.range[1]),
-				),
-				severity: vscode.DiagnosticSeverity.Warning,
-			})
-		}
 		return result
 	}
 

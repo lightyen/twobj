@@ -69,7 +69,6 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		rootFontSize: 16,
 		diagnostics: {
 			enabled: true,
-			emptyChecking: true,
 		},
 		documentColors: false,
 		hoverColorHint: "none",

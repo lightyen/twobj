@@ -13,7 +13,6 @@ export interface Settings {
 	fallbackDefaultConfig: boolean
 	diagnostics: {
 		enabled: boolean
-		emptyChecking: boolean
 	}
 	rootFontSize: number
 	logLevel: "none" | "error" | "warning" | "info" | "debug" | "trace"

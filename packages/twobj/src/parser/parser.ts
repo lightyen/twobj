@@ -28,47 +28,6 @@ type TokenU = string
 type TokenV = [string, TokenExpr?]
 export type TokenExpr = TokenV | TokenU | TokenExpr[]
 
-export interface SpreadedItem {
-	target: nodes.Classname | nodes.ArbitraryClassname | nodes.ArbitraryProperty | nodes.ShortCss
-	value: string
-	variants: nodes.Variant[]
-	important: boolean
-}
-
-export interface SpreadResult {
-	items: SpreadedItem[]
-	emptyGroup: nodes.Group[]
-	emptyVariants: nodes.VariantSpan[]
-	notClosed: nodes.BracketNode[]
-}
-
-export interface HoverResultVariant {
-	type: "variant"
-	target: nodes.Variant
-}
-
-export interface HoverResultClassName {
-	type: "classname"
-	target: nodes.Classname | nodes.ArbitraryClassname | nodes.ArbitraryProperty
-	value: string
-	variants: nodes.Variant[]
-	important: boolean
-}
-
-export type HoverResult = HoverResultVariant | HoverResultClassName
-
-export interface SuggestResult {
-	inComment: boolean
-	variants: nodes.Variant[]
-	target?:
-		| nodes.Classname
-		| nodes.ArbitraryClassname
-		| nodes.ArbitraryProperty
-		| nodes.SimpleVariant
-		| nodes.ArbitrarySelector
-		| nodes.ArbitraryVariant
-}
-
 export function createParser(separator = ":") {
 	if (!validSeparator(separator)) {
 		console.warn("[warn] invalid separator:", separator)

@@ -1,4 +1,15 @@
-import { Node, NodeType, parse_theme_val, Program, renderThemePath, ThemeValueNode } from "twobj/parser"
+import {
+	ArbitrarySelector,
+	ArbitraryVariant,
+	Leaf,
+	Node,
+	NodeType,
+	parse_theme_val,
+	Program,
+	renderThemePath,
+	SimpleVariant,
+	ThemeValueNode,
+} from "twobj/parser"
 import vscode from "vscode"
 import { getEntryDescription } from "vscode-css-languageservice/lib/esm/languageFacts/entry"
 import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/extractors/types"
@@ -59,7 +70,7 @@ export default async function hover(
 					document.positionAt(token.start + end),
 				)
 
-				if (hoverResult.type === "variant") {
+				if (isVariant(hoverResult.target)) {
 					const header = new vscode.MarkdownString()
 					if (hoverResult.target.type === NodeType.SimpleVariant) {
 						const variant = hoverResult.target.id.getText()
@@ -168,12 +179,26 @@ export default async function hover(
 
 	function hoverProgram(program: Program, position: number) {
 		const inRange = (node: Node) => position >= node.range[0] && position < node.range[1]
-		program.walk(node => {
+		let _node: Leaf | undefined
+		let _important = false
+		program.walk((node, important) => {
 			if (inRange(node)) {
-				node
+				_node = node
+				_important = important
 				return false
 			}
 		})
+		return _node == undefined ? undefined : { target: _node, important: _important }
+	}
+
+	function isVariant(node: Leaf): node is SimpleVariant | ArbitraryVariant | ArbitrarySelector {
+		switch (node.type) {
+			case NodeType.SimpleVariant:
+			case NodeType.ArbitraryVariant:
+			case NodeType.ArbitrarySelector:
+				return true
+		}
+		return false
 	}
 }
 

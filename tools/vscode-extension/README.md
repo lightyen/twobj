@@ -35,8 +35,7 @@ pnpm install && pnpm package
   "twobj.colorDecorators": "inherit", // inherit from "editor.colorDecorators"
   "twobj.references": true,
   "twobj.diagnostics": {
-    "enabled": true,
-    "emptyChecking": true,
+    "enabled": true
   },
   "twobj.preferVariantWithParentheses": false,
   "twobj.fallbackDefaultConfig": true,
