@@ -667,7 +667,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 						variant = arbitrarySelector(node.variant)
 						break
 					case NodeType.GroupVariant:
-						variant = groupVariant(node.variant)
+						variant = wrapGroupVariant(node.variant)
 						break
 				}
 				if (node.child) {
@@ -742,27 +742,6 @@ export function createContext(config: ResolvedConfigJS): Context {
 			}
 		}
 		return variant
-	}
-
-	function groupVariant(node: GroupVariant): VariantSpec {
-		return mergeVariants(...node.expressions.map(expression))
-	}
-
-	function variantSpan({ variant, child }: VariantSpan): VariantSpec {
-		if (!child) {
-			return wrap(variant)
-		}
-		return composeVariants(wrap(variant), expression(child))
-	}
-
-	function expression(expr: Expression) {
-		if (expr.type === NodeType.VariantSpan) {
-			return variantSpan(expr)
-		}
-		if (isVariant(expr)) {
-			return wrap(expr)
-		}
-		return undefined
 	}
 
 	function arbitrarySelector(node: ArbitrarySelector) {
@@ -884,16 +863,42 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return result
 	}
 
+	function wrapExpression(expr: Expression, variantGroup = false) {
+		if (expr.type === NodeType.VariantSpan) {
+			return wrapVariantSpan(expr, variantGroup)
+		}
+		if (variantGroup && expr.type === NodeType.Group) {
+			return mergeVariants(...expr.expressions.map(expr => wrapExpression(expr, true)))
+		}
+		return undefined
+	}
+
+	function wrapGroupVariant(node: GroupVariant): VariantSpec {
+		return mergeVariants(...node.expressions.map(expr => wrapExpression(expr, true)))
+	}
+
+	function wrapVariantSpan({ variant, child }: VariantSpan, variantGroup = false): VariantSpec {
+		if (!child) {
+			return wrap(variant)
+		}
+		return composeVariants(
+			wrap(variant),
+			wrapExpression(child, variantGroup || variant.type === NodeType.GroupVariant),
+		)
+	}
+
 	function wrap(variants: string | TemplateStringsArray | Variant, ...args: Variant[]): VariantSpec {
 		if (variants == undefined) {
 			return (css = {}) => css
 		}
+
 		if (typeof variants === "string") {
-			return mergeVariants(...parser.createProgram(variants).expressions.map(expression))
+			return mergeVariants(...parser.createProgram(variants).expressions.map(expr => wrapExpression(expr)))
 		}
+
 		if (!isVariant(variants)) {
 			variants = variants[0]
-			return mergeVariants(...parser.createProgram(variants).expressions.map(expression))
+			return mergeVariants(...parser.createProgram(variants).expressions.map(expr => wrapExpression(expr)))
 		}
 
 		args.unshift(variants)
@@ -907,7 +912,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 				}
 
 				if (node.type === NodeType.GroupVariant) {
-					return groupVariant(node)
+					return wrapGroupVariant(node)
 				}
 
 				if (node.type === NodeType.ArbitrarySelector) {
