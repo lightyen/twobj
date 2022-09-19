@@ -629,19 +629,15 @@ const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (f
 			if (
 				arr.every(v => {
 					const params = parser.splitCssParams(v.value)
-					const parameters = params.filter((p: string): p is string => typeof p === "string")
-					if (params.length !== parameters.length) {
-						return false
-					}
-					switch (parameters.length) {
+					switch (params.length) {
 						case 1:
-							return one(parameters[0])
+							return one(params[0])
 						case 2:
-							return two(parameters[0], parameters[1])
+							return two(params[0], params[1])
 						case 3:
-							return three(parameters[0], parameters[1], parameters[2])
+							return three(params[0], params[1], params[2])
 						case 4:
-							return four(parameters[0], parameters[1], parameters[2], parameters[3])
+							return four(params[0], params[1], params[2], params[3])
 						default:
 							return false
 					}
@@ -653,23 +649,26 @@ const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (f
 		},
 	}
 
-	function isX(value: string) {
+	function isX(value: parser.Param) {
 		return value === "left" || value === "right"
 	}
 
-	function isY(value: string) {
+	function isY(value: parser.Param) {
 		return value === "top" || value === "bottom"
 	}
 
-	function isCenter(value: string) {
+	function isCenter(value: parser.Param) {
 		return value === "center"
 	}
 
-	function isValue(value: string) {
+	function isValue(value: parser.Param) {
+		if (typeof value !== "string") {
+			value = value.getText()
+		}
 		return length.handleValue(value) != undefined || percentage.handleValue(value) != undefined
 	}
 
-	function type(value: string): "x" | "y" | "center" | "value" | "unknown" {
+	function type(value: parser.Param): "x" | "y" | "center" | "value" | "unknown" {
 		if (isX(value)) {
 			return "x"
 		}
@@ -685,11 +684,11 @@ const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (f
 		return "unknown"
 	}
 
-	function one(value: string): boolean {
+	function one(value: parser.Param): boolean {
 		return type(value) !== "unknown"
 	}
 
-	function two(a: string, b: string): boolean {
+	function two(a: parser.Param, b: parser.Param): boolean {
 		const [first, second] = [type(a), type(b)]
 		if (first === "unknown" || second === "unknown") {
 			return false
@@ -710,7 +709,7 @@ const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (f
 		return true
 	}
 
-	function three(a: string, b: string, c: string): boolean {
+	function three(a: parser.Param, b: parser.Param, c: parser.Param): boolean {
 		const [first, second, third] = [type(a), type(b), type(c)]
 		if (first === "unknown" || second === "unknown" || third === "unknown") {
 			return false
@@ -745,7 +744,7 @@ const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (f
 		return true
 	}
 
-	function four(a: string, b: string, c: string, d: string): boolean {
+	function four(a: parser.Param, b: parser.Param, c: parser.Param, d: parser.Param): boolean {
 		const [first, second, third, fourth] = [type(a), type(b), type(c), type(d)]
 		if (first === "unknown" || second === "unknown" || third === "unknown" || fourth === "unknown") {
 			return false
@@ -788,15 +787,16 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 			if (
 				arr.every(v => {
 					const params = parser.splitCssParams(v.value)
-					const parameters = params.filter((p: string): p is string => typeof p === "string")
-					if (params.length !== parameters.length) {
-						return false
-					}
-					switch (parameters.length) {
+					// console.log(params)
+					// const parameters = params.filter((p: string): p is string => typeof p === "string")
+					// if (params.length !== parameters.length) {
+					// 	return false
+					// }
+					switch (params.length) {
 						case 1:
-							return one(parameters[0])
+							return one(params[0])
 						case 2:
-							return two(parameters[0], parameters[1])
+							return two(params[0], params[1])
 						default:
 							return false
 					}
@@ -808,19 +808,22 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 		},
 	}
 
-	function isAuto(value: string) {
+	function isAuto(value: parser.Param) {
 		return value === "auto"
 	}
 
-	function isKeyword(value: string) {
+	function isKeyword(value: parser.Param) {
 		return value === "contain" || value === "cover"
 	}
 
-	function isValue(value: string) {
+	function isValue(value: parser.Param) {
+		if (typeof value !== "string") {
+			value = value.getText()
+		}
 		return length.handleValue(value) != undefined || percentage.handleValue(value) != undefined
 	}
 
-	function type(value: string): "auto" | "keyword" | "value" | "unknown" {
+	function type(value: parser.Param): "auto" | "keyword" | "value" | "unknown" {
 		if (isAuto(value)) {
 			return "auto"
 		}
@@ -833,11 +836,11 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 		return "unknown"
 	}
 
-	function one(value: string): boolean {
+	function one(value: parser.Param): boolean {
 		return type(value) !== "unknown"
 	}
 
-	function two(a: string, b: string): boolean {
+	function two(a: parser.Param, b: parser.Param): boolean {
 		const [first, second] = [type(a), type(b)]
 		if (first === "unknown" || second === "unknown") {
 			return false

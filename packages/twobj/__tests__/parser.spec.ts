@@ -10,23 +10,31 @@ test("getUnitFromNumberFunction", async () => {
 })
 
 test("parseColor", async () => {
-	expect(parser.parseColor("red")).toEqual({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
-	expect(parser.parseColor("#ff0000")).toEqual({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })
-	expect(parser.parseColor("rgb(41, 3, 120)")).toEqual({ fn: "rgb", params: ["41", "3", "120"], range: [0, 15] })
-	expect(parser.parseColor("rgb(41 3 120)")).toEqual({ fn: "rgb", params: ["41", "3", "120"], range: [0, 13] })
-	expect(parser.parseColor("hsl(33 93% 40%)")).toEqual({ fn: "hsl", params: ["33", "93%", "40%"], range: [0, 15] })
-	expect(parser.parseColor("hsl(a b% c%)")).toEqual({ fn: "hsl", params: ["a", "b%", "c%"], range: [0, 12] })
-	expect(parser.parseColor("hsl(var(--color))")).toEqual({
+	expect(parser.parseColor("red")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
+	expect(parser.parseColor("#ff0000")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })
+	expect(parser.parseColor("rgb(41, 3, 120)")).toMatchObject({
+		fn: "rgb",
+		params: ["41", "3", "120"],
+		range: [0, 15],
+	})
+	expect(parser.parseColor("rgb(41 3 120)")).toMatchObject({ fn: "rgb", params: ["41", "3", "120"], range: [0, 13] })
+	expect(parser.parseColor("hsl(33 93% 40%)")).toMatchObject({
+		fn: "hsl",
+		params: ["33", "93%", "40%"],
+		range: [0, 15],
+	})
+	expect(parser.parseColor("hsl(a b% c%)")).toMatchObject({ fn: "hsl", params: ["a", "b%", "c%"], range: [0, 12] })
+	expect(parser.parseColor("hsl(var(--color))")).toMatchObject({
 		fn: "hsl",
 		params: [{ fn: "var", params: ["--color"], range: [4, 16] }],
 		range: [0, 17],
 	})
-	expect(parser.parseColor("var(--color)")).toEqual({ fn: "var", params: ["--color"], range: [0, 12] })
+	expect(parser.parseColor("var(--color)")).toMatchObject({ fn: "var", params: ["--color"], range: [0, 12] })
 })
 
 test("splitCssParams", async () => {
 	const source = "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
-	expect(parser.splitCssParams(source)).toEqual([
+	expect(parser.splitCssParams(source)).toMatchObject([
 		"0",
 		"20px",
 		"25px",

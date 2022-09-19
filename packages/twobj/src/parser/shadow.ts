@@ -18,25 +18,27 @@ export function isValidShadow(value: string): boolean {
 	let spread = ""
 	let color: Param | undefined
 
-	for (const part of params) {
-		if (typeof part === "string") {
-			if (!keyword && keywords.find(v => v === part)) {
-				keyword = part
-				continue
-			}
+	for (let part of params) {
+		if (typeof part !== "string") {
+			part = part.getText()
+		}
 
-			if (isValidLength(part)) {
-				if (!x) {
-					x = part
-				} else if (!y) {
-					y = part
-				} else if (!blur) {
-					blur = part
-				} else if (!spread) {
-					spread = part
-				}
-				continue
+		if (!keyword && keywords.find(v => v === part)) {
+			keyword = part
+			continue
+		}
+
+		if (isValidLength(part)) {
+			if (!x) {
+				x = part
+			} else if (!y) {
+				y = part
+			} else if (!blur) {
+				blur = part
+			} else if (!spread) {
+				spread = part
 			}
+			continue
 		}
 
 		if (color == undefined) {

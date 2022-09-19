@@ -6,6 +6,7 @@ export interface ParamObject {
 	fn: string
 	params: Param[]
 	range: [number, number]
+	getText(): string
 }
 
 export function parseColor(css: string): ParamObject | undefined {
@@ -53,6 +54,9 @@ function parseHex(css: string): ParamObject | undefined {
 			fn: "rgb",
 			params: [r.toString(), g.toString(), b.toString()],
 			range: [match.index, match.index + text.length],
+			getText() {
+				return css.slice(this.range[0], this.range[1])
+			},
 		}
 		if (a) {
 			color.params.push((parseInt(a) / 255).toString())
@@ -69,6 +73,9 @@ function parseHex(css: string): ParamObject | undefined {
 			fn: "rgb",
 			params: [r.toString(), g.toString(), b.toString()],
 			range: [match.index, match.index + text.length],
+			getText() {
+				return css.slice(this.range[0], this.range[1])
+			},
 		}
 		if (A) {
 			color.params.push((parseInt(A + A) / 255).toString())
@@ -126,7 +133,10 @@ export function splitCssParams(source: string, [start = 0, end = source.length] 
 					fn,
 					params,
 					range: [match.index, end],
-				})
+					getText() {
+						return source.slice(this.range[0], this.range[1])
+					},
+				} as ParamObject)
 				return result
 			}
 			const params = splitCssParams(source, [regexp.lastIndex, rb])
@@ -137,7 +147,10 @@ export function splitCssParams(source: string, [start = 0, end = source.length] 
 				fn,
 				params,
 				range: [match.index, rb + 1],
-			})
+				getText() {
+					return source.slice(this.range[0], this.range[1])
+				},
+			} as ParamObject)
 			regexp.lastIndex = rb + 1
 		} else if (word) {
 			result.push(word)
