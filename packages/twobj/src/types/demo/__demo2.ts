@@ -98,11 +98,9 @@ const config: ConfigJS = {
 					]
 				},
 			})
-			matchVariant({
-				tab(value) {
-					if (value == null) return "& > *"
-					return `&.${e(value ?? "")} > *`
-				},
+			matchVariant("tab", ({ value }) => {
+				if (!value) return "& > *"
+				return `&.${e(value)} > *`
 			})
 		},
 		function ({ addVariant }) {

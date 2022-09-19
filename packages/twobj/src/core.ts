@@ -251,34 +251,37 @@ export function createContext(config: ResolvedConfigJS): Context {
 
 	function addVariant(
 		variantName: string,
-		variantDesc: string | string[],
+		variantDesc: string | (() => string) | Array<string | (() => string)>,
 		options: {
 			postModifier?: PostModifier
 		} = {},
 	): void {
 		if (variantMap.has(variantName)) throw Error(`variant '${variantName} is duplicated.'`)
 		variantDesc = toArray(variantDesc)
-		if (variantDesc.some(value => typeof value !== "string"))
-			throw Error(`variant description type should be string or string[].`)
-		variantDesc = variantDesc.map(v => v.replace(/:merge\((.*?)\)/g, "$1"))
-		variantMap.set(variantName, createVariantSpec(variantDesc, options.postModifier))
+		const desc = variantDesc.map(variantFunc => {
+			if (typeof variantFunc === "function") {
+				variantFunc = variantFunc()
+			}
+			return variantFunc.replace(/:merge\((.*?)\)/g, "$1")
+		})
+		variantMap.set(variantName, createVariantSpec(desc, options.postModifier))
 	}
 
 	function matchVariant(
-		variants: Record<string, (value: string) => string | string[]>,
+		variantName: string,
+		variantDesc: (options: { value: string }) => string | string[],
 		options: {
 			values?: Record<string, string>
 			postModifier?: PostModifier
 		} = {},
 	): void {
-		for (const key in variants) {
-			for (const [k, v] of Object.entries(options.values ?? {})) {
-				addVariant(`${key}-${k}`, variants[key](v), { postModifier: options.postModifier })
-			}
-			arbitraryVariantMap.set(key, value =>
-				createVariantSpec(toArray(variants[key](value)), options.postModifier),
-			)
+		for (const [key, value] of Object.entries(options.values ?? {})) {
+			addVariant(`${variantName}-${key}`, variantDesc({ value }), { postModifier: options.postModifier })
 		}
+
+		arbitraryVariantMap.set(variantName, value =>
+			createVariantSpec(toArray(variantDesc({ value })), options.postModifier),
+		)
 	}
 
 	function createVariantSpec(variantDesc: string[], postModifier?: PostModifier): VariantSpec {

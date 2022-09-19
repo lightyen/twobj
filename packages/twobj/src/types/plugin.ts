@@ -63,7 +63,7 @@ export interface UserPluginOptions {
 	/** Register a custom variant. */
 	addVariant(
 		variantName: string,
-		variantDesc: string | string[],
+		variantDesc: string | (() => string) | Array<string | (() => string)>,
 		options?: {
 			postModifier?: PostModifier
 		},
@@ -71,7 +71,8 @@ export interface UserPluginOptions {
 
 	/** Register an arbitrary variant */
 	matchVariant(
-		variants: Record<string, (value?: string) => string | string[]>,
+		variantName: string,
+		variantDesc: (options: { value: string }) => string | string[],
 		options?: {
 			values?: ConfigObject
 			postModifier?: VariantSpec
