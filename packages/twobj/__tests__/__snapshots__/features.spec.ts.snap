@@ -9537,6 +9537,12 @@ Object {
 }
 `;
 
+exports[`snapshots: basis-inherit 1`] = `
+Object {
+  "flexBasis": "inherit",
+}
+`;
+
 exports[`snapshots: basis-px 1`] = `
 Object {
   "flexBasis": "1px",
@@ -16808,6 +16814,14 @@ Object {
 }
 `;
 
+exports[`snapshots: border-spacing-inherit 1`] = `
+Object {
+  "--tw-border-spacing-x": "inherit",
+  "--tw-border-spacing-y": "inherit",
+  "borderSpacing": "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
+}
+`;
+
 exports[`snapshots: border-spacing-px 1`] = `
 Object {
   "--tw-border-spacing-x": "1px",
@@ -17054,6 +17068,13 @@ Object {
 }
 `;
 
+exports[`snapshots: border-spacing-x-inherit 1`] = `
+Object {
+  "--tw-border-spacing-x": "inherit",
+  "borderSpacing": "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
+}
+`;
+
 exports[`snapshots: border-spacing-x-px 1`] = `
 Object {
   "--tw-border-spacing-x": "1px",
@@ -17295,6 +17316,13 @@ Object {
 exports[`snapshots: border-spacing-y-96 1`] = `
 Object {
   "--tw-border-spacing-y": "24rem",
+  "borderSpacing": "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
+}
+`;
+
+exports[`snapshots: border-spacing-y-inherit 1`] = `
+Object {
+  "--tw-border-spacing-y": "inherit",
   "borderSpacing": "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
 }
 `;
@@ -22470,6 +22498,12 @@ Object {
 }
 `;
 
+exports[`snapshots: bottom-inherit 1`] = `
+Object {
+  "bottom": "inherit",
+}
+`;
+
 exports[`snapshots: bottom-px 1`] = `
 Object {
   "bottom": "1px",
@@ -24713,6 +24747,12 @@ Object {
 }
 `;
 
+exports[`snapshots: cursor-inherit 1`] = `
+Object {
+  "cursor": "inherit",
+}
+`;
+
 exports[`snapshots: cursor-move 1`] = `
 Object {
   "cursor": "move",
@@ -26312,6 +26352,12 @@ Object {
 exports[`snapshots: delay-1000 1`] = `
 Object {
   "transitionDelay": "1000ms",
+}
+`;
+
+exports[`snapshots: delay-inherit 1`] = `
+Object {
+  "transitionDelay": "inherit",
 }
 `;
 
@@ -28375,6 +28421,12 @@ Object {
 }
 `;
 
+exports[`snapshots: duration-inherit 1`] = `
+Object {
+  "transitionDuration": "inherit",
+}
+`;
+
 exports[`snapshots: ease-in 1`] = `
 Object {
   "transitionTimingFunction": "cubic-bezier(0.4, 0, 1, 1)",
@@ -28384,6 +28436,12 @@ Object {
 exports[`snapshots: ease-in-out 1`] = `
 Object {
   "transitionTimingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
+}
+`;
+
+exports[`snapshots: ease-inherit 1`] = `
+Object {
+  "transitionTimingFunction": "inherit",
 }
 `;
 
@@ -29800,6 +29858,12 @@ Object {
 exports[`snapshots: flex-col-reverse 1`] = `
 Object {
   "flexDirection": "column-reverse",
+}
+`;
+
+exports[`snapshots: flex-inherit 1`] = `
+Object {
+  "flex": "inherit",
 }
 `;
 
@@ -31945,6 +32009,12 @@ Object {
 }
 `;
 
+exports[`snapshots: gap-inherit 1`] = `
+Object {
+  "gap": "inherit",
+}
+`;
+
 exports[`snapshots: gap-px 1`] = `
 Object {
   "gap": "1px",
@@ -32152,6 +32222,12 @@ Object {
 exports[`snapshots: gap-x-96 1`] = `
 Object {
   "columnGap": "24rem",
+}
+`;
+
+exports[`snapshots: gap-x-inherit 1`] = `
+Object {
+  "columnGap": "inherit",
 }
 `;
 
@@ -32365,6 +32441,12 @@ Object {
 }
 `;
 
+exports[`snapshots: gap-y-inherit 1`] = `
+Object {
+  "rowGap": "inherit",
+}
+`;
+
 exports[`snapshots: gap-y-px 1`] = `
 Object {
   "rowGap": "1px",
@@ -32550,6 +32632,12 @@ Object {
 exports[`snapshots: grow-0 1`] = `
 Object {
   "flexGrow": "0",
+}
+`;
+
+exports[`snapshots: grow-inherit 1`] = `
+Object {
+  "flexGrow": "inherit",
 }
 `;
 
@@ -32865,6 +32953,12 @@ Object {
 }
 `;
 
+exports[`snapshots: h-inherit 1`] = `
+Object {
+  "height": "inherit",
+}
+`;
+
 exports[`snapshots: h-max 1`] = `
 Object {
   "height": "max-content",
@@ -33138,6 +33232,12 @@ Object {
 exports[`snapshots: indent-96 1`] = `
 Object {
   "textIndent": "24rem",
+}
+`;
+
+exports[`snapshots: indent-inherit 1`] = `
+Object {
+  "textIndent": "inherit",
 }
 `;
 
@@ -33555,6 +33655,15 @@ Object {
 }
 `;
 
+exports[`snapshots: inset-inherit 1`] = `
+Object {
+  "bottom": "inherit",
+  "left": "inherit",
+  "right": "inherit",
+  "top": "inherit",
+}
+`;
+
 exports[`snapshots: inset-px 1`] = `
 Object {
   "bottom": "1px",
@@ -33855,6 +33964,13 @@ exports[`snapshots: inset-x-full 1`] = `
 Object {
   "left": "100%",
   "right": "100%",
+}
+`;
+
+exports[`snapshots: inset-x-inherit 1`] = `
+Object {
+  "left": "inherit",
+  "right": "inherit",
 }
 `;
 
@@ -34159,6 +34275,13 @@ Object {
 }
 `;
 
+exports[`snapshots: inset-y-inherit 1`] = `
+Object {
+  "bottom": "inherit",
+  "top": "inherit",
+}
+`;
+
 exports[`snapshots: inset-y-px 1`] = `
 Object {
   "bottom": "1px",
@@ -34369,6 +34492,12 @@ Object {
 exports[`snapshots: leading-10 1`] = `
 Object {
   "lineHeight": "2.5rem",
+}
+`;
+
+exports[`snapshots: leading-inherit 1`] = `
+Object {
+  "lineHeight": "inherit",
 }
 `;
 
@@ -34660,6 +34789,12 @@ Object {
 }
 `;
 
+exports[`snapshots: left-inherit 1`] = `
+Object {
+  "left": "inherit",
+}
+`;
+
 exports[`snapshots: left-px 1`] = `
 Object {
   "left": "1px",
@@ -34688,6 +34823,12 @@ Object {
 exports[`snapshots: list-disc 1`] = `
 Object {
   "listStyleType": "disc",
+}
+`;
+
+exports[`snapshots: list-inherit 1`] = `
+Object {
+  "listStyleType": "inherit",
 }
 `;
 
@@ -34931,6 +35072,12 @@ Object {
 }
 `;
 
+exports[`snapshots: m-inherit 1`] = `
+Object {
+  "margin": "inherit",
+}
+`;
+
 exports[`snapshots: m-px 1`] = `
 Object {
   "margin": "1px",
@@ -35153,6 +35300,12 @@ Object {
 }
 `;
 
+exports[`snapshots: max-h-inherit 1`] = `
+Object {
+  "maxHeight": "inherit",
+}
+`;
+
 exports[`snapshots: max-h-max 1`] = `
 Object {
   "maxHeight": "max-content",
@@ -35228,6 +35381,12 @@ Object {
 exports[`snapshots: max-w-full 1`] = `
 Object {
   "maxWidth": "100%",
+}
+`;
+
+exports[`snapshots: max-w-inherit 1`] = `
+Object {
+  "maxWidth": "inherit",
 }
 `;
 
@@ -35525,6 +35684,12 @@ Object {
 }
 `;
 
+exports[`snapshots: mb-inherit 1`] = `
+Object {
+  "marginBottom": "inherit",
+}
+`;
+
 exports[`snapshots: mb-px 1`] = `
 Object {
   "marginBottom": "1px",
@@ -35546,6 +35711,12 @@ Object {
 exports[`snapshots: min-h-full 1`] = `
 Object {
   "minHeight": "100%",
+}
+`;
+
+exports[`snapshots: min-h-inherit 1`] = `
+Object {
+  "minHeight": "inherit",
 }
 `;
 
@@ -35582,6 +35753,12 @@ Object {
 exports[`snapshots: min-w-full 1`] = `
 Object {
   "minWidth": "100%",
+}
+`;
+
+exports[`snapshots: min-w-inherit 1`] = `
+Object {
+  "minWidth": "inherit",
 }
 `;
 
@@ -35909,6 +36086,12 @@ Object {
 }
 `;
 
+exports[`snapshots: ml-inherit 1`] = `
+Object {
+  "marginLeft": "inherit",
+}
+`;
+
 exports[`snapshots: ml-px 1`] = `
 Object {
   "marginLeft": "1px",
@@ -36125,6 +36308,12 @@ Object {
 }
 `;
 
+exports[`snapshots: mr-inherit 1`] = `
+Object {
+  "marginRight": "inherit",
+}
+`;
+
 exports[`snapshots: mr-px 1`] = `
 Object {
   "marginRight": "1px",
@@ -36338,6 +36527,12 @@ Object {
 exports[`snapshots: mt-auto 1`] = `
 Object {
   "marginTop": "auto",
+}
+`;
+
+exports[`snapshots: mt-inherit 1`] = `
+Object {
+  "marginTop": "inherit",
 }
 `;
 
@@ -36589,6 +36784,13 @@ exports[`snapshots: mx-auto 1`] = `
 Object {
   "marginLeft": "auto",
   "marginRight": "auto",
+}
+`;
+
+exports[`snapshots: mx-inherit 1`] = `
+Object {
+  "marginLeft": "inherit",
+  "marginRight": "inherit",
 }
 `;
 
@@ -36844,6 +37046,13 @@ Object {
 }
 `;
 
+exports[`snapshots: my-inherit 1`] = `
+Object {
+  "marginBottom": "inherit",
+  "marginTop": "inherit",
+}
+`;
+
 exports[`snapshots: my-px 1`] = `
 Object {
   "marginBottom": "1px",
@@ -36915,6 +37124,12 @@ Object {
 exports[`snapshots: object-fill 1`] = `
 Object {
   "objectFit": "fill",
+}
+`;
+
+exports[`snapshots: object-inherit 1`] = `
+Object {
+  "objectPosition": "inherit",
 }
 `;
 
@@ -37926,6 +38141,12 @@ Object {
 exports[`snapshots: outline-offset-8 1`] = `
 Object {
   "outlineOffset": "8px",
+}
+`;
+
+exports[`snapshots: outline-offset-inherit 1`] = `
+Object {
+  "outlineOffset": "inherit",
 }
 `;
 
@@ -39015,6 +39236,12 @@ Object {
 }
 `;
 
+exports[`snapshots: p-inherit 1`] = `
+Object {
+  "padding": "inherit",
+}
+`;
+
 exports[`snapshots: p-px 1`] = `
 Object {
   "padding": "1px",
@@ -39225,6 +39452,12 @@ Object {
 }
 `;
 
+exports[`snapshots: pb-inherit 1`] = `
+Object {
+  "paddingBottom": "inherit",
+}
+`;
+
 exports[`snapshots: pb-px 1`] = `
 Object {
   "paddingBottom": "1px",
@@ -39432,6 +39665,12 @@ Object {
 exports[`snapshots: pl-96 1`] = `
 Object {
   "paddingLeft": "24rem",
+}
+`;
+
+exports[`snapshots: pl-inherit 1`] = `
+Object {
+  "paddingLeft": "inherit",
 }
 `;
 
@@ -41553,6 +41792,12 @@ Object {
 }
 `;
 
+exports[`snapshots: pr-inherit 1`] = `
+Object {
+  "paddingRight": "inherit",
+}
+`;
+
 exports[`snapshots: pr-px 1`] = `
 Object {
   "paddingRight": "1px",
@@ -41767,6 +42012,12 @@ Object {
 exports[`snapshots: pt-96 1`] = `
 Object {
   "paddingTop": "24rem",
+}
+`;
+
+exports[`snapshots: pt-inherit 1`] = `
+Object {
+  "paddingTop": "inherit",
 }
 `;
 
@@ -42014,6 +42265,13 @@ Object {
 }
 `;
 
+exports[`snapshots: px-inherit 1`] = `
+Object {
+  "paddingLeft": "inherit",
+  "paddingRight": "inherit",
+}
+`;
+
 exports[`snapshots: px-px 1`] = `
 Object {
   "paddingLeft": "1px",
@@ -42256,6 +42514,13 @@ exports[`snapshots: py-96 1`] = `
 Object {
   "paddingBottom": "24rem",
   "paddingTop": "24rem",
+}
+`;
+
+exports[`snapshots: py-inherit 1`] = `
+Object {
+  "paddingBottom": "inherit",
+  "paddingTop": "inherit",
 }
 `;
 
@@ -42545,6 +42810,12 @@ Object {
 exports[`snapshots: right-full 1`] = `
 Object {
   "right": "100%",
+}
+`;
+
+exports[`snapshots: right-inherit 1`] = `
+Object {
+  "right": "inherit",
 }
 `;
 
@@ -45401,6 +45672,13 @@ Object {
 }
 `;
 
+exports[`snapshots: rotate-inherit 1`] = `
+Object {
+  "--tw-rotate": "inherit",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
 exports[`snapshots: rounded 1`] = `
 Object {
   "borderRadius": "0.25rem",
@@ -45444,6 +45722,13 @@ exports[`snapshots: rounded-b-full 1`] = `
 Object {
   "borderBottomLeftRadius": "9999px",
   "borderBottomRightRadius": "9999px",
+}
+`;
+
+exports[`snapshots: rounded-b-inherit 1`] = `
+Object {
+  "borderBottomLeftRadius": "inherit",
+  "borderBottomRightRadius": "inherit",
 }
 `;
 
@@ -45506,6 +45791,12 @@ Object {
 }
 `;
 
+exports[`snapshots: rounded-bl-inherit 1`] = `
+Object {
+  "borderBottomLeftRadius": "inherit",
+}
+`;
+
 exports[`snapshots: rounded-bl-lg 1`] = `
 Object {
   "borderBottomLeftRadius": "0.5rem",
@@ -45560,6 +45851,12 @@ Object {
 }
 `;
 
+exports[`snapshots: rounded-br-inherit 1`] = `
+Object {
+  "borderBottomRightRadius": "inherit",
+}
+`;
+
 exports[`snapshots: rounded-br-lg 1`] = `
 Object {
   "borderBottomRightRadius": "0.5rem",
@@ -45596,6 +45893,12 @@ Object {
 }
 `;
 
+exports[`snapshots: rounded-inherit 1`] = `
+Object {
+  "borderRadius": "inherit",
+}
+`;
+
 exports[`snapshots: rounded-l 1`] = `
 Object {
   "borderBottomLeftRadius": "0.25rem",
@@ -45621,6 +45924,13 @@ exports[`snapshots: rounded-l-full 1`] = `
 Object {
   "borderBottomLeftRadius": "9999px",
   "borderTopLeftRadius": "9999px",
+}
+`;
+
+exports[`snapshots: rounded-l-inherit 1`] = `
+Object {
+  "borderBottomLeftRadius": "inherit",
+  "borderTopLeftRadius": "inherit",
 }
 `;
 
@@ -45705,6 +46015,13 @@ Object {
 }
 `;
 
+exports[`snapshots: rounded-r-inherit 1`] = `
+Object {
+  "borderBottomRightRadius": "inherit",
+  "borderTopRightRadius": "inherit",
+}
+`;
+
 exports[`snapshots: rounded-r-lg 1`] = `
 Object {
   "borderBottomRightRadius": "0.5rem",
@@ -45774,6 +46091,13 @@ Object {
 }
 `;
 
+exports[`snapshots: rounded-t-inherit 1`] = `
+Object {
+  "borderTopLeftRadius": "inherit",
+  "borderTopRightRadius": "inherit",
+}
+`;
+
 exports[`snapshots: rounded-t-lg 1`] = `
 Object {
   "borderTopLeftRadius": "0.5rem",
@@ -45833,6 +46157,12 @@ Object {
 }
 `;
 
+exports[`snapshots: rounded-tl-inherit 1`] = `
+Object {
+  "borderTopLeftRadius": "inherit",
+}
+`;
+
 exports[`snapshots: rounded-tl-lg 1`] = `
 Object {
   "borderTopLeftRadius": "0.5rem",
@@ -45884,6 +46214,12 @@ Object {
 exports[`snapshots: rounded-tr-full 1`] = `
 Object {
   "borderTopRightRadius": "9999px",
+}
+`;
+
+exports[`snapshots: rounded-tr-inherit 1`] = `
+Object {
+  "borderTopRightRadius": "inherit",
 }
 `;
 
@@ -46182,6 +46518,14 @@ Object {
 }
 `;
 
+exports[`snapshots: scale-inherit 1`] = `
+Object {
+  "--tw-scale-x": "inherit",
+  "--tw-scale-y": "inherit",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
 exports[`snapshots: scale-x-0 1`] = `
 Object {
   "--tw-scale-x": "0",
@@ -46252,6 +46596,13 @@ Object {
 }
 `;
 
+exports[`snapshots: scale-x-inherit 1`] = `
+Object {
+  "--tw-scale-x": "inherit",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
 exports[`snapshots: scale-y-0 1`] = `
 Object {
   "--tw-scale-y": "0",
@@ -46318,6 +46669,13 @@ Object {
 exports[`snapshots: scale-y-150 1`] = `
 Object {
   "--tw-scale-y": "1.5",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
+exports[`snapshots: scale-y-inherit 1`] = `
+Object {
+  "--tw-scale-y": "inherit",
   "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
 }
 `;
@@ -46532,6 +46890,12 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-m-inherit 1`] = `
+Object {
+  "scrollMargin": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-m-px 1`] = `
 Object {
   "scrollMargin": "1px",
@@ -46739,6 +47103,12 @@ Object {
 exports[`snapshots: scroll-mb-96 1`] = `
 Object {
   "scrollMarginBottom": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-mb-inherit 1`] = `
+Object {
+  "scrollMarginBottom": "inherit",
 }
 `;
 
@@ -46952,6 +47322,12 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-ml-inherit 1`] = `
+Object {
+  "scrollMarginLeft": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-ml-px 1`] = `
 Object {
   "scrollMarginLeft": "1px",
@@ -47162,6 +47538,12 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-mr-inherit 1`] = `
+Object {
+  "scrollMarginRight": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-mr-px 1`] = `
 Object {
   "scrollMarginRight": "1px",
@@ -47369,6 +47751,12 @@ Object {
 exports[`snapshots: scroll-mt-96 1`] = `
 Object {
   "scrollMarginTop": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-mt-inherit 1`] = `
+Object {
+  "scrollMarginTop": "inherit",
 }
 `;
 
@@ -47613,6 +48001,13 @@ exports[`snapshots: scroll-mx-96 1`] = `
 Object {
   "scrollMarginLeft": "24rem",
   "scrollMarginRight": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-mx-inherit 1`] = `
+Object {
+  "scrollMarginLeft": "inherit",
+  "scrollMarginRight": "inherit",
 }
 `;
 
@@ -47861,6 +48256,13 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-my-inherit 1`] = `
+Object {
+  "scrollMarginBottom": "inherit",
+  "scrollMarginTop": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-my-px 1`] = `
 Object {
   "scrollMarginBottom": "1px",
@@ -48069,6 +48471,12 @@ Object {
 exports[`snapshots: scroll-p-96 1`] = `
 Object {
   "scrollPadding": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-p-inherit 1`] = `
+Object {
+  "scrollPadding": "inherit",
 }
 `;
 
@@ -48282,6 +48690,12 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-pb-inherit 1`] = `
+Object {
+  "scrollPaddingBottom": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-pb-px 1`] = `
 Object {
   "scrollPaddingBottom": "1px",
@@ -48489,6 +48903,12 @@ Object {
 exports[`snapshots: scroll-pl-96 1`] = `
 Object {
   "scrollPaddingLeft": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-pl-inherit 1`] = `
+Object {
+  "scrollPaddingLeft": "inherit",
 }
 `;
 
@@ -48702,6 +49122,12 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-pr-inherit 1`] = `
+Object {
+  "scrollPaddingRight": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-pr-px 1`] = `
 Object {
   "scrollPaddingRight": "1px",
@@ -48909,6 +49335,12 @@ Object {
 exports[`snapshots: scroll-pt-96 1`] = `
 Object {
   "scrollPaddingTop": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-pt-inherit 1`] = `
+Object {
+  "scrollPaddingTop": "inherit",
 }
 `;
 
@@ -49156,6 +49588,13 @@ Object {
 }
 `;
 
+exports[`snapshots: scroll-px-inherit 1`] = `
+Object {
+  "scrollPaddingLeft": "inherit",
+  "scrollPaddingRight": "inherit",
+}
+`;
+
 exports[`snapshots: scroll-px-px 1`] = `
 Object {
   "scrollPaddingLeft": "1px",
@@ -49398,6 +49837,13 @@ exports[`snapshots: scroll-py-96 1`] = `
 Object {
   "scrollPaddingBottom": "24rem",
   "scrollPaddingTop": "24rem",
+}
+`;
+
+exports[`snapshots: scroll-py-inherit 1`] = `
+Object {
+  "scrollPaddingBottom": "inherit",
+  "scrollPaddingTop": "inherit",
 }
 `;
 
@@ -50924,6 +51370,12 @@ Object {
 }
 `;
 
+exports[`snapshots: shrink-inherit 1`] = `
+Object {
+  "flexShrink": "inherit",
+}
+`;
+
 exports[`snapshots: skew-x-0 1`] = `
 Object {
   "--tw-skew-x": "0deg",
@@ -50966,6 +51418,13 @@ Object {
 }
 `;
 
+exports[`snapshots: skew-x-inherit 1`] = `
+Object {
+  "--tw-skew-x": "inherit",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
 exports[`snapshots: skew-y-0 1`] = `
 Object {
   "--tw-skew-y": "0deg",
@@ -51004,6 +51463,13 @@ Object {
 exports[`snapshots: skew-y-12 1`] = `
 Object {
   "--tw-skew-y": "12deg",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
+exports[`snapshots: skew-y-inherit 1`] = `
+Object {
+  "--tw-skew-y": "inherit",
   "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
 }
 `;
@@ -51427,6 +51893,16 @@ Object {
 }
 `;
 
+exports[`snapshots: space-x-inherit 1`] = `
+Object {
+  "& > :not([hidden]) ~ :not([hidden])": Object {
+    "--tw-space-x-reverse": "0",
+    "marginLeft": "calc(inherit * calc(1 - var(--tw-space-x-reverse)))",
+    "marginRight": "calc(inherit * var(--tw-space-x-reverse))",
+  },
+}
+`;
+
 exports[`snapshots: space-x-px 1`] = `
 Object {
   "& > :not([hidden]) ~ :not([hidden])": Object {
@@ -51781,6 +52257,16 @@ Object {
     "--tw-space-y-reverse": "0",
     "marginBottom": "calc(24rem * var(--tw-space-y-reverse))",
     "marginTop": "calc(24rem * calc(1 - var(--tw-space-y-reverse)))",
+  },
+}
+`;
+
+exports[`snapshots: space-y-inherit 1`] = `
+Object {
+  "& > :not([hidden]) ~ :not([hidden])": Object {
+    "--tw-space-y-reverse": "0",
+    "marginBottom": "calc(inherit * var(--tw-space-y-reverse))",
+    "marginTop": "calc(inherit * calc(1 - var(--tw-space-y-reverse)))",
   },
 }
 `;
@@ -56381,6 +56867,12 @@ Object {
 }
 `;
 
+exports[`snapshots: top-inherit 1`] = `
+Object {
+  "top": "inherit",
+}
+`;
+
 exports[`snapshots: top-px 1`] = `
 Object {
   "top": "1px",
@@ -56451,6 +56943,12 @@ exports[`snapshots: touch-pinch-zoom 1`] = `
 Object {
   "--tw-pinch-zoom": "pinch-zoom",
   "touchAction": "var(--tw-pan-x) var(--tw-pan-y) var(--tw-pinch-zoom)",
+}
+`;
+
+exports[`snapshots: tracking-inherit 1`] = `
+Object {
+  "letterSpacing": "inherit",
 }
 `;
 
@@ -56536,6 +57034,14 @@ exports[`snapshots: transition-colors 1`] = `
 Object {
   "transitionDuration": "150ms",
   "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke",
+  "transitionTimingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
+}
+`;
+
+exports[`snapshots: transition-inherit 1`] = `
+Object {
+  "transitionDuration": "150ms",
+  "transitionProperty": "inherit",
   "transitionTimingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
 }
 `;
@@ -56857,6 +57363,13 @@ Object {
 }
 `;
 
+exports[`snapshots: translate-x-inherit 1`] = `
+Object {
+  "--tw-translate-x": "inherit",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
 exports[`snapshots: translate-x-px 1`] = `
 Object {
   "--tw-translate-x": "1px",
@@ -57151,6 +57664,13 @@ Object {
 }
 `;
 
+exports[`snapshots: translate-y-inherit 1`] = `
+Object {
+  "--tw-translate-y": "inherit",
+  "transform": "var(--tw-transfrom-translate, var(--tw-transfrom-translate-default)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
 exports[`snapshots: translate-y-px 1`] = `
 Object {
   "--tw-translate-y": "1px",
@@ -57205,6 +57725,12 @@ Object {
 exports[`snapshots: underline-offset-auto 1`] = `
 Object {
   "textUnderlineOffset": "auto",
+}
+`;
+
+exports[`snapshots: underline-offset-inherit 1`] = `
+Object {
+  "textUnderlineOffset": "inherit",
 }
 `;
 
@@ -59173,6 +59699,12 @@ Object {
 }
 `;
 
+exports[`snapshots: w-inherit 1`] = `
+Object {
+  "width": "inherit",
+}
+`;
+
 exports[`snapshots: w-max 1`] = `
 Object {
   "width": "max-content",
@@ -59236,6 +59768,12 @@ Object {
 exports[`snapshots: will-change-contents 1`] = `
 Object {
   "willChange": "contents",
+}
+`;
+
+exports[`snapshots: will-change-inherit 1`] = `
+Object {
+  "willChange": "inherit",
 }
 `;
 

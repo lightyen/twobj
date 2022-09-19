@@ -13,49 +13,53 @@ import { context } from "./context"
 
 test("diff tailwindcss", async () => {
 	const ctx = createContext(resolveConfig({} as Config))
+	const colors = context.getColorClasses()
+	const colorClassnames = new Set(context.getColorClasses().keys())
 
 	/** classnames */
 
-	const tailwind = ctx
-		.getClassList()
-		.filter(classname => {
-			// use 'grow'
-			if (/flex-grow(-\d+)?$/.test(classname)) {
+	const tailwind = ctx.getClassList().filter(classname => {
+		// use 'grow'
+		if (/flex-grow(-\d+)?$/.test(classname)) {
+			return false
+		}
+
+		// use 'shrink'
+		if (/flex-shrink(-\d+)?$/.test(classname)) {
+			return false
+		}
+
+		// use 'bg-red-500/80'
+		if (/^(text|bg|divide|border|placeholder|ring)-opacity-\d+$/.test(classname)) {
+			return false
+		}
+
+		switch (classname) {
+			case "*":
+			case "overflow-ellipsis": // use 'text-ellipsis'
+			case "decoration-slice": // use 'box-decoration-slice'
+			case "decoration-clone": // use 'box-decoration-clone'
+			case "outline-hidden": // invalid
+				return false
+		}
+
+		return true
+	})
+
+	const s0 = new Set(
+		context.getClassList().filter(classname => {
+			// skip 'inherit'
+			if (/-inherit$/.test(classname) && !colorClassnames.has(classname)) {
 				return false
 			}
-
-			// use 'shrink'
-			if (/flex-shrink(-\d+)?$/.test(classname)) {
-				return false
-			}
-
-			// use 'bg-red-500/80'
-			if (/^(text|bg|divide|border|placeholder|ring)-opacity-\d+$/.test(classname)) {
-				return false
-			}
-
 			switch (classname) {
-				case "*":
-				case "overflow-ellipsis": // use 'text-ellipsis'
-				case "decoration-slice": // use 'box-decoration-slice'
-				case "decoration-clone": // use 'box-decoration-clone'
-				case "outline-hidden": // invalid
+				case "fill-none":
+				case "stroke-none":
 					return false
 			}
-
 			return true
-		})
-		.concat([
-			"fill-none",
-			"stroke-none",
-			"-outline-offset-0",
-			"-outline-offset-1",
-			"-outline-offset-2",
-			"-outline-offset-4",
-			"-outline-offset-8",
-		])
-
-	const s0 = new Set(context.getClassList())
+		}),
+	)
 	const s1 = new Set(tailwind)
 	for (const s of s0) {
 		expect(s1).toContain(s)
@@ -75,7 +79,6 @@ test("diff tailwindcss", async () => {
 		expect(s2).toContain(s)
 	}
 
-	const colors = context.getColorClasses()
 	for (const c of tailwind.filter(classname => {
 		if (classname[0] === "-") return false
 		if (classname.startsWith("float")) return false

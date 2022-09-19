@@ -47,6 +47,7 @@ export const defaultConfig: ConfigJS = {
 			"7xl": "80rem",
 		},
 		spacing: {
+			inherit: "inherit",
 			px: "1px",
 			0: "0px",
 			0.5: "0.125rem",
@@ -161,6 +162,7 @@ export const defaultConfig: ConfigJS = {
 			DEFAULT: theme("colors.gray.200", "currentColor"),
 		}),
 		borderRadius: {
+			inherit: "inherit",
 			none: "0px",
 			sm: "0.125rem",
 			DEFAULT: "0.25rem",
@@ -211,6 +213,7 @@ export const defaultConfig: ConfigJS = {
 			none: "none",
 		},
 		cursor: {
+			inherit: "inherit",
 			auto: "auto",
 			default: "default",
 			pointer: "pointer",
@@ -280,6 +283,7 @@ export const defaultConfig: ConfigJS = {
 			DEFAULT: "100%",
 		},
 		flex: {
+			inherit: "inherit",
 			1: "1 1 0%",
 			auto: "1 1 auto",
 			initial: "0 1 auto",
@@ -317,10 +321,12 @@ export const defaultConfig: ConfigJS = {
 			full: "100%",
 		}),
 		flexGrow: {
+			inherit: "inherit",
 			0: "0",
 			DEFAULT: "1",
 		},
 		flexShrink: {
+			inherit: "inherit",
 			0: "0",
 			DEFAULT: "1",
 		},
@@ -559,6 +565,7 @@ export const defaultConfig: ConfigJS = {
 			},
 		},
 		letterSpacing: {
+			inherit: "inherit",
 			tighter: "-0.05em",
 			tight: "-0.025em",
 			normal: "0em",
@@ -567,6 +574,7 @@ export const defaultConfig: ConfigJS = {
 			widest: "0.1em",
 		},
 		lineHeight: {
+			inherit: "inherit",
 			none: "1",
 			tight: "1.25",
 			snug: "1.375",
@@ -583,6 +591,7 @@ export const defaultConfig: ConfigJS = {
 			10: "2.5rem",
 		},
 		listStyleType: {
+			inherit: "inherit",
 			none: "none",
 			disc: "disc",
 			decimal: "decimal",
@@ -600,6 +609,7 @@ export const defaultConfig: ConfigJS = {
 			fit: "fit-content",
 		}),
 		maxWidth: {
+			inherit: "inherit",
 			none: "none",
 			0: "0rem",
 			xs: "20rem",
@@ -620,6 +630,7 @@ export const defaultConfig: ConfigJS = {
 			prose: "65ch",
 		},
 		minHeight: {
+			inherit: "inherit",
 			0: "0px",
 			full: "100%",
 			screen: "100vh",
@@ -628,6 +639,7 @@ export const defaultConfig: ConfigJS = {
 			fit: "fit-content",
 		},
 		minWidth: {
+			inherit: "inherit",
 			0: "0px",
 			full: "100%",
 			min: "min-content",
@@ -635,6 +647,7 @@ export const defaultConfig: ConfigJS = {
 			fit: "fit-content",
 		},
 		objectPosition: {
+			inherit: "inherit",
 			bottom: "bottom",
 			center: "center",
 			left: "left",
@@ -683,6 +696,7 @@ export const defaultConfig: ConfigJS = {
 		placeholderColor: ({ theme }) => theme("colors"),
 		outlineColor: ({ theme }) => theme("colors"),
 		outlineOffset: {
+			inherit: "inherit",
 			0: "0px",
 			1: "1px",
 			2: "2px",
@@ -717,6 +731,7 @@ export const defaultConfig: ConfigJS = {
 			8: "8px",
 		},
 		rotate: {
+			inherit: "inherit",
 			0: "0deg",
 			1: "1deg",
 			2: "2deg",
@@ -735,6 +750,7 @@ export const defaultConfig: ConfigJS = {
 			200: "2",
 		},
 		scale: {
+			inherit: "inherit",
 			0: "0",
 			50: ".5",
 			75: ".75",
@@ -755,6 +771,7 @@ export const defaultConfig: ConfigJS = {
 			DEFAULT: "100%",
 		},
 		skew: {
+			inherit: "inherit",
 			0: "0deg",
 			1: "1deg",
 			2: "2deg",
@@ -786,6 +803,7 @@ export const defaultConfig: ConfigJS = {
 			8: "8px",
 		},
 		textUnderlineOffset: {
+			inherit: "inherit",
 			auto: "auto",
 			0: "0px",
 			1: "1px",
@@ -808,6 +826,7 @@ export const defaultConfig: ConfigJS = {
 			"top-left": "top left",
 		},
 		transitionDelay: {
+			inherit: "inherit",
 			75: "75ms",
 			100: "100ms",
 			150: "150ms",
@@ -818,6 +837,7 @@ export const defaultConfig: ConfigJS = {
 			1000: "1000ms",
 		},
 		transitionDuration: {
+			inherit: "inherit",
 			DEFAULT: "150ms",
 			75: "75ms",
 			100: "100ms",
@@ -829,6 +849,7 @@ export const defaultConfig: ConfigJS = {
 			1000: "1000ms",
 		},
 		transitionProperty: {
+			inherit: "inherit",
 			none: "none",
 			all: "all",
 			DEFAULT:
@@ -839,6 +860,7 @@ export const defaultConfig: ConfigJS = {
 			transform: "transform",
 		},
 		transitionTimingFunction: {
+			inherit: "inherit",
 			DEFAULT: "cubic-bezier(0.4, 0, 0.2, 1)",
 			linear: "linear",
 			in: "cubic-bezier(0.4, 0, 1, 1)",
@@ -891,6 +913,7 @@ export const defaultConfig: ConfigJS = {
 			fit: "fit-content",
 		}),
 		willChange: {
+			inherit: "inherit",
 			auto: "auto",
 			scroll: "scroll-position",
 			contents: "contents",
