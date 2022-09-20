@@ -681,7 +681,8 @@ const arbitraryPropertyCompletion: CompletionFeature = (
 		for (const item of items) callback(item)
 	}
 
-	transfrom(item => (item.insertText = new vscode.SnippetString(`[${item.label}: $0]`)))
+	const oldValue = target.type === parser.NodeType.ShortCss ? target.expr.value : ""
+	transfrom(item => (item.insertText = new vscode.SnippetString(`[${item.label}: ${oldValue}$0]`)))
 
 	switch (target.type) {
 		case parser.NodeType.ArbitrarySelector:
