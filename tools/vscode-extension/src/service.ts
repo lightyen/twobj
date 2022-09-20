@@ -9,6 +9,7 @@ import { defaultLogger as console } from "~/common/logger"
 import type { ServiceOptions } from "~/shared"
 import { Settings } from "~/shared"
 import { ICompletionItem } from "~/typings/completion"
+import { Now } from "./common/time"
 import { createColorProvider } from "./service/colorProvider"
 import completion from "./service/completion"
 import completionResolve from "./service/completionResolve"
@@ -88,23 +89,23 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 		})
 	}
 
-	function start() {
+	async function start() {
 		if (!options.enabled || loading) return
 		if (state.tw) return
 		try {
 			loading = true
 			console.info("loading:", configPathMessage)
-			const start = process.hrtime.bigint()
-			state.readTailwind({
-				configPath,
+			const start = Now()
+			await state.readTailwind({
+				uri: configPath,
 				mode: options.extensionMode,
 				pnp: isDefault ? undefined : options.pnpContext,
 				onChange: reload,
 			})
 			_colorProvider = createColorProvider(state.tw, state.separator)
-			const end = process.hrtime.bigint()
+			const end = Now()
 			activated.emit("signal")
-			console.info(`activated: ${configPathMessage} (${Number((end - start) / 10n ** 6n) / 10 ** 3}s)\n`)
+			console.info(`activated: ${configPathMessage} (${Number(end - start)}ms)\n`)
 			activatedEvent.fire()
 		} catch (error) {
 			console.error(error)
@@ -114,23 +115,23 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 		}
 	}
 
-	function reload() {
+	async function reload() {
 		if (!options.enabled || loading) return
 		try {
 			loading = true
 			console.info("reloading:", configPathMessage)
-			const start = process.hrtime.bigint()
-			state.readTailwind({
-				configPath,
+			const start = Now()
+			await state.readTailwind({
+				uri: configPath,
 				mode: options.extensionMode,
 				pnp: isDefault ? undefined : options.pnpContext,
 				onChange: reload,
 			})
 			if (_colorProvider) _colorProvider.dispose()
 			_colorProvider = createColorProvider(state.tw, state.separator)
-			const end = process.hrtime.bigint()
+			const end = Now()
 			activated.emit("signal")
-			console.info(`activated: ${configPathMessage} (${Number((end - start) / 10n ** 6n) / 10 ** 3}s)\n`)
+			console.info(`activated: ${configPathMessage} (${Number(end - start)}ms)\n`)
 			activatedEvent.fire()
 		} catch (error) {
 			console.error(error)
@@ -241,7 +242,7 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 		callback: (defaultValue: ReturnValue) => ReturnValue,
 	) {
 		if (!loading) {
-			if (!state.tw) start()
+			if (!state.tw) await start()
 			return callback(defaultValue)
 		}
 		await ready()

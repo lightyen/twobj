@@ -1,38 +1,15 @@
-import type { PnpApi } from "@yarnpkg/pnp"
-import chokidar from "chokidar"
 import Fuse from "fuse.js"
 import type { ConfigJS, ResolvedConfigJS } from "twobj"
 import { defaultConfig, resolveConfig } from "twobj"
 import * as vscode from "vscode"
-import { URI } from "vscode-uri"
 import { calcFraction } from "~/common"
 import type { Extractor } from "~/common/extractors/types"
-import { importFrom } from "~/common/module"
 import { cssDataManager } from "~/common/vscode-css-languageservice"
 import { ICompletionItem } from "~/typings/completion"
+import { createConfigReader, LoadConfigOptions } from "../../common/config"
 import { createTwContext, TwContext } from "./tw"
 
 export type TailwindLoader = ReturnType<typeof createTailwindLoader>
-
-export enum ExtensionMode {
-	/**
-	 * The extension is installed normally (for example, from the marketplace
-	 * or VSIX) in the editor.
-	 */
-	Production = 1,
-
-	/**
-	 * The extension is running from an `--extensionDevelopmentPath` provided
-	 * when launching the editor.
-	 */
-	Development = 2,
-
-	/**
-	 * The extension is running from an `--extensionTestsPath` and
-	 * the extension host is running unit tests.
-	 */
-	Test = 3,
-}
 
 /**
  * Completion item tags are extra annotations that tweak the rendering of a completion
@@ -43,13 +20,6 @@ export enum CompletionItemTag {
 	 * Render a completion as obsolete, usually using a strike-out.
 	 */
 	Deprecated = 1,
-}
-
-interface CreateTailwindLoaderOptions {
-	configPath?: URI | undefined
-	pnp?: PnpApi | undefined
-	mode: ExtensionMode
-	onChange(): void
 }
 
 function isExtrator(value: unknown): value is Extractor {
@@ -74,7 +44,7 @@ export function createTailwindLoader() {
 	let tw: TwContext
 	let variants: Fuse<string>
 	let classnames: Fuse<string>
-	let watcher: chokidar.FSWatcher
+	const reader = createConfigReader()
 
 	return {
 		get separator() {
@@ -93,7 +63,7 @@ export function createTailwindLoader() {
 			return classnames
 		},
 		get extractors() {
-			const extrators = config.extrators as unknown
+			const extrators = config?.extrators as unknown
 			if (Array.isArray(extrators)) {
 				return extrators.filter(isExtrator)
 			}
@@ -106,36 +76,24 @@ export function createTailwindLoader() {
 	} as const
 
 	function dispose() {
-		if (watcher) watcher.close()
+		reader.closeWatcher()
 	}
 
-	function readTailwind({ configPath, pnp, mode, onChange }: CreateTailwindLoaderOptions) {
+	async function readTailwind(options: LoadConfigOptions) {
 		dispose()
-		let __config: ConfigJS
-		const deps: string[] = []
-		if (configPath) {
+		let __config: ConfigJS | undefined
+		if (options.uri) {
 			try {
-				__config = importFrom(configPath.fsPath, {
-					pnp,
-					cache: false,
-					deps,
-					header:
-						mode === ExtensionMode.Development
-							? "process.env.NODE_ENV = 'development';\n"
-							: "process.env.NODE_ENV = 'production';\n",
-				})
+				__config = await reader.load(options)
+			} catch (error) {
+				__config = defaultConfig
+				throw error
 			} finally {
-				watcher = chokidar.watch(deps, { ignoreInitial: true })
-				watcher.on("change", onChange)
-				watcher.on("unlink", onChange)
-				watcher.on("add", onChange)
+				config = resolveConfig(__config)
+				createContext()
 			}
 		} else {
-			__config = defaultConfig
-		}
-
-		if (__config) {
-			config = resolveConfig(__config)
+			config = resolveConfig(defaultConfig)
 			createContext()
 		}
 	}

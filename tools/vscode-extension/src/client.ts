@@ -1,9 +1,8 @@
-import { deepStrictEqual } from "assert"
 import path from "path"
 import vscode from "vscode"
 import { URI, Utils } from "vscode-uri"
 import { defaultLogger as console } from "~/common/logger"
-import { findPnpApi } from "~/common/pnp"
+import { findPnpApi } from "./common/config"
 import { createTailwindLanguageService } from "./service"
 import { IDiagnostic } from "./service/diagnostics"
 import { SECTION_ID, Settings } from "./shared"
@@ -47,6 +46,41 @@ function equalLanguages(a: string[], b: string[]) {
 	return true
 }
 
+const TAILWIND_CONFIG = /(tailwind|tailwind[.]config)[.](ts|js|cjs)/
+const EXCLUDE_DIR = /(node_modules|[.]yarn)/
+
+// NOTE: vscode.workspace.findFiles is not working.
+/** Get all tailwindConfig under given uri. */
+async function findTailwindConfigs(uri: vscode.Uri): Promise<vscode.Uri[]> {
+	const result = await vscode.workspace.fs.readDirectory(uri)
+	const files: string[] = []
+	const directories: string[] = []
+
+	result.forEach(([name, t]) => {
+		if (t !== vscode.FileType.Unknown) {
+			if (t === vscode.FileType.Directory) {
+				if (EXCLUDE_DIR.test(name)) {
+					return
+				}
+				directories.push(name)
+			} else {
+				if (TAILWIND_CONFIG.test(name)) {
+					files.push(name)
+				}
+			}
+		}
+	})
+
+	const first = await Promise.all(
+		directories.map(d => {
+			const subDirectory = vscode.Uri.joinPath(uri, d)
+			return findTailwindConfigs(subDirectory)
+		}),
+	)
+
+	return [...first.flat(), ...files.map(f => vscode.Uri.joinPath(uri, f))]
+}
+
 export async function workspaceClient(context: vscode.ExtensionContext, ws: vscode.WorkspaceFolder) {
 	const extensionUri = context.extensionUri
 	const extensionMode = context.extensionMode
@@ -67,9 +101,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		preferVariantWithParentheses: false,
 		references: true,
 		rootFontSize: 16,
-		diagnostics: {
-			enabled: true,
-		},
+		diagnostics: true,
 		documentColors: false,
 		hoverColorHint: "none",
 		otherLanguages: [],
@@ -88,19 +120,32 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 
 	async function init(languages: string[]) {
 		const disposes: vscode.Disposable[] = []
-		const tailwindConfigs = await vscode.workspace.findFiles(
-			new vscode.RelativePattern(ws, "**/{tailwind,tailwind.config}.{ts,js,cjs}"),
-			new vscode.RelativePattern(ws, "**/{node_modules/,.yarn/}*"),
-		)
+
+		const tailwindConfigs = await findTailwindConfigs(ws.uri)
+
+		const schemes = new Set(tailwindConfigs.map(t => t.scheme))
+		schemes.add("file")
+		schemes.add("untitled")
+		schemes.add("tailwind")
+
 		console.level = settings.logLevel
 
 		const languageSet = new Set(languages)
 		settings.otherLanguages.forEach(lang => languageSet.add(lang))
-		documentSelector = Array.from(languageSet).flatMap(language => [
-			{ scheme: "file", language },
-			{ scheme: "untitled", language },
-			{ scheme: "tailwind", language },
-		])
+
+		function getDocumentFilters(language: string) {
+			Array.from(schemes)
+			const filters: vscode.DocumentFilter[] = []
+			for (const scheme of schemes) {
+				filters.push({
+					scheme,
+					language,
+				})
+			}
+			return filters
+		}
+
+		documentSelector = Array.from(languageSet).flatMap(getDocumentFilters)
 
 		if (settings.colorDecorators === "inherit") {
 			settings.colorDecorators = workspaceConfiguration.get("editor.colorDecorators") ? "on" : "off"
@@ -120,6 +165,10 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		}
 
 		for (const configPath of tailwindConfigs) {
+			// const fs = vscode.workspace.fs
+			// const buffer = await fs.readFile(configPath)
+			// const code = new TextDecoder().decode(buffer)
+			// console.log(code)
 			addService(URI.parse(configPath.toString()), settings)
 		}
 
@@ -302,13 +351,11 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 					console.info(`hoverColorHint = ${settings.hoverColorHint}`)
 				}
 
-				try {
-					deepStrictEqual(settings.diagnostics, extSettings.diagnostics)
-				} catch {
+				if (settings.diagnostics !== extSettings.diagnostics) {
 					settings.diagnostics = extSettings.diagnostics
 					needToUpdate = true
 					needToDiagnostics = true
-					console.info(`diagnostics = ${JSON.stringify(settings.diagnostics)}`)
+					console.info(`diagnostics = ${settings.diagnostics}`)
 				}
 
 				const labelsBefore = new Set(settings.importLabels)
@@ -408,7 +455,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			if (documentSelector.every(p => p.language !== document.languageId)) return
 			if (settings.colorDecorators === "on") srv.colorProvider.render(editor)
 			diagnosticCollection.delete(document.uri)
-			if (settings.diagnostics.enabled) {
+			if (settings.diagnostics) {
 				diagnosticCollection.set(document.uri, await srv.provideDiagnostics(document))
 			}
 		})
@@ -426,7 +473,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			if (documentSelector.every(s => s.language !== document.languageId)) return
 			if (settings.colorDecorators === "on") srv.colorProvider.render(editor)
 			diagnosticCollection.delete(document.uri)
-			if (settings.diagnostics.enabled) {
+			if (settings.diagnostics) {
 				diagnosticCollection.set(document.uri, await srv.provideDiagnostics(document))
 			}
 		}

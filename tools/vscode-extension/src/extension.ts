@@ -1,4 +1,3 @@
-import { install } from "source-map-support"
 import vscode from "vscode"
 import { LanguageClient } from "vscode-languageclient/node"
 import { URI, Utils } from "vscode-uri"
@@ -8,8 +7,6 @@ import { workspaceClient } from "./client"
 import { intl } from "./locale"
 import { createTailwindLanguageService } from "./service"
 import { NAME } from "./shared"
-
-install()
 
 const outputChannel = vscode.window.createOutputChannel(NAME)
 console.outputChannel = outputChannel
@@ -88,7 +85,7 @@ function createWorkspacesHandler() {
 	}
 
 	function tidy(folders: vscode.WorkspaceFolder[]) {
-		const s = new Set<vscode.WorkspaceFolder>()
+		const s: vscode.WorkspaceFolder[] = []
 		for (const ws of folders) {
 			let hasCreated = false
 			for (const k of s) {
@@ -97,9 +94,9 @@ function createWorkspacesHandler() {
 					break
 				}
 			}
-			if (!hasCreated) s.add(ws)
+			if (!hasCreated) s.push(ws)
 		}
-		return Array.from(s)
+		return s
 	}
 
 	async function dispose() {

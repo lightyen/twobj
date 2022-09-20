@@ -1,11 +1,12 @@
 import * as culori from "culori"
+import { sha1 } from "object-hash"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
-import { md5 } from "~/common"
 import { ensureContrastRatio } from "~/common/culori"
 import type { ExtractedToken, TextDocument } from "~/common/extractors/types"
 import { defaultLogger as console } from "~/common/logger"
 import type { ServiceOptions } from "~/shared"
+import { Now } from "../common/time"
 import { ColorDesc, createTwContext, TwContext } from "./tailwind/tw"
 
 function walk(program: parser.Program, check: (node: parser.Leaf) => boolean | void) {
@@ -58,10 +59,10 @@ export function createColorProvider(tw: TwContext, separator: string) {
 			colors.clear()
 		},
 		render(tokens: ExtractedToken[], editor: vscode.TextEditor, options: ServiceOptions) {
-			const a = process.hrtime.bigint()
+			const a = Now()
 			_render()
-			const b = process.hrtime.bigint()
-			console.trace(`colors decoration (${Number((b - a) / 10n ** 6n)}ms)`)
+			const b = Now()
+			console.trace(`colors decoration (${Number(b - a)}ms)`)
 
 			return
 
@@ -171,7 +172,7 @@ export function createColorProvider(tw: TwContext, separator: string) {
 	}
 
 	function toKey(desc: ColorDesc) {
-		return md5("a" + (desc.color ?? "") + "b" + (desc.backgroundColor ?? "") + "c" + (desc.borderColor ?? ""))
+		return sha1(desc)
 	}
 
 	function createTextEditorDecorationType(desc: ColorDesc, opts: ServiceOptions) {

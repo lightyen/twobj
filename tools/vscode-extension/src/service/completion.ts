@@ -9,6 +9,7 @@ import type { ExtractedToken, ExtractedTokenKind, TextDocument } from "~/common/
 import { defaultLogger as console } from "~/common/logger"
 import type { ServiceOptions } from "~/shared"
 import type { ICompletionItem } from "~/typings/completion"
+import { Now } from "../common/time"
 import type { TailwindLoader } from "./tailwind"
 
 function inComment(source: string, position: number, [start = 0, end = source.length] = []): boolean {
@@ -134,10 +135,10 @@ export default function completion(
 ): vscode.CompletionList<ICompletionItem> | undefined {
 	if (!result) return undefined
 
-	const start = process.hrtime.bigint()
+	const start = Now()
 	const list = doComplete(result)
-	const end = process.hrtime.bigint()
-	console.trace(`completion (${Number((end - start) / 10n ** 6n)}ms)`)
+	const end = Now()
+	console.trace(`completion (${Number(end - start)}ms)`)
 	return list
 
 	function doComplete(result: ExtractedToken) {

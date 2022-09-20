@@ -1,11 +1,10 @@
 .vscode
-webpack.config.*
+webpack.*.*
 **/*.ts
 .gitignore
 .prettierrc.yml
 .editorconfig
 .eslintignore
-webpack.tsconfig.json
 **/tsconfig.json
 **/tsconfig.base.json
 contributing.md

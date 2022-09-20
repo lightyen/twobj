@@ -1,4 +1,3 @@
-import { formatWithOptions } from "util"
 import type { OutputChannel } from "vscode"
 
 enum LogLevel {
@@ -106,7 +105,10 @@ export function createLogger({
 		const datetime = `[${new Date().toLocaleString()}]`
 		const lv = `[${level2LevelString(level)}]`
 		if (_mode === "outputChannel" || _mode === "all") {
-			_outputChannel?.appendLine(formatWithOptions({ colors: false, depth: 3 }, datetime, lv, ...args))
+			if (_outputChannel) {
+				const output = datetime + " " + lv + " " + args.map(v => String(v)).join(" ")
+				_outputChannel.appendLine(output)
+			}
 			if (_mode === "outputChannel") return
 		}
 		if (colors && typeof args[0] === "string") {

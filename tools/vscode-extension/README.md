@@ -1,8 +1,8 @@
 # Twobj IntelliSense
 
-VSCode IntelliSense Extension for twobj
+VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj)
 
-![preview](preview.gif)
+![preview](https://github.com/lightyen/twobj/raw/vscode-web/tools/vscode-extension/preview.png)
 
 ## Features
 
@@ -34,9 +34,7 @@ pnpm install && pnpm package
 {
   "twobj.colorDecorators": "inherit", // inherit from "editor.colorDecorators"
   "twobj.references": true,
-  "twobj.diagnostics": {
-    "enabled": true
-  },
+  "twobj.diagnostics":true,
   "twobj.preferVariantWithParentheses": false,
   "twobj.fallbackDefaultConfig": true,
   "twobj.enabled": true,

@@ -1,4 +1,5 @@
 import type { PnpApi } from "@yarnpkg/pnp"
+import type { ExtensionMode } from "vscode"
 import { URI } from "vscode-uri"
 
 export const NAME = "Twobj IntelliSense"
@@ -11,9 +12,7 @@ export interface Settings {
 	references: boolean
 	preferVariantWithParentheses: boolean
 	fallbackDefaultConfig: boolean
-	diagnostics: {
-		enabled: boolean
-	}
+	diagnostics: boolean
 	rootFontSize: number
 	logLevel: "none" | "error" | "warning" | "info" | "debug" | "trace"
 	documentColors: boolean
@@ -27,26 +26,6 @@ export interface ColorDecoration {
 	color?: string
 	backgroundColor?: string
 	borderColor?: string
-}
-
-export enum ExtensionMode {
-	/**
-	 * The extension is installed normally (for example, from the marketplace
-	 * or VSIX) in the editor.
-	 */
-	Production = 1,
-
-	/**
-	 * The extension is running from an `--extensionDevelopmentPath` provided
-	 * when launching the editor.
-	 */
-	Development = 2,
-
-	/**
-	 * The extension is running from an `--extensionTestsPath` and
-	 * the extension host is running unit tests.
-	 */
-	Test = 3,
 }
 
 /**

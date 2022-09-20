@@ -1,11 +1,10 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "ES2020",
-    "lib": ["ESNext"],
-    "types": ["node", "vscode", "webpack-env", "@types/node", "@types/jest"],
+    "types": ["webpack-env", "@types/node", "@types/jest"],
     "rootDir": "..",
     "paths": {
       "~/*": ["./*"]

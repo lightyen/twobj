@@ -7,6 +7,7 @@
   "author": "lightyen",
   "license": "MIT",
   "private": true,
+  "icon": "media/icon.png",
   "homepage": "https://github.com/lightyen/twobj/tree/main/tools/vscode-extension",
   "repository": {
     "type": "git",
@@ -31,14 +32,20 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "workspaceContains:**/{*.js,*.jsx,*.ts,*.tsx}"
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
   ],
-  "main": "./dist/extension",
+  "main": "./dist/extension.js",
+  "browser": "./dist/web/extension.js",
   "scripts": {
     "doit": "pnpm update --interactive --latest",
     "analyze": "cross-env NODE_ENV=production webpack --config webpack.analyzer.js",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.js",
-    "watch": "cross-env NODE_ENV=development webpack --config webpack.config.js --watch",
+    "watch-node": "cross-env NODE_ENV=development webpack --config webpack.node.js --watch",
+    "watch-web": "cross-env NODE_ENV=development webpack --config webpack.web.js --watch",
+    "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ~/react-emotion",
     "vscode:prepublish": "npm run build",
     "format": "prettier --write \"**/*.{ts,json,yml}\"",
     "check-format": "prettier --check \"**/*.{ts,json,yml}\"",
@@ -54,7 +61,9 @@
     "@types/webpack-env": "1.18.0",
     "@typescript-eslint/eslint-plugin": "5.37.0",
     "@typescript-eslint/parser": "5.37.0",
+    "@vscode/test-web": "0.0.30",
     "@yarnpkg/pnp": "4.0.0-rc.18",
+    "assert": "2.0.0",
     "chokidar": "3.5.3",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "11.0.0",
@@ -63,16 +72,19 @@
     "esbuild": "0.15.7",
     "eslint": "8.23.1",
     "eslint-webpack-plugin": "3.2.0",
+    "events": "3.3.0",
     "fork-ts-checker-webpack-plugin": "7.2.13",
     "fsevents": "2.3.2",
     "fuse.js": "6.6.2",
     "js-yaml-loader": "1.2.2",
     "node-loader": "2.0.0",
     "object-hash": "3.0.0",
+    "path-browserify": "1.0.1",
     "postcss": "8.4.16",
     "postcss-js": "4.0.0",
     "postcss-selector-parser": "6.0.10",
     "prettier": "2.7.1",
+    "process": "0.11.10",
     "source-map-support": "0.5.21",
     "swc-loader": "0.2.3",
     "terser-webpack-plugin": "5.3.6",
@@ -81,6 +93,7 @@
     "twobj": "2.1.0",
     "typescript": "4.8.3",
     "typescript-paths": "1.4.0",
+    "util": "0.12.4",
     "vsce": "2.11.0",
     "vscode-css-languageservice": "6.1.1",
     "vscode-languageclient": "8.0.2",
@@ -156,17 +169,8 @@
         },
         "twobj.diagnostics": {
           "markdownDescription": "%ext.settings.diagnostics%",
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "markdownDescription": "%ext.settings.diagnostics.enabled%",
-              "type": "boolean",
-              "default": true
-            }
-          },
-          "default": {
-            "enabled": true
-          }
+          "type": "boolean",
+          "default": true
         },
         "twobj.preferVariantWithParentheses": {
           "type": "boolean",

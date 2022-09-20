@@ -6,6 +6,7 @@ import { defaultLogger as console } from "~/common/logger"
 import { cssDataManager } from "~/common/vscode-css-languageservice"
 import type { ServiceOptions } from "~/shared"
 import { DIAGNOSTICS_ID } from "~/shared"
+import { Now } from "../common/time"
 import { TailwindLoader } from "./tailwind"
 
 export interface IDiagnostic extends vscode.Diagnostic {
@@ -63,10 +64,10 @@ export function validate(
 	options: ServiceOptions,
 ) {
 	const diagnostics = createDiagnosticArray()
-	const start = process.hrtime.bigint()
+	const start = Now()
 	const answer = doValidate()
-	const end = process.hrtime.bigint()
-	console.trace(`diagnostic (${Number((end - start) / 10n ** 6n)}ms)`)
+	const end = Now()
+	console.trace(`diagnostic (${Number(end - start)}ms)`)
 	return answer
 
 	function doValidate() {
