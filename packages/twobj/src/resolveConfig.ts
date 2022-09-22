@@ -112,7 +112,7 @@ export function mergeWith<T extends ConfigArray | ConfigObject>(
 				continue
 			}
 
-			if (isObject(t)) {
+			if (isObject(t) && isObject(s)) {
 				target[key] = mergeWith(customizer, {}, t, s)
 				continue
 			}

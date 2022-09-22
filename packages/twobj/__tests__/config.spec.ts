@@ -59,3 +59,16 @@ test("does not duplicate extended configs every time resolveConfig is called", (
 	const foo = result.theme.foo as any
 	expect(foo?.bar?.baz).toMatchObject([{ color: "red" }, { color: "blue" }])
 })
+
+test("overwrite default colors", async () => {
+	let ctx = createContext(resolveConfig({ theme: { extend: { colors: { blue: "#fff", green: undefined } } } }))
+	expect(ctx.css("text-blue")).toEqual({ color: "#fff" })
+	expect(ctx.css("text-blue-100")).toEqual({})
+	expect(ctx.css("text-green")).toEqual({})
+	expect(ctx.css("text-green-100")).toEqual({})
+	ctx = createContext(resolveConfig({ theme: { extend: { textColor: { blue: "#fff", green: undefined } } } }))
+	expect(ctx.css("text-blue")).toEqual({ color: "#fff" })
+	expect(ctx.css("text-blue-100")).toEqual({})
+	expect(ctx.css("text-green")).toEqual({})
+	expect(ctx.css("text-green-100")).toEqual({})
+})

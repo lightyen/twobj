@@ -36,7 +36,7 @@ export interface CustomPalette {
 }
 
 export interface ColorValueFunc {
-	(options: { opacityValue?: string }): string
+	(options: { opacityValue?: string }): Primitive
 }
 
-export type ColorValue = ColorValueFunc | CustomPalette | string
+export type ColorValue = ColorValueFunc | CustomPalette | Primitive

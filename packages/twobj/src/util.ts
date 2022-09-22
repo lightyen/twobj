@@ -150,6 +150,9 @@ export function flattenColorPalette(colors: Palette | null | undefined): {
 		{},
 		...Object.entries(colors ?? {}).flatMap(([key, child]) => {
 			if (typeof child !== "object" || child === null) {
+				if (child == undefined) {
+					return []
+				}
 				return [{ [key]: child }]
 			}
 			return Object.entries(flattenColorPalette(child as Palette | null | undefined)).map(([k, v]) => {

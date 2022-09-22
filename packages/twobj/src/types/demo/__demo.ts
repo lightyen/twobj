@@ -27,6 +27,10 @@ resolveConfig({
 			stroke: {
 				black: "#000",
 			},
+			textColor: {
+				blue: "#fff",
+				green: undefined,
+			},
 		},
 	},
 	plugins: [
