@@ -1,7 +1,7 @@
 import { defaultColors } from "./defaultColors"
 import * as parser from "./parser"
 import { ConfigEntry, ConfigObject, ConfigUtils, ResolveThemePath } from "./types"
-import { isPlainArray, isPlainObject } from "./util"
+import { isObject, isPlainArray, isPlainObject } from "./util"
 
 function cloneDeep(value: unknown): unknown {
 	if (Array.isArray(value)) {
@@ -27,7 +27,7 @@ export function resolveFunctionKeys(themeObject: ConfigObject): ConfigObject {
 
 		for (let i = 0; i < paths.length; i++) {
 			const path = paths[i].value
-			if (Object.prototype.hasOwnProperty.call(target, path)) {
+			if (isObject(target) && Object.prototype.hasOwnProperty.call(target, path)) {
 				target = (target as ConfigObject)[path]
 			} else {
 				const result = parser.tryOpacity(paths)
@@ -37,8 +37,12 @@ export function resolveFunctionKeys(themeObject: ConfigObject): ConfigObject {
 					opacityValue = result.opacity
 					paths = result.path
 
-					if (i < paths.length && Object.prototype.hasOwnProperty.call(target, paths[i].value)) {
-						target = (target as ConfigObject)[paths[i].value]
+					if (
+						isObject(target) &&
+						i < paths.length &&
+						Object.prototype.hasOwnProperty.call(target, paths[i].value)
+					) {
+						target = target[paths[i].value]
 					} else {
 						target = undefined
 					}
