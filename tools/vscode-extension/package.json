@@ -28,8 +28,8 @@
     "vscode": "^1.70.0"
   },
   "galleryBanner": {
-    "color": "#191A1F",
-    "theme": "dark"
+    "color": "#DFDFDF",
+    "theme": "light"
   },
   "activationEvents": [
     "onLanguage:javascript",

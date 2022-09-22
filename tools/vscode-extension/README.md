@@ -1,24 +1,17 @@
-# Twobj IntelliSense
 
-VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj)
+VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj).
 
 ![preview](https://github.com/lightyen/twobj/raw/vscode-web/tools/vscode-extension/preview.png)
 
 ## Features
 
-- auto completion
-- hover
-- color decoration
-- document references
-- diagnostics
+- **Auto completion**
+- **Hover preview**
+- **Color decoration**
+- **Diagnostics**
+- **Help links**
 
-## Pack
-
-```sh
-pnpm install && pnpm package
-```
-
-## VSCode Settings
+## VS Code Settings
 
 ### Recommended
 
@@ -28,7 +21,7 @@ pnpm install && pnpm package
 }
 ```
 
-### Defaults
+### All settings
 
 ```json5
 {
@@ -40,12 +33,11 @@ pnpm install && pnpm package
   "twobj.enabled": true,
   "twobj.rootFontSize": 16,
   "twobj.logLevel": "info",
-  "twobj.hoverColorHint": "none",
-  "twobj.otherLanguages": []
+  "twobj.hoverColorHint": "none"
 }
 ```
 
-### Custom CompletionList Panel
+### Theme: Custom CompletionList Panel
 
 ```json5
 // example
@@ -62,7 +54,7 @@ pnpm install && pnpm package
 }
 ```
 
-### Custom Semantic Colors [(docs)](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide)
+### Theme: Custom Semantic Colors [(docs)](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide)
 
 ```json5
 {
@@ -92,4 +84,10 @@ pnpm install && pnpm package
     }
   }
 }
+```
+
+## Build your own extension
+
+```sh
+pnpm install && pnpm package
 ```
