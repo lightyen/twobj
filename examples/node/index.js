@@ -53,11 +53,7 @@ const ctx = createContext(
 						return `&.${e(value ?? "")} > *`
 					},
 				})
-				matchVariant({
-					screen(value) {
-						return `@media (min-width: ${value ?? "0px"})`
-					},
-				})
+				matchVariant("screen", (value) => `@media (min-width: ${value ?? "0px"})`)
 			},
 		],
 	}),

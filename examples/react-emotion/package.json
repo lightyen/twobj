@@ -40,7 +40,7 @@
     "@reduxjs/toolkit": "1.8.5",
     "@tanstack/react-query": "4.2.3",
     "axios": "0.27.2",
-    "babel-plugin-twobj": "1.0.5",
+    "babel-plugin-twobj": "2.0.0",
     "react-intl": "6.1.1",
     "react-redux": "8.0.2",
     "redux": "4.2.0",

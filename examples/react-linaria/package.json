@@ -71,11 +71,11 @@
     "@reduxjs/toolkit": "1.8.3",
     "@tanstack/react-query": "4.0.10",
     "axios": "0.27.2",
-    "babel-plugin-twobj": "1.0.5",
+    "babel-plugin-twobj": "2.0.0",
     "react-intl": "6.0.5",
     "react-redux": "8.0.2",
     "redux": "4.2.0",
     "redux-saga": "1.1.3",
-    "twobj": "1.2.0"
+    "twobj": "../../packages/twobj"
   }
 }
