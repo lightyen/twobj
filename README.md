@@ -94,3 +94,7 @@ const ctx = createContext(
   }),
 )
 ```
+
+## VS Code Extension
+
+[Install via the Marketplace](https://marketplace.visualstudio.com/items?itemName=lightyen.twobj-intellisense)
