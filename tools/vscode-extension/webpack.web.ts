@@ -28,7 +28,7 @@ const configExtension: Configuration = {
 	},
 	target: "webworker",
 	mode: process.env.NODE_ENV === "production" ? "production" : "development",
-	devtool: "nosources-source-map",
+	devtool: false,
 	entry: path.join(clientWorkspaceFolder, "extension.ts"),
 	output: {
 		path: path.resolve(__dirname, "dist/web"),
@@ -37,7 +37,6 @@ const configExtension: Configuration = {
 		devtoolModuleFilenameTemplate: "[absolute-resource-path]",
 	},
 	optimization: {
-		minimize: false,
 		minimizer: [
 			new TerserPlugin({
 				parallel: true,
@@ -106,6 +105,7 @@ const configExtension: Configuration = {
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ["extension*"] }),
 		new DefinePlugin({
 			__COMMIT_HASH__: JSON.stringify(execSync("git rev-parse HEAD").toString().trim()),
+			__VSCODE_WEB__: "true",
 		}),
 	],
 }

@@ -95,6 +95,7 @@ const configExtension: Configuration = {
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ["extension*"] }),
 		new DefinePlugin({
 			__COMMIT_HASH__: JSON.stringify(execSync("git rev-parse HEAD").toString().trim()),
+			__VSCODE_WEB__: "false",
 		}),
 	],
 }

@@ -18,4 +18,4 @@ media/icon.xcf
 src/**/*
 .browserslistrc
 statistics.html
-preview.gif
+pnpm-lock.yaml

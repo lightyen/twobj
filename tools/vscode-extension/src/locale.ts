@@ -2,9 +2,9 @@ interface NLSConfig {
 	locale: "en" | "zh-tw"
 }
 
-// const nlsConfig = JSON.parse(process.env.VSCODE_NLS_CONFIG ?? "") as NLSConfig
-// NOTE: VSCODE_NLS_CONFIG is undefined in web extension.
-const nlsConfig: NLSConfig = { locale: "en" }
+const nlsConfig: NLSConfig = __VSCODE_WEB__
+	? { locale: "en" }
+	: JSON.parse(process?.env?.VSCODE_NLS_CONFIG ?? '{"locale":"en"}')
 
 import { createIntl, createIntlCache, IntlConfig } from "@formatjs/intl"
 import defaultMessages from "../package.nls.json"

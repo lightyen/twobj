@@ -1,7 +1,3 @@
-export function escapeRegexp(expression: string) {
-	return expression.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&")
-}
-
 /** accept strings: `1/4` */
 export function calcFraction(value: string): number {
 	const i = value.indexOf("/")
