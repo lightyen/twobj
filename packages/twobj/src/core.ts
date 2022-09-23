@@ -781,7 +781,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 						return [css, c]
 					}
 				} else {
-					return [c.css, c]
+					return [{ ...c.css }, c]
 				}
 			} else if (arr.filter(c => c.type === "lookup").length > 1) {
 				const lookup = arr.filter((c): c is LookupSpec => c.type === "lookup")
@@ -803,7 +803,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 				const statik = arr.filter((c): c is StaticSpec => c.type === "static")
 				if (statik.length > 0) {
 					const c = statik[0]
-					return [c.css, c]
+					return [{ ...c.css }, c]
 				}
 			} else {
 				for (const c of arr) {
@@ -813,7 +813,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 							return [css, c]
 						}
 					} else {
-						return [c.css, c]
+						return [{ ...c.css }, c]
 					}
 				}
 			}
