@@ -1,6 +1,7 @@
+import { createGlobalStyle } from "styled-components"
 import { globalStyles, theme, tw, wrap } from "twobj"
 
-globalStyles
+export const GlobalStyles = createGlobalStyle`${globalStyles}`
 
 tw`divide-black`
 tw`flex items-center font-bold text-lg after:text-cyan-400`

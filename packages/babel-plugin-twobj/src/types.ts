@@ -29,7 +29,7 @@ export interface PluginState {
 	}
 }
 
-export type ThirdPartyName = "emotion" | "linaria"
+export type ThirdPartyName = "emotion" | "styled-components" | "linaria"
 
 export interface ThirdParty {
 	name: ThirdPartyName // ex: emotion

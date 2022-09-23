@@ -1,3 +1,4 @@
+import { createGlobalStyle } from "styled-components"
 const globalStyles = {
 	"*, ::before, ::after": {
 		"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
@@ -223,7 +224,7 @@ const globalStyles = {
 		display: "none",
 	},
 }
-globalStyles
+export const GlobalStyles = createGlobalStyle`${globalStyles}`
 ;({
 	"& > :not([hidden]) ~ :not([hidden])": {
 		borderColor: "#000",

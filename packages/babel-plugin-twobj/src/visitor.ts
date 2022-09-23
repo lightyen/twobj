@@ -16,6 +16,19 @@ import {
 
 export const packageName = "twobj"
 
+function getPlugin({ name }: ThirdParty) {
+	switch (name) {
+		case "emotion":
+			return plugins.emotion
+		case "styled-components":
+			return plugins.styledComponents
+		case "linaria":
+			return plugins.linaria
+		default:
+			return undefined
+	}
+}
+
 export function createVisitor({
 	babel,
 	options: { useClassName = false },
@@ -43,7 +56,12 @@ export function createVisitor({
 				for (const { localName, importedName } of variables) {
 					if (importedName === "globalStyles" && path.node.name === localName) {
 						const parent = path.parentPath
-						if (parent.isExpression() || parent.isAssignmentPattern() || parent.isVariableDeclarator()) {
+						if (
+							parent.isExpression() ||
+							parent.isAssignmentPattern() ||
+							parent.isVariableDeclarator() ||
+							parent.isExpressionStatement()
+						) {
 							if (!state.globalInserted) {
 								if (isObject(ctx.globalStyles)) {
 									const result = buildStyleObjectExpression(t, ctx.globalStyles)
@@ -55,6 +73,8 @@ export function createVisitor({
 								}
 								state.globalInserted = true
 							}
+						} else {
+							throw Error("not match")
 						}
 						break
 					}
@@ -77,6 +97,7 @@ export function createVisitor({
 									const value = quasi.node.value.cooked ?? quasi.node.value.raw
 									path.replaceWith(buildStyle(value))
 								}
+								skip = true
 								break
 							}
 							case "theme": {
@@ -101,10 +122,18 @@ export function createVisitor({
 										path.replaceWith(expr)
 									}
 								}
+								skip = true
 								break
 							}
+							case "css":
+							case "createGlobalStyle": {
+								// no skip
+								break
+							}
+							default:
+								skip = true
+								break
 						}
-						skip = true
 						break
 					}
 				}
@@ -119,7 +148,11 @@ export function createVisitor({
 	const lookup = new Set([packageName])
 
 	if (thirdParty) {
-		plugins[thirdParty.name].lookup.forEach(v => lookup.add(v))
+		Object.values(plugins).forEach(plugin => {
+			for (const keyword of plugin.lookup) {
+				lookup.add(keyword)
+			}
+		})
 	}
 
 	return {
@@ -138,17 +171,20 @@ export function createVisitor({
 			}
 
 			if (thirdParty) {
-				program.traverse<State & PluginState>(
-					plugins[thirdParty.name]({
-						thirdParty,
-						t,
-						buildStyle,
-						buildWrap,
-						addImportDeclaration,
-						useClassName,
-					}),
-					Object.assign(state, { styled: { imported: false, localName: "styled" } }),
-				)
+				const plugin = getPlugin(thirdParty)
+				if (plugin) {
+					program.traverse<State & PluginState>(
+						plugin({
+							thirdParty,
+							t,
+							buildStyle,
+							buildWrap,
+							addImportDeclaration,
+							useClassName,
+						}),
+						Object.assign(state, { styled: { imported: false, localName: "styled" } }),
+					)
+				}
 			}
 
 			// transfrom tw template tag
