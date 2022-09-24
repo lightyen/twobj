@@ -172,8 +172,10 @@ export default async function hover(
 								header.appendMarkdown(links.map(ref => `[Reference](${ref.url}) `).join("\n"))
 							}
 						}
-					} else {
+					} else if (target.type === parser.NodeType.ArbitraryVariant) {
 						header.appendMarkdown("**arbitrary variant**")
+					} else if (target.type === parser.NodeType.ArbitrarySelector) {
+						header.appendMarkdown("**arbitrary selector**")
 					}
 
 					const code = state.tw.renderVariant(target, tabSize)

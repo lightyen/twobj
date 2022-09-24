@@ -351,13 +351,15 @@ function validateTw({
 			}
 		},
 		node => {
+			const start = node.range[0]
+			let end = node.range[0]
+			if (node.type === parser.NodeType.ArbitraryClassname) {
+				end = node.prefix.range[1]
+			}
 			return !!diagnostics.push({
 				source: DIAGNOSTICS_ID,
-				message: "Bracket is not closed.",
-				range: new vscode.Range(
-					document.positionAt(offset + node.range[0]),
-					document.positionAt(offset + node.range[1]),
-				),
+				message: "Brackets are not balanced.",
+				range: new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end)),
 				severity: vscode.DiagnosticSeverity.Error,
 			})
 		},
@@ -506,10 +508,14 @@ function checkArbitraryClassname(
 			let [start, end] = item.expr.range
 			while (start < end && parser.isSpace(text.charCodeAt(start))) start++
 			while (start < end && parser.isSpace(text.charCodeAt(end - 1))) end--
+			if (start === end) {
+				start = item.expr.range[0]
+				end = item.expr.range[1]
+			}
 			const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 			result.push({
 				source: DIAGNOSTICS_ID,
-				message: "Fail to resolve this value.",
+				message: "Fail to resolve the value.",
 				range,
 				severity: vscode.DiagnosticSeverity.Error,
 			})
@@ -563,7 +569,7 @@ function rejectShortCss(item: parser.ShortCss, document: TextDocument, offset: n
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 	result.push({
 		source: DIAGNOSTICS_ID,
-		message: "Unknown token",
+		message: "Unknown",
 		range,
 		severity: vscode.DiagnosticSeverity.Error,
 	})

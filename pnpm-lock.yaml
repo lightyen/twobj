@@ -88,7 +88,7 @@ importers:
     specifiers:
       '@types/cssesc': 3.0.0
       cssesc: 3.0.0
-      csstype: ^3.1.1
+      csstype: 3.1.1
       parsel-js: 1.0.2
       postcss: 8.4.16
       tailwindcss: 0.0.0-insiders.19b86e6
@@ -140,7 +140,7 @@ importers:
       terser-webpack-plugin: 5.3.6
       ts-paths-resolve-plugin: 5.8.0
       tslib: 2.4.0
-      twobj: 2.1.4
+      twobj: 2.1.5
       typescript: 4.8.3
       typescript-paths: 1.4.0
       util: 0.12.4
@@ -1642,7 +1642,7 @@ packages:
       '@emotion/memoize': 0.8.0
       '@emotion/unitless': 0.8.0
       '@emotion/utils': 1.2.0
-      csstype: 3.1.0
+      csstype: 3.1.1
     dev: true
 
   /@emotion/sheet/1.2.0:
@@ -4062,10 +4062,6 @@ packages:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
     engines: {node: '>=4'}
     hasBin: true
-    dev: true
-
-  /csstype/3.1.0:
-    resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
     dev: true
 
   /csstype/3.1.1:
