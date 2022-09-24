@@ -1,9 +1,9 @@
 {
-	"compilerOptions": {
-		"noEmit": true,
-		"jsx": "preserve",
-		"allowJs": true,
-		"skipLibCheck": true,
-		"types": ["@types/node", "@emotion/react/types/css-prop", "../../types/emotion"]
-	}
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "preserve",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "types": ["@types/node", "@emotion/react/types/css-prop", "../../types/emotion"]
+  }
 }

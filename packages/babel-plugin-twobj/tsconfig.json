@@ -1,7 +1,7 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": ["src/**/*.ts", "src/index.mts", "src/index.cts"],
-	"compilerOptions": {
-		"noImplicitAny": true
-	}
+  "extends": "../../tsconfig.json",
+  "include": ["src/**/*.ts", "src/index.mts", "src/index.cts"],
+  "compilerOptions": {
+    "noImplicitAny": true
+  }
 }

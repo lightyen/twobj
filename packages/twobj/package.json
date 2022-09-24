@@ -1,42 +1,42 @@
 {
-	"name": "twobj",
-	"version": "2.1.4",
-	"homepage": "https://github.com/lightyen/twobj",
-	"author": {
-		"name": "lightyen",
-		"url": "https://github.com/lightyen"
-	},
-	"repository": {
-		"directory": "https://github.com/lightyen/twobj/tree/main/packages/twobj"
-	},
-	"exports": {
-		".": {
-			"require": "./index.js",
-			"import": "./index.mjs"
-		},
-		"./parser": {
-			"require": "./parser/index.js",
-			"import": "./parser/index.mjs"
-		}
-	},
-	"scripts": {
-		"doit": "pnpm update --interactive --latest",
-		"compile": "del ./index.* ./parser ./config *.d.ts **/*.d.ts && tsup",
-		"format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
-		"build": "npm run compile && npm run format"
-	},
-	"files": [
-		"parser",
-		"index.js",
-		"index.mjs",
-		"*.d.ts"
-	],
-	"devDependencies": {
-		"@types/cssesc": "3.0.0",
-		"cssesc": "3.0.0",
-		"csstype": "3.1.1",
-		"parsel-js": "1.0.2",
-		"postcss": "8.4.16",
-		"tailwindcss": "0.0.0-insiders.19b86e6"
-	}
+  "name": "twobj",
+  "version": "2.1.4",
+  "homepage": "https://github.com/lightyen/twobj",
+  "author": {
+    "name": "lightyen",
+    "url": "https://github.com/lightyen"
+  },
+  "repository": {
+    "directory": "https://github.com/lightyen/twobj/tree/main/packages/twobj"
+  },
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./index.mjs"
+    },
+    "./parser": {
+      "require": "./parser/index.js",
+      "import": "./parser/index.mjs"
+    }
+  },
+  "scripts": {
+    "doit": "pnpm update --interactive --latest",
+    "compile": "del ./index.* ./parser ./config *.d.ts **/*.d.ts && tsup",
+    "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
+    "build": "npm run compile && npm run format"
+  },
+  "files": [
+    "parser",
+    "index.js",
+    "index.mjs",
+    "*.d.ts"
+  ],
+  "devDependencies": {
+    "@types/cssesc": "3.0.0",
+    "cssesc": "3.0.0",
+    "csstype": "3.1.1",
+    "parsel-js": "1.0.2",
+    "postcss": "8.4.16",
+    "tailwindcss": "0.0.0-insiders.19b86e6"
+  }
 }

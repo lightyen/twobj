@@ -1,11 +1,11 @@
 {
-	"editor.formatOnSave": true,
-	"editor.snippetSuggestions": "none",
-	"javascript.suggestionActions.enabled": false,
-	"editor.codeActionsOnSave": {
-		"source.organizeImports": true
-	},
-	"search.exclude": {
-		"**/*.spec.ts.snap": true
-	}
+  "editor.formatOnSave": true,
+  "editor.snippetSuggestions": "none",
+  "javascript.suggestionActions.enabled": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "search.exclude": {
+    "**/*.spec.ts.snap": true
+  }
 }

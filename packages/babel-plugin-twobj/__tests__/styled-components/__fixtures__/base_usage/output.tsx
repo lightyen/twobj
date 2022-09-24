@@ -117,8 +117,7 @@ const globalStyles = {
 		fontWeight: "bolder",
 	},
 	"code,kbd,samp,pre": {
-		fontFamily:
-			'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+		fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
 		fontSize: "1em",
 	},
 	small: {

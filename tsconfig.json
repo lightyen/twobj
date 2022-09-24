@@ -1,14 +1,14 @@
 {
-	"compilerOptions": {
-		"types": ["@types/node", "@types/jest"],
-		"strictNullChecks": true,
-		"noImplicitAny": false,
-		"noImplicitThis": true,
-		"allowSyntheticDefaultImports": true,
-		"isolatedModules": true,
-		"esModuleInterop": true,
-		"module": "ESNext",
-		"moduleResolution": "node",
-		"target": "es2021"
-	}
+  "compilerOptions": {
+    "types": ["@types/node", "@types/jest"],
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "es2021"
+  }
 }
