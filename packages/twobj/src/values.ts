@@ -855,6 +855,9 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 const imageFunction: ValueTypeSpec<string | number | null | undefined> = (function () {
 	const imageFunctions = [
 		"image",
+		"cross-fade",
+		"conic-gradient",
+		"repeating-conic-gradient",
 		"-webkit-image-set",
 		"image-set",
 		"-moz-element",

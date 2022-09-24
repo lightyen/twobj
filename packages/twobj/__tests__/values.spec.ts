@@ -136,13 +136,27 @@ test("url", async () => {
 	).toBeUndefined()
 })
 
-test("image", async () => {
+test("background image", async () => {
 	expect(__types.image.handleValue("image(aaaaa)")).not.toBeUndefined()
 	expect(__types.image.handleValue("element(xxxx")).not.toBeUndefined()
 	expect(
 		__types.image.handleValue("linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))"),
 	).not.toBeUndefined()
 	expect(__types.image.handleValue("rgb(210 120 20)")).toBeUndefined()
+	expect(
+		__types.image.handleValue(
+			"conic-gradient(hsl(360, 100%, 50%), hsl(315, 100%, 50%), hsl(270, 100%, 50%), hsl(225, 100%, 50%), hsl(180, 100%, 50%), hsl(135, 100%, 50%), hsl(90, 100%, 50%), hsl(45, 100%, 50%), hsl(0, 100%, 50%) )",
+		),
+	).not.toBeUndefined()
+	expect(__types.image.handleValue("cross-fade(url(white.png) 100%, url(black.png) 0%)")).not.toBeUndefined()
+	expect(
+		__types.image.handleValue(`repeating-conic-gradient(
+		from 45deg at 10% 50%,
+		brown 0deg 10deg,
+		darkgoldenrod 10deg 20deg,
+		chocolate 20deg 30deg
+	  )`),
+	).not.toBeUndefined()
 })
 
 test("line-width", async () => {
