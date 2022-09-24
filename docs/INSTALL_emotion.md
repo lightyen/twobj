@@ -4,22 +4,27 @@
 pnpm add twobj babel-plugin-twobj
 ```
 
-## .babelrc
+## .babelrc.js
 
-```json
-{
-  "plugins": ["twobj", "@emotion"],
+```js
+module.exports = {
+  "plugins": [["twobj", { tailwindConfig: require("./tailwind.config") }], "@emotion"],
 }
 ```
 
 ## TypeScript
 
-Add this line to your `src/typings/tw.d.ts`:
+Add types to your `tsconfig.json`:
 
-```ts
-/// <reference types="babel-plugin-twobj/types/emotion" />
+```json
+{
+  "compilerOptions": {
+    "types": ["@emotion/react/types/css-prop", "babel-plugin-twobj/types/emotion"]
+  }
+}
+
 ```
 
 ## More detail
 
-- https://github.com/lightyen/twobj/tree/main/examples/react-emotion
+- https://github.com/lightyen/twobj.examples/tree/main/react-emotion
