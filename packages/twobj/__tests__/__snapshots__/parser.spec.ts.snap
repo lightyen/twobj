@@ -1,96 +1,96 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`parse the group of variants 1`] = `
-Object {
-  "expressions": Array [
-    Object {
-      "child": Object {
+{
+  "expressions": [
+    {
+      "child": {
         "getText": [Function],
         "important": true,
-        "range": Array [
+        "range": [
           85,
           93,
         ],
         "type": "ClassName",
       },
       "getText": [Function],
-      "range": Array [
+      "range": [
         0,
         93,
       ],
       "type": "VariantSpan",
-      "variant": Object {
-        "expressions": Array [
-          Object {
+      "variant": {
+        "expressions": [
+          {
             "getText": [Function],
-            "range": Array [
+            "range": [
               2,
               11,
             ],
             "type": "VariantSpan",
-            "variant": Object {
+            "variant": {
               "getText": [Function],
-              "id": Object {
+              "id": {
                 "getText": [Function],
-                "range": Array [
+                "range": [
                   2,
                   10,
                 ],
                 "type": "Identifier",
               },
-              "range": Array [
+              "range": [
                 2,
                 11,
               ],
               "type": "SimpleVariant",
             },
           },
-          Object {
-            "child": Object {
+          {
+            "child": {
               "closed": true,
-              "expressions": Array [
-                Object {
+              "expressions": [
+                {
                   "getText": [Function],
-                  "range": Array [
+                  "range": [
                     22,
                     31,
                   ],
                   "type": "VariantSpan",
-                  "variant": Object {
+                  "variant": {
                     "getText": [Function],
-                    "id": Object {
+                    "id": {
                       "getText": [Function],
-                      "range": Array [
+                      "range": [
                         22,
                         30,
                       ],
                       "type": "Identifier",
                     },
-                    "range": Array [
+                    "range": [
                       22,
                       31,
                     ],
                     "type": "SimpleVariant",
                   },
                 },
-                Object {
+                {
                   "getText": [Function],
-                  "range": Array [
+                  "range": [
                     47,
                     56,
                   ],
                   "type": "VariantSpan",
-                  "variant": Object {
+                  "variant": {
                     "getText": [Function],
-                    "id": Object {
+                    "id": {
                       "getText": [Function],
-                      "range": Array [
+                      "range": [
                         47,
                         55,
                       ],
                       "type": "Identifier",
                     },
-                    "range": Array [
+                    "range": [
                       47,
                       56,
                     ],
@@ -100,49 +100,49 @@ Object {
               ],
               "getText": [Function],
               "important": false,
-              "range": Array [
+              "range": [
                 21,
                 57,
               ],
               "type": "Group",
             },
             "getText": [Function],
-            "range": Array [
+            "range": [
               12,
               57,
             ],
             "type": "VariantSpan",
-            "variant": Object {
+            "variant": {
               "getText": [Function],
-              "id": Object {
+              "id": {
                 "getText": [Function],
-                "range": Array [
+                "range": [
                   12,
                   20,
                 ],
                 "type": "Identifier",
               },
-              "range": Array [
+              "range": [
                 12,
                 21,
               ],
               "type": "SimpleVariant",
             },
           },
-          Object {
+          {
             "getText": [Function],
             "important": false,
-            "range": Array [
+            "range": [
               58,
               65,
             ],
             "type": "ClassName",
           },
-          Object {
+          {
             "closed": true,
-            "decl": Object {
+            "decl": {
               "getText": [Function],
-              "range": Array [
+              "range": [
                 67,
                 81,
               ],
@@ -150,7 +150,7 @@ Object {
             },
             "getText": [Function],
             "important": false,
-            "range": Array [
+            "range": [
               66,
               82,
             ],
@@ -159,7 +159,7 @@ Object {
         ],
         "getText": [Function],
         "important": true,
-        "range": Array [
+        "range": [
           2,
           82,
         ],
@@ -168,7 +168,7 @@ Object {
     },
   ],
   "getText": [Function],
-  "range": Array [
+  "range": [
     0,
     93,
   ],
