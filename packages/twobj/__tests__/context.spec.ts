@@ -12,4 +12,11 @@ test("style objects are immutable", async () => {
 		borderWidth: "2px",
 		backgroundColor: "#f3f4f6",
 	})
+	expect(ctx.css("sm:divide-black")).toEqual({
+		"@media (min-width: 640px)": { "& > :not([hidden]) ~ :not([hidden])": { borderColor: "#000" } },
+	})
+	expect(ctx.css("flex border-black")).toEqual({
+		display: "flex",
+		borderColor: "#000",
+	})
 })
