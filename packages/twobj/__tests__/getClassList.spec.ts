@@ -3382,6 +3382,7 @@ const source = [
 	"break-normal",
 	"break-words",
 	"break-all",
+	"break-keep",
 	"rounded-none",
 	"rounded-sm",
 	"rounded",

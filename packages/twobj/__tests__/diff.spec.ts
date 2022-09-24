@@ -16,44 +16,32 @@ test("diff tailwindcss", async () => {
 
 	/** classnames */
 
-	const tailwind = ctx
-		.getClassList()
-		.filter(classname => {
-			// use 'grow'
-			if (/flex-grow(-\d+)?$/.test(classname)) {
+	const tailwind = ctx.getClassList().filter(classname => {
+		// Deprecated, replace with 'grow'
+		if (/flex-grow(-\d+)?$/.test(classname)) {
+			return false
+		}
+
+		// Deprecated, replace with 'shrink'
+		if (/flex-shrink(-\d+)?$/.test(classname)) {
+			return false
+		}
+
+		// Deprecated, replace with 'bg-red-500/80'
+		if (/^(text|bg|divide|border|placeholder|ring)-opacity-\d+$/.test(classname)) {
+			return false
+		}
+
+		switch (classname) {
+			case "*":
+			case "overflow-ellipsis": // Deprecated, replace with 'text-ellipsis'
+			case "decoration-slice": // Deprecated, replace with 'box-decoration-slice'
+			case "decoration-clone": // Deprecated, replace with 'box-decoration-clone'
 				return false
-			}
+		}
 
-			// use 'shrink'
-			if (/flex-shrink(-\d+)?$/.test(classname)) {
-				return false
-			}
-
-			// use 'bg-red-500/80'
-			if (/^(text|bg|divide|border|placeholder|ring)-opacity-\d+$/.test(classname)) {
-				return false
-			}
-
-			switch (classname) {
-				case "*":
-				case "overflow-ellipsis": // use 'text-ellipsis'
-				case "decoration-slice": // use 'box-decoration-slice'
-				case "decoration-clone": // use 'box-decoration-clone'
-				case "outline-hidden": // invalid
-					return false
-			}
-
-			return true
-		})
-		.concat([
-			"fill-none",
-			"stroke-none",
-			"-outline-offset-0",
-			"-outline-offset-1",
-			"-outline-offset-2",
-			"-outline-offset-4",
-			"-outline-offset-8",
-		])
+		return true
+	})
 
 	const s0 = new Set(context.getClassList())
 	const s1 = new Set(tailwind)

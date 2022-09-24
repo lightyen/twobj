@@ -91,14 +91,14 @@ importers:
       csstype: ^3.1.1
       parsel-js: 1.0.2
       postcss: 8.4.16
-      tailwindcss: 0.0.0-insiders.1d82327
+      tailwindcss: 0.0.0-insiders.19b86e6
     devDependencies:
       '@types/cssesc': 3.0.0
       cssesc: 3.0.0
       csstype: 3.1.1
       parsel-js: 1.0.2
       postcss: 8.4.16
-      tailwindcss: 0.0.0-insiders.1d82327_postcss@8.4.16
+      tailwindcss: 0.0.0-insiders.19b86e6_postcss@8.4.16
 
   tools/vscode-extension:
     specifiers:
@@ -8370,8 +8370,8 @@ packages:
       webpack: 5.74.0_acnmyxptuibk6bca6qigk2wyju
     dev: true
 
-  /tailwindcss/0.0.0-insiders.1d82327_postcss@8.4.16:
-    resolution: {integrity: sha512-Te5F9uEzDKyKX/oBuB1pSHTI9lIGo6MWv3MM6Kqs7Uvh7JCBOr0Kf2oNJqthksFu2oRdGy2N3RxYWglV0h0hQw==}
+  /tailwindcss/0.0.0-insiders.19b86e6_postcss@8.4.16:
+    resolution: {integrity: sha512-Fhba9yJvubOZMgZtSgQI+HJD3/5+OgzLS1U8Xuka098yGIeG+6oBFBWoej5X6TN1/kcuQ3tmMEdFOhOKRpZfZw==}
     engines: {node: '>=12.13.0'}
     hasBin: true
     peerDependencies:

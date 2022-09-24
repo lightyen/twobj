@@ -2135,6 +2135,7 @@ export const classPlugins: ClassPlugins = {
 			".break-normal": { overflowWrap: "normal", wordBreak: "normal" },
 			".break-words": { overflowWrap: "break-word" },
 			".break-all": { wordBreak: "break-all" },
+			".break-keep": { wordBreak: "keep-all" },
 		})
 	}),
 }

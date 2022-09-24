@@ -22626,6 +22626,12 @@ Object {
 }
 `;
 
+exports[`snapshots: break-keep 1`] = `
+Object {
+  "wordBreak": "keep-all",
+}
+`;
+
 exports[`snapshots: break-normal 1`] = `
 Object {
   "overflowWrap": "normal",
