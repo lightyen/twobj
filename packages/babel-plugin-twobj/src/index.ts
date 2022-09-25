@@ -74,6 +74,7 @@ function babelPlugin(babel: typeof import("babel__core"), options: PluginOptions
 			config,
 			moduleType: "cjs",
 			thirdParty: thirdParty === "auto" ? findThirdParty() : thirdParty,
+			throwError: options.throwError ?? false,
 		}),
 	}
 }

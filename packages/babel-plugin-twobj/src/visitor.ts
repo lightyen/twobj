@@ -1,7 +1,8 @@
-import type { NodePath, Visitor } from "@babel/core"
+import type { BabelFile, NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import type { CSSProperties } from "twobj"
 import { createContext, resolveConfig } from "twobj"
+import type * as parser from "twobj/parser"
 import * as plugins from "./plugins"
 import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
 import {
@@ -13,6 +14,12 @@ import {
 	getFirstQuasi,
 	isObject,
 } from "./util"
+
+interface ParseError {
+	name: string
+	message: string
+	node: parser.Classname | parser.ArbitraryClassname | parser.SimpleVariant | parser.ArbitraryVariant
+}
 
 export const packageName = "twobj"
 
@@ -35,16 +42,18 @@ export function createVisitor({
 	config,
 	moduleType,
 	thirdParty,
+	throwError,
 }: {
 	babel: typeof import("babel__core")
 	options: PluginOptions
 	config: unknown
 	moduleType: "esm" | "cjs"
 	thirdParty: ThirdParty | undefined
+	throwError: boolean
 }): Visitor<import("@babel/core").PluginPass> {
 	const t = babel.types
 	const resolved = resolveConfig(config as Parameters<typeof resolveConfig>[0])
-	const ctx = createContext(resolved)
+	const ctx = createContext(resolved, { throwError })
 
 	const visitor: Visitor<State> = {
 		// add globalStyles to global scope
@@ -95,7 +104,7 @@ export function createVisitor({
 								const quasi = getFirstQuasi(path)
 								if (quasi) {
 									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-									path.replaceWith(buildStyle(value))
+									path.replaceWith(buildStyle(value, quasi, state.file))
 								}
 								skip = true
 								break
@@ -218,12 +227,91 @@ export function createVisitor({
 		},
 	}
 
-	function buildStyle(input: string) {
-		return buildStyleObjectExpression(t, ctx.css(input))
+	function buildStyle(input: string, errPath: NodePath, file: BabelFile) {
+		try {
+			return buildStyleObjectExpression(t, ctx.css(input))
+		} catch (error) {
+			throw createError(error as ParseError, errPath, file)
+		}
 	}
 
-	function buildWrap(input: string) {
-		return buildWrapObjectExpression(t, ctx.wrap(input)(Math.E as unknown as CSSProperties))
+	function buildWrap(input: string, errPath: NodePath, file: BabelFile) {
+		try {
+			return buildWrapObjectExpression(t, ctx.wrap(input)(Math.E as unknown as CSSProperties))
+		} catch (error) {
+			throw createError(error as ParseError, errPath, file)
+		}
+	}
+
+	function createError(error: ParseError, errPath: NodePath, file: BabelFile) {
+		if (errPath.node.loc == undefined) {
+			return errPath.buildCodeFrameError(error.message)
+		}
+		let loc = errPath.node.loc
+		if (errPath.isJSXAttribute()) {
+			loc.start.column += 3 // tw=
+			const value = errPath.get("value")
+			if (value && value.isJSXExpressionContainer()) {
+				loc.start.column += 2
+			} else {
+				loc.start.column += 1
+			}
+		}
+
+		loc = getLocation(file.code, loc, error.node.range)
+		errPath.node.loc = loc
+		const retErr = errPath.buildCodeFrameError(
+			`${error.message}\n\n${file.opts.filename}:${loc.start.line}:${loc.start.column + 1}`,
+		)
+		return retErr
+	}
+
+	function getLocation(
+		rawLines: string,
+		{ start, end }: babel.SourceLocation,
+		[a, b]: parser.Range,
+	): babel.SourceLocation {
+		const lineOffsets = computeLineOffsets(rawLines)
+		start.line -= 1
+		end.line -= 1
+		end = positionAt(offsetAt(start) + b)
+		start = positionAt(offsetAt(start) + a)
+		start.line += 1
+		end.line += 1
+		return { start, end }
+
+		function offsetAt(position: { line: number; column: number }) {
+			if (position.line >= lineOffsets.length) {
+				return rawLines.length
+			} else if (position.line < 0) {
+				return 0
+			}
+			const lineOffset = lineOffsets[position.line]
+			const nextLineOffset =
+				position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : rawLines.length
+			return Math.max(Math.min(lineOffset + position.column, nextLineOffset), lineOffset)
+		}
+
+		function positionAt(offset: number): { line: number; column: number } {
+			offset = Math.max(Math.min(offset, rawLines.length), 0)
+			let low = 0,
+				high = lineOffsets.length
+			if (high === 0) {
+				return { line: 0, column: offset }
+			}
+			while (low < high) {
+				const mid = Math.floor((low + high) / 2)
+				if (lineOffsets[mid] > offset) {
+					high = mid
+				} else {
+					low = mid + 1
+				}
+			}
+			// low is the least x for which the line offset is larger than the current offset
+			// or array.length if no line offset is larger than the current offset
+			const line = low - 1
+			return { line, column: offset - lineOffsets[line] }
+		}
 	}
 }
 
@@ -265,4 +353,19 @@ function getImportLibrary(
 	}
 
 	return lib
+}
+
+function computeLineOffsets(text: string): number[] {
+	const result: number[] = [0]
+	for (let i = 0; i < text.length; i++) {
+		const ch = text.charCodeAt(i)
+		// cr lf
+		if (ch === 13 || ch === 10) {
+			if (ch === 13 && i + 1 < text.length && text.charCodeAt(i + 1) === 10) {
+				i++
+			}
+			result.push(i + 1)
+		}
+	}
+	return result
 }

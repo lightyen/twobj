@@ -129,8 +129,10 @@ export const styledComponents: Plugin = function ({
 								if (elements.length === 0) {
 									const expr =
 										targets.length === 1
-											? buildStyle(targets[0].value)
-											: t.arrayExpression(targets.map(t => buildStyle(t.value)))
+											? buildStyle(targets[0].value, targets[0].path, state.file)
+											: t.arrayExpression(
+													targets.map(t => buildStyle(t.value, t.path, state.file)),
+											  )
 									expression.replaceWith(expr)
 								} else {
 									interface A {
@@ -138,7 +140,10 @@ export const styledComponents: Plugin = function ({
 										elements: Array<babel.Expression | babel.SpreadElement | null>
 									}
 									const sorted = targets
-										.map<A>(t => ({ index: t.index, elements: [buildStyle(t.value)] }))
+										.map<A>(t => ({
+											index: t.index,
+											elements: [buildStyle(t.value, t.path, state.file)],
+										}))
 										.concat({ index: cssProp.index, elements: elements.map(e => e.node) })
 										.sort((a, b) => {
 											if (a.index < b.index) {
@@ -160,7 +165,10 @@ export const styledComponents: Plugin = function ({
 									element: babel.Expression | babel.SpreadElement
 								}
 								const sorted = targets
-									.map<B>(t => ({ index: t.index, element: buildStyle(t.value) }))
+									.map<B>(t => ({
+										index: t.index,
+										element: buildStyle(t.value, t.path, state.file),
+									}))
 									.concat({ index: cssProp.index, element: expression.node })
 									.sort((a, b) => {
 										if (a.index < b.index) {
@@ -174,7 +182,9 @@ export const styledComponents: Plugin = function ({
 					} else {
 						const attr = t.jsxAttribute(
 							t.jsxIdentifier("css"),
-							t.jsxExpressionContainer(t.arrayExpression(targets.map(t => buildStyle(t.value)))),
+							t.jsxExpressionContainer(
+								t.arrayExpression(targets.map(t => buildStyle(t.value, t.path, state.file))),
+							),
 						)
 						const last = targets[targets.length - 1]
 						last.path.insertAfter(attr)
@@ -222,7 +232,7 @@ export const styledComponents: Plugin = function ({
 											t.identifier(state.styled.localName),
 											args.map(a => a.node),
 										),
-										[buildStyle(value)],
+										[buildStyle(value, quasi, state.file)],
 									)
 									path.replaceWith(expr)
 								}
@@ -256,7 +266,7 @@ export const styledComponents: Plugin = function ({
 											t.identifier(state.styled.localName),
 											t.identifier(property.node.name),
 										),
-										[buildStyle(value)],
+										[buildStyle(value, quasi, state.file)],
 									)
 									path.replaceWith(expr)
 								}
@@ -328,7 +338,10 @@ export const styledComponents: Plugin = function ({
 									const value = quasi.node.value.cooked ?? quasi.node.value.raw
 
 									const expr = t.callExpression(
-										t.arrowFunctionExpression([t.identifier("e")], buildWrap(value)),
+										t.arrowFunctionExpression(
+											[t.identifier("e")],
+											buildWrap(value, quasi, state.file),
+										),
 										path.get("arguments").map(arg => arg.node),
 									)
 

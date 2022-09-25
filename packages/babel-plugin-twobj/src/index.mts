@@ -86,6 +86,7 @@ export default async function babelPlugin(
 			config,
 			moduleType: "esm",
 			thirdParty: thirdParty === "auto" ? await findThirdParty() : thirdParty,
+			throwError: options.throwError ?? false,
 		}),
 	}
 }

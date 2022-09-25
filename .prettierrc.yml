@@ -7,6 +7,6 @@ jsxSingleQuote: false
 arrowParens: avoid
 trailingComma: all
 overrides:
-  - files: "**/(*.json|*.yaml|*.yml|.babelrc|.prettierrc)"
+  - files: "**/(*.json|*.yaml|*.yml|.babelrc|.prettierrc|.eslintrc)"
     options:
       useTabs: false

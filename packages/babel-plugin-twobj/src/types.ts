@@ -3,6 +3,7 @@ import type babel from "@babel/types"
 
 export interface PluginOptions {
 	tailwindConfig?: unknown
+	throwError?: boolean
 	debug?: boolean
 	thirdParty?: ThirdParty | "auto"
 	/** experimental */
@@ -42,8 +43,8 @@ export interface Plugin {
 	(options: {
 		thirdParty: ThirdParty
 		t: typeof babel
-		buildStyle: (input: string) => babel.ObjectExpression
-		buildWrap: (input: string) => babel.ObjectExpression
+		buildStyle: (input: string, errPath: NodePath, file: BabelFile) => babel.ObjectExpression
+		buildWrap: (input: string, errPath: NodePath, file: BabelFile) => babel.ObjectExpression
 		addImportDeclaration: (declaration: babel.ImportDeclaration) => void
 		useClassName: boolean
 	}): Visitor<State & PluginState>
