@@ -1,10 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type * as parser from "../parser"
 import { CSSProperties } from "./base"
-import { CorePluginFeatures } from "./features"
 import { UserPluginOptions, ValueType } from "./plugin"
 import { LookupSpec, StaticSpec, VariantSpec } from "./specification"
+
+export interface CreateContextOptions {
+	/**
+	 * Throw an error if any variant or utility is not found.
+	 * @default false
+	 */
+	throwError?: boolean
+}
 
 export interface Context extends UserPluginOptions {
 	/** core parser */
@@ -33,9 +38,6 @@ export interface Context extends UserPluginOptions {
 	/** Reverse utilities mapping. */
 	getPluginName(value: string): string | undefined
 
-	/** Look up values in the user's Tailwind configuration. */
-	config(path: string, defaultValue?: unknown): any
-
 	/** Signature: `theme(colors.red.500, <default-value>)` */
 	renderThemeFunc(value: string): string
 
@@ -45,24 +47,12 @@ export interface Context extends UserPluginOptions {
 	/** List all utilities. */
 	getClassList(): string[]
 
-	/** List all color's utilities. */
+	/** List all color utilities. */
 	getColorClasses(): Map<string, string[]>
 
+	/** List all ambiguous utilities. */
 	getAmbiguous(): Map<string, LookupSpec[]>
 
-	/** Escape css. */
-	e(classname: string): string
-	/**
-	 * Do nothing.
-	 * @deprecated
-	 */
-	prefix(classname: string): string
-	/**
-	 * Do nothing.
-	 * @deprecated
-	 */
-	variants(corePlugin: string): string[]
-
-	/** Test a feature exists whether or not. */
-	corePlugins(feature: keyof CorePluginFeatures): boolean
+	set throwError(e: boolean)
+	get throwError(): boolean
 }

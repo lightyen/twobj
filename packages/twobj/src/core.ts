@@ -21,6 +21,7 @@ import type {
 	Context,
 	CorePluginFeatures,
 	CorePluginOptions,
+	CreateContextOptions,
 	CSSProperties,
 	CSSValue,
 	LookupSpec,
@@ -32,6 +33,7 @@ import type {
 	ValueType,
 	VariantSpec,
 } from "./types"
+import { createParseError } from "./types/errors"
 import {
 	applyCamelCase,
 	applyImportant,
@@ -52,7 +54,7 @@ import { representAny, representTypes } from "./values"
 import { variantPlugins } from "./variantPlugins"
 
 /** Create a tailwind context. */
-export function createContext(config: ResolvedConfigJS): Context {
+export function createContext(config: ResolvedConfigJS, { throwError = false }: CreateContextOptions = {}): Context {
 	if (typeof config.separator !== "string" || !config.separator) {
 		config.separator = ":"
 	}
@@ -170,6 +172,8 @@ export function createContext(config: ResolvedConfigJS): Context {
 
 	resolveGlobalTheme(globalStyles)
 
+	let validate = throwError
+
 	return {
 		parser,
 		globalStyles,
@@ -178,6 +182,7 @@ export function createContext(config: ResolvedConfigJS): Context {
 		arbitraryVariants: arbitraryVariantMap,
 		arbitraryUtilities: arbitraryUtilityMap,
 		css,
+		wrap,
 		getPluginName,
 		features,
 		renderTheme(value) {
@@ -193,7 +198,12 @@ export function createContext(config: ResolvedConfigJS): Context {
 		getAmbiguous() {
 			return getAmbiguousFrom(utilityMap)
 		},
-		wrap,
+		set throwError(e: boolean) {
+			validate = e
+		},
+		get throwError(): boolean {
+			return validate
+		},
 		...options,
 	}
 
@@ -662,9 +672,15 @@ export function createContext(config: ResolvedConfigJS): Context {
 				switch (node.variant.type) {
 					case NodeType.SimpleVariant:
 						variant = simpleVariant(node.variant)
+						if (variant == undefined) {
+							if (validate) throw createParseError(node.variant, "Variant is not found.")
+						}
 						break
 					case NodeType.ArbitraryVariant:
 						variant = arbitraryVariant(node.variant)
+						if (variant == undefined) {
+							if (validate) throw createParseError(node.variant, "Variant is not found.")
+						}
 						break
 					case NodeType.ArbitrarySelector:
 						variant = arbitrarySelector(node.variant)
@@ -688,10 +704,10 @@ export function createContext(config: ResolvedConfigJS): Context {
 			case NodeType.ArbitraryClassname: {
 				const [result, spec] = classname(node)
 				let css = result
-				if (css != undefined) {
-					if (important || node.important || (spec?.respectImportant && importantAll)) {
-						css = applyImportant(css)
-					}
+				if (css == undefined) {
+					if (validate) throw createParseError(node, "Utility is not found.")
+				} else if (important || node.important || (spec?.respectImportant && importantAll)) {
+					css = applyImportant(css)
 				}
 				if (spec?.respectImportant && importantRoot) {
 					merge(importantRoot, variantCtx(css))
@@ -910,19 +926,28 @@ export function createContext(config: ResolvedConfigJS): Context {
 		return composeVariants(
 			...args.map(value => {
 				const node = value
+				let variant: VariantSpec | undefined
 				if (node.type === NodeType.SimpleVariant) {
-					return variantMap.get(node.id.getText())
+					variant = variantMap.get(node.id.getText())
+					if (variant == undefined) {
+						if (validate) throw createParseError(node, "Variant is not found.")
+					}
+					return variant
 				}
 
-				if (node.type === NodeType.GroupVariant) {
-					return wrapGroupVariant(node)
+				if (node.type === NodeType.ArbitraryVariant) {
+					variant = arbitraryVariant(node)
+					if (variant == undefined) {
+						if (validate) throw createParseError(node, "Variant is not found.")
+					}
+					return variant
 				}
 
 				if (node.type === NodeType.ArbitrarySelector) {
 					return arbitrarySelector(node)
 				}
 
-				return arbitraryVariant(node)
+				return wrapGroupVariant(node)
 			}),
 		)
 	}

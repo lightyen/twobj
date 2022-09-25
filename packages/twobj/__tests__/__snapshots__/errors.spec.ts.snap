@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`throw errors 1`] = `"Utility is not found."`;
+
+exports[`throw errors 2`] = `"Utility is not found."`;
+
+exports[`throw errors 3`] = `"Variant is not found."`;
+
+exports[`throw errors 4`] = `"Variant is not found."`;
