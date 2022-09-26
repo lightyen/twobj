@@ -1,8 +1,7 @@
 import type { BabelFile, NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
-import type { CSSProperties } from "twobj"
+import type { CSSProperties, ParseError } from "twobj"
 import { createContext, resolveConfig } from "twobj"
-import type * as parser from "twobj/parser"
 import * as plugins from "./plugins"
 import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
 import {
@@ -14,12 +13,6 @@ import {
 	getFirstQuasi,
 	isObject,
 } from "./util"
-
-interface ParseError {
-	name: string
-	message: string
-	node: parser.Classname | parser.ArbitraryClassname | parser.SimpleVariant | parser.ArbitraryVariant
-}
 
 export const packageName = "twobj"
 
@@ -269,7 +262,7 @@ export function createVisitor({
 	function getLocation(
 		rawLines: string,
 		{ start, end }: babel.SourceLocation,
-		[a, b]: parser.Range,
+		[a, b]: [number, number],
 	): babel.SourceLocation {
 		const lineOffsets = computeLineOffsets(rawLines)
 		start.line -= 1

@@ -4,6 +4,7 @@ import {
 	AnyStyledComponent,
 	CSSObject,
 	DefaultTheme,
+	SimpleInterpolation,
 	StyledComponent,
 	StyledComponentInnerAttrs,
 	StyledComponentInnerComponent,
@@ -85,5 +86,5 @@ declare module "twobj" {
 
 	export const globalStyles: CSSObject
 	export function theme(arr: TemplateStringsArray): unknown
-	export function wrap(arr: TemplateStringsArray): (arg: CSSObject) => CSSObject
+	export function wrap(arr: TemplateStringsArray): (arg: SimpleInterpolation) => CSSObject
 }
