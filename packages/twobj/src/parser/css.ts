@@ -436,7 +436,7 @@ export function parseAnimations(value: string): string[] {
 export function reverseSign(value: string): string | undefined {
 	const match = matchValue(value)
 	if (match == null) {
-		return reverseNumberFunction(value)
+		return parseNumberFunction(value, true)
 	}
 
 	const { num, unit } = match
@@ -452,7 +452,9 @@ export function reverseSign(value: string): string | undefined {
 	return "-" + num + (unit ?? "")
 }
 
-export function reverseNumberFunction(value: string): string | undefined {
+const numberFn = ["var", "min", "max", "clamp", "calc"]
+
+export function parseNumberFunction(value: string, negative?: boolean): string | undefined {
 	const params = splitCssParams(value)
 	if (params.length !== 1) {
 		return undefined
@@ -460,13 +462,17 @@ export function reverseNumberFunction(value: string): string | undefined {
 	if (typeof params[0] === "string") {
 		return undefined
 	}
+
 	const { fn } = params[0]
-	for (const s of ["var", "min", "max", "clamp", "calc"]) {
-		if (s === fn) {
-			return `calc(${value} * -1)`
-		}
+	if (!numberFn.includes(fn)) {
+		return undefined
 	}
-	return undefined
+
+	if (negative) {
+		return `calc(${value} * -1)`
+	}
+
+	return value
 }
 
 export function getUnitFromNumberFunction(value: string): string | null | undefined {

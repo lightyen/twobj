@@ -44,6 +44,8 @@ test("stroke", async () => {
 	expect(tw`stroke-red-500`).toEqual({ stroke: "#ef4444" })
 	expect(tw`stroke-[#121029]`).toEqual({ stroke: "#121029" })
 	expect(tw`stroke-none`).toEqual({ stroke: "none" })
+	expect(tw`stroke-[rgb(209 218 229 / 0.5)]`).toEqual({ stroke: "rgb(209 218 229 / 0.5)" })
+	expect(tw`stroke-[rgba(209, 218, 229, 0.5)]`).toEqual({ stroke: "rgba(209, 218, 229, 0.5)" })
 })
 
 test("backgroundColor", async () => {

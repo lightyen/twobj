@@ -23,6 +23,7 @@ test("number", async () => {
 	expect(__types.number.handleValue("2.2em", { negative: true })).toBeUndefined()
 	expect(__types.number.handleValue("10%", { negative: true })).toBeUndefined()
 	expect(__types.number.handleValue("calc(100px + 3px)", { negative: true })).toBeUndefined()
+	expect(__types.number.handleValue("rgba(209, 218, 229, 0.5)")).toBeUndefined()
 })
 
 test("length", async () => {
@@ -95,6 +96,8 @@ test("color", () => {
 	expect(__types.color.handleValue("rgb(10,22,66)")).not.toBeUndefined()
 	expect(__types.color.handleValue("rgb(10,22,66,0.5)")).not.toBeUndefined()
 	expect(__types.color.handleValue("rgba(10,22,66,0.5)")).not.toBeUndefined()
+	expect(__types.color.handleValue("rgba(209, 218, 229, 0.5)")).not.toBeUndefined()
+	expect(__types.color.handleValue("rgb(209 218 229 / 0.5)")).not.toBeUndefined()
 	expect(__types.color.handleValue("rgb(10 22 66)")).not.toBeUndefined()
 	expect(__types.color.handleValue("rgb(10 22 66/0.5)")).not.toBeUndefined()
 	expect(__types.color.handleValue("rgba(10 22 66 / 0.5)")).not.toBeUndefined()

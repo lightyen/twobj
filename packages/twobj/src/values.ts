@@ -209,7 +209,7 @@ const number: ValueTypeSpec<string | number | null | undefined> = (function () {
 			}
 			let num = Number(value)
 			if (Number.isNaN(num)) {
-				return negative ? parser.reverseNumberFunction(value) : value
+				return parser.parseNumberFunction(value, negative)
 			}
 
 			num = num * (negative ? -1 : 1)
@@ -240,7 +240,7 @@ const length: ValueTypeSpec<string | number | null | undefined> = (function () {
 
 			let num = Number(result.num)
 			if (Number.isNaN(num)) {
-				return negative ? parser.reverseNumberFunction(value) : value
+				return parser.parseNumberFunction(value, negative)
 			}
 
 			num = num * (negative ? -1 : 1)
@@ -273,7 +273,7 @@ const percentage: ValueTypeSpec<string | number | null | undefined> = (function 
 
 			let num = Number(result.num)
 			if (Number.isNaN(num)) {
-				return negative ? parser.reverseNumberFunction(value) : value
+				return parser.parseNumberFunction(value, negative)
 			}
 
 			num = num * (negative ? -1 : 1)
@@ -306,7 +306,7 @@ const angle: ValueTypeSpec<string | number | null | undefined> = (function () {
 
 			let num = Number(result.num)
 			if (Number.isNaN(num)) {
-				return negative ? parser.reverseNumberFunction(value) : value
+				return parser.parseNumberFunction(value, negative)
 			}
 
 			num = num * (negative ? -1 : 1)
@@ -787,11 +787,6 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 			if (
 				arr.every(v => {
 					const params = parser.splitCssParams(v.value)
-					// console.log(params)
-					// const parameters = params.filter((p: string): p is string => typeof p === "string")
-					// if (params.length !== parameters.length) {
-					// 	return false
-					// }
 					switch (params.length) {
 						case 1:
 							return one(params[0])
