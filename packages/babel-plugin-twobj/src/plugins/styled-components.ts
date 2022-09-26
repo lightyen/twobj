@@ -285,7 +285,6 @@ export const styledComponents: Plugin = function ({
 		/**
 		 * tw('div')(props => ({ width: props.width })) ==> styled('div')(props => ({ width: props.width }))
 		 * tw.div(props => ({ width: props.width })) ==> styled.div(props => ({ width: props.width }))
-		 * wrap``(payload) ==> ((e) => ({ ... }))(payload)
 		 */
 		CallExpression(path, state) {
 			if (state.imports.length === 0) return
@@ -329,26 +328,6 @@ export const styledComponents: Plugin = function ({
 									}
 								}
 								object.replaceWith(t.identifier(state.styled.localName))
-							}
-						} else if (callee.isTaggedTemplateExpression()) {
-							const tag = callee.get("tag")
-							if (tag.isIdentifier() && importedName === "wrap" && tag.node.name === localName) {
-								const quasi = getFirstQuasi(callee)
-								if (quasi) {
-									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-
-									const expr = t.callExpression(
-										t.arrowFunctionExpression(
-											[t.identifier("e")],
-											buildWrap(value, quasi, state.file),
-										),
-										path.get("arguments").map(arg => arg.node),
-									)
-
-									path.replaceWith(expr)
-									skip = true
-									break
-								}
 							}
 						}
 					}

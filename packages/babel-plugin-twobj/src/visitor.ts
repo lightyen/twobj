@@ -83,6 +83,11 @@ export function createVisitor({
 				}
 			}
 		},
+
+		/**
+		 * tw`` ==> {...}
+		 * wrap`` ==> (e) => ({ ... })
+		 */
 		TaggedTemplateExpression(path, state) {
 			if (state.imports.length === 0) return
 
@@ -98,6 +103,19 @@ export function createVisitor({
 								if (quasi) {
 									const value = quasi.node.value.cooked ?? quasi.node.value.raw
 									path.replaceWith(buildStyle(value, quasi, state.file))
+								}
+								skip = true
+								break
+							}
+							case "wrap": {
+								const quasi = getFirstQuasi(path)
+								if (quasi) {
+									const value = quasi.node.value.cooked ?? quasi.node.value.raw
+									const expr = t.arrowFunctionExpression(
+										[t.identifier("e")],
+										buildWrap(value, quasi, state.file),
+									)
+									path.replaceWith(expr)
 								}
 								skip = true
 								break

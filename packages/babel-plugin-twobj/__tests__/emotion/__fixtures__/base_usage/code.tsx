@@ -5,6 +5,8 @@ globalStyles
 tw`divide-black`
 tw`flex items-center font-bold text-lg after:text-cyan-400`
 
+wrap`(hover: focus:):`
+
 export function Header(props: React.PropsWithChildren<{ className?: string }>) {
 	return <h1 tw="border-y-4 border-indigo-400 sm:(rounded-2xl border-l-indigo-300 flex justify-around)" {...props} />
 }
