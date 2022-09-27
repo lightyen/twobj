@@ -2,6 +2,7 @@ import type { BabelFile, NodePath, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import type { CSSProperties, ParseError } from "twobj"
 import { createContext, resolveConfig } from "twobj"
+import { NodeType } from "twobj/parser"
 import * as plugins from "./plugins"
 import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
 import {
@@ -269,7 +270,18 @@ export function createVisitor({
 			}
 		}
 
-		loc = getLocation(file.code, loc, error.node.range)
+		switch (error.node.type) {
+			case NodeType.ArbitraryClassname:
+			case NodeType.ArbitraryProperty:
+			case NodeType.Group:
+			case NodeType.WithOpacity:
+				loc = getLocation(file.code, loc, [error.node.range[0], error.node.range[0] + 1])
+				break
+			default:
+				loc = getLocation(file.code, loc, error.node.range)
+				break
+		}
+
 		errPath.node.loc = loc
 		const retErr = errPath.buildCodeFrameError(
 			`${error.message}\n\n${file.opts.filename}:${loc.start.line}:${loc.start.column + 1}`,
