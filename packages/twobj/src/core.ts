@@ -297,6 +297,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	function createVariantSpec(variantDesc: string[], postModifier?: PostModifier): VariantSpec {
 		const fns = variantDesc.map<VariantSpec>(desc => {
 			const reg = /{/gs
+			desc = desc.trim().replace(/\s{2,}/g, " ")
 			const match = reg.exec(desc)
 			if (!match) {
 				return (css = {}) => ({ [desc]: css })
@@ -305,10 +306,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				if (rb == undefined) {
 					return (css = {}) => ({ [desc]: css })
 				}
-				const scope = desc
-					.slice(0, reg.lastIndex - 1)
-					.trim()
-					.replace(/\s{2,}/g, " ")
+				const scope = desc.slice(0, reg.lastIndex - 1).trim()
 				const restDesc = desc.slice(reg.lastIndex, rb).trim()
 				if (scope) {
 					return (css = {}) => ({ [scope]: createVariantSpec([restDesc])(css) })
@@ -764,15 +762,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function arbitrarySelector(node: ArbitrarySelector) {
-		const value = node.selector
-			.getText()
-			.trim()
-			.replace(/\s{2,}/g, " ")
-		if (value) {
-			const variant: VariantSpec = (css = {}) => ({ [value]: css })
-			return variant
-		}
-		return undefined
+		return createVariantSpec([node.selector.getText()])
 	}
 
 	function classname(node: Classname | ArbitraryClassname): [css?: CSSProperties, spec?: LookupSpec | StaticSpec] {
