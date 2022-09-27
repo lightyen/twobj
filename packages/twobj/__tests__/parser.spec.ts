@@ -24,6 +24,21 @@ test("splitAtTopLevelOnly", async () => {
 	])
 })
 
+test("normalizeSelector", async () => {
+	expect(parser.normalizeSelector("&:hover")).toEqual("&:hover")
+	expect(parser.normalizeSelector(":hover")).toEqual("&:hover")
+	expect(parser.normalizeSelector("svg")).toEqual("& svg")
+	expect(parser.normalizeSelector("> *")).toEqual("& > *")
+	expect(parser.normalizeSelector("::placeholder")).toEqual("&::placeholder")
+	expect(parser.normalizeSelector(".test")).toEqual("& .test")
+	expect(parser.normalizeSelector(".test &")).toEqual(".test &")
+	expect(parser.normalizeSelector("@media print")).toEqual("@media print")
+	expect(parser.normalizeSelector(".foo,.bar")).toEqual("& .foo, & .bar")
+	expect(parser.normalizeSelector(".foo,.bar &")).toEqual("& .foo, .bar &")
+	expect(parser.normalizeSelector("&.foo,.bar &")).toEqual("&.foo, .bar &")
+	expect(parser.normalizeSelector(".foo,:nth-child(1)")).toEqual("& .foo, &:nth-child(1)")
+})
+
 test("parseColor", async () => {
 	expect(parser.parseColor("red")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
 	expect(parser.parseColor("#ff0000")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })

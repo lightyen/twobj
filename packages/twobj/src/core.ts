@@ -1,5 +1,5 @@
 import { classPlugins } from "./classPlugins"
-import { camelCase, createParser, findRightBracket } from "./parser"
+import { camelCase, createParser, findRightBracket, normalizeSelector } from "./parser"
 import {
 	ArbitraryClassname,
 	ArbitrarySelector,
@@ -300,7 +300,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			desc = desc.trim().replace(/\s{2,}/g, " ")
 			const match = reg.exec(desc)
 			if (!match) {
-				return (css = {}) => ({ [desc]: css })
+				return (css = {}) => ({ [normalizeSelector(desc)]: css })
 			} else {
 				const rb = findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
 				if (rb == undefined) {
@@ -309,7 +309,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				const scope = desc.slice(0, reg.lastIndex - 1).trim()
 				const restDesc = desc.slice(reg.lastIndex, rb).trim()
 				if (scope) {
-					return (css = {}) => ({ [scope]: createVariantSpec([restDesc])(css) })
+					return (css = {}) => ({ [normalizeSelector(scope)]: createVariantSpec([restDesc])(css) })
 				} else {
 					return (css = {}) => createVariantSpec([restDesc])(css)
 				}

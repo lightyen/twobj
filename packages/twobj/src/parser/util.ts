@@ -274,3 +274,23 @@ export function removeComments(
 
 	return buffer
 }
+
+// Ensure to work in any css-in-js library.
+export function normalizeSelector(selector: string): string {
+	const selectors = splitAtTopLevelOnly(selector)
+	const atRule = /^@/
+	return selectors
+		.map(({ value }) => {
+			if (atRule.test(value)) {
+				return value
+			}
+			if (value.indexOf("&") !== -1) {
+				return value
+			}
+			if (value.startsWith(":")) {
+				return "&" + value
+			}
+			return "& " + value
+		})
+		.join(", ")
+}
