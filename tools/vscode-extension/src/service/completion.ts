@@ -1,7 +1,7 @@
 import * as culori from "culori"
 import * as parser from "twobj/parser"
 import vscode from "vscode"
-import { getCSSLanguageService } from "vscode-css-languageservice"
+import { getCSSLanguageService, getSCSSLanguageService } from "vscode-css-languageservice"
 import { TextDocument as LspTextDocument } from "vscode-languageserver-textdocument"
 import * as lsp from "vscode-languageserver-types"
 import { calcFraction } from "~/common"
@@ -535,7 +535,7 @@ function getCssDeclarationCompletionList(
 	return items
 }
 
-const scssLanguageSrv = getCSSLanguageService()
+const scssLanguageSrv = getSCSSLanguageService()
 function getScssSelectorCompletionList(
 	document: TextDocument,
 	position: number,
