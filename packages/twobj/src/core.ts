@@ -737,7 +737,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				break
 			}
 			case NodeType.ShortCss: {
-				// do nothing
+				if (validate) throw createParseError(node, "Not supported.")
 				break
 			}
 		}
