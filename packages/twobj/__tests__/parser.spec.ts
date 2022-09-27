@@ -9,6 +9,21 @@ test("getUnitFromNumberFunction", async () => {
 	expect(parser.getUnitFromNumberFunction("min(0rem, 200px)")).toEqual("rem")
 })
 
+test("splitAtTopLevelOnly", async () => {
+	expect(parser.splitAtTopLevelOnly("bottom 0px center")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("min(0, 300)")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("min(0px, 200rem)")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("min(0rem, 200px)")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("top,right")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("top,right,[bottom,left]")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("top,right,[bottom,left], min(0px, 200em)")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly("top,right,'[bottom,left], min(0px, 200em)'")).toMatchSnapshot()
+	expect(parser.splitAtTopLevelOnly(",right")).toEqual([
+		{ value: "", range: [0, 0] },
+		{ value: "right", range: [1, 6] },
+	])
+})
+
 test("parseColor", async () => {
 	expect(parser.parseColor("red")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
 	expect(parser.parseColor("#ff0000")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })

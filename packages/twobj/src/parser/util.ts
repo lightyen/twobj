@@ -142,9 +142,7 @@ export function splitAtTopLevelOnly(value: string, trim = true): Array<{ value: 
 				while (start < end && isSpace(value.charCodeAt(end - 1))) end--
 			}
 			const str = value.slice(start, end)
-			if (str) {
-				result.push({ value: str, range: [start, end] })
-			}
+			result.push({ value: str, range: [start, end] })
 			base = i + 1
 			continue
 		}
