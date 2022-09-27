@@ -22,4 +22,19 @@ test("throw errors", async () => {
 	expect(() => {
 		ctx.css("(second:):accent-black")
 	}).toThrowErrorMatchingSnapshot()
+	expect(() => {
+		ctx.css(" (bg-black")
+	}).toThrowErrorMatchingSnapshot()
+	expect(() => {
+		ctx.css(" bg-[red")
+	}).toThrowErrorMatchingSnapshot()
+	expect(() => {
+		ctx.css(" bg-[red]/[")
+	}).toThrowErrorMatchingSnapshot()
+	expect(() => {
+		ctx.css(" bg[red]")
+	}).toThrowErrorMatchingSnapshot()
+	expect(() => {
+		ctx.css(" bg[red]/[")
+	}).toThrowErrorMatchingSnapshot()
 })

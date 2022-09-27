@@ -7,3 +7,13 @@ exports[`throw errors 2`] = `"Utility is not found."`;
 exports[`throw errors 3`] = `"Variant is not found."`;
 
 exports[`throw errors 4`] = `"Variant is not found."`;
+
+exports[`throw errors 5`] = `"Bracket is not closed."`;
+
+exports[`throw errors 6`] = `"Bracket is not closed."`;
+
+exports[`throw errors 7`] = `"Bracket is not closed."`;
+
+exports[`throw errors 8`] = `"Not supported."`;
+
+exports[`throw errors 9`] = `"Not supported."`;

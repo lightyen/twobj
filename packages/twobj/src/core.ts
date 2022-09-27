@@ -55,6 +55,8 @@ import { variantPlugins } from "./variantPlugins"
 
 /** Create a tailwind context. */
 export function createContext(config: ResolvedConfigJS, { throwError = false }: CreateContextOptions = {}): Context {
+	let validate = throwError
+
 	if (typeof config.separator !== "string" || !config.separator) {
 		config.separator = ":"
 	}
@@ -171,8 +173,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	resolveGlobalTheme(globalStyles)
-
-	let validate = throwError
 
 	return {
 		parser,
@@ -670,15 +670,9 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				switch (node.variant.type) {
 					case NodeType.SimpleVariant:
 						variant = simpleVariant(node.variant)
-						if (variant == undefined) {
-							if (validate) throw createParseError(node.variant, "Variant is not found.")
-						}
 						break
 					case NodeType.ArbitraryVariant:
 						variant = arbitraryVariant(node.variant)
-						if (variant == undefined) {
-							if (validate) throw createParseError(node.variant, "Variant is not found.")
-						}
 						break
 					case NodeType.ArbitrarySelector:
 						variant = arbitrarySelector(node.variant)
@@ -693,6 +687,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				break
 			}
 			case NodeType.Group: {
+				if (validate) {
+					if (!node.closed) {
+						throw createParseError(node, "Bracket is not closed.")
+					}
+				}
 				for (let i = 0; i < node.expressions.length; i++) {
 					process(node.expressions[i], root, importantRoot, variantCtx, important || node.important)
 				}
@@ -700,10 +699,20 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			}
 			case NodeType.ClassName:
 			case NodeType.ArbitraryClassname: {
+				if (validate && node.type === NodeType.ArbitraryClassname) {
+					if (!node.closed) {
+						throw createParseError(node, "Bracket is not closed.")
+					}
+					if (node.e?.type === NodeType.WithOpacity && !node.e.closed) {
+						throw createParseError(node.e, "Bracket is not closed.")
+					}
+				}
 				const [result, spec] = classname(node)
 				let css = result
 				if (css == undefined) {
-					if (validate) throw createParseError(node, "Utility is not found.")
+					if (validate) {
+						throw createParseError(node, "Utility is not found.")
+					}
 				} else if (important || node.important || (spec?.respectImportant && importantAll)) {
 					css = applyImportant(css)
 				}
@@ -715,6 +724,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				break
 			}
 			case NodeType.ArbitraryProperty: {
+				if (validate) {
+					if (!node.closed) {
+						throw createParseError(node, "Bracket is not closed.")
+					}
+				}
 				const i = node.decl.getText().indexOf(":")
 				if (i !== -1) {
 					const prop = node.decl.getText().slice(0, i).trim()
@@ -737,14 +751,22 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				break
 			}
 			case NodeType.ShortCss: {
-				if (validate) throw createParseError(node, "Not supported.")
+				if (validate) {
+					throw createParseError(node, "Not supported.")
+				}
 				break
 			}
 		}
 	}
 
 	function simpleVariant(node: SimpleVariant) {
-		return variantMap.get(node.id.getText())
+		const variant = variantMap.get(node.id.getText())
+		if (validate) {
+			if (variant == undefined) {
+				throw createParseError(node, "Variant is not found.")
+			}
+		}
+		return variant
 	}
 
 	function arbitraryVariant(node: ArbitraryVariant) {
@@ -756,6 +778,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			if (spec) {
 				const input = node.selector.getText()
 				variant = spec(input)
+			}
+		}
+		if (validate) {
+			if (variant == undefined) {
+				throw createParseError(node, "Variant is not found.")
 			}
 		}
 		return variant
@@ -916,21 +943,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return composeVariants(
 			...args.map(value => {
 				const node = value
-				let variant: VariantSpec | undefined
 				if (node.type === NodeType.SimpleVariant) {
-					variant = variantMap.get(node.id.getText())
-					if (variant == undefined) {
-						if (validate) throw createParseError(node, "Variant is not found.")
-					}
-					return variant
+					return simpleVariant(node)
 				}
 
 				if (node.type === NodeType.ArbitraryVariant) {
-					variant = arbitraryVariant(node)
-					if (variant == undefined) {
-						if (validate) throw createParseError(node, "Variant is not found.")
-					}
-					return variant
+					return arbitraryVariant(node)
 				}
 
 				if (node.type === NodeType.ArbitrarySelector) {
