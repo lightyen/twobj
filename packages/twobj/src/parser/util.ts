@@ -279,7 +279,7 @@ export function removeComments(
 export function normalizeSelector(selector: string): string {
 	const selectors = splitAtTopLevelOnly(selector)
 	const atRule = /^@/
-	return selectors
+	selector = selectors
 		.map(({ value }) => {
 			if (atRule.test(value)) {
 				return value
@@ -293,4 +293,8 @@ export function normalizeSelector(selector: string): string {
 			return "& " + value
 		})
 		.join(", ")
+	if (selector === "") {
+		return "&"
+	}
+	return selector
 }

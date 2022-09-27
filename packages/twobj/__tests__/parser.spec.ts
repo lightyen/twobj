@@ -37,6 +37,7 @@ test("normalizeSelector", async () => {
 	expect(parser.normalizeSelector(".foo,.bar &")).toEqual("& .foo, .bar &")
 	expect(parser.normalizeSelector("&.foo,.bar &")).toEqual("&.foo, .bar &")
 	expect(parser.normalizeSelector(".foo,:nth-child(1)")).toEqual("& .foo, &:nth-child(1)")
+	expect(parser.normalizeSelector("")).toEqual("&")
 })
 
 test("parseColor", async () => {
