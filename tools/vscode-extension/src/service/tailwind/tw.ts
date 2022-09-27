@@ -11,10 +11,13 @@ import * as parser from "twobj/parser"
 import { isColorFunction, isColorHexValue, isColorIdentifier, parse as parseColors } from "~/common/color"
 import { defaultLogger as console } from "~/common/logger"
 
-function beautify(root: Root, tabWidth = 4) {
+function beautify(root: Root, tabSize: number) {
 	try {
 		const result = postcss().process(format(root.toString()), { from: undefined })
-		return result.root
+		root = result.root
+		const raws = root.raws
+		raws.indent = "".padStart(tabSize)
+		return root
 	} catch (error) {
 		console.error(error)
 		return root
@@ -25,7 +28,35 @@ function beautify(root: Root, tabWidth = 4) {
 			parser: "scss",
 			plugins: [cssPrettier],
 			useTabs: false,
-			tabWidth,
+			tabWidth: tabSize,
+		})
+	}
+}
+
+function comment(node: Root): void {
+	node.each(node => {
+		switch (node.type) {
+			case "atrule":
+			case "rule":
+				addComment(node)
+				break
+		}
+	})
+
+	return
+
+	function addComment(node: AtRule | Rule) {
+		if (node.nodes.every(n => n.type === "decl")) {
+			node.prepend(postcss.comment({ text: "..." }))
+			return
+		}
+		node.each(node => {
+			switch (node.type) {
+				case "atrule":
+				case "rule":
+					addComment(node)
+					break
+			}
 		})
 	}
 }
@@ -161,23 +192,6 @@ export function createTwContext(config: ResolvedConfigJS) {
 		arbitrary,
 	} as const
 
-	function replaceSelectorAndComment(node: AtRule | Rule | Root, tabSize = 4) {
-		if ((node.type === "rule" || node.type === "atrule") && node.nodes.every(n => n.type === "decl")) {
-			const raws = node.raws
-			raws.indent = "".padStart(tabSize)
-			node.prepend(postcss.comment({ text: "..." }))
-			return
-		}
-		node.each(node => {
-			switch (node.type) {
-				case "rule":
-				case "atrule":
-					replaceSelectorAndComment(node, tabSize)
-					break
-			}
-		})
-	}
-
 	function renderVariant(value: string | parser.Variant, tabSize = 4): ScssText {
 		const fn = context.wrap(value)
 		let { root } = postcss().process(fn(), {
@@ -185,20 +199,9 @@ export function createTwContext(config: ResolvedConfigJS) {
 			parser: postcssJs,
 		})
 
-		root = beautify(root)
-		decorate(root)
+		root = beautify(root, tabSize)
+		comment(root)
 		return root.toString()
-
-		function decorate(root: Root) {
-			root.each(node => {
-				switch (node.type) {
-					case "atrule":
-					case "rule":
-						replaceSelectorAndComment(node, tabSize)
-						break
-				}
-			})
-		}
 	}
 
 	function renderVariantScope(...variants: parser.Variant[]): string {
@@ -326,19 +329,15 @@ export function createTwContext(config: ResolvedConfigJS) {
 		colorHint?: "none" | "hex" | "rgb" | "hsl"
 	}): ScssText {
 		let { root } = render(classname, tabSize)
-		root = beautify(root)
-		decorate(root)
-		return root.toString()
-
-		function decorate(root: Root) {
-			if (important || rootFontSize) {
-				root.walkDecls(decl => {
-					decl.important ||= important
-					if (colorHint && colorHint !== "none") decl.value = extendColorValue(decl.value, colorHint)
-					decl.value = toPixelUnit(decl.value, rootFontSize)
-				})
-			}
+		root = beautify(root, tabSize)
+		if (important || rootFontSize) {
+			root.walkDecls(decl => {
+				decl.important ||= important
+				if (colorHint && colorHint !== "none") decl.value = extendColorValue(decl.value, colorHint)
+				decl.value = toPixelUnit(decl.value, rootFontSize)
+			})
 		}
+		return root.toString()
 	}
 
 	function getDecorationColor(values: string[]): string | undefined {
@@ -447,7 +446,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 			parser: postcssJs,
 		})
 
-		globalStyles = beautify(root)
+		globalStyles = beautify(root, tabSize)
 		const clone = globalStyles.clone()
 		decorate(clone)
 		return clone.toString()
