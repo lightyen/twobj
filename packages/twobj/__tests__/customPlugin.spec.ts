@@ -253,3 +253,48 @@ test("escaped selectors", async () => {
 		top: "25%",
 	})
 })
+
+test("addVariant", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			plugins: [
+				function ({ addVariant }) {
+					addVariant("abc", "abc &")
+					addVariant("x", ["&:abc", "&:def"])
+					addVariant("y", () => "&:xyz")
+					addVariant("z", ["&:hover", () => ["&::placeholder { :test }"]])
+				},
+			],
+		}),
+	)
+	const tw = createTw(ctx)
+
+	expect(tw`abc:inline`).toEqual({
+		"abc &": {
+			display: "inline",
+		},
+	})
+	expect(tw`x:inline`).toEqual({
+		"&:abc": {
+			display: "inline",
+		},
+		"&:def": {
+			display: "inline",
+		},
+	})
+	expect(tw`y:inline`).toEqual({
+		"&:xyz": {
+			display: "inline",
+		},
+	})
+	expect(tw`z:inline`).toEqual({
+		"&:hover": {
+			display: "inline",
+		},
+		"&::placeholder": {
+			"&:test": {
+				display: "inline",
+			},
+		},
+	})
+})

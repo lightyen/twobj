@@ -63,7 +63,7 @@ export interface UserPluginOptions {
 	/** Register a custom variant. */
 	addVariant(
 		variantName: string,
-		variantDesc: string | (() => string) | Array<string | (() => string)>,
+		variantDesc: string | (() => string | string[]) | Array<string | (() => string | string[])>,
 		options?: {
 			postModifier?: PostModifier
 		},

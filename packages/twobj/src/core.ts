@@ -261,19 +261,21 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 	function addVariant(
 		variantName: string,
-		variantDesc: string | (() => string) | Array<string | (() => string)>,
+		variantDesc: string | (() => string) | Array<string | (() => string | string[])>,
 		options: {
 			postModifier?: PostModifier
 		} = {},
 	): void {
 		if (variantMap.has(variantName)) throw Error(`variant '${variantName} is duplicated.'`)
 		variantDesc = toArray(variantDesc)
-		const desc = variantDesc.map(variantFunc => {
-			if (typeof variantFunc === "function") {
-				variantFunc = variantFunc()
-			}
-			return variantFunc.replace(/:merge\((.*?)\)/g, "$1")
-		})
+		const desc = variantDesc
+			.flatMap(variantFunc => {
+				if (typeof variantFunc === "function") {
+					return variantFunc()
+				}
+				return variantFunc
+			})
+			.map(v => v.replace(/:merge\((.*?)\)/g, "$1"))
 		variantMap.set(variantName, createVariantSpec(desc, options.postModifier))
 	}
 
