@@ -3,7 +3,6 @@
 import * as parser from "./parser"
 import type {
 	ColorValue,
-	ConfigValue,
 	CSSProperties,
 	CSSValue,
 	CustomPalette,
@@ -12,15 +11,12 @@ import type {
 	Palette,
 	PlainCSSProperties,
 	PostModifier,
+	Primitive,
 	StaticSpec,
 } from "./types"
 
 export function isCSSValue(value: unknown): value is CSSValue {
 	return typeof value === "string" || typeof value === "number"
-}
-
-export function isConfigValue(value: unknown): value is ConfigValue {
-	return !isObject(value)
 }
 
 export function isString(value: unknown): value is string {
@@ -31,7 +27,7 @@ export function isNumber(value: unknown): value is number {
 	return typeof value === "number"
 }
 
-export function isObject(value: unknown): value is Record<string | symbol, unknown> {
+export function isObject<T>(value: T): value is Exclude<T, Primitive | Func> {
 	return typeof value === "object" && value !== null
 }
 
@@ -47,8 +43,24 @@ export function isNotEmpty<T>(value: T): value is Exclude<T, null | undefined | 
 	return !!value
 }
 
-export function isPlainCSSProperties(css: CSSProperties): css is PlainCSSProperties {
-	return Object.values(css).every(value => typeof value !== "object")
+export function isPlainCSSProperties(css: CSSProperties[string]): css is PlainCSSProperties {
+	return Object.values(css).every(isCSSValue)
+}
+
+export function isPlainObject<T>(value: T): value is Exclude<T, Primitive | Func> {
+	if (Object.prototype.toString.call(value) !== "[object Object]") {
+		return false
+	}
+	const prototype = Object.getPrototypeOf(value)
+	return prototype === null || prototype === Object.prototype
+}
+
+export function isPlainArray(value: unknown): value is Array<unknown> {
+	if (Object.prototype.toString.call(value) !== "[object Array]") {
+		return false
+	}
+	const prototype = Object.getPrototypeOf(value)
+	return prototype === null || prototype === Array.prototype
 }
 
 export const IMPORTANT = "!important"
@@ -99,43 +111,28 @@ export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSPr
 	return css
 }
 
-export function isPlainObject(value: unknown): value is {} {
-	if (Object.prototype.toString.call(value) !== "[object Object]") {
-		return false
-	}
-	const prototype = Object.getPrototypeOf(value)
-	return prototype === null || prototype === Object.prototype
-}
-
-export function isPlainArray(value: unknown): value is Array<unknown> {
-	if (Object.prototype.toString.call(value) !== "[object Array]") {
-		return false
-	}
-	const prototype = Object.getPrototypeOf(value)
-	return prototype === null || prototype === Array.prototype
-}
-
 export function assignImpotant(target: any, source: any): any {
-	if (typeof source === "string" && source.includes(IMPORTANT)) return source
-	if (typeof target === "string" && target.includes(IMPORTANT)) return target
+	if (typeof source === "string" && source.lastIndexOf(IMPORTANT) !== -1) return source
+	if (typeof target === "string" && target.lastIndexOf(IMPORTANT) !== -1) return target
 	return source
 }
 
-export function merge(target: any, ...sources: any[]): any {
-	if (!sources.length) return target
+export function merge(target: CSSProperties, ...sources: CSSProperties[string][]): CSSProperties {
 	const source = sources.shift()
+	if (source == undefined) return target
 
-	if (isPlainObject(target) && isPlainObject(source)) {
+	if (isObject(target) && isObject(source)) {
 		for (const key in source) {
-			if (isPlainObject(source[key])) {
-				if (isPlainObject(target[key])) {
-					merge(target[key], source[key])
+			const targetValue = target[key]
+			if (isObject(source[key])) {
+				if (isObject(targetValue)) {
+					merge(targetValue, source[key])
 				} else {
 					// value <- object
 					target[key] = source[key]
 				}
 			} else {
-				target[key] = assignImpotant(target[key], source[key])
+				target[key] = assignImpotant(targetValue, source[key])
 			}
 		}
 	}
@@ -204,7 +201,7 @@ export function toArray<T>(target: T | T[]): T[] {
 // => ['sm', { min: '100px', max: '200px' }, 'md', { min: '300px', max: '400px' } }]
 
 export function normalizeScreens(screens: unknown) {
-	if (!isPlainObject(screens)) {
+	if (!screens || !isPlainObject(screens)) {
 		return {}
 	}
 

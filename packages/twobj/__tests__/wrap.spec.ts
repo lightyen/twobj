@@ -17,8 +17,7 @@ test("wrap function", async () => {
 		"@media (min-width: 640px)": {
 			"@media (hover: hover) and (pointer: fine)": {
 				"&:hover": {
-					"& *::marker": { color: "black" },
-					"&::marker": { color: "black" },
+					"& *::marker, &::marker": { color: "black" },
 				},
 			},
 		},

@@ -275,10 +275,7 @@ test("addVariant", async () => {
 		},
 	})
 	expect(tw`x:inline`).toEqual({
-		"&:abc": {
-			display: "inline",
-		},
-		"&:def": {
+		"&:abc, &:def": {
 			display: "inline",
 		},
 	})
@@ -289,6 +286,28 @@ test("addVariant", async () => {
 	})
 	expect(tw`z:inline`).toEqual({
 		"&:hover": {
+			display: "inline",
+		},
+		"&::placeholder": {
+			"&:test": {
+				display: "inline",
+			},
+		},
+	})
+	expect(tw`(y:z:):inline`).toEqual({
+		"&:xyz": {
+			"&:hover": {
+				display: "inline",
+			},
+			"&::placeholder": {
+				"&:test": {
+					display: "inline",
+				},
+			},
+		},
+	})
+	expect(tw`(y: z:):inline`).toEqual({
+		"&:xyz, &:hover": {
 			display: "inline",
 		},
 		"&::placeholder": {

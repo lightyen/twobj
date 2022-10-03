@@ -12,10 +12,7 @@ test("hover", async () => {
 
 test("marker", async () => {
 	expect(tw`marker:bg-black`).toEqual({
-		"& *::marker": {
-			backgroundColor: "#000",
-		},
-		"&::marker": {
+		"& *::marker, &::marker": {
 			backgroundColor: "#000",
 		},
 	})

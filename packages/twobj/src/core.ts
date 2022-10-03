@@ -43,6 +43,7 @@ import {
 	getClassListFrom,
 	getColorClassesFrom,
 	isCSSValue,
+	isExists,
 	isFunction,
 	isNotEmpty,
 	isObject,
@@ -214,7 +215,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return theme.resolveThemeNoDefault(config, value, defaultValue)
 	}
 
-	function resolveGlobalTheme(g: CSSProperties): void {
+	function resolveGlobalTheme(g: CSSProperties[string]): void {
 		if (typeof g !== "object") return
 		Object.entries(g).map(([key, child]) => {
 			if (typeof child !== "object") {
@@ -253,9 +254,16 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function addDefaults(pluginName: string, properties: Record<string, string | string[]>): void {
-		properties = Object.fromEntries(Object.entries(properties).map(([key, value]) => [camelCase(key), value]))
+		const decls: Record<string, string>[] = Object.entries(properties)
+			.map(([key, value]) => {
+				if (typeof value === "string") {
+					return { [camelCase(key)]: value }
+				}
+				return value.map(value => ({ [camelCase(key)]: value }))
+			})
+			.flat()
 		for (let i = 0; i < defaults.length; i++) {
-			merge(defaults[i], properties)
+			merge(defaults[i], ...decls)
 		}
 	}
 
@@ -297,7 +305,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function createVariantSpec(variantDesc: string[], postModifier?: PostModifier): VariantSpec {
-		const fns = variantDesc.map<VariantSpec>(desc => {
+		const variants = variantDesc.map<VariantSpec>(desc => {
 			const reg = /{/gs
 			desc = desc.trim().replace(/\s{2,}/g, " ")
 			const match = reg.exec(desc)
@@ -321,7 +329,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			if (postModifier) {
 				css = applyModifier(css, postModifier)
 			}
-			return Object.assign({}, ...fns.map(fn => fn(css)))
+			return mergeVariants(...variants)(css)
 		}
 	}
 
@@ -359,8 +367,9 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		const ret = new Map<string, CSSProperties>()
 		const result = styles.flatMap(s => traverse(s)).filter((v): v is [string, CSSProperties] => v != undefined)
 		for (const [key, css] of result) {
-			if (ret.has(key)) {
-				ret.set(key, merge(ret.get(key), css))
+			const value = ret.get(key)
+			if (value != undefined) {
+				ret.set(key, merge(value, css))
 			} else {
 				ret.set(key, css)
 			}
@@ -590,31 +599,78 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return spec
 	}
 
-	function mergeVariants(...variants: (VariantSpec | undefined)[]): VariantSpec {
-		const v = variants.filter(isNotEmpty)
-		if (v.length === 0) {
+	function mergeVariants(...variants: Array<VariantSpec | undefined>): VariantSpec {
+		const _variants = variants.filter(isExists)
+		if (_variants.length === 0) {
 			return (css = {}) => css
 		}
+
+		const AtRule = /^\s*@\w/
+		const SPECIAL = ""
+		const anchor = { [SPECIAL]: SPECIAL }
+		const context = combineAndReplace(Object.assign({}, ..._variants.map(variant => variant(anchor))), anchor)
 		return (css = {}) => {
-			const style = Object.assign({}, ...v.map(variant => variant(css)))
-			const keys: string[] = []
-			const startsWithAtRule = /^\s*@\w/
-			for (const k in style) {
-				if (!startsWithAtRule.test(k)) {
-					keys.push(k)
+			return combineAndReplace(context, css)
+		}
+
+		function combineAndReplace(source: CSSProperties, replaceValue: CSSProperties): CSSProperties {
+			const combined = new Set<string>()
+			const deep = new Map<string, CSSProperties>()
+			const order = new Map<string, CSSProperties[string]>()
+
+			const result: CSSProperties = {}
+
+			for (const key in source) {
+				const value = source[key]
+				if (isCSSValue(value)) {
+					order.set(key, value)
+					continue
 				}
+
+				if (value[SPECIAL] !== SPECIAL) {
+					order.set(key, value)
+					deep.set(key, value)
+					continue
+				}
+
+				if (Object.keys(value).length !== 1) {
+					const rest = { ...value }
+					delete rest[SPECIAL]
+					order.set(key, { ...replaceValue, ...rest })
+					continue
+				}
+
+				if (AtRule.test(key)) {
+					order.set(key, replaceValue)
+					continue
+				}
+
+				order.set(key, replaceValue)
+				combined.add(key)
 			}
 
-			if (keys.length > 0) {
-				let value: unknown
-				for (const k of keys) {
-					if (value == undefined) value = style[k]
-					delete style[k]
+			if (combined.size <= 1) {
+				for (const [key, value] of order) {
+					const d = deep.get(key)
+					if (d !== undefined) {
+						result[key] = combineAndReplace(d, replaceValue)
+					} else {
+						result[key] = value
+					}
 				}
-				style[keys.join(", ")] = value
+			} else {
+				for (const [key, value] of order) {
+					const d = deep.get(key)
+					if (d !== undefined) {
+						result[key] = combineAndReplace(d, replaceValue)
+					} else if (!combined.has(key)) {
+						result[key] = value
+					}
+				}
+				Object.assign(result, { [Array.from(combined).join(", ")]: replaceValue })
 			}
 
-			return style
+			return result
 		}
 	}
 
