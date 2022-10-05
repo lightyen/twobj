@@ -1,7 +1,7 @@
 
 VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj)
 
-![preview](https://github.com/lightyen/twobj/raw/vscode-web/tools/vscode-extension/preview.png)
+![preview](https://github.com/lightyen/twobj/raw/main/tools/vscode-extension/preview.png)
 
 ## Features
 
