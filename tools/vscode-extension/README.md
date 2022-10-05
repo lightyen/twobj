@@ -1,5 +1,5 @@
 
-VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj).
+VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj)
 
 ![preview](https://github.com/lightyen/twobj/raw/vscode-web/tools/vscode-extension/preview.png)
 
@@ -33,7 +33,8 @@ VSCode IntelliSense Extension for [twobj](https://github.com/lightyen/twobj).
   "twobj.enabled": true,
   "twobj.rootFontSize": 16,
   "twobj.logLevel": "info",
-  "twobj.hoverColorHint": "none"
+  "twobj.hoverColorHint": "none",
+  "twobj.hoverUtility": "default"
 }
 ```
 
