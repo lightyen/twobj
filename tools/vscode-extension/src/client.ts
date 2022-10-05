@@ -104,6 +104,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		diagnostics: true,
 		documentColors: false,
 		hoverColorHint: "none",
+		hoverUtility: "default",
 		otherLanguages: [],
 		minimumContrastRatio: 0,
 		importLabels: [],
@@ -349,6 +350,12 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 					settings.hoverColorHint = extSettings.hoverColorHint
 					needToUpdate = true
 					console.info(`hoverColorHint = ${settings.hoverColorHint}`)
+				}
+
+				if (settings.hoverUtility !== extSettings.hoverUtility) {
+					settings.hoverUtility = extSettings.hoverUtility
+					needToUpdate = true
+					console.info(`hoverUtility = ${settings.hoverUtility}`)
 				}
 
 				if (settings.diagnostics !== extSettings.diagnostics) {

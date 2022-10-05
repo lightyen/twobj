@@ -292,8 +292,11 @@ export function createTwContext(config: ResolvedConfigJS) {
 		}
 	}
 
-	function render(classname: string, tabSize = 4) {
-		const css = context.css(classname)
+	function render(classname: string, tabSize = 4, showVariants = false, variants: parser.Variant[] = []) {
+		let css = context.css(classname)
+		if (showVariants) {
+			css = context.wrap(...variants)(css)
+		}
 		const result = postcss().process(wrap(css), {
 			from: undefined,
 			parser: postcssJs,
@@ -317,18 +320,22 @@ export function createTwContext(config: ResolvedConfigJS) {
 
 	function renderClassname({
 		classname,
+		variants = [],
 		important = false,
 		rootFontSize = 0,
 		tabSize = 4,
 		colorHint = "none",
+		showVariants = false,
 	}: {
 		classname: string
+		variants?: parser.Variant[]
 		important?: boolean
 		rootFontSize?: number
 		tabSize?: number
 		colorHint?: "none" | "hex" | "rgb" | "hsl"
+		showVariants?: boolean
 	}): ScssText {
-		let { root } = render(classname, tabSize)
+		let { root } = render(classname, tabSize, showVariants, variants)
 		root = beautify(root, tabSize)
 		if (important || rootFontSize) {
 			root.walkDecls(decl => {

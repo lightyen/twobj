@@ -10,11 +10,11 @@ import type { TailwindLoader } from "./tailwind"
 
 function walk(
 	program: parser.Program,
-	check: (node: parser.Leaf, important: boolean) => boolean | void,
+	check: (node: parser.Leaf, important: boolean, variants: parser.Variant[]) => boolean | void,
 	variantGroup: (node: parser.GroupVariant) => void,
 ) {
 	for (const expr of program.expressions) {
-		if (walkExpr(expr, check, variantGroup, false) === false) {
+		if (walkExpr(expr, check, variantGroup, [], false) === false) {
 			break
 		}
 	}
@@ -23,14 +23,15 @@ function walk(
 
 	function walkExpr(
 		expr: parser.Expression,
-		check: (node: parser.Leaf, important: boolean) => boolean | void,
+		check: (node: parser.Leaf, important: boolean, variants: parser.Variant[]) => boolean | void,
 		variantGroup: (node: parser.GroupVariant) => void,
+		variants: parser.Variant[],
 		important: boolean,
 	): boolean | void {
 		if (expr.type === parser.NodeType.Group) {
 			important ||= expr.important
 			for (const e of expr.expressions) {
-				if (walkExpr(e, check, variantGroup, important) === false) {
+				if (walkExpr(e, check, variantGroup, [...variants], important) === false) {
 					return false
 				}
 			}
@@ -41,27 +42,28 @@ function walk(
 			const { variant, child } = expr
 			switch (variant.type) {
 				case parser.NodeType.GroupVariant:
-					variantGroup(variant)
 					for (const e of variant.expressions) {
-						if (walkExpr(e, check, variantGroup, true) === false) {
+						if (walkExpr(e, check, variantGroup, [], true) === false) {
 							return false
 						}
 					}
 					break
 				default:
-					if (check(variant, important) === false) {
+					if (check(variant, important, variants) === false) {
 						return false
 					}
 					break
 			}
+
 			if (child) {
-				return walkExpr(child, check, variantGroup, important)
+				variants.push(variant)
+				return walkExpr(child, check, variantGroup, variants, important)
 			}
 			return
 		}
 
 		important ||= expr.important
-		return check(expr, important)
+		return check(expr, important, variants)
 	}
 }
 
@@ -82,12 +84,14 @@ function hoverProgram(program: parser.Program, position: number) {
 	let _node: parser.Leaf | undefined
 	let _important = false
 	let variantGroup = false
+	let _context: parser.Variant[] = []
 	walk(
 		program,
-		(node, important) => {
+		(node, important, context) => {
 			if (inRange(node)) {
 				_node = node
 				_important = important
+				_context = context
 				return false
 			}
 		},
@@ -97,7 +101,7 @@ function hoverProgram(program: parser.Program, position: number) {
 			}
 		},
 	)
-	return [_node, _important, variantGroup] as [parser.Leaf | undefined, boolean, boolean]
+	return [_node, _context, _important, variantGroup] as [parser.Leaf | undefined, parser.Variant[], boolean, boolean]
 }
 
 export default async function hover(
@@ -141,7 +145,7 @@ export default async function hover(
 			} else {
 				const program = state.tw.context.parser.createProgram(token.value)
 
-				const [target, important, variantGroup] = hoverProgram(
+				const [target, context, important, variantGroup] = hoverProgram(
 					program,
 					document.offsetAt(position) - token.start,
 				)
@@ -231,9 +235,11 @@ export default async function hover(
 
 				const code = state.tw.renderClassname({
 					classname: value,
+					variants: context,
 					important,
 					rootFontSize: options.rootFontSize,
 					colorHint: options.hoverColorHint,
+					showVariants: options.hoverUtility === "showVariants",
 					tabSize,
 				})
 				const codes = new vscode.MarkdownString()
