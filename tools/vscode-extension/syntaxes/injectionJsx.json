@@ -67,6 +67,7 @@
           "patterns": [
             { "include": "#line-comment-end-double-quote" },
             { "include": "#block-comment-end-double-quote" },
+            { "include": "#string-character-escape" },
             { "include": "source.tw" }
           ]
         }
@@ -86,10 +87,11 @@
       },
       "patterns": [
         {
-          "end": "\"}",
+          "end": "'}",
           "patterns": [
             { "include": "#line-comment-end-single-quote" },
             { "include": "#block-comment-end-single-quote" },
+            { "include": "#string-character-escape" },
             { "include": "source.tw" }
           ]
         }
@@ -109,6 +111,7 @@
           "patterns": [
             { "include": "#line-comment-end-backtick" },
             { "include": "#block-comment-end-backtick" },
+            { "include": "#string-character-escape" },
             { "include": "source.tw" }
           ]
         }
@@ -169,6 +172,10 @@
         "1": { "name": "punctuation.definition.comment.end.tw" }
       },
       "contentName": "comment.block.tw"
+    },
+    "string-character-escape": {
+      "name": "constant.character.escape.tw",
+      "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|u\\{[0-9A-Fa-f]+\\}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
     }
   }
 }
