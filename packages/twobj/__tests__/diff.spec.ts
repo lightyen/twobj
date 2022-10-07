@@ -80,6 +80,47 @@ test("diff tailwindcss", async () => {
 		const c0 = context.css(c)
 		const root = objectify(c)
 		const c1 = postcssJs.objectify(root)
+		if (c === "sr-only" || c === "not-sr-only") {
+			c1["marginTop"] = c1["margin"]
+			c1["marginBottom"] = c1["margin"]
+			c1["marginLeft"] = c1["margin"]
+			c1["marginRight"] = c1["margin"]
+			c1["paddingTop"] = c1["padding"]
+			c1["paddingBottom"] = c1["padding"]
+			c1["paddingLeft"] = c1["padding"]
+			c1["paddingRight"] = c1["padding"]
+			delete c1["margin"]
+			delete c1["padding"]
+		}
+		if (c.startsWith("m-") && c1["margin"]) {
+			c1["marginTop"] = c1["margin"]
+			c1["marginBottom"] = c1["margin"]
+			c1["marginLeft"] = c1["margin"]
+			c1["marginRight"] = c1["margin"]
+			delete c1["margin"]
+		}
+		if (c.startsWith("p-") && c1["padding"]) {
+			c1["paddingTop"] = c1["padding"]
+			c1["paddingBottom"] = c1["padding"]
+			c1["paddingLeft"] = c1["padding"]
+			c1["paddingRight"] = c1["padding"]
+			delete c1["padding"]
+		}
+
+		if (c.startsWith("scroll-m-") && c1["scrollMargin"]) {
+			c1["scrollMarginTop"] = c1["scrollMargin"]
+			c1["scrollMarginBottom"] = c1["scrollMargin"]
+			c1["scrollMarginLeft"] = c1["scrollMargin"]
+			c1["scrollMarginRight"] = c1["scrollMargin"]
+			delete c1["scrollMargin"]
+		}
+		if (c.startsWith("scroll-p-") && c1["scrollPadding"]) {
+			c1["scrollPaddingTop"] = c1["scrollPadding"]
+			c1["scrollPaddingBottom"] = c1["scrollPadding"]
+			c1["scrollPaddingLeft"] = c1["scrollPadding"]
+			c1["scrollPaddingRight"] = c1["scrollPadding"]
+			delete c1["scrollPadding"]
+		}
 
 		stringProperties(c0)
 		stringProperties(c1)

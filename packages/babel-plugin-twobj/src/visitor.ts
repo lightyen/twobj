@@ -5,15 +5,7 @@ import { createContext, resolveConfig } from "twobj"
 import { NodeType } from "twobj/parser"
 import * as plugins from "./plugins"
 import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
-import {
-	buildArrayExpression,
-	buildObjectExpression,
-	buildPrimitive,
-	buildStyleObjectExpression,
-	buildWrapObjectExpression,
-	getFirstQuasi,
-	isObject,
-} from "./util"
+import { buildArrayExpression, buildObjectExpression, buildPrimitive, getFirstQuasi, isObject } from "./util"
 
 export const packageName = "twobj"
 
@@ -67,7 +59,7 @@ export function createVisitor({
 						) {
 							if (!state.globalInserted) {
 								if (isObject(ctx.globalStyles)) {
-									const result = buildStyleObjectExpression(t, ctx.globalStyles)
+									const result = buildObjectExpression(t, false, ctx.globalStyles)
 									importPath.insertBefore(
 										t.variableDeclaration("const", [
 											t.variableDeclarator(t.identifier(localName), result),
@@ -132,9 +124,9 @@ export function createVisitor({
 
 									let expr: babel.Expression
 									if (Array.isArray(themeValue)) {
-										expr = buildArrayExpression(t, themeValue)
+										expr = buildArrayExpression(t, false, themeValue)
 									} else if (typeof themeValue === "object" && themeValue !== null) {
-										expr = buildObjectExpression(t, themeValue as Record<string, unknown>)
+										expr = buildObjectExpression(t, false, themeValue as Record<string, unknown>)
 									} else {
 										expr = buildPrimitive(t, themeValue)
 									}
@@ -241,7 +233,7 @@ export function createVisitor({
 
 	function buildStyle(input: string, errPath: NodePath, file: BabelFile) {
 		try {
-			return buildStyleObjectExpression(t, ctx.css(input))
+			return buildObjectExpression(t, false, ctx.css(input))
 		} catch (error) {
 			throw createError(error as ParseError, errPath, file)
 		}
@@ -249,7 +241,7 @@ export function createVisitor({
 
 	function buildWrap(input: string, errPath: NodePath, file: BabelFile) {
 		try {
-			return buildWrapObjectExpression(t, ctx.wrap(input)(Math.E as unknown as CSSProperties))
+			return buildObjectExpression(t, true, ctx.wrap(input)(Math.E as unknown as CSSProperties))
 		} catch (error) {
 			throw createError(error as ParseError, errPath, file)
 		}

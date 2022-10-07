@@ -49,14 +49,18 @@ export function buildArrayExpression(t: typeof babel, value: unknown[]): babel.A
 				return buildArrayExpression(t, val)
 			}
 			if (isObject(val)) {
-				return buildObjectExpression(t, val)
+				return buildObjectExpression(t, false, val)
 			}
 			return buildPrimitive(t, val)
 		}),
 	)
 }
 
-export function buildObjectExpression(t: typeof babel, obj: Record<string, unknown>): babel.ObjectExpression {
+export function buildObjectExpression(
+	t: typeof babel,
+	wrap: boolean,
+	obj: Record<string, unknown>,
+): babel.ObjectExpression {
 	const members: babel.ObjectProperty[] = []
 	for (const k in obj) {
 		const key = /^[a-zA-Z]\w*$/.test(k) ? t.identifier(k) : t.stringLiteral(k)
@@ -68,67 +72,16 @@ export function buildObjectExpression(t: typeof babel, obj: Record<string, unkno
 		}
 
 		if (isObject(v)) {
-			members.push(t.objectProperty(key, buildObjectExpression(t, v)))
+			members.push(t.objectProperty(key, buildObjectExpression(t, wrap, v)))
 			continue
 		}
 
-		members.push(t.objectProperty(key, buildPrimitive(t, v)))
-	}
-	return t.objectExpression(members)
-}
-
-export function buildStyleObjectExpression(t: typeof babel, obj: Record<string, unknown>) {
-	const members: babel.ObjectProperty[] = []
-	for (const k in obj) {
-		const key = /^[a-zA-Z]\w*$/.test(k) ? t.identifier(k) : t.stringLiteral(k)
-		let v = (obj as Record<string, unknown>)[k]
-		if (isObject(v)) {
-			const result = buildStyleObjectExpression(t, v)
-			if (result) {
-				members.push(t.objectProperty(key, result))
-			}
-			continue
-		}
-
-		if (Array.isArray(v) && v[v.length - 1] != undefined) {
-			v = v[v.length - 1] // pick last value
-		}
-
-		if (Array.isArray(v)) {
-			continue
-		}
-
-		members.push(t.objectProperty(key, buildPrimitive(t, v)))
-	}
-	return t.objectExpression(members)
-}
-
-export function buildWrapObjectExpression(t: typeof babel, obj: Record<string, unknown>) {
-	const members: babel.ObjectProperty[] = []
-	for (const k in obj) {
-		const key = /^[a-zA-Z]\w*$/.test(k) ? t.identifier(k) : t.stringLiteral(k)
-		let v = (obj as Record<string, unknown>)[k]
-		if (isObject(v)) {
-			const result = buildWrapObjectExpression(t, v)
-			if (result) {
-				members.push(t.objectProperty(key, result))
-			}
-			continue
-		}
-
-		if (Array.isArray(v) && v[v.length - 1] != undefined) {
-			v = v[v.length - 1]
-		}
-
-		if (Array.isArray(v)) {
-			continue
-		}
-
-		if (v === Math.E) {
+		if (wrap && v === Math.E) {
 			members.push(t.objectProperty(key, t.identifier("e")))
-		} else {
-			members.push(t.objectProperty(key, buildPrimitive(t, v)))
+			continue
 		}
+
+		members.push(t.objectProperty(key, buildPrimitive(t, v)))
 	}
 	return t.objectExpression(members)
 }

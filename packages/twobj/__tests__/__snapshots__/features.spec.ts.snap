@@ -1766,211 +1766,316 @@ exports[`snapshots: -left-px 1`] = `
 
 exports[`snapshots: -m-0 1`] = `
 {
-  "margin": "-0px",
+  "marginBottom": "-0px",
+  "marginLeft": "-0px",
+  "marginRight": "-0px",
+  "marginTop": "-0px",
 }
 `;
 
 exports[`snapshots: -m-0.5 1`] = `
 {
-  "margin": "-0.125rem",
+  "marginBottom": "-0.125rem",
+  "marginLeft": "-0.125rem",
+  "marginRight": "-0.125rem",
+  "marginTop": "-0.125rem",
 }
 `;
 
 exports[`snapshots: -m-1 1`] = `
 {
-  "margin": "-0.25rem",
+  "marginBottom": "-0.25rem",
+  "marginLeft": "-0.25rem",
+  "marginRight": "-0.25rem",
+  "marginTop": "-0.25rem",
 }
 `;
 
 exports[`snapshots: -m-1.5 1`] = `
 {
-  "margin": "-0.375rem",
+  "marginBottom": "-0.375rem",
+  "marginLeft": "-0.375rem",
+  "marginRight": "-0.375rem",
+  "marginTop": "-0.375rem",
 }
 `;
 
 exports[`snapshots: -m-2 1`] = `
 {
-  "margin": "-0.5rem",
+  "marginBottom": "-0.5rem",
+  "marginLeft": "-0.5rem",
+  "marginRight": "-0.5rem",
+  "marginTop": "-0.5rem",
 }
 `;
 
 exports[`snapshots: -m-2.5 1`] = `
 {
-  "margin": "-0.625rem",
+  "marginBottom": "-0.625rem",
+  "marginLeft": "-0.625rem",
+  "marginRight": "-0.625rem",
+  "marginTop": "-0.625rem",
 }
 `;
 
 exports[`snapshots: -m-3 1`] = `
 {
-  "margin": "-0.75rem",
+  "marginBottom": "-0.75rem",
+  "marginLeft": "-0.75rem",
+  "marginRight": "-0.75rem",
+  "marginTop": "-0.75rem",
 }
 `;
 
 exports[`snapshots: -m-3.5 1`] = `
 {
-  "margin": "-0.875rem",
+  "marginBottom": "-0.875rem",
+  "marginLeft": "-0.875rem",
+  "marginRight": "-0.875rem",
+  "marginTop": "-0.875rem",
 }
 `;
 
 exports[`snapshots: -m-4 1`] = `
 {
-  "margin": "-1rem",
+  "marginBottom": "-1rem",
+  "marginLeft": "-1rem",
+  "marginRight": "-1rem",
+  "marginTop": "-1rem",
 }
 `;
 
 exports[`snapshots: -m-5 1`] = `
 {
-  "margin": "-1.25rem",
+  "marginBottom": "-1.25rem",
+  "marginLeft": "-1.25rem",
+  "marginRight": "-1.25rem",
+  "marginTop": "-1.25rem",
 }
 `;
 
 exports[`snapshots: -m-6 1`] = `
 {
-  "margin": "-1.5rem",
+  "marginBottom": "-1.5rem",
+  "marginLeft": "-1.5rem",
+  "marginRight": "-1.5rem",
+  "marginTop": "-1.5rem",
 }
 `;
 
 exports[`snapshots: -m-7 1`] = `
 {
-  "margin": "-1.75rem",
+  "marginBottom": "-1.75rem",
+  "marginLeft": "-1.75rem",
+  "marginRight": "-1.75rem",
+  "marginTop": "-1.75rem",
 }
 `;
 
 exports[`snapshots: -m-8 1`] = `
 {
-  "margin": "-2rem",
+  "marginBottom": "-2rem",
+  "marginLeft": "-2rem",
+  "marginRight": "-2rem",
+  "marginTop": "-2rem",
 }
 `;
 
 exports[`snapshots: -m-9 1`] = `
 {
-  "margin": "-2.25rem",
+  "marginBottom": "-2.25rem",
+  "marginLeft": "-2.25rem",
+  "marginRight": "-2.25rem",
+  "marginTop": "-2.25rem",
 }
 `;
 
 exports[`snapshots: -m-10 1`] = `
 {
-  "margin": "-2.5rem",
+  "marginBottom": "-2.5rem",
+  "marginLeft": "-2.5rem",
+  "marginRight": "-2.5rem",
+  "marginTop": "-2.5rem",
 }
 `;
 
 exports[`snapshots: -m-11 1`] = `
 {
-  "margin": "-2.75rem",
+  "marginBottom": "-2.75rem",
+  "marginLeft": "-2.75rem",
+  "marginRight": "-2.75rem",
+  "marginTop": "-2.75rem",
 }
 `;
 
 exports[`snapshots: -m-12 1`] = `
 {
-  "margin": "-3rem",
+  "marginBottom": "-3rem",
+  "marginLeft": "-3rem",
+  "marginRight": "-3rem",
+  "marginTop": "-3rem",
 }
 `;
 
 exports[`snapshots: -m-14 1`] = `
 {
-  "margin": "-3.5rem",
+  "marginBottom": "-3.5rem",
+  "marginLeft": "-3.5rem",
+  "marginRight": "-3.5rem",
+  "marginTop": "-3.5rem",
 }
 `;
 
 exports[`snapshots: -m-16 1`] = `
 {
-  "margin": "-4rem",
+  "marginBottom": "-4rem",
+  "marginLeft": "-4rem",
+  "marginRight": "-4rem",
+  "marginTop": "-4rem",
 }
 `;
 
 exports[`snapshots: -m-20 1`] = `
 {
-  "margin": "-5rem",
+  "marginBottom": "-5rem",
+  "marginLeft": "-5rem",
+  "marginRight": "-5rem",
+  "marginTop": "-5rem",
 }
 `;
 
 exports[`snapshots: -m-24 1`] = `
 {
-  "margin": "-6rem",
+  "marginBottom": "-6rem",
+  "marginLeft": "-6rem",
+  "marginRight": "-6rem",
+  "marginTop": "-6rem",
 }
 `;
 
 exports[`snapshots: -m-28 1`] = `
 {
-  "margin": "-7rem",
+  "marginBottom": "-7rem",
+  "marginLeft": "-7rem",
+  "marginRight": "-7rem",
+  "marginTop": "-7rem",
 }
 `;
 
 exports[`snapshots: -m-32 1`] = `
 {
-  "margin": "-8rem",
+  "marginBottom": "-8rem",
+  "marginLeft": "-8rem",
+  "marginRight": "-8rem",
+  "marginTop": "-8rem",
 }
 `;
 
 exports[`snapshots: -m-36 1`] = `
 {
-  "margin": "-9rem",
+  "marginBottom": "-9rem",
+  "marginLeft": "-9rem",
+  "marginRight": "-9rem",
+  "marginTop": "-9rem",
 }
 `;
 
 exports[`snapshots: -m-40 1`] = `
 {
-  "margin": "-10rem",
+  "marginBottom": "-10rem",
+  "marginLeft": "-10rem",
+  "marginRight": "-10rem",
+  "marginTop": "-10rem",
 }
 `;
 
 exports[`snapshots: -m-44 1`] = `
 {
-  "margin": "-11rem",
+  "marginBottom": "-11rem",
+  "marginLeft": "-11rem",
+  "marginRight": "-11rem",
+  "marginTop": "-11rem",
 }
 `;
 
 exports[`snapshots: -m-48 1`] = `
 {
-  "margin": "-12rem",
+  "marginBottom": "-12rem",
+  "marginLeft": "-12rem",
+  "marginRight": "-12rem",
+  "marginTop": "-12rem",
 }
 `;
 
 exports[`snapshots: -m-52 1`] = `
 {
-  "margin": "-13rem",
+  "marginBottom": "-13rem",
+  "marginLeft": "-13rem",
+  "marginRight": "-13rem",
+  "marginTop": "-13rem",
 }
 `;
 
 exports[`snapshots: -m-56 1`] = `
 {
-  "margin": "-14rem",
+  "marginBottom": "-14rem",
+  "marginLeft": "-14rem",
+  "marginRight": "-14rem",
+  "marginTop": "-14rem",
 }
 `;
 
 exports[`snapshots: -m-60 1`] = `
 {
-  "margin": "-15rem",
+  "marginBottom": "-15rem",
+  "marginLeft": "-15rem",
+  "marginRight": "-15rem",
+  "marginTop": "-15rem",
 }
 `;
 
 exports[`snapshots: -m-64 1`] = `
 {
-  "margin": "-16rem",
+  "marginBottom": "-16rem",
+  "marginLeft": "-16rem",
+  "marginRight": "-16rem",
+  "marginTop": "-16rem",
 }
 `;
 
 exports[`snapshots: -m-72 1`] = `
 {
-  "margin": "-18rem",
+  "marginBottom": "-18rem",
+  "marginLeft": "-18rem",
+  "marginRight": "-18rem",
+  "marginTop": "-18rem",
 }
 `;
 
 exports[`snapshots: -m-80 1`] = `
 {
-  "margin": "-20rem",
+  "marginBottom": "-20rem",
+  "marginLeft": "-20rem",
+  "marginRight": "-20rem",
+  "marginTop": "-20rem",
 }
 `;
 
 exports[`snapshots: -m-96 1`] = `
 {
-  "margin": "-24rem",
+  "marginBottom": "-24rem",
+  "marginLeft": "-24rem",
+  "marginRight": "-24rem",
+  "marginTop": "-24rem",
 }
 `;
 
 exports[`snapshots: -m-px 1`] = `
 {
-  "margin": "-1px",
+  "marginBottom": "-1px",
+  "marginLeft": "-1px",
+  "marginRight": "-1px",
+  "marginTop": "-1px",
 }
 `;
 
@@ -3961,211 +4066,316 @@ exports[`snapshots: -scale-y-150 1`] = `
 
 exports[`snapshots: -scroll-m-0 1`] = `
 {
-  "scrollMargin": "-0px",
+  "scrollMarginBottom": "-0px",
+  "scrollMarginLeft": "-0px",
+  "scrollMarginRight": "-0px",
+  "scrollMarginTop": "-0px",
 }
 `;
 
 exports[`snapshots: -scroll-m-0.5 1`] = `
 {
-  "scrollMargin": "-0.125rem",
+  "scrollMarginBottom": "-0.125rem",
+  "scrollMarginLeft": "-0.125rem",
+  "scrollMarginRight": "-0.125rem",
+  "scrollMarginTop": "-0.125rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-1 1`] = `
 {
-  "scrollMargin": "-0.25rem",
+  "scrollMarginBottom": "-0.25rem",
+  "scrollMarginLeft": "-0.25rem",
+  "scrollMarginRight": "-0.25rem",
+  "scrollMarginTop": "-0.25rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-1.5 1`] = `
 {
-  "scrollMargin": "-0.375rem",
+  "scrollMarginBottom": "-0.375rem",
+  "scrollMarginLeft": "-0.375rem",
+  "scrollMarginRight": "-0.375rem",
+  "scrollMarginTop": "-0.375rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-2 1`] = `
 {
-  "scrollMargin": "-0.5rem",
+  "scrollMarginBottom": "-0.5rem",
+  "scrollMarginLeft": "-0.5rem",
+  "scrollMarginRight": "-0.5rem",
+  "scrollMarginTop": "-0.5rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-2.5 1`] = `
 {
-  "scrollMargin": "-0.625rem",
+  "scrollMarginBottom": "-0.625rem",
+  "scrollMarginLeft": "-0.625rem",
+  "scrollMarginRight": "-0.625rem",
+  "scrollMarginTop": "-0.625rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-3 1`] = `
 {
-  "scrollMargin": "-0.75rem",
+  "scrollMarginBottom": "-0.75rem",
+  "scrollMarginLeft": "-0.75rem",
+  "scrollMarginRight": "-0.75rem",
+  "scrollMarginTop": "-0.75rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-3.5 1`] = `
 {
-  "scrollMargin": "-0.875rem",
+  "scrollMarginBottom": "-0.875rem",
+  "scrollMarginLeft": "-0.875rem",
+  "scrollMarginRight": "-0.875rem",
+  "scrollMarginTop": "-0.875rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-4 1`] = `
 {
-  "scrollMargin": "-1rem",
+  "scrollMarginBottom": "-1rem",
+  "scrollMarginLeft": "-1rem",
+  "scrollMarginRight": "-1rem",
+  "scrollMarginTop": "-1rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-5 1`] = `
 {
-  "scrollMargin": "-1.25rem",
+  "scrollMarginBottom": "-1.25rem",
+  "scrollMarginLeft": "-1.25rem",
+  "scrollMarginRight": "-1.25rem",
+  "scrollMarginTop": "-1.25rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-6 1`] = `
 {
-  "scrollMargin": "-1.5rem",
+  "scrollMarginBottom": "-1.5rem",
+  "scrollMarginLeft": "-1.5rem",
+  "scrollMarginRight": "-1.5rem",
+  "scrollMarginTop": "-1.5rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-7 1`] = `
 {
-  "scrollMargin": "-1.75rem",
+  "scrollMarginBottom": "-1.75rem",
+  "scrollMarginLeft": "-1.75rem",
+  "scrollMarginRight": "-1.75rem",
+  "scrollMarginTop": "-1.75rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-8 1`] = `
 {
-  "scrollMargin": "-2rem",
+  "scrollMarginBottom": "-2rem",
+  "scrollMarginLeft": "-2rem",
+  "scrollMarginRight": "-2rem",
+  "scrollMarginTop": "-2rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-9 1`] = `
 {
-  "scrollMargin": "-2.25rem",
+  "scrollMarginBottom": "-2.25rem",
+  "scrollMarginLeft": "-2.25rem",
+  "scrollMarginRight": "-2.25rem",
+  "scrollMarginTop": "-2.25rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-10 1`] = `
 {
-  "scrollMargin": "-2.5rem",
+  "scrollMarginBottom": "-2.5rem",
+  "scrollMarginLeft": "-2.5rem",
+  "scrollMarginRight": "-2.5rem",
+  "scrollMarginTop": "-2.5rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-11 1`] = `
 {
-  "scrollMargin": "-2.75rem",
+  "scrollMarginBottom": "-2.75rem",
+  "scrollMarginLeft": "-2.75rem",
+  "scrollMarginRight": "-2.75rem",
+  "scrollMarginTop": "-2.75rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-12 1`] = `
 {
-  "scrollMargin": "-3rem",
+  "scrollMarginBottom": "-3rem",
+  "scrollMarginLeft": "-3rem",
+  "scrollMarginRight": "-3rem",
+  "scrollMarginTop": "-3rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-14 1`] = `
 {
-  "scrollMargin": "-3.5rem",
+  "scrollMarginBottom": "-3.5rem",
+  "scrollMarginLeft": "-3.5rem",
+  "scrollMarginRight": "-3.5rem",
+  "scrollMarginTop": "-3.5rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-16 1`] = `
 {
-  "scrollMargin": "-4rem",
+  "scrollMarginBottom": "-4rem",
+  "scrollMarginLeft": "-4rem",
+  "scrollMarginRight": "-4rem",
+  "scrollMarginTop": "-4rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-20 1`] = `
 {
-  "scrollMargin": "-5rem",
+  "scrollMarginBottom": "-5rem",
+  "scrollMarginLeft": "-5rem",
+  "scrollMarginRight": "-5rem",
+  "scrollMarginTop": "-5rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-24 1`] = `
 {
-  "scrollMargin": "-6rem",
+  "scrollMarginBottom": "-6rem",
+  "scrollMarginLeft": "-6rem",
+  "scrollMarginRight": "-6rem",
+  "scrollMarginTop": "-6rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-28 1`] = `
 {
-  "scrollMargin": "-7rem",
+  "scrollMarginBottom": "-7rem",
+  "scrollMarginLeft": "-7rem",
+  "scrollMarginRight": "-7rem",
+  "scrollMarginTop": "-7rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-32 1`] = `
 {
-  "scrollMargin": "-8rem",
+  "scrollMarginBottom": "-8rem",
+  "scrollMarginLeft": "-8rem",
+  "scrollMarginRight": "-8rem",
+  "scrollMarginTop": "-8rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-36 1`] = `
 {
-  "scrollMargin": "-9rem",
+  "scrollMarginBottom": "-9rem",
+  "scrollMarginLeft": "-9rem",
+  "scrollMarginRight": "-9rem",
+  "scrollMarginTop": "-9rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-40 1`] = `
 {
-  "scrollMargin": "-10rem",
+  "scrollMarginBottom": "-10rem",
+  "scrollMarginLeft": "-10rem",
+  "scrollMarginRight": "-10rem",
+  "scrollMarginTop": "-10rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-44 1`] = `
 {
-  "scrollMargin": "-11rem",
+  "scrollMarginBottom": "-11rem",
+  "scrollMarginLeft": "-11rem",
+  "scrollMarginRight": "-11rem",
+  "scrollMarginTop": "-11rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-48 1`] = `
 {
-  "scrollMargin": "-12rem",
+  "scrollMarginBottom": "-12rem",
+  "scrollMarginLeft": "-12rem",
+  "scrollMarginRight": "-12rem",
+  "scrollMarginTop": "-12rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-52 1`] = `
 {
-  "scrollMargin": "-13rem",
+  "scrollMarginBottom": "-13rem",
+  "scrollMarginLeft": "-13rem",
+  "scrollMarginRight": "-13rem",
+  "scrollMarginTop": "-13rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-56 1`] = `
 {
-  "scrollMargin": "-14rem",
+  "scrollMarginBottom": "-14rem",
+  "scrollMarginLeft": "-14rem",
+  "scrollMarginRight": "-14rem",
+  "scrollMarginTop": "-14rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-60 1`] = `
 {
-  "scrollMargin": "-15rem",
+  "scrollMarginBottom": "-15rem",
+  "scrollMarginLeft": "-15rem",
+  "scrollMarginRight": "-15rem",
+  "scrollMarginTop": "-15rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-64 1`] = `
 {
-  "scrollMargin": "-16rem",
+  "scrollMarginBottom": "-16rem",
+  "scrollMarginLeft": "-16rem",
+  "scrollMarginRight": "-16rem",
+  "scrollMarginTop": "-16rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-72 1`] = `
 {
-  "scrollMargin": "-18rem",
+  "scrollMarginBottom": "-18rem",
+  "scrollMarginLeft": "-18rem",
+  "scrollMarginRight": "-18rem",
+  "scrollMarginTop": "-18rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-80 1`] = `
 {
-  "scrollMargin": "-20rem",
+  "scrollMarginBottom": "-20rem",
+  "scrollMarginLeft": "-20rem",
+  "scrollMarginRight": "-20rem",
+  "scrollMarginTop": "-20rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-96 1`] = `
 {
-  "scrollMargin": "-24rem",
+  "scrollMarginBottom": "-24rem",
+  "scrollMarginLeft": "-24rem",
+  "scrollMarginRight": "-24rem",
+  "scrollMarginTop": "-24rem",
 }
 `;
 
 exports[`snapshots: -scroll-m-px 1`] = `
 {
-  "scrollMargin": "-1px",
+  "scrollMarginBottom": "-1px",
+  "scrollMarginLeft": "-1px",
+  "scrollMarginRight": "-1px",
+  "scrollMarginTop": "-1px",
 }
 `;
 
@@ -34729,217 +34939,325 @@ exports[`snapshots: lowercase 1`] = `
 
 exports[`snapshots: m-0 1`] = `
 {
-  "margin": "0px",
+  "marginBottom": "0px",
+  "marginLeft": "0px",
+  "marginRight": "0px",
+  "marginTop": "0px",
 }
 `;
 
 exports[`snapshots: m-0.5 1`] = `
 {
-  "margin": "0.125rem",
+  "marginBottom": "0.125rem",
+  "marginLeft": "0.125rem",
+  "marginRight": "0.125rem",
+  "marginTop": "0.125rem",
 }
 `;
 
 exports[`snapshots: m-1 1`] = `
 {
-  "margin": "0.25rem",
+  "marginBottom": "0.25rem",
+  "marginLeft": "0.25rem",
+  "marginRight": "0.25rem",
+  "marginTop": "0.25rem",
 }
 `;
 
 exports[`snapshots: m-1.5 1`] = `
 {
-  "margin": "0.375rem",
+  "marginBottom": "0.375rem",
+  "marginLeft": "0.375rem",
+  "marginRight": "0.375rem",
+  "marginTop": "0.375rem",
 }
 `;
 
 exports[`snapshots: m-2 1`] = `
 {
-  "margin": "0.5rem",
+  "marginBottom": "0.5rem",
+  "marginLeft": "0.5rem",
+  "marginRight": "0.5rem",
+  "marginTop": "0.5rem",
 }
 `;
 
 exports[`snapshots: m-2.5 1`] = `
 {
-  "margin": "0.625rem",
+  "marginBottom": "0.625rem",
+  "marginLeft": "0.625rem",
+  "marginRight": "0.625rem",
+  "marginTop": "0.625rem",
 }
 `;
 
 exports[`snapshots: m-3 1`] = `
 {
-  "margin": "0.75rem",
+  "marginBottom": "0.75rem",
+  "marginLeft": "0.75rem",
+  "marginRight": "0.75rem",
+  "marginTop": "0.75rem",
 }
 `;
 
 exports[`snapshots: m-3.5 1`] = `
 {
-  "margin": "0.875rem",
+  "marginBottom": "0.875rem",
+  "marginLeft": "0.875rem",
+  "marginRight": "0.875rem",
+  "marginTop": "0.875rem",
 }
 `;
 
 exports[`snapshots: m-4 1`] = `
 {
-  "margin": "1rem",
+  "marginBottom": "1rem",
+  "marginLeft": "1rem",
+  "marginRight": "1rem",
+  "marginTop": "1rem",
 }
 `;
 
 exports[`snapshots: m-5 1`] = `
 {
-  "margin": "1.25rem",
+  "marginBottom": "1.25rem",
+  "marginLeft": "1.25rem",
+  "marginRight": "1.25rem",
+  "marginTop": "1.25rem",
 }
 `;
 
 exports[`snapshots: m-6 1`] = `
 {
-  "margin": "1.5rem",
+  "marginBottom": "1.5rem",
+  "marginLeft": "1.5rem",
+  "marginRight": "1.5rem",
+  "marginTop": "1.5rem",
 }
 `;
 
 exports[`snapshots: m-7 1`] = `
 {
-  "margin": "1.75rem",
+  "marginBottom": "1.75rem",
+  "marginLeft": "1.75rem",
+  "marginRight": "1.75rem",
+  "marginTop": "1.75rem",
 }
 `;
 
 exports[`snapshots: m-8 1`] = `
 {
-  "margin": "2rem",
+  "marginBottom": "2rem",
+  "marginLeft": "2rem",
+  "marginRight": "2rem",
+  "marginTop": "2rem",
 }
 `;
 
 exports[`snapshots: m-9 1`] = `
 {
-  "margin": "2.25rem",
+  "marginBottom": "2.25rem",
+  "marginLeft": "2.25rem",
+  "marginRight": "2.25rem",
+  "marginTop": "2.25rem",
 }
 `;
 
 exports[`snapshots: m-10 1`] = `
 {
-  "margin": "2.5rem",
+  "marginBottom": "2.5rem",
+  "marginLeft": "2.5rem",
+  "marginRight": "2.5rem",
+  "marginTop": "2.5rem",
 }
 `;
 
 exports[`snapshots: m-11 1`] = `
 {
-  "margin": "2.75rem",
+  "marginBottom": "2.75rem",
+  "marginLeft": "2.75rem",
+  "marginRight": "2.75rem",
+  "marginTop": "2.75rem",
 }
 `;
 
 exports[`snapshots: m-12 1`] = `
 {
-  "margin": "3rem",
+  "marginBottom": "3rem",
+  "marginLeft": "3rem",
+  "marginRight": "3rem",
+  "marginTop": "3rem",
 }
 `;
 
 exports[`snapshots: m-14 1`] = `
 {
-  "margin": "3.5rem",
+  "marginBottom": "3.5rem",
+  "marginLeft": "3.5rem",
+  "marginRight": "3.5rem",
+  "marginTop": "3.5rem",
 }
 `;
 
 exports[`snapshots: m-16 1`] = `
 {
-  "margin": "4rem",
+  "marginBottom": "4rem",
+  "marginLeft": "4rem",
+  "marginRight": "4rem",
+  "marginTop": "4rem",
 }
 `;
 
 exports[`snapshots: m-20 1`] = `
 {
-  "margin": "5rem",
+  "marginBottom": "5rem",
+  "marginLeft": "5rem",
+  "marginRight": "5rem",
+  "marginTop": "5rem",
 }
 `;
 
 exports[`snapshots: m-24 1`] = `
 {
-  "margin": "6rem",
+  "marginBottom": "6rem",
+  "marginLeft": "6rem",
+  "marginRight": "6rem",
+  "marginTop": "6rem",
 }
 `;
 
 exports[`snapshots: m-28 1`] = `
 {
-  "margin": "7rem",
+  "marginBottom": "7rem",
+  "marginLeft": "7rem",
+  "marginRight": "7rem",
+  "marginTop": "7rem",
 }
 `;
 
 exports[`snapshots: m-32 1`] = `
 {
-  "margin": "8rem",
+  "marginBottom": "8rem",
+  "marginLeft": "8rem",
+  "marginRight": "8rem",
+  "marginTop": "8rem",
 }
 `;
 
 exports[`snapshots: m-36 1`] = `
 {
-  "margin": "9rem",
+  "marginBottom": "9rem",
+  "marginLeft": "9rem",
+  "marginRight": "9rem",
+  "marginTop": "9rem",
 }
 `;
 
 exports[`snapshots: m-40 1`] = `
 {
-  "margin": "10rem",
+  "marginBottom": "10rem",
+  "marginLeft": "10rem",
+  "marginRight": "10rem",
+  "marginTop": "10rem",
 }
 `;
 
 exports[`snapshots: m-44 1`] = `
 {
-  "margin": "11rem",
+  "marginBottom": "11rem",
+  "marginLeft": "11rem",
+  "marginRight": "11rem",
+  "marginTop": "11rem",
 }
 `;
 
 exports[`snapshots: m-48 1`] = `
 {
-  "margin": "12rem",
+  "marginBottom": "12rem",
+  "marginLeft": "12rem",
+  "marginRight": "12rem",
+  "marginTop": "12rem",
 }
 `;
 
 exports[`snapshots: m-52 1`] = `
 {
-  "margin": "13rem",
+  "marginBottom": "13rem",
+  "marginLeft": "13rem",
+  "marginRight": "13rem",
+  "marginTop": "13rem",
 }
 `;
 
 exports[`snapshots: m-56 1`] = `
 {
-  "margin": "14rem",
+  "marginBottom": "14rem",
+  "marginLeft": "14rem",
+  "marginRight": "14rem",
+  "marginTop": "14rem",
 }
 `;
 
 exports[`snapshots: m-60 1`] = `
 {
-  "margin": "15rem",
+  "marginBottom": "15rem",
+  "marginLeft": "15rem",
+  "marginRight": "15rem",
+  "marginTop": "15rem",
 }
 `;
 
 exports[`snapshots: m-64 1`] = `
 {
-  "margin": "16rem",
+  "marginBottom": "16rem",
+  "marginLeft": "16rem",
+  "marginRight": "16rem",
+  "marginTop": "16rem",
 }
 `;
 
 exports[`snapshots: m-72 1`] = `
 {
-  "margin": "18rem",
+  "marginBottom": "18rem",
+  "marginLeft": "18rem",
+  "marginRight": "18rem",
+  "marginTop": "18rem",
 }
 `;
 
 exports[`snapshots: m-80 1`] = `
 {
-  "margin": "20rem",
+  "marginBottom": "20rem",
+  "marginLeft": "20rem",
+  "marginRight": "20rem",
+  "marginTop": "20rem",
 }
 `;
 
 exports[`snapshots: m-96 1`] = `
 {
-  "margin": "24rem",
+  "marginBottom": "24rem",
+  "marginLeft": "24rem",
+  "marginRight": "24rem",
+  "marginTop": "24rem",
 }
 `;
 
 exports[`snapshots: m-auto 1`] = `
 {
-  "margin": "auto",
+  "marginBottom": "auto",
+  "marginLeft": "auto",
+  "marginRight": "auto",
+  "marginTop": "auto",
 }
 `;
 
 exports[`snapshots: m-px 1`] = `
 {
-  "margin": "1px",
+  "marginBottom": "1px",
+  "marginLeft": "1px",
+  "marginRight": "1px",
+  "marginTop": "1px",
 }
 `;
 
@@ -36885,9 +37203,15 @@ exports[`snapshots: not-sr-only 1`] = `
 {
   "clip": "auto",
   "height": "auto",
-  "margin": "0",
+  "marginBottom": "0",
+  "marginLeft": "0",
+  "marginRight": "0",
+  "marginTop": "0",
   "overflow": "visible",
-  "padding": "0",
+  "paddingBottom": "0",
+  "paddingLeft": "0",
+  "paddingRight": "0",
+  "paddingTop": "0",
   "position": "static",
   "whiteSpace": "normal",
   "width": "auto",
@@ -38819,211 +39143,316 @@ exports[`snapshots: overscroll-y-none 1`] = `
 
 exports[`snapshots: p-0 1`] = `
 {
-  "padding": "0px",
+  "paddingBottom": "0px",
+  "paddingLeft": "0px",
+  "paddingRight": "0px",
+  "paddingTop": "0px",
 }
 `;
 
 exports[`snapshots: p-0.5 1`] = `
 {
-  "padding": "0.125rem",
+  "paddingBottom": "0.125rem",
+  "paddingLeft": "0.125rem",
+  "paddingRight": "0.125rem",
+  "paddingTop": "0.125rem",
 }
 `;
 
 exports[`snapshots: p-1 1`] = `
 {
-  "padding": "0.25rem",
+  "paddingBottom": "0.25rem",
+  "paddingLeft": "0.25rem",
+  "paddingRight": "0.25rem",
+  "paddingTop": "0.25rem",
 }
 `;
 
 exports[`snapshots: p-1.5 1`] = `
 {
-  "padding": "0.375rem",
+  "paddingBottom": "0.375rem",
+  "paddingLeft": "0.375rem",
+  "paddingRight": "0.375rem",
+  "paddingTop": "0.375rem",
 }
 `;
 
 exports[`snapshots: p-2 1`] = `
 {
-  "padding": "0.5rem",
+  "paddingBottom": "0.5rem",
+  "paddingLeft": "0.5rem",
+  "paddingRight": "0.5rem",
+  "paddingTop": "0.5rem",
 }
 `;
 
 exports[`snapshots: p-2.5 1`] = `
 {
-  "padding": "0.625rem",
+  "paddingBottom": "0.625rem",
+  "paddingLeft": "0.625rem",
+  "paddingRight": "0.625rem",
+  "paddingTop": "0.625rem",
 }
 `;
 
 exports[`snapshots: p-3 1`] = `
 {
-  "padding": "0.75rem",
+  "paddingBottom": "0.75rem",
+  "paddingLeft": "0.75rem",
+  "paddingRight": "0.75rem",
+  "paddingTop": "0.75rem",
 }
 `;
 
 exports[`snapshots: p-3.5 1`] = `
 {
-  "padding": "0.875rem",
+  "paddingBottom": "0.875rem",
+  "paddingLeft": "0.875rem",
+  "paddingRight": "0.875rem",
+  "paddingTop": "0.875rem",
 }
 `;
 
 exports[`snapshots: p-4 1`] = `
 {
-  "padding": "1rem",
+  "paddingBottom": "1rem",
+  "paddingLeft": "1rem",
+  "paddingRight": "1rem",
+  "paddingTop": "1rem",
 }
 `;
 
 exports[`snapshots: p-5 1`] = `
 {
-  "padding": "1.25rem",
+  "paddingBottom": "1.25rem",
+  "paddingLeft": "1.25rem",
+  "paddingRight": "1.25rem",
+  "paddingTop": "1.25rem",
 }
 `;
 
 exports[`snapshots: p-6 1`] = `
 {
-  "padding": "1.5rem",
+  "paddingBottom": "1.5rem",
+  "paddingLeft": "1.5rem",
+  "paddingRight": "1.5rem",
+  "paddingTop": "1.5rem",
 }
 `;
 
 exports[`snapshots: p-7 1`] = `
 {
-  "padding": "1.75rem",
+  "paddingBottom": "1.75rem",
+  "paddingLeft": "1.75rem",
+  "paddingRight": "1.75rem",
+  "paddingTop": "1.75rem",
 }
 `;
 
 exports[`snapshots: p-8 1`] = `
 {
-  "padding": "2rem",
+  "paddingBottom": "2rem",
+  "paddingLeft": "2rem",
+  "paddingRight": "2rem",
+  "paddingTop": "2rem",
 }
 `;
 
 exports[`snapshots: p-9 1`] = `
 {
-  "padding": "2.25rem",
+  "paddingBottom": "2.25rem",
+  "paddingLeft": "2.25rem",
+  "paddingRight": "2.25rem",
+  "paddingTop": "2.25rem",
 }
 `;
 
 exports[`snapshots: p-10 1`] = `
 {
-  "padding": "2.5rem",
+  "paddingBottom": "2.5rem",
+  "paddingLeft": "2.5rem",
+  "paddingRight": "2.5rem",
+  "paddingTop": "2.5rem",
 }
 `;
 
 exports[`snapshots: p-11 1`] = `
 {
-  "padding": "2.75rem",
+  "paddingBottom": "2.75rem",
+  "paddingLeft": "2.75rem",
+  "paddingRight": "2.75rem",
+  "paddingTop": "2.75rem",
 }
 `;
 
 exports[`snapshots: p-12 1`] = `
 {
-  "padding": "3rem",
+  "paddingBottom": "3rem",
+  "paddingLeft": "3rem",
+  "paddingRight": "3rem",
+  "paddingTop": "3rem",
 }
 `;
 
 exports[`snapshots: p-14 1`] = `
 {
-  "padding": "3.5rem",
+  "paddingBottom": "3.5rem",
+  "paddingLeft": "3.5rem",
+  "paddingRight": "3.5rem",
+  "paddingTop": "3.5rem",
 }
 `;
 
 exports[`snapshots: p-16 1`] = `
 {
-  "padding": "4rem",
+  "paddingBottom": "4rem",
+  "paddingLeft": "4rem",
+  "paddingRight": "4rem",
+  "paddingTop": "4rem",
 }
 `;
 
 exports[`snapshots: p-20 1`] = `
 {
-  "padding": "5rem",
+  "paddingBottom": "5rem",
+  "paddingLeft": "5rem",
+  "paddingRight": "5rem",
+  "paddingTop": "5rem",
 }
 `;
 
 exports[`snapshots: p-24 1`] = `
 {
-  "padding": "6rem",
+  "paddingBottom": "6rem",
+  "paddingLeft": "6rem",
+  "paddingRight": "6rem",
+  "paddingTop": "6rem",
 }
 `;
 
 exports[`snapshots: p-28 1`] = `
 {
-  "padding": "7rem",
+  "paddingBottom": "7rem",
+  "paddingLeft": "7rem",
+  "paddingRight": "7rem",
+  "paddingTop": "7rem",
 }
 `;
 
 exports[`snapshots: p-32 1`] = `
 {
-  "padding": "8rem",
+  "paddingBottom": "8rem",
+  "paddingLeft": "8rem",
+  "paddingRight": "8rem",
+  "paddingTop": "8rem",
 }
 `;
 
 exports[`snapshots: p-36 1`] = `
 {
-  "padding": "9rem",
+  "paddingBottom": "9rem",
+  "paddingLeft": "9rem",
+  "paddingRight": "9rem",
+  "paddingTop": "9rem",
 }
 `;
 
 exports[`snapshots: p-40 1`] = `
 {
-  "padding": "10rem",
+  "paddingBottom": "10rem",
+  "paddingLeft": "10rem",
+  "paddingRight": "10rem",
+  "paddingTop": "10rem",
 }
 `;
 
 exports[`snapshots: p-44 1`] = `
 {
-  "padding": "11rem",
+  "paddingBottom": "11rem",
+  "paddingLeft": "11rem",
+  "paddingRight": "11rem",
+  "paddingTop": "11rem",
 }
 `;
 
 exports[`snapshots: p-48 1`] = `
 {
-  "padding": "12rem",
+  "paddingBottom": "12rem",
+  "paddingLeft": "12rem",
+  "paddingRight": "12rem",
+  "paddingTop": "12rem",
 }
 `;
 
 exports[`snapshots: p-52 1`] = `
 {
-  "padding": "13rem",
+  "paddingBottom": "13rem",
+  "paddingLeft": "13rem",
+  "paddingRight": "13rem",
+  "paddingTop": "13rem",
 }
 `;
 
 exports[`snapshots: p-56 1`] = `
 {
-  "padding": "14rem",
+  "paddingBottom": "14rem",
+  "paddingLeft": "14rem",
+  "paddingRight": "14rem",
+  "paddingTop": "14rem",
 }
 `;
 
 exports[`snapshots: p-60 1`] = `
 {
-  "padding": "15rem",
+  "paddingBottom": "15rem",
+  "paddingLeft": "15rem",
+  "paddingRight": "15rem",
+  "paddingTop": "15rem",
 }
 `;
 
 exports[`snapshots: p-64 1`] = `
 {
-  "padding": "16rem",
+  "paddingBottom": "16rem",
+  "paddingLeft": "16rem",
+  "paddingRight": "16rem",
+  "paddingTop": "16rem",
 }
 `;
 
 exports[`snapshots: p-72 1`] = `
 {
-  "padding": "18rem",
+  "paddingBottom": "18rem",
+  "paddingLeft": "18rem",
+  "paddingRight": "18rem",
+  "paddingTop": "18rem",
 }
 `;
 
 exports[`snapshots: p-80 1`] = `
 {
-  "padding": "20rem",
+  "paddingBottom": "20rem",
+  "paddingLeft": "20rem",
+  "paddingRight": "20rem",
+  "paddingTop": "20rem",
 }
 `;
 
 exports[`snapshots: p-96 1`] = `
 {
-  "padding": "24rem",
+  "paddingBottom": "24rem",
+  "paddingLeft": "24rem",
+  "paddingRight": "24rem",
+  "paddingTop": "24rem",
 }
 `;
 
 exports[`snapshots: p-px 1`] = `
 {
-  "padding": "1px",
+  "paddingBottom": "1px",
+  "paddingLeft": "1px",
+  "paddingRight": "1px",
+  "paddingTop": "1px",
 }
 `;
 
@@ -46336,211 +46765,316 @@ exports[`snapshots: scroll-auto 1`] = `
 
 exports[`snapshots: scroll-m-0 1`] = `
 {
-  "scrollMargin": "0px",
+  "scrollMarginBottom": "0px",
+  "scrollMarginLeft": "0px",
+  "scrollMarginRight": "0px",
+  "scrollMarginTop": "0px",
 }
 `;
 
 exports[`snapshots: scroll-m-0.5 1`] = `
 {
-  "scrollMargin": "0.125rem",
+  "scrollMarginBottom": "0.125rem",
+  "scrollMarginLeft": "0.125rem",
+  "scrollMarginRight": "0.125rem",
+  "scrollMarginTop": "0.125rem",
 }
 `;
 
 exports[`snapshots: scroll-m-1 1`] = `
 {
-  "scrollMargin": "0.25rem",
+  "scrollMarginBottom": "0.25rem",
+  "scrollMarginLeft": "0.25rem",
+  "scrollMarginRight": "0.25rem",
+  "scrollMarginTop": "0.25rem",
 }
 `;
 
 exports[`snapshots: scroll-m-1.5 1`] = `
 {
-  "scrollMargin": "0.375rem",
+  "scrollMarginBottom": "0.375rem",
+  "scrollMarginLeft": "0.375rem",
+  "scrollMarginRight": "0.375rem",
+  "scrollMarginTop": "0.375rem",
 }
 `;
 
 exports[`snapshots: scroll-m-2 1`] = `
 {
-  "scrollMargin": "0.5rem",
+  "scrollMarginBottom": "0.5rem",
+  "scrollMarginLeft": "0.5rem",
+  "scrollMarginRight": "0.5rem",
+  "scrollMarginTop": "0.5rem",
 }
 `;
 
 exports[`snapshots: scroll-m-2.5 1`] = `
 {
-  "scrollMargin": "0.625rem",
+  "scrollMarginBottom": "0.625rem",
+  "scrollMarginLeft": "0.625rem",
+  "scrollMarginRight": "0.625rem",
+  "scrollMarginTop": "0.625rem",
 }
 `;
 
 exports[`snapshots: scroll-m-3 1`] = `
 {
-  "scrollMargin": "0.75rem",
+  "scrollMarginBottom": "0.75rem",
+  "scrollMarginLeft": "0.75rem",
+  "scrollMarginRight": "0.75rem",
+  "scrollMarginTop": "0.75rem",
 }
 `;
 
 exports[`snapshots: scroll-m-3.5 1`] = `
 {
-  "scrollMargin": "0.875rem",
+  "scrollMarginBottom": "0.875rem",
+  "scrollMarginLeft": "0.875rem",
+  "scrollMarginRight": "0.875rem",
+  "scrollMarginTop": "0.875rem",
 }
 `;
 
 exports[`snapshots: scroll-m-4 1`] = `
 {
-  "scrollMargin": "1rem",
+  "scrollMarginBottom": "1rem",
+  "scrollMarginLeft": "1rem",
+  "scrollMarginRight": "1rem",
+  "scrollMarginTop": "1rem",
 }
 `;
 
 exports[`snapshots: scroll-m-5 1`] = `
 {
-  "scrollMargin": "1.25rem",
+  "scrollMarginBottom": "1.25rem",
+  "scrollMarginLeft": "1.25rem",
+  "scrollMarginRight": "1.25rem",
+  "scrollMarginTop": "1.25rem",
 }
 `;
 
 exports[`snapshots: scroll-m-6 1`] = `
 {
-  "scrollMargin": "1.5rem",
+  "scrollMarginBottom": "1.5rem",
+  "scrollMarginLeft": "1.5rem",
+  "scrollMarginRight": "1.5rem",
+  "scrollMarginTop": "1.5rem",
 }
 `;
 
 exports[`snapshots: scroll-m-7 1`] = `
 {
-  "scrollMargin": "1.75rem",
+  "scrollMarginBottom": "1.75rem",
+  "scrollMarginLeft": "1.75rem",
+  "scrollMarginRight": "1.75rem",
+  "scrollMarginTop": "1.75rem",
 }
 `;
 
 exports[`snapshots: scroll-m-8 1`] = `
 {
-  "scrollMargin": "2rem",
+  "scrollMarginBottom": "2rem",
+  "scrollMarginLeft": "2rem",
+  "scrollMarginRight": "2rem",
+  "scrollMarginTop": "2rem",
 }
 `;
 
 exports[`snapshots: scroll-m-9 1`] = `
 {
-  "scrollMargin": "2.25rem",
+  "scrollMarginBottom": "2.25rem",
+  "scrollMarginLeft": "2.25rem",
+  "scrollMarginRight": "2.25rem",
+  "scrollMarginTop": "2.25rem",
 }
 `;
 
 exports[`snapshots: scroll-m-10 1`] = `
 {
-  "scrollMargin": "2.5rem",
+  "scrollMarginBottom": "2.5rem",
+  "scrollMarginLeft": "2.5rem",
+  "scrollMarginRight": "2.5rem",
+  "scrollMarginTop": "2.5rem",
 }
 `;
 
 exports[`snapshots: scroll-m-11 1`] = `
 {
-  "scrollMargin": "2.75rem",
+  "scrollMarginBottom": "2.75rem",
+  "scrollMarginLeft": "2.75rem",
+  "scrollMarginRight": "2.75rem",
+  "scrollMarginTop": "2.75rem",
 }
 `;
 
 exports[`snapshots: scroll-m-12 1`] = `
 {
-  "scrollMargin": "3rem",
+  "scrollMarginBottom": "3rem",
+  "scrollMarginLeft": "3rem",
+  "scrollMarginRight": "3rem",
+  "scrollMarginTop": "3rem",
 }
 `;
 
 exports[`snapshots: scroll-m-14 1`] = `
 {
-  "scrollMargin": "3.5rem",
+  "scrollMarginBottom": "3.5rem",
+  "scrollMarginLeft": "3.5rem",
+  "scrollMarginRight": "3.5rem",
+  "scrollMarginTop": "3.5rem",
 }
 `;
 
 exports[`snapshots: scroll-m-16 1`] = `
 {
-  "scrollMargin": "4rem",
+  "scrollMarginBottom": "4rem",
+  "scrollMarginLeft": "4rem",
+  "scrollMarginRight": "4rem",
+  "scrollMarginTop": "4rem",
 }
 `;
 
 exports[`snapshots: scroll-m-20 1`] = `
 {
-  "scrollMargin": "5rem",
+  "scrollMarginBottom": "5rem",
+  "scrollMarginLeft": "5rem",
+  "scrollMarginRight": "5rem",
+  "scrollMarginTop": "5rem",
 }
 `;
 
 exports[`snapshots: scroll-m-24 1`] = `
 {
-  "scrollMargin": "6rem",
+  "scrollMarginBottom": "6rem",
+  "scrollMarginLeft": "6rem",
+  "scrollMarginRight": "6rem",
+  "scrollMarginTop": "6rem",
 }
 `;
 
 exports[`snapshots: scroll-m-28 1`] = `
 {
-  "scrollMargin": "7rem",
+  "scrollMarginBottom": "7rem",
+  "scrollMarginLeft": "7rem",
+  "scrollMarginRight": "7rem",
+  "scrollMarginTop": "7rem",
 }
 `;
 
 exports[`snapshots: scroll-m-32 1`] = `
 {
-  "scrollMargin": "8rem",
+  "scrollMarginBottom": "8rem",
+  "scrollMarginLeft": "8rem",
+  "scrollMarginRight": "8rem",
+  "scrollMarginTop": "8rem",
 }
 `;
 
 exports[`snapshots: scroll-m-36 1`] = `
 {
-  "scrollMargin": "9rem",
+  "scrollMarginBottom": "9rem",
+  "scrollMarginLeft": "9rem",
+  "scrollMarginRight": "9rem",
+  "scrollMarginTop": "9rem",
 }
 `;
 
 exports[`snapshots: scroll-m-40 1`] = `
 {
-  "scrollMargin": "10rem",
+  "scrollMarginBottom": "10rem",
+  "scrollMarginLeft": "10rem",
+  "scrollMarginRight": "10rem",
+  "scrollMarginTop": "10rem",
 }
 `;
 
 exports[`snapshots: scroll-m-44 1`] = `
 {
-  "scrollMargin": "11rem",
+  "scrollMarginBottom": "11rem",
+  "scrollMarginLeft": "11rem",
+  "scrollMarginRight": "11rem",
+  "scrollMarginTop": "11rem",
 }
 `;
 
 exports[`snapshots: scroll-m-48 1`] = `
 {
-  "scrollMargin": "12rem",
+  "scrollMarginBottom": "12rem",
+  "scrollMarginLeft": "12rem",
+  "scrollMarginRight": "12rem",
+  "scrollMarginTop": "12rem",
 }
 `;
 
 exports[`snapshots: scroll-m-52 1`] = `
 {
-  "scrollMargin": "13rem",
+  "scrollMarginBottom": "13rem",
+  "scrollMarginLeft": "13rem",
+  "scrollMarginRight": "13rem",
+  "scrollMarginTop": "13rem",
 }
 `;
 
 exports[`snapshots: scroll-m-56 1`] = `
 {
-  "scrollMargin": "14rem",
+  "scrollMarginBottom": "14rem",
+  "scrollMarginLeft": "14rem",
+  "scrollMarginRight": "14rem",
+  "scrollMarginTop": "14rem",
 }
 `;
 
 exports[`snapshots: scroll-m-60 1`] = `
 {
-  "scrollMargin": "15rem",
+  "scrollMarginBottom": "15rem",
+  "scrollMarginLeft": "15rem",
+  "scrollMarginRight": "15rem",
+  "scrollMarginTop": "15rem",
 }
 `;
 
 exports[`snapshots: scroll-m-64 1`] = `
 {
-  "scrollMargin": "16rem",
+  "scrollMarginBottom": "16rem",
+  "scrollMarginLeft": "16rem",
+  "scrollMarginRight": "16rem",
+  "scrollMarginTop": "16rem",
 }
 `;
 
 exports[`snapshots: scroll-m-72 1`] = `
 {
-  "scrollMargin": "18rem",
+  "scrollMarginBottom": "18rem",
+  "scrollMarginLeft": "18rem",
+  "scrollMarginRight": "18rem",
+  "scrollMarginTop": "18rem",
 }
 `;
 
 exports[`snapshots: scroll-m-80 1`] = `
 {
-  "scrollMargin": "20rem",
+  "scrollMarginBottom": "20rem",
+  "scrollMarginLeft": "20rem",
+  "scrollMarginRight": "20rem",
+  "scrollMarginTop": "20rem",
 }
 `;
 
 exports[`snapshots: scroll-m-96 1`] = `
 {
-  "scrollMargin": "24rem",
+  "scrollMarginBottom": "24rem",
+  "scrollMarginLeft": "24rem",
+  "scrollMarginRight": "24rem",
+  "scrollMarginTop": "24rem",
 }
 `;
 
 exports[`snapshots: scroll-m-px 1`] = `
 {
-  "scrollMargin": "1px",
+  "scrollMarginBottom": "1px",
+  "scrollMarginLeft": "1px",
+  "scrollMarginRight": "1px",
+  "scrollMarginTop": "1px",
 }
 `;
 
@@ -47876,211 +48410,316 @@ exports[`snapshots: scroll-my-px 1`] = `
 
 exports[`snapshots: scroll-p-0 1`] = `
 {
-  "scrollPadding": "0px",
+  "scrollPaddingBottom": "0px",
+  "scrollPaddingLeft": "0px",
+  "scrollPaddingRight": "0px",
+  "scrollPaddingTop": "0px",
 }
 `;
 
 exports[`snapshots: scroll-p-0.5 1`] = `
 {
-  "scrollPadding": "0.125rem",
+  "scrollPaddingBottom": "0.125rem",
+  "scrollPaddingLeft": "0.125rem",
+  "scrollPaddingRight": "0.125rem",
+  "scrollPaddingTop": "0.125rem",
 }
 `;
 
 exports[`snapshots: scroll-p-1 1`] = `
 {
-  "scrollPadding": "0.25rem",
+  "scrollPaddingBottom": "0.25rem",
+  "scrollPaddingLeft": "0.25rem",
+  "scrollPaddingRight": "0.25rem",
+  "scrollPaddingTop": "0.25rem",
 }
 `;
 
 exports[`snapshots: scroll-p-1.5 1`] = `
 {
-  "scrollPadding": "0.375rem",
+  "scrollPaddingBottom": "0.375rem",
+  "scrollPaddingLeft": "0.375rem",
+  "scrollPaddingRight": "0.375rem",
+  "scrollPaddingTop": "0.375rem",
 }
 `;
 
 exports[`snapshots: scroll-p-2 1`] = `
 {
-  "scrollPadding": "0.5rem",
+  "scrollPaddingBottom": "0.5rem",
+  "scrollPaddingLeft": "0.5rem",
+  "scrollPaddingRight": "0.5rem",
+  "scrollPaddingTop": "0.5rem",
 }
 `;
 
 exports[`snapshots: scroll-p-2.5 1`] = `
 {
-  "scrollPadding": "0.625rem",
+  "scrollPaddingBottom": "0.625rem",
+  "scrollPaddingLeft": "0.625rem",
+  "scrollPaddingRight": "0.625rem",
+  "scrollPaddingTop": "0.625rem",
 }
 `;
 
 exports[`snapshots: scroll-p-3 1`] = `
 {
-  "scrollPadding": "0.75rem",
+  "scrollPaddingBottom": "0.75rem",
+  "scrollPaddingLeft": "0.75rem",
+  "scrollPaddingRight": "0.75rem",
+  "scrollPaddingTop": "0.75rem",
 }
 `;
 
 exports[`snapshots: scroll-p-3.5 1`] = `
 {
-  "scrollPadding": "0.875rem",
+  "scrollPaddingBottom": "0.875rem",
+  "scrollPaddingLeft": "0.875rem",
+  "scrollPaddingRight": "0.875rem",
+  "scrollPaddingTop": "0.875rem",
 }
 `;
 
 exports[`snapshots: scroll-p-4 1`] = `
 {
-  "scrollPadding": "1rem",
+  "scrollPaddingBottom": "1rem",
+  "scrollPaddingLeft": "1rem",
+  "scrollPaddingRight": "1rem",
+  "scrollPaddingTop": "1rem",
 }
 `;
 
 exports[`snapshots: scroll-p-5 1`] = `
 {
-  "scrollPadding": "1.25rem",
+  "scrollPaddingBottom": "1.25rem",
+  "scrollPaddingLeft": "1.25rem",
+  "scrollPaddingRight": "1.25rem",
+  "scrollPaddingTop": "1.25rem",
 }
 `;
 
 exports[`snapshots: scroll-p-6 1`] = `
 {
-  "scrollPadding": "1.5rem",
+  "scrollPaddingBottom": "1.5rem",
+  "scrollPaddingLeft": "1.5rem",
+  "scrollPaddingRight": "1.5rem",
+  "scrollPaddingTop": "1.5rem",
 }
 `;
 
 exports[`snapshots: scroll-p-7 1`] = `
 {
-  "scrollPadding": "1.75rem",
+  "scrollPaddingBottom": "1.75rem",
+  "scrollPaddingLeft": "1.75rem",
+  "scrollPaddingRight": "1.75rem",
+  "scrollPaddingTop": "1.75rem",
 }
 `;
 
 exports[`snapshots: scroll-p-8 1`] = `
 {
-  "scrollPadding": "2rem",
+  "scrollPaddingBottom": "2rem",
+  "scrollPaddingLeft": "2rem",
+  "scrollPaddingRight": "2rem",
+  "scrollPaddingTop": "2rem",
 }
 `;
 
 exports[`snapshots: scroll-p-9 1`] = `
 {
-  "scrollPadding": "2.25rem",
+  "scrollPaddingBottom": "2.25rem",
+  "scrollPaddingLeft": "2.25rem",
+  "scrollPaddingRight": "2.25rem",
+  "scrollPaddingTop": "2.25rem",
 }
 `;
 
 exports[`snapshots: scroll-p-10 1`] = `
 {
-  "scrollPadding": "2.5rem",
+  "scrollPaddingBottom": "2.5rem",
+  "scrollPaddingLeft": "2.5rem",
+  "scrollPaddingRight": "2.5rem",
+  "scrollPaddingTop": "2.5rem",
 }
 `;
 
 exports[`snapshots: scroll-p-11 1`] = `
 {
-  "scrollPadding": "2.75rem",
+  "scrollPaddingBottom": "2.75rem",
+  "scrollPaddingLeft": "2.75rem",
+  "scrollPaddingRight": "2.75rem",
+  "scrollPaddingTop": "2.75rem",
 }
 `;
 
 exports[`snapshots: scroll-p-12 1`] = `
 {
-  "scrollPadding": "3rem",
+  "scrollPaddingBottom": "3rem",
+  "scrollPaddingLeft": "3rem",
+  "scrollPaddingRight": "3rem",
+  "scrollPaddingTop": "3rem",
 }
 `;
 
 exports[`snapshots: scroll-p-14 1`] = `
 {
-  "scrollPadding": "3.5rem",
+  "scrollPaddingBottom": "3.5rem",
+  "scrollPaddingLeft": "3.5rem",
+  "scrollPaddingRight": "3.5rem",
+  "scrollPaddingTop": "3.5rem",
 }
 `;
 
 exports[`snapshots: scroll-p-16 1`] = `
 {
-  "scrollPadding": "4rem",
+  "scrollPaddingBottom": "4rem",
+  "scrollPaddingLeft": "4rem",
+  "scrollPaddingRight": "4rem",
+  "scrollPaddingTop": "4rem",
 }
 `;
 
 exports[`snapshots: scroll-p-20 1`] = `
 {
-  "scrollPadding": "5rem",
+  "scrollPaddingBottom": "5rem",
+  "scrollPaddingLeft": "5rem",
+  "scrollPaddingRight": "5rem",
+  "scrollPaddingTop": "5rem",
 }
 `;
 
 exports[`snapshots: scroll-p-24 1`] = `
 {
-  "scrollPadding": "6rem",
+  "scrollPaddingBottom": "6rem",
+  "scrollPaddingLeft": "6rem",
+  "scrollPaddingRight": "6rem",
+  "scrollPaddingTop": "6rem",
 }
 `;
 
 exports[`snapshots: scroll-p-28 1`] = `
 {
-  "scrollPadding": "7rem",
+  "scrollPaddingBottom": "7rem",
+  "scrollPaddingLeft": "7rem",
+  "scrollPaddingRight": "7rem",
+  "scrollPaddingTop": "7rem",
 }
 `;
 
 exports[`snapshots: scroll-p-32 1`] = `
 {
-  "scrollPadding": "8rem",
+  "scrollPaddingBottom": "8rem",
+  "scrollPaddingLeft": "8rem",
+  "scrollPaddingRight": "8rem",
+  "scrollPaddingTop": "8rem",
 }
 `;
 
 exports[`snapshots: scroll-p-36 1`] = `
 {
-  "scrollPadding": "9rem",
+  "scrollPaddingBottom": "9rem",
+  "scrollPaddingLeft": "9rem",
+  "scrollPaddingRight": "9rem",
+  "scrollPaddingTop": "9rem",
 }
 `;
 
 exports[`snapshots: scroll-p-40 1`] = `
 {
-  "scrollPadding": "10rem",
+  "scrollPaddingBottom": "10rem",
+  "scrollPaddingLeft": "10rem",
+  "scrollPaddingRight": "10rem",
+  "scrollPaddingTop": "10rem",
 }
 `;
 
 exports[`snapshots: scroll-p-44 1`] = `
 {
-  "scrollPadding": "11rem",
+  "scrollPaddingBottom": "11rem",
+  "scrollPaddingLeft": "11rem",
+  "scrollPaddingRight": "11rem",
+  "scrollPaddingTop": "11rem",
 }
 `;
 
 exports[`snapshots: scroll-p-48 1`] = `
 {
-  "scrollPadding": "12rem",
+  "scrollPaddingBottom": "12rem",
+  "scrollPaddingLeft": "12rem",
+  "scrollPaddingRight": "12rem",
+  "scrollPaddingTop": "12rem",
 }
 `;
 
 exports[`snapshots: scroll-p-52 1`] = `
 {
-  "scrollPadding": "13rem",
+  "scrollPaddingBottom": "13rem",
+  "scrollPaddingLeft": "13rem",
+  "scrollPaddingRight": "13rem",
+  "scrollPaddingTop": "13rem",
 }
 `;
 
 exports[`snapshots: scroll-p-56 1`] = `
 {
-  "scrollPadding": "14rem",
+  "scrollPaddingBottom": "14rem",
+  "scrollPaddingLeft": "14rem",
+  "scrollPaddingRight": "14rem",
+  "scrollPaddingTop": "14rem",
 }
 `;
 
 exports[`snapshots: scroll-p-60 1`] = `
 {
-  "scrollPadding": "15rem",
+  "scrollPaddingBottom": "15rem",
+  "scrollPaddingLeft": "15rem",
+  "scrollPaddingRight": "15rem",
+  "scrollPaddingTop": "15rem",
 }
 `;
 
 exports[`snapshots: scroll-p-64 1`] = `
 {
-  "scrollPadding": "16rem",
+  "scrollPaddingBottom": "16rem",
+  "scrollPaddingLeft": "16rem",
+  "scrollPaddingRight": "16rem",
+  "scrollPaddingTop": "16rem",
 }
 `;
 
 exports[`snapshots: scroll-p-72 1`] = `
 {
-  "scrollPadding": "18rem",
+  "scrollPaddingBottom": "18rem",
+  "scrollPaddingLeft": "18rem",
+  "scrollPaddingRight": "18rem",
+  "scrollPaddingTop": "18rem",
 }
 `;
 
 exports[`snapshots: scroll-p-80 1`] = `
 {
-  "scrollPadding": "20rem",
+  "scrollPaddingBottom": "20rem",
+  "scrollPaddingLeft": "20rem",
+  "scrollPaddingRight": "20rem",
+  "scrollPaddingTop": "20rem",
 }
 `;
 
 exports[`snapshots: scroll-p-96 1`] = `
 {
-  "scrollPadding": "24rem",
+  "scrollPaddingBottom": "24rem",
+  "scrollPaddingLeft": "24rem",
+  "scrollPaddingRight": "24rem",
+  "scrollPaddingTop": "24rem",
 }
 `;
 
 exports[`snapshots: scroll-p-px 1`] = `
 {
-  "scrollPadding": "1px",
+  "scrollPaddingBottom": "1px",
+  "scrollPaddingLeft": "1px",
+  "scrollPaddingRight": "1px",
+  "scrollPaddingTop": "1px",
 }
 `;
 
@@ -51814,9 +52453,15 @@ exports[`snapshots: sr-only 1`] = `
   "borderWidth": "0",
   "clip": "rect(0, 0, 0, 0)",
   "height": "1px",
-  "margin": "-1px",
+  "marginBottom": "-1px",
+  "marginLeft": "-1px",
+  "marginRight": "-1px",
+  "marginTop": "-1px",
   "overflow": "hidden",
-  "padding": "0",
+  "paddingBottom": "0",
+  "paddingLeft": "0",
+  "paddingRight": "0",
+  "paddingTop": "0",
   "position": "absolute",
   "whiteSpace": "nowrap",
   "width": "1px",
