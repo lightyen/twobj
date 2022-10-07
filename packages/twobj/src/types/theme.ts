@@ -1,4 +1,4 @@
-import { ColorValue, ConfigEntry, ConfigObject, CSSProperties, CSSValue } from "./base"
+import { ColorValue, ConfigEntry, ConfigObject, CSSProperties, CSSValue, CSSValueArray } from "./base"
 
 /** User-defined theme */
 export interface CustomTheme {}
@@ -87,7 +87,10 @@ export interface FontFamilyValueExtension extends ConfigObject {
 	fontFeatureSettings?: CSSValue
 }
 
-export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValue[], options: FontFamilyValueExtension]
+export type FontFamilyValue =
+	| CSSValue
+	| CSSValueArray
+	| [value: CSSValue | CSSValueArray, options: FontFamilyValueExtension]
 
 export interface ContainerConfig {
 	center?: boolean

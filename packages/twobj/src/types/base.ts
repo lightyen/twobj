@@ -1,7 +1,9 @@
 export type CSSValue = string | number
 
+export type CSSValueArray = Array<CSSValue>
+
 export interface CSSProperties {
-	[key: string]: CSSProperties | CSSValue
+	[key: string]: CSSProperties | CSSValueArray | CSSValue
 }
 
 export interface PlainCSSProperties {

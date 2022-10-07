@@ -42,7 +42,8 @@ import {
 	getAmbiguousFrom,
 	getClassListFrom,
 	getColorClassesFrom,
-	isCSSValue,
+	isCSSEntry,
+	isEmptyCSSProperties,
 	isExists,
 	isFunction,
 	isNotEmpty,
@@ -397,7 +398,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 					for (const [key, rest] of selectors) {
 						if (rest !== "&") {
 							ret.push([key, { [rest]: value }])
-						} else if (!isCSSValue(value)) {
+						} else if (!isCSSEntry(value)) {
 							ret.push([key, value])
 						}
 					}
@@ -419,7 +420,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 		const target: CSSProperties = {}
 		for (const [key, value] of Object.entries(style)) {
-			if (isCSSValue(value)) {
+			if (isCSSEntry(value)) {
 				target[key] = value
 				continue
 			}
@@ -622,7 +623,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 			for (const key in source) {
 				const value = source[key]
-				if (isCSSValue(value)) {
+				if (isCSSEntry(value)) {
 					order.set(key, value)
 					continue
 				}
@@ -707,10 +708,9 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			rootStyle[`${importantSelector} &`] = importantRootStyle
 		}
 
-		const rootFn: VariantSpec = (css = {}) => css
 		const program = parser.createProgram(value)
 		for (let i = 0; i < program.expressions.length; i++) {
-			process(program.expressions[i], rootStyle, importantRootStyle, rootFn, false)
+			process(program.expressions[i], rootStyle, importantRootStyle, (css = {}) => css, false)
 		}
 		return rootStyle
 	}
@@ -750,8 +750,18 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 						throw createParseError(node, "Bracket is not closed.")
 					}
 				}
+				const tmp: CSSProperties = {}
+				const imp: CSSProperties | undefined = importantRoot == undefined ? undefined : {}
 				for (let i = 0; i < node.expressions.length; i++) {
-					process(node.expressions[i], root, importantRoot, variantCtx, important || node.important)
+					process(node.expressions[i], tmp, imp, (css = {}) => css, important || node.important)
+				}
+				if (importantRoot) {
+					merge(importantRoot, variantCtx(imp))
+					if (!isEmptyCSSProperties(tmp)) {
+						merge(root, variantCtx(tmp))
+					}
+				} else {
+					merge(root, variantCtx(tmp))
 				}
 				break
 			}
@@ -774,7 +784,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				} else if (important || node.important || (spec?.respectImportant && importantAll)) {
 					css = applyImportant(css)
 				}
-				if (spec?.respectImportant && importantRoot) {
+				if (importantRoot && spec?.respectImportant) {
 					merge(importantRoot, variantCtx(css))
 				} else {
 					merge(root, variantCtx(css))

@@ -8,7 +8,7 @@ import type {
 	Template,
 	ValueType,
 } from "./types"
-import { isCSSValue, isNotEmpty, opacityToFloat, toArray } from "./util"
+import { isCSSEntry, isCSSValue, isNotEmpty, opacityToFloat, toArray } from "./util"
 
 interface LookupResult {
 	key?: string
@@ -339,7 +339,7 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 				return config({ opacityValue: options.opacity }).toString()
 			}
 
-			if (!isCSSValue(config)) {
+			if (!isCSSEntry(config)) {
 				return ""
 			}
 

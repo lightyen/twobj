@@ -5,6 +5,7 @@ import type {
 	ColorValue,
 	CSSProperties,
 	CSSValue,
+	CSSValueArray,
 	CustomPalette,
 	Func,
 	LookupSpec,
@@ -17,6 +18,10 @@ import type {
 
 export function isCSSValue(value: unknown): value is CSSValue {
 	return typeof value === "string" || typeof value === "number"
+}
+
+export function isCSSEntry(value: unknown): value is CSSValueArray | CSSValue {
+	return Array.isArray(value) || typeof value === "string" || typeof value === "number"
 }
 
 export function isString(value: unknown): value is string {
@@ -44,10 +49,19 @@ export function isNotEmpty<T>(value: T): value is Exclude<T, null | undefined | 
 }
 
 export function isPlainCSSProperties(css: CSSProperties[string]): css is PlainCSSProperties {
-	return Object.values(css).every(isCSSValue)
+	return Object.values(css).every(isCSSEntry)
 }
 
-export function isPlainObject<T>(value: T): value is Exclude<T, Primitive | Func> {
+export function isEmptyCSSProperties(css: CSSProperties) {
+	for (const key in css) {
+		if (Object.prototype.hasOwnProperty.call(css, key)) {
+			return false
+		}
+	}
+	return true
+}
+
+export function isPlainObject<T>(value: T): value is Exclude<T, Primitive | Func | Array<unknown>> {
 	if (Object.prototype.toString.call(value) !== "[object Object]") {
 		return false
 	}
@@ -85,7 +99,7 @@ export function applyCamelCase(css: CSSProperties): CSSProperties {
 		return Object.fromEntries(
 			Object.entries(css).map(arr => {
 				const [prop, value] = arr
-				if (isCSSValue(value)) {
+				if (isCSSEntry(value)) {
 					arr[0] = parser.camelCase(prop)
 				}
 				return arr
@@ -103,7 +117,7 @@ export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSPr
 		if (value === undefined) {
 			continue
 		}
-		if (isCSSValue(value)) {
+		if (isCSSEntry(value)) {
 			continue
 		}
 		css[key] = applyModifier(value, modifier)
@@ -121,18 +135,23 @@ export function merge(target: CSSProperties, ...sources: CSSProperties[string][]
 	const source = sources.shift()
 	if (source == undefined) return target
 
-	if (isObject(target) && isObject(source)) {
+	if (isPlainObject(target) && isPlainObject(source)) {
 		for (const key in source) {
 			const targetValue = target[key]
-			if (isObject(source[key])) {
-				if (isObject(targetValue)) {
-					merge(targetValue, source[key])
-				} else {
-					// value <- object
-					target[key] = source[key]
+			const srcValue = source[key]
+
+			if (isPlainObject(targetValue)) {
+				if (isPlainObject(srcValue)) {
+					merge(targetValue, srcValue)
 				}
-			} else {
-				target[key] = assignImpotant(targetValue, source[key])
+			} else if (isPlainObject(srcValue)) {
+				target[key] = srcValue
+			} else if (targetValue == undefined) {
+				if (srcValue != undefined) {
+					target[key] = srcValue
+				}
+			} else if (srcValue != undefined) {
+				target[key] = [].concat(targetValue as any, srcValue as any) as CSSValueArray
 			}
 		}
 	}
@@ -304,7 +323,7 @@ export function getColorClassesFrom(utilities: Map<string, LookupSpec | StaticSp
 			if (value === undefined) {
 				continue
 			}
-			if (isCSSValue(value)) {
+			if (isCSSEntry(value)) {
 				if (typeof value === "string") {
 					const color = parser.parseColor(value)
 					if (color && parser.isOpacityFunction(color.fn)) {

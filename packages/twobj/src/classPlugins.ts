@@ -10,7 +10,7 @@ import type {
 	UnnamedPlugin,
 } from "./types"
 import { CSSProperties, CSSValue, Template } from "./types"
-import { isCSSValue, isNotEmpty, isObject, normalizeScreens } from "./util"
+import { isCSSEntry, isCSSValue, isNotEmpty, isObject, normalizeScreens } from "./util"
 import { withAlphaValue } from "./values"
 
 type ClassPlugins = {
@@ -560,17 +560,19 @@ export const classPlugins: ClassPlugins = {
 		interface Template {
 			fontFeatureSettings?: CSSValue
 		}
-		const values = Object.fromEntries(
+		const table = Object.fromEntries(
 			Object.entries(themeObject.fontFamily)
-				.map(([key, value]) => {
-					const valueArray = Array.isArray(value) ? value : [value]
+				.map(([key, ffValue]) => {
+					const valueArray = Array.isArray(ffValue) ? ffValue : [ffValue]
 					const [fontFamily, options = {}] = valueArray
-					if (!isCSSValue(fontFamily)) {
+					if (!isCSSEntry(fontFamily)) {
 						return undefined
 					}
+
 					if (isCSSValue(options)) {
 						return [key, { fontFamily: valueArray.join(", ") }] as [string, CSSProperties]
 					}
+
 					const tmp: Template = options
 
 					return [
@@ -586,7 +588,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				font(value) {
-					const css = values[value]
+					const css = table[value]
 					if (css) return css
 					return { fontFamily: value }
 				},
@@ -641,14 +643,14 @@ export const classPlugins: ClassPlugins = {
 			Object.entries(themeObject.fontSize)
 				.map(([key, value]) => {
 					const [fontSize, options = {}] = Array.isArray(value) ? value : [value]
-					if (!isCSSValue(fontSize)) {
+					if (!isCSSEntry(fontSize)) {
 						return undefined
 					}
-					if (!isCSSValue(options) && !isObject(options)) {
+					if (!isCSSEntry(options) && !isObject(options)) {
 						return undefined
 					}
-					const tmp: Template = isCSSValue(options) ? { lineHeight: options } : options
-					if (Object.values(tmp).some(v => !isCSSValue(v))) {
+					const tmp: Template = isCSSEntry(options) ? { lineHeight: options } : options
+					if (Object.values(tmp).some(v => !isCSSEntry(v))) {
 						return undefined
 					}
 
@@ -711,12 +713,6 @@ export const classPlugins: ClassPlugins = {
 		}),
 	),
 	boxShadow: plugin("boxShadow", ({ addDefaults, matchUtilities, themeObject }) => {
-		addDefaults("box-shadow", {
-			"--tw-ring-inset": emptyCssValue,
-			"--tw-ring-offset-shadow": "0 0 #0000",
-			"--tw-ring-shadow": "0 0 #0000",
-		})
-
 		matchUtilities(
 			{
 				shadow(value): CSSProperties {
@@ -944,11 +940,11 @@ export const classPlugins: ClassPlugins = {
 		const generatePaddingFor = (key: string): CSSProperties => {
 			let value: CSSValue = ""
 
-			if (isCSSValue(padding)) {
+			if (isCSSEntry(padding)) {
 				value = padding
 			} else if (typeof padding === "object") {
 				const p = padding[key]
-				if (isCSSValue(p)) {
+				if (isCSSEntry(p)) {
 					value = p
 				} else {
 					return {}

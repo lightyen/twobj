@@ -90,17 +90,17 @@ test("before and after", async () => {
 
 	expect(tw`before:(content-['ABC'] bg-black content-none)`).toEqual({
 		"&::before": {
-			"--tw-content": "none",
+			"--tw-content": ["'ABC'", "none"],
 			backgroundColor: "#000",
-			content: "var(--tw-content)",
+			content: ["var(--tw-content)", "var(--tw-content)"],
 		},
 	})
 
 	expect(tw`after:(content-['ABC'] bg-black content-none)`).toEqual({
 		"&::after": {
-			"--tw-content": "none",
+			"--tw-content": ["'ABC'", "none"],
 			backgroundColor: "#000",
-			content: "var(--tw-content)",
+			content: ["var(--tw-content)", "var(--tw-content)"],
 		},
 	})
 
@@ -118,9 +118,9 @@ test("before and after", async () => {
 				"&:hover": {
 					color: "#ec4899",
 					"&::before": {
-						"--tw-content": "none",
+						"--tw-content": ["'ABC'", "none"],
 						backgroundColor: "#000",
-						content: "var(--tw-content)",
+						content: ["var(--tw-content)", "var(--tw-content)"],
 					},
 				},
 			},
