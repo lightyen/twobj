@@ -197,7 +197,15 @@ export const classPlugins: ClassPlugins = {
 	margin: createUtilityPlugin(
 		"margin",
 		[
-			["m", "margin"],
+			[
+				"m",
+				value => ({
+					marginLeft: value,
+					marginRight: value,
+					marginTop: value,
+					marginBottom: value,
+				}),
+			],
 			[
 				"mx",
 				value => ({
@@ -361,7 +369,15 @@ export const classPlugins: ClassPlugins = {
 	scrollMargin: createUtilityPlugin(
 		"scrollMargin",
 		[
-			["scroll-m", "scrollMargin"],
+			[
+				"scroll-m",
+				value => ({
+					scrollMarginLeft: value,
+					scrollMarginRight: value,
+					scrollMarginTop: value,
+					scrollMarginBottom: value,
+				}),
+			],
 			[
 				"scroll-mx",
 				value => ({
@@ -389,7 +405,15 @@ export const classPlugins: ClassPlugins = {
 	scrollPadding: createUtilityPlugin(
 		"scrollPadding",
 		[
-			["scroll-p", "scrollPadding"],
+			[
+				"scroll-p",
+				value => ({
+					scrollPaddingLeft: value,
+					scrollPaddingRight: value,
+					scrollPaddingTop: value,
+					scrollPaddingBottom: value,
+				}),
+			],
 			[
 				"scroll-px",
 				value => ({
@@ -530,7 +554,15 @@ export const classPlugins: ClassPlugins = {
 	padding: createUtilityPlugin(
 		"padding",
 		[
-			["p", "padding"],
+			[
+				"p",
+				value => ({
+					paddingLeft: value,
+					paddingRight: value,
+					paddingTop: value,
+					paddingBottom: value,
+				}),
+			],
 			[
 				"px",
 				value => ({
@@ -1644,8 +1676,14 @@ export const classPlugins: ClassPlugins = {
 				position: "absolute",
 				width: "1px",
 				height: "1px",
-				padding: "0",
-				margin: "-1px",
+				paddingLeft: "0",
+				paddingRight: "0",
+				paddingTop: "0",
+				paddingBottom: "0",
+				marginLeft: "-1px",
+				marginRight: "-1px",
+				marginTop: "-1px",
+				marginBottom: "-1px",
 				overflow: "hidden",
 				clip: "rect(0, 0, 0, 0)",
 				whiteSpace: "nowrap",
@@ -1655,8 +1693,14 @@ export const classPlugins: ClassPlugins = {
 				position: "static",
 				width: "auto",
 				height: "auto",
-				padding: "0",
-				margin: "0",
+				paddingLeft: "0",
+				paddingRight: "0",
+				paddingTop: "0",
+				paddingBottom: "0",
+				marginLeft: "0",
+				marginRight: "0",
+				marginTop: "0",
+				marginBottom: "0",
 				overflow: "visible",
 				clip: "auto",
 				whiteSpace: "normal",
