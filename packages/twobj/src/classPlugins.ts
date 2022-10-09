@@ -1996,6 +1996,7 @@ export const classPlugins: ClassPlugins = {
 			".place-content-around": { placeContent: "space-around" },
 			".place-content-evenly": { placeContent: "space-evenly" },
 			".place-content-stretch": { placeContent: "stretch" },
+			".place-content-baseline": { placeContent: "baseline" },
 		})
 	}),
 	placeItems: plugin("placeItems", ({ addUtilities }) => {
