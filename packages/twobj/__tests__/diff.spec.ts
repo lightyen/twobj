@@ -56,6 +56,10 @@ test("diff tailwindcss", async () => {
 
 	const s2 = new Set(ctx.variantMap.keys())
 	const s3 = new Set(context.variantMap.keys())
+	s2.delete("group")
+	s2.delete("peer")
+	s2.delete("supports")
+
 	for (const s of s2) {
 		expect(s3).toContain(s)
 	}

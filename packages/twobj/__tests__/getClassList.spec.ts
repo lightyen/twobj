@@ -2815,6 +2815,7 @@ const source = [
 	"place-content-around",
 	"place-content-evenly",
 	"place-content-stretch",
+	"place-content-baseline",
 	"place-items-start",
 	"place-items-end",
 	"place-items-center",
