@@ -2,14 +2,14 @@
 
 Convert tailwind declarations to a style object
 
-## How to use
+## Getting Started
 
 ```ts
 import { createContext, resolveConfig } from "twobj"
 
-const ctx = createContext(resolveConfig({}))
+const c = createContext(resolveConfig())
 
-const output = ctx.css("[& :first-of-type]:(text-cyan-500 sm:text-pink-500)")
+const output = c.css("[& :first-of-type]:(text-cyan-500 sm:text-pink-500)")
 
 output => {
   "& :first-of-type": {
@@ -23,7 +23,7 @@ output => {
 
 ## Plugin feature
 
-Tailwind plugin is acceptable.
+Tailwind plugin is supported.
 
 ```ts
 resolveConfig({

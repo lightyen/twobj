@@ -1,28 +1,21 @@
-# Install (with emotion)
+# Develop with [`emotion`](https://github.com/emotion-js/emotion)
 
 ```sh
-pnpm add twobj babel-plugin-twobj
+pnpm add -D twobj babel-plugin-twobj @emotion/babel-plugin @emotion/styled @emotion/react
 ```
 
 ## .babelrc.js
 
 ```js
 module.exports = {
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-typescript",
+    ["@babel/preset-react", { "runtime": "automatic", "importSource": "@emotion/react" }],
+  ],
+  jsxImportSource: "@emotion/react",
   "plugins": [["twobj", { tailwindConfig: require("./tailwind.config") }], "@emotion"],
 }
-```
-
-## TypeScript
-
-Add types to your `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "types": ["@emotion/react/types/css-prop", "babel-plugin-twobj/types/emotion"]
-  }
-}
-
 ```
 
 ## More detail
