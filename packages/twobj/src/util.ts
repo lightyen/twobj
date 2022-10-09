@@ -123,17 +123,20 @@ export function merge(target: CSSProperties, ...sources: CSSProperties[string][]
 
 	if (isObject(target) && isObject(source)) {
 		for (const key in source) {
-			const targetValue = target[key]
-			if (isObject(source[key])) {
-				if (isObject(targetValue)) {
-					merge(targetValue, source[key])
+			const dist = target[key]
+			const src = source[key]
+
+			// TODO: support array merge?
+			if (isObject(src)) {
+				if (isObject(dist)) {
+					merge(dist, src)
 				} else {
-					// value <- object
-					target[key] = source[key]
+					target[key] = src
 				}
-			} else {
-				target[key] = assignImpotant(targetValue, source[key])
+				continue
 			}
+
+			target[key] = assignImpotant(dist, src)
 		}
 	}
 

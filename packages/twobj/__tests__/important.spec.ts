@@ -2,9 +2,9 @@ import { createContext, resolveConfig } from "../src"
 import { tw } from "./context"
 
 test("important", async () => {
-	expect(tw`text-black!`).toEqual({ color: "#000 !important" })
-	expect(tw`!text-black`).toEqual({ color: "#000 !important" })
-	expect(tw`(text-black)!`).toEqual({ color: "#000 !important" })
+	expect(tw`text-black! text-white`).toEqual({ color: "#000 !important" })
+	expect(tw`!text-black text-white`).toEqual({ color: "#000 !important" })
+	expect(tw`(text-black)! text-white`).toEqual({ color: "#000 !important" })
 	expect(tw`!(text-black)`).toEqual({ color: "#000 !important" })
 	expect(tw`text-[#000]/30!`).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
 	expect(tw`!text-[#000]/30`).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
