@@ -1675,6 +1675,7 @@ export const classPlugins: ClassPlugins = {
 			".content-between": { alignContent: "space-between" },
 			".content-around": { alignContent: "space-around" },
 			".content-evenly": { alignContent: "space-evenly" },
+			".content-baseline": { alignContent: "baseline" },
 		})
 	}),
 	alignItems: plugin("alignItems", ({ addUtilities }) => {
@@ -2005,6 +2006,7 @@ export const classPlugins: ClassPlugins = {
 			".place-items-end": { placeItems: "end" },
 			".place-items-center": { placeItems: "center" },
 			".place-items-stretch": { placeItems: "stretch" },
+			".place-items-baseline": { placeItems: "baseline" },
 		})
 	}),
 	placeSelf: plugin("placeSelf", ({ addUtilities }) => {

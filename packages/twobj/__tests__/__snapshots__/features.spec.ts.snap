@@ -24543,6 +24543,12 @@ exports[`snapshots: content-around 1`] = `
 }
 `;
 
+exports[`snapshots: content-baseline 1`] = `
+{
+  "alignContent": "baseline",
+}
+`;
+
 exports[`snapshots: content-between 1`] = `
 {
   "alignContent": "space-between",
@@ -39453,6 +39459,12 @@ exports[`snapshots: place-content-around 1`] = `
 }
 `;
 
+exports[`snapshots: place-content-baseline 1`] = `
+{
+  "placeContent": "baseline",
+}
+`;
+
 exports[`snapshots: place-content-between 1`] = `
 {
   "placeContent": "space-between",
@@ -39486,6 +39498,12 @@ exports[`snapshots: place-content-start 1`] = `
 exports[`snapshots: place-content-stretch 1`] = `
 {
   "placeContent": "stretch",
+}
+`;
+
+exports[`snapshots: place-items-baseline 1`] = `
+{
+  "placeItems": "baseline",
 }
 `;
 
