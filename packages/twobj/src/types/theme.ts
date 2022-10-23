@@ -1,4 +1,4 @@
-import { ColorValue, ConfigEntry, ConfigObject, CSSProperties, CSSValue } from "./base"
+import { ColorValue, ConfigEntry, ConfigObject, CSSProperties, CSSValue } from "./specification"
 
 /** User-defined theme */
 export interface CustomTheme {}
@@ -76,12 +76,6 @@ export type FontSizeValue =
 	| [fontSize: CSSValue, lineHeight: CSSValue]
 	| [fontSize: CSSValue, options: FontSizeValueExtension]
 
-export type ScreenValue =
-	| CSSValue
-	| [min?: CSSValue, max?: CSSValue]
-	| { min?: CSSValue; max?: CSSValue }
-	| { raw?: CSSValue }
-
 export interface FontFamilyValueExtension extends ConfigObject {
 	/** https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings */
 	fontFeatureSettings?: CSSValue
@@ -92,7 +86,7 @@ export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValu
 export interface ContainerConfig {
 	center?: boolean
 	padding?: CSSValue | { [key: string]: CSSValue }
-	screens?: { [key: string]: ScreenValue }
+	screens?: { [key: string]: CSSValue }
 }
 
 export interface Theme {
@@ -107,11 +101,11 @@ export interface Theme {
 	 * {@link https://tailwindcss.com/docs/responsive-design Reference}
 	 */
 	screens?: CoreThemeObject<{
-		sm: ScreenValue
-		md: ScreenValue
-		lg: ScreenValue
-		xl: ScreenValue
-		"2xl": ScreenValue
+		sm: CSSValue
+		md: CSSValue
+		lg: CSSValue
+		xl: CSSValue
+		"2xl": CSSValue
 	}>
 
 	/** A component for fixing an element's width to the current breakpoint.
@@ -1456,6 +1450,9 @@ export interface Theme {
 		40: "40"
 		50: "50"
 	}>
+
+	supports?: CoreThemeObject<{}>
+	data?: CoreThemeObject<{}>
 }
 
 export type Palette<T extends Record<string | symbol, unknown> = {}> = {
@@ -1470,7 +1467,7 @@ export interface ResolvedThemeObject<V = ConfigEntry> {
 export interface ResolvedCustomTheme {}
 
 export interface ResolvedTheme extends ResolvedCustomTheme {
-	screens: ResolvedThemeObject<ScreenValue>
+	screens: ResolvedThemeObject<CSSValue>
 	container: ContainerConfig
 	colors: Palette
 	borderColor: Palette
@@ -1575,4 +1572,7 @@ export interface ResolvedTheme extends ResolvedCustomTheme {
 	scrollMargin: ResolvedThemeObject
 	scrollPadding: ResolvedThemeObject
 	willChange: ResolvedThemeObject
+	aria: ResolvedThemeObject
+	supports: ResolvedThemeObject
+	data: ResolvedThemeObject
 }

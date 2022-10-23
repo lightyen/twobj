@@ -6,10 +6,11 @@ import type {
 	ConfigObject,
 	CorePluginFeatures,
 	MatchOption,
+	PlainCSSProperties,
 	StrictResolvedConfigJS,
 	UnnamedPlugin,
 } from "./types"
-import { CSSProperties, CSSValue, Template } from "./types"
+import { ArbitraryParameters, CSSProperties, CSSValue, UtilityRender } from "./types"
 import { isCSSValue, isNotEmpty, isObject, normalizeScreens } from "./util"
 import { withAlphaValue } from "./values"
 
@@ -19,9 +20,18 @@ type ClassPlugins = {
 
 const emptyCssValue: CSSValue = "var(--tw-empty,/**/ /**/)"
 
-function createUtilityPlugin(
+function spec(
+	utilities: Record<
+		string,
+		<Value extends CSSValue = CSSValue>(...args: ArbitraryParameters<Value>) => CSSProperties
+	>,
+) {
+	return utilities as Record<string, (...args: ArbitraryParameters) => CSSProperties>
+}
+
+function createUtilityPlugin<Value = unknown>(
 	pluginName: string,
-	mappings: Array<[key: string, propOrTemplate: string | Template]>,
+	mappings: Array<[key: string, propOrTemplate: string | Array<string> | UtilityRender<Value>]>,
 	getOptions: (theme: StrictResolvedConfigJS["theme"]) => MatchOption,
 ) {
 	return plugin(pluginName, ({ matchUtilities, themeObject }) => {
@@ -29,15 +39,23 @@ function createUtilityPlugin(
 			Object.assign(
 				{},
 				...mappings.map(([key, prop]) => {
-					if (typeof prop === "string") {
-						return {
-							[key](value: string) {
-								return { [prop]: value }
-							},
+					const render: UtilityRender<Value> = (value, options) => {
+						if (typeof prop === "function") {
+							return prop(value, options)
 						}
+
+						if (typeof value === "string") {
+							if (typeof prop === "string") {
+								return { [prop]: value }
+							}
+							if (Array.isArray(prop)) {
+								return Object.fromEntries(prop.map(p => [p, value]))
+							}
+						}
+						return {}
 					}
 					return {
-						[key]: prop,
+						[key]: render,
 					}
 				}),
 			),
@@ -48,7 +66,7 @@ function createUtilityPlugin(
 
 function createColorPlugin(
 	pluginName: string,
-	mappings: Array<[key: string, propOrTemplate: string | Template]>,
+	mappings: Array<[key: string, propOrTemplate: string | UtilityRender<string>]>,
 	getValues: (theme: StrictResolvedConfigJS["theme"]) => ConfigEntry,
 ) {
 	return createUtilityPlugin(pluginName, mappings, themeObject => ({
@@ -90,8 +108,8 @@ export const classPlugins: ClassPlugins = {
 			["border-r", "borderRightColor"],
 			["border-b", "borderBottomColor"],
 			["border-l", "borderLeftColor"],
-			["border-x", value => ({ borderLeftColor: value, borderRightColor: value })],
-			["border-y", value => ({ borderTopColor: value, borderBottomColor: value })],
+			["border-x", ["borderLeftColor", "borderRightColor"]],
+			["border-y", ["borderTopColor", "borderBottomColor"]],
 		],
 		theme => ({
 			type: "color",
@@ -107,7 +125,7 @@ export const classPlugins: ClassPlugins = {
 		type: "color",
 		values: theme.textDecorationColor,
 	})),
-	divideColor: createUtilityPlugin(
+	divideColor: createUtilityPlugin<string>(
 		"divideColor",
 		[
 			[
@@ -142,29 +160,9 @@ export const classPlugins: ClassPlugins = {
 	inset: createUtilityPlugin(
 		"inset",
 		[
-			[
-				"inset",
-				value => ({
-					top: value,
-					right: value,
-					bottom: value,
-					left: value,
-				}),
-			],
-			[
-				"inset-x",
-				value => ({
-					left: value,
-					right: value,
-				}),
-			],
-			[
-				"inset-y",
-				value => ({
-					top: value,
-					bottom: value,
-				}),
-			],
+			["inset", ["top", "right", "bottom", "left"]],
+			["inset-x", ["left", "right"]],
+			["inset-y", ["top", "bottom"]],
 			["top", "top"],
 			["right", "right"],
 			["bottom", "bottom"],
@@ -198,20 +196,8 @@ export const classPlugins: ClassPlugins = {
 		"margin",
 		[
 			["m", "margin"],
-			[
-				"mx",
-				value => ({
-					marginLeft: value,
-					marginRight: value,
-				}),
-			],
-			[
-				"my",
-				value => ({
-					marginTop: value,
-					marginBottom: value,
-				}),
-			],
+			["mx", ["marginLeft", "marginRight"]],
+			["my", ["marginTop", "marginBottom"]],
 			["mt", "marginTop"],
 			["mr", "marginRight"],
 			["mb", "marginBottom"],
@@ -227,27 +213,19 @@ export const classPlugins: ClassPlugins = {
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
 	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
-		const screens = Object.entries(normalizeScreens(themeObject.screens)).reduce(
-			(breakpoints, [key, { raw, min, max }]) => {
-				let value = max ?? min
-				if (typeof value === "number") value = value + "px"
-				if (value) {
-					return Object.assign(breakpoints, { [`screen-${key}`]: value })
-				}
-				return breakpoints
-			},
-			{},
-		)
+		const screens = normalizeScreens(themeObject.screens).reduce((breakpoints, { key, value }) => {
+			return Object.assign(breakpoints, { [`screen-${key}`]: value + "px" })
+		}, {})
 
 		const values = Object.assign({}, themeObject.maxWidth, screens)
 		matchUtilities(
-			{
+			spec({
 				"max-w"(value) {
 					return {
 						maxWidth: value,
 					}
 				},
-			},
+			}),
 			{ values },
 		)
 	}),
@@ -280,7 +258,7 @@ export const classPlugins: ClassPlugins = {
 	})),
 	translate: plugin("translate", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
-			{
+			spec({
 				"translate-x"(value) {
 					return {
 						"--tw-translate-x": value,
@@ -293,26 +271,26 @@ export const classPlugins: ClassPlugins = {
 						transform: cssTransformValue,
 					}
 				},
-			},
+			}),
 			{ values: themeObject.translate, supportsNegativeValues: true },
 		)
 	}),
 	rotate: plugin("rotate", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
-			{
+			spec({
 				rotate(value) {
 					return {
 						"--tw-rotate": value,
 						transform: cssTransformValue,
 					}
 				},
-			},
+			}),
 			{ values: themeObject.rotate, supportsNegativeValues: true },
 		)
 	}),
 	skew: plugin("skew", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
-			{
+			spec({
 				"skew-x"(value) {
 					return {
 						"--tw-skew-x": value,
@@ -325,13 +303,13 @@ export const classPlugins: ClassPlugins = {
 						transform: cssTransformValue,
 					}
 				},
-			},
+			}),
 			{ values: themeObject.skew, supportsNegativeValues: true },
 		)
 	}),
 	scale: plugin("scale", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
-			{
+			spec({
 				scale(value) {
 					return {
 						"--tw-scale-x": value,
@@ -351,7 +329,7 @@ export const classPlugins: ClassPlugins = {
 						transform: cssTransformValue,
 					}
 				},
-			},
+			}),
 			{ values: themeObject.scale, supportsNegativeValues: true },
 		)
 	}),
@@ -362,20 +340,8 @@ export const classPlugins: ClassPlugins = {
 		"scrollMargin",
 		[
 			["scroll-m", "scrollMargin"],
-			[
-				"scroll-mx",
-				value => ({
-					scrollMarginLeft: value,
-					scrollMarginRight: value,
-				}),
-			],
-			[
-				"scroll-my",
-				value => ({
-					scrollMarginTop: value,
-					scrollMarginBottom: value,
-				}),
-			],
+			["scroll-mx", ["scrollMarginLeft", "scrollMarginRight"]],
+			["scroll-my", ["scrollMarginTop", "scrollMarginBottom"]],
 			["scroll-mt", "scrollMarginTop"],
 			["scroll-mr", "scrollMarginRight"],
 			["scroll-mb", "scrollMarginBottom"],
@@ -390,20 +356,8 @@ export const classPlugins: ClassPlugins = {
 		"scrollPadding",
 		[
 			["scroll-p", "scrollPadding"],
-			[
-				"scroll-px",
-				value => ({
-					scrollPaddingLeft: value,
-					scrollPaddingRight: value,
-				}),
-			],
-			[
-				"scroll-py",
-				value => ({
-					scrollPaddingTop: value,
-					scrollPaddingBottom: value,
-				}),
-			],
+			["scroll-px", ["scrollPaddingLeft", "scrollPaddingRight"]],
+			["scroll-py", ["scrollPaddingTop", "scrollPaddingBottom"]],
 			["scroll-pt", "scrollPaddingTop"],
 			["scroll-pr", "scrollPaddingRight"],
 			["scroll-pb", "scrollPaddingBottom"],
@@ -444,10 +398,10 @@ export const classPlugins: ClassPlugins = {
 		"borderRadius",
 		[
 			["rounded", "borderRadius"],
-			["rounded-t", value => ({ "border-top-left-radius": value, "border-top-right-radius": value })],
-			["rounded-r", value => ({ "border-top-right-radius": value, "border-bottom-right-radius": value })],
-			["rounded-b", value => ({ "border-bottom-right-radius": value, "border-bottom-left-radius": value })],
-			["rounded-l", value => ({ "border-top-left-radius": value, "border-bottom-left-radius": value })],
+			["rounded-t", ["border-top-left-radius", "border-top-right-radius"]],
+			["rounded-r", ["border-top-right-radius", "border-bottom-right-radius"]],
+			["rounded-b", ["border-bottom-right-radius", "border-bottom-left-radius"]],
+			["rounded-l", ["border-top-left-radius", "border-bottom-left-radius"]],
 			["rounded-tl", "border-top-left-radius"],
 			["rounded-tr", "border-top-right-radius"],
 			["rounded-br", "border-bottom-right-radius"],
@@ -463,8 +417,8 @@ export const classPlugins: ClassPlugins = {
 			["border-r", "borderRightWidth"],
 			["border-b", "borderBottomWidth"],
 			["border-l", "borderLeftWidth"],
-			["border-x", value => ({ borderLeftWidth: value, borderRightWidth: value })],
-			["border-y", value => ({ borderTopWidth: value, borderBottomWidth: value })],
+			["border-x", ["borderLeftWidth", "borderRightWidth"]],
+			["border-y", ["borderTopWidth", "borderBottomWidth"]],
 		],
 		theme => ({ type: ["line-width", "length"], values: theme.borderWidth }),
 	),
@@ -474,7 +428,7 @@ export const classPlugins: ClassPlugins = {
 			"--tw-border-spacing-y": "0",
 		})
 		matchUtilities(
-			{
+			spec({
 				"border-spacing": value => {
 					return {
 						"--tw-border-spacing-x": value,
@@ -494,7 +448,7 @@ export const classPlugins: ClassPlugins = {
 						borderSpacing: "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
 					}
 				},
-			},
+			}),
 			{ values: themeObject.borderSpacing },
 		)
 	}),
@@ -531,20 +485,8 @@ export const classPlugins: ClassPlugins = {
 		"padding",
 		[
 			["p", "padding"],
-			[
-				"px",
-				value => ({
-					paddingLeft: value,
-					paddingRight: value,
-				}),
-			],
-			[
-				"py",
-				value => ({
-					paddingTop: value,
-					paddingBottom: value,
-				}),
-			],
+			["px", ["paddingLeft", "paddingRight"]],
+			["py", ["paddingTop", "paddingBottom"]],
 			["pt", "paddingTop"],
 			["pr", "paddingRight"],
 			["pb", "paddingBottom"],
@@ -586,14 +528,15 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				font(value) {
-					const css = values[value]
-					if (css) return css
-					return { fontFamily: value }
+					if (typeof value === "string") {
+						return { fontFamily: value }
+					}
+					return value
 				},
 			},
 			{
 				type: ["generic-name", "family-name"],
-				values: themeObject.fontFamily,
+				values,
 			},
 		)
 	}),
@@ -622,7 +565,7 @@ export const classPlugins: ClassPlugins = {
 	willChange: createUtilityPlugin("willChange", [["will-change", "willChange"]], theme => ({
 		values: theme.willChange,
 	})),
-	content: createUtilityPlugin(
+	content: createUtilityPlugin<string>(
 		"content",
 		[["content", value => ({ content: "var(--tw-content)", "--tw-content": value })]],
 		theme => ({
@@ -665,13 +608,14 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				text(value) {
-					const css = values[value]
-					if (css) return css
-					return { fontSize: value }
+					if (typeof value === "string") {
+						return { fontSize: value }
+					}
+					return value
 				},
 			},
 			{
-				values: themeObject.fontSize,
+				values,
 				type: ["length", "percentage", "absolute-size", "relative-size"],
 			},
 		)
@@ -681,15 +625,15 @@ export const classPlugins: ClassPlugins = {
 		const defaultDuration = theme("transitionDuration.DEFAULT") as string
 		matchUtilities(
 			{
-				transition(value): CSSProperties {
+				transition(value) {
 					if (value === "none") {
-						return { transitionProperty: value }
+						return { transitionProperty: value } as CSSProperties
 					}
 					return {
 						transitionProperty: value,
 						transitionTimingFunction: defaultTimingFunction,
 						transitionDuration: defaultDuration,
-					}
+					} as CSSProperties
 				},
 			},
 			{ values: themeObject.transitionProperty },
@@ -797,6 +741,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				ring(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-ring-offset-shadow":
 							"var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)",
@@ -831,28 +776,28 @@ export const classPlugins: ClassPlugins = {
 			},
 		})
 		matchUtilities(
-			{
+			spec({
 				"divide-x"(value) {
-					value = value == "0" ? "0px" : value
+					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
 							"--tw-divide-x-reverse": "0",
-							borderRightWidth: `calc(${value} * var(--tw-divide-x-reverse))`,
-							borderLeftWidth: `calc(${value} * calc(1 - var(--tw-divide-x-reverse)))`,
+							borderRightWidth: `calc(${val} * var(--tw-divide-x-reverse))`,
+							borderLeftWidth: `calc(${val} * calc(1 - var(--tw-divide-x-reverse)))`,
 						},
 					}
 				},
 				"divide-y"(value) {
-					value = value == "0" ? "0px" : value
+					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
 							"--tw-divide-y-reverse": "0",
-							borderTopWidth: `calc(${value} * calc(1 - var(--tw-divide-y-reverse)))`,
-							borderBottomWidth: `calc(${value} * var(--tw-divide-y-reverse))`,
+							borderTopWidth: `calc(${val} * calc(1 - var(--tw-divide-y-reverse)))`,
+							borderBottomWidth: `calc(${val} * var(--tw-divide-y-reverse))`,
 						},
 					}
 				},
-			},
+			}),
 			{ type: ["line-width", "length"], values: themeObject.divideWidth },
 		)
 	}),
@@ -864,22 +809,24 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"space-x"(value) {
-					value = value == "0" ? "0px" : value
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
 							"--tw-space-x-reverse": "0",
-							marginRight: `calc(${value} * var(--tw-space-x-reverse))`,
-							marginLeft: `calc(${value} * calc(1 - var(--tw-space-x-reverse)))`,
+							marginRight: `calc(${val} * var(--tw-space-x-reverse))`,
+							marginLeft: `calc(${val} * calc(1 - var(--tw-space-x-reverse)))`,
 						},
 					}
 				},
 				"space-y"(value) {
-					value = value == "0" ? "0px" : value
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
 							"--tw-space-y-reverse": "0",
-							marginTop: `calc(${value} * calc(1 - var(--tw-space-y-reverse)))`,
-							marginBottom: `calc(${value} * var(--tw-space-y-reverse))`,
+							marginTop: `calc(${val} * calc(1 - var(--tw-space-y-reverse)))`,
+							marginBottom: `calc(${val} * var(--tw-space-y-reverse))`,
 						},
 					}
 				},
@@ -893,7 +840,7 @@ export const classPlugins: ClassPlugins = {
 		}
 
 		matchUtilities(
-			{
+			spec({
 				from(value) {
 					return {
 						"--tw-gradient-from": value,
@@ -910,7 +857,7 @@ export const classPlugins: ClassPlugins = {
 				to(value) {
 					return { "--tw-gradient-to": value }
 				},
-			},
+			}),
 			{
 				type: "color",
 				values: themeObject.gradientColorStops,
@@ -929,14 +876,16 @@ export const classPlugins: ClassPlugins = {
 			".align-super": { verticalAlign: "super" },
 		})
 
-		matchUtilities({
-			align(value) {
-				return { verticalAlign: value }
-			},
-		})
+		matchUtilities(
+			spec({
+				align(value) {
+					return { verticalAlign: value }
+				},
+			}),
+		)
 	}),
 	container: plugin("container", ({ addComponents, themeObject, theme }) => {
-		const screens = normalizeScreens(theme("container.screens", themeObject.screens))
+		const screens = normalizeScreens(theme("container.screens", themeObject.screens) ?? {})
 		const container = themeObject.container
 		const center = container.center ?? false
 		const padding = (container.padding as Record<string, string> | string | undefined) ?? {}
@@ -961,26 +910,12 @@ export const classPlugins: ClassPlugins = {
 			}
 		}
 
-		const others = Object.entries(screens).map<CSSProperties>(([key, { raw, min, max }]) => {
-			if (raw) {
-				return {}
-			}
-
-			if (typeof min === "number") min = min + "px"
-			if (typeof max === "number") max = max + "px"
-			let mediaQuery = ""
-			if (min != undefined && max != undefined) {
-				mediaQuery = `@media (min-width: ${min}) and (max-width: ${max})`
-			} else if (min != undefined) {
-				mediaQuery = `@media (min-width: ${min})`
-			} else if (max != undefined) {
-				mediaQuery = `@media (max-width: ${max})`
-			}
-
+		const others = screens.map<CSSProperties>(({ key, value }) => {
+			const width = value + "px"
 			return {
-				[mediaQuery]: {
+				[`@media (min-width: ${width})`]: {
 					".container": {
-						maxWidth: min,
+						maxWidth: width,
 						...generatePaddingFor(key),
 					} as CSSProperties,
 				},
@@ -1060,6 +995,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				blur(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-blur": `blur(${value})`,
 						filter: cssFilterValue,
@@ -1084,6 +1020,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				brightness(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-brightness": `brightness(${value})`,
 						filter: cssFilterValue,
@@ -1108,6 +1045,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				contrast(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-contrast": `contrast(${value})`,
 						filter: cssFilterValue,
@@ -1132,6 +1070,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				grayscale(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-grayscale": `grayscale(${value})`,
 						filter: cssFilterValue,
@@ -1156,6 +1095,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"hue-rotate"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-hue-rotate": `hue-rotate(${value})`,
 						filter: cssFilterValue,
@@ -1180,6 +1120,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				invert(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-invert": `invert(${value})`,
 						filter: cssFilterValue,
@@ -1204,6 +1145,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				saturate(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-saturate": `saturate(${value})`,
 						filter: cssFilterValue,
@@ -1228,6 +1170,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				sepia(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-sepia": `sepia(${value})`,
 						filter: cssFilterValue,
@@ -1250,14 +1193,14 @@ export const classPlugins: ClassPlugins = {
 			"var(--tw-drop-shadow)",
 		].join(" ")
 		matchUtilities(
-			{
+			spec({
 				"drop-shadow"(value) {
 					return {
 						"--tw-drop-shadow": value,
 						filter: cssFilterValue,
 					}
 				},
-			},
+			}),
 			{ values: themeObject.dropShadow },
 		)
 	}),
@@ -1304,6 +1247,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-blur"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-blur": `blur(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1328,6 +1272,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-brightness"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-brightness": `brightness(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1352,6 +1297,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-contrast"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-contrast": `contrast(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1376,6 +1322,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-grayscale"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-grayscale": `grayscale(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1400,6 +1347,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-hue-rotate"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-hue-rotate": `hue-rotate(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1424,6 +1372,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-invert"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-invert": `invert(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1448,6 +1397,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-saturate"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-saturate": `saturate(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1472,6 +1422,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-sepia"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-sepia": `sepia(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1496,6 +1447,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-opacity"(value) {
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-opacity": `opacity(${value})`,
 						backdropFilter: cssBackdropFilterValue,

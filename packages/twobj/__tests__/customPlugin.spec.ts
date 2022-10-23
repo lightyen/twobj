@@ -317,3 +317,111 @@ test("addVariant", async () => {
 		},
 	})
 })
+
+test("matchUtilities", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			corePlugins: { preflight: false },
+			plugins: [
+				function ({ matchUtilities }) {
+					matchUtilities(
+						{
+							test: (value, { modifier }) => {
+								if (modifier) {
+									if (modifier === "foo") {
+										value = value + "_" + "mewtwo"
+									} else {
+										value = value + "_" + modifier
+									}
+								}
+								return {
+									color: value,
+								}
+							},
+						},
+						{
+							values: {
+								DEFAULT: "default",
+								bar: "bar",
+								"1": "one",
+							},
+						},
+					)
+				},
+			],
+		}),
+	)
+
+	expect(ctx.css("test")).toEqual({ color: "default" })
+	expect(ctx.css("test/foo")).toEqual({ color: "default_mewtwo" })
+	expect(ctx.css("test-1/foo")).toEqual({ color: "one_mewtwo" })
+	expect(ctx.css("test/bar")).toEqual({ color: "default_bar" })
+	expect(ctx.css("test/[bar]")).toEqual({ color: "default_bar" })
+	expect(ctx.css("test-1/[bar]")).toEqual({ color: "one_bar" })
+	expect(ctx.css("test-1/[bar]")).toEqual({ color: "one_bar" })
+})
+
+test("matchVariant", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			corePlugins: { preflight: false },
+			plugins: [
+				function ({ matchVariant }) {
+					matchVariant(
+						"tooltip",
+						(value, { modifier }) => {
+							const selectors = `&[data-location="${value}"]`
+							if (modifier) {
+								return selectors + " ." + modifier
+							}
+							return selectors
+						},
+						{
+							values: {
+								DEFAULT: "default",
+								bottom: "bottom",
+								top: "top",
+							},
+						},
+					)
+				},
+			],
+		}),
+	)
+
+	expect(ctx.css("tooltip-bottom:mt-2")).toEqual({
+		'&[data-location="bottom"]': {
+			marginTop: "0.5rem",
+		},
+	})
+	expect(ctx.css("tooltip-top:mb-2")).toEqual({
+		'&[data-location="top"]': {
+			marginBottom: "0.5rem",
+		},
+	})
+	expect(ctx.css("tooltip-[right]:mb-2")).toEqual({
+		'&[data-location="right"]': {
+			marginBottom: "0.5rem",
+		},
+	})
+	expect(ctx.css("tooltip:mb-2")).toEqual({
+		'&[data-location="default"]': {
+			marginBottom: "0.5rem",
+		},
+	})
+	expect(ctx.css("tooltip/bar:mb-2")).toEqual({
+		'&[data-location="default"] .bar': {
+			marginBottom: "0.5rem",
+		},
+	})
+	expect(ctx.css("tooltip-top/bar:mb-2")).toEqual({
+		'&[data-location="top"] .bar': {
+			marginBottom: "0.5rem",
+		},
+	})
+	expect(ctx.css("tooltip-[foo]/bar:mb-2")).toEqual({
+		'&[data-location="foo"] .bar': {
+			marginBottom: "0.5rem",
+		},
+	})
+})

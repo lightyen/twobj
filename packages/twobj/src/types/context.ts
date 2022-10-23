@@ -1,7 +1,6 @@
 import type * as parser from "../parser"
-import { CSSProperties } from "./base"
 import { UserPluginOptions, ValueType } from "./plugin"
-import { LookupSpec, StaticSpec, VariantSpec } from "./specification"
+import { CSSProperties, LookupSpec, LookupVariantSpec, StaticSpec, Variant, VariantSpec } from "./specification"
 
 export interface CreateContextOptions {
 	/**
@@ -19,8 +18,8 @@ export interface Context extends UserPluginOptions {
 	globalStyles: Record<string, CSSProperties>
 
 	utilities: Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>
-	variantMap: Map<string, VariantSpec>
-	arbitraryVariants: Map<string, (value: string) => VariantSpec>
+	variantMap: Map<string, VariantSpec | LookupVariantSpec | Array<VariantSpec | LookupVariantSpec>>
+	arbitraryVariants: Set<string>
 	arbitraryUtilities: Map<string, Set<ValueType | "any">>
 	features: Set<string>
 
@@ -30,10 +29,10 @@ export interface Context extends UserPluginOptions {
 	css(strings: string | TemplateStringsArray): CSSProperties
 
 	/** Get one variant spec form strings or nodes. */
-	wrap(variants: string): VariantSpec
-	wrap(variants: TemplateStringsArray): VariantSpec
-	wrap(...variants: parser.Variant[]): VariantSpec
-	wrap(variants: string | TemplateStringsArray | parser.Variant, ...args: parser.Variant[]): VariantSpec
+	wrap(variants: string): Variant
+	wrap(variants: TemplateStringsArray): Variant
+	wrap(...variants: parser.Variant[]): Variant
+	wrap(variants: string | TemplateStringsArray | parser.Variant, ...args: parser.Variant[]): Variant
 
 	/** Reverse utilities mapping. */
 	getPluginName(value: string): string | undefined
@@ -46,6 +45,9 @@ export interface Context extends UserPluginOptions {
 
 	/** List all utilities. */
 	getClassList(): string[]
+
+	/** List all variants. */
+	getVariantList(): string[]
 
 	/** List all color utilities. */
 	getColorClasses(): Map<string, string[]>

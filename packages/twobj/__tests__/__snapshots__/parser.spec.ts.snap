@@ -2,178 +2,231 @@
 
 exports[`parse the group of variants 1`] = `
 {
+  "end": 93,
   "expressions": [
     {
       "child": {
-        "getText": [Function],
+        "end": 93,
         "important": true,
-        "range": [
-          85,
-          93,
-        ],
-        "type": "ClassName",
+        "key": {
+          "end": 93,
+          "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):!bg-black",
+          "start": 85,
+          "text": "bg-black",
+          "type": "Identifier",
+        },
+        "m": null,
+        "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):!bg-black",
+        "start": 85,
+        "text": "bg-black",
+        "type": "Classname",
       },
-      "getText": [Function],
-      "range": [
-        0,
-        93,
-      ],
+      "end": 93,
+      "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):!bg-black",
+      "start": 0,
+      "text": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):!bg-black",
       "type": "VariantSpan",
       "variant": {
+        "end": 84,
         "expressions": [
           {
-            "getText": [Function],
-            "range": [
-              2,
-              11,
-            ],
+            "child": null,
+            "end": 11,
+            "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+            "start": 2,
+            "text": "variant1:",
             "type": "VariantSpan",
             "variant": {
-              "getText": [Function],
-              "id": {
-                "getText": [Function],
-                "range": [
-                  2,
-                  10,
-                ],
+              "end": 11,
+              "key": {
+                "end": 10,
+                "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+                "start": 2,
+                "text": "variant1",
                 "type": "Identifier",
               },
-              "range": [
-                2,
-                11,
-              ],
+              "m": undefined,
+              "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+              "start": 2,
+              "text": "variant1:",
               "type": "SimpleVariant",
             },
           },
           {
             "child": {
               "closed": true,
+              "end": 57,
               "expressions": [
                 {
-                  "getText": [Function],
-                  "range": [
-                    22,
-                    31,
-                  ],
+                  "child": null,
+                  "end": 31,
+                  "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:",
+                  "start": 22,
+                  "text": "variant3:",
                   "type": "VariantSpan",
                   "variant": {
-                    "getText": [Function],
-                    "id": {
-                      "getText": [Function],
-                      "range": [
-                        22,
-                        30,
-                      ],
+                    "end": 31,
+                    "key": {
+                      "end": 30,
+                      "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:",
+                      "start": 22,
+                      "text": "variant3",
                       "type": "Identifier",
                     },
-                    "range": [
-                      22,
-                      31,
-                    ],
+                    "m": undefined,
+                    "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:",
+                    "start": 22,
+                    "text": "variant3:",
                     "type": "SimpleVariant",
                   },
                 },
                 {
-                  "getText": [Function],
-                  "range": [
-                    47,
-                    56,
-                  ],
+                  "child": null,
+                  "end": 56,
+                  "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:",
+                  "start": 47,
+                  "text": "variant4:",
                   "type": "VariantSpan",
                   "variant": {
-                    "getText": [Function],
-                    "id": {
-                      "getText": [Function],
-                      "range": [
-                        47,
-                        55,
-                      ],
+                    "end": 56,
+                    "key": {
+                      "end": 55,
+                      "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:",
+                      "start": 47,
+                      "text": "variant4",
                       "type": "Identifier",
                     },
-                    "range": [
-                      47,
-                      56,
-                    ],
+                    "m": undefined,
+                    "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:",
+                    "start": 47,
+                    "text": "variant4:",
                     "type": "SimpleVariant",
                   },
                 },
               ],
-              "getText": [Function],
               "important": false,
-              "range": [
-                21,
-                57,
-              ],
+              "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+              "start": 21,
+              "text": "(variant3:
+		          
+		variant4:)",
               "type": "Group",
             },
-            "getText": [Function],
-            "range": [
-              12,
-              57,
-            ],
+            "end": 57,
+            "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+            "start": 12,
+            "text": "variant2:(variant3:
+		          
+		variant4:)",
             "type": "VariantSpan",
             "variant": {
-              "getText": [Function],
-              "id": {
-                "getText": [Function],
-                "range": [
-                  12,
-                  20,
-                ],
+              "end": 21,
+              "key": {
+                "end": 20,
+                "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+                "start": 12,
+                "text": "variant2",
                 "type": "Identifier",
               },
-              "range": [
-                12,
-                21,
-              ],
+              "m": undefined,
+              "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+              "start": 12,
+              "text": "variant2:",
               "type": "SimpleVariant",
             },
           },
           {
-            "getText": [Function],
+            "end": 65,
             "important": false,
-            "range": [
-              58,
-              65,
-            ],
-            "type": "ClassName",
+            "key": {
+              "end": 65,
+              "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+              "start": 58,
+              "text": "unknown",
+              "type": "Identifier",
+            },
+            "m": null,
+            "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+            "start": 58,
+            "text": "unknown",
+            "type": "Classname",
           },
           {
             "closed": true,
             "decl": {
-              "getText": [Function],
-              "range": [
-                67,
-                81,
-              ],
-              "type": "CssDeclaration",
+              "end": 81,
+              "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+              "start": 67,
+              "text": "unknown: value",
+              "type": "Value",
             },
-            "getText": [Function],
+            "end": 82,
             "important": false,
-            "range": [
-              66,
-              82,
-            ],
+            "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]",
+            "start": 66,
+            "text": "[unknown: value]",
             "type": "ArbitraryProperty",
           },
         ],
-        "getText": [Function],
-        "important": true,
-        "range": [
-          2,
-          82,
-        ],
+        "source": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):!bg-black",
+        "start": 0,
+        "text": "!(variant1: variant2:(variant3:
+		          
+		variant4:) unknown [unknown: value]):",
         "type": "GroupVariant",
       },
     },
   ],
-  "getText": [Function],
-  "range": [
-    0,
-    93,
-  ],
   "source": "!(variant1: variant2:(variant3:
-		          
+		// comment
+		variant4:) unknown [unknown: value]):!bg-black",
+  "start": 0,
+  "text": "!(variant1: variant2:(variant3:
+		// comment
 		variant4:) unknown [unknown: value]):!bg-black",
   "type": "Program",
 }

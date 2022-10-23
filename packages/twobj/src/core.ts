@@ -1,49 +1,35 @@
 import { classPlugins } from "./classPlugins"
-import { camelCase, createParser, findRightBracket, normalizeSelector } from "./parser"
-import {
-	ArbitraryClassname,
-	ArbitrarySelector,
-	ArbitraryVariant,
-	Classname,
-	Expression,
-	GroupVariant,
-	isVariant,
-	NodeType,
-	SimpleVariant,
-	Variant,
-	VariantSpan,
-} from "./parser/nodes"
+import { camelCase, createParser } from "./parser"
+import * as nodes from "./parser/nodes"
 import * as theme from "./parser/theme"
 import { isPluginWithOptions } from "./plugin"
 import { escapeCss, findClasses } from "./postcss"
 import type {
-	ConfigObject,
 	Context,
 	CorePluginFeatures,
 	CorePluginOptions,
 	CreateContextOptions,
 	CSSProperties,
-	CSSValue,
 	LookupSpec,
+	LookupVariantSpec,
 	Palette,
-	PostModifier,
+	Post,
 	ResolvedConfigJS,
 	StaticSpec,
 	UserPluginOptions,
 	ValueType,
+	Variant,
 	VariantSpec,
 } from "./types"
 import { createParseError } from "./types/errors"
 import {
 	applyCamelCase,
 	applyImportant,
-	applyModifier,
 	flattenColorPalette,
 	getAmbiguousFrom,
 	getClassListFrom,
 	getColorClassesFrom,
 	isCSSValue,
-	isExists,
 	isFunction,
 	isNotEmpty,
 	isObject,
@@ -52,6 +38,7 @@ import {
 	toArray,
 } from "./util"
 import { representAny, representTypes } from "./values"
+import { createVariant, mergeVariants, representVariant } from "./variant"
 import { variantPlugins } from "./variantPlugins"
 
 /** Create a tailwind context. */
@@ -97,8 +84,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 	const defaults = [globalStyles["*, ::before, ::after"], globalStyles["::backdrop"]]
 	const utilityMap = new Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>()
-	const variantMap = new Map<string, VariantSpec>()
-	const arbitraryVariantMap = new Map<string, (value: string) => VariantSpec>()
+	const variantMap = new Map<string, VariantSpec | LookupVariantSpec | Array<VariantSpec | LookupVariantSpec>>()
+	const arbitraryVariantCollection = new Set<string>()
 	const arbitraryUtilityMap = new Map<string, Set<ValueType | "any">>()
 
 	const options: UserPluginOptions = {
@@ -147,7 +134,9 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	for (const [, plugin] of Object.entries(variantPlugins)) {
+		currentPluginName = plugin.name
 		plugin(apiContext)
+		currentPluginName = undefined
 	}
 
 	for (let i = 0; i < config.plugins.length; i++) {
@@ -180,7 +169,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		globalStyles,
 		utilities: utilityMap,
 		variantMap,
-		arbitraryVariants: arbitraryVariantMap,
+		arbitraryVariants: arbitraryVariantCollection,
 		arbitraryUtilities: arbitraryUtilityMap,
 		css,
 		wrap,
@@ -192,6 +181,29 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		renderThemeFunc,
 		getClassList() {
 			return getClassListFrom(utilityMap)
+		},
+		getVariantList() {
+			const c = new Set<string>()
+			for (const [variantName, spec] of variantMap) {
+				if (Array.isArray(spec)) {
+					for (const s of spec) {
+						if (s.type === "static") {
+							c.add(variantName)
+						} else if (s.type === "lookup") {
+							for (const val of Object.keys(s.values)) {
+								c.add(variantName + "-" + val)
+							}
+						}
+					}
+				} else if (spec.type === "static") {
+					c.add(variantName)
+				} else if (spec.type === "lookup") {
+					for (const val of Object.keys(spec.values)) {
+						c.add(variantName + "-" + val)
+					}
+				}
+			}
+			return Array.from(c)
 		},
 		getColorClasses() {
 			return getColorClassesFrom(utilityMap)
@@ -211,6 +223,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	function renderThemeFunc(value: string): string {
 		return theme.renderThemeFunc(config, value)
 	}
+
 	function resolveTheme(value: string, defaultValue?: unknown): unknown {
 		return theme.resolveThemeNoDefault(config, value, defaultValue)
 	}
@@ -233,6 +246,19 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		const useDefault = true
 		const target = theme.resolve(config, node.path, useDefault)
 		return target === undefined ? defaultValue : target
+	}
+
+	function addVariantSpec(key: string, core: VariantSpec | LookupVariantSpec): void {
+		const obj = variantMap.get(key)
+		if (obj == null) {
+			variantMap.set(key, core)
+			return
+		}
+		if (Array.isArray(obj)) {
+			obj.push(core)
+			return
+		}
+		variantMap.set(key, [obj, core])
 	}
 
 	function addUtilitySpec(key: string, core: StaticSpec | LookupSpec): void {
@@ -270,11 +296,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	function addVariant(
 		variantName: string,
 		variantDesc: string | (() => string) | Array<string | (() => string | string[])>,
-		options: {
-			postModifier?: PostModifier
+		{
+			post,
+		}: {
+			post?: Post
 		} = {},
 	): void {
-		if (variantMap.has(variantName)) throw Error(`variant '${variantName} is duplicated.'`)
 		variantDesc = toArray(variantDesc)
 		const desc = variantDesc
 			.flatMap(variantFunc => {
@@ -284,53 +311,40 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				return variantFunc
 			})
 			.map(v => v.replace(/:merge\((.*?)\)/g, "$1"))
-		variantMap.set(variantName, createVariantSpec(desc, options.postModifier))
+		addVariantSpec(variantName, {
+			type: "static",
+			variant: createVariant(desc, post),
+			pluginName: currentPluginName,
+			post,
+		})
 	}
 
-	function matchVariant(
+	function matchVariant<T>(
 		variantName: string,
-		variantDesc: (options: { value: string }) => string | string[],
-		options: {
-			values?: Record<string, string>
-			postModifier?: PostModifier
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		render: (value: T, options: { modifier?: string; wrapped?: boolean }) => string | string[],
+		{
+			values = {},
+			filterDefault = false,
+			post,
+		}: {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			values?: Record<string, any>
+			post?: Post
+			filterDefault?: boolean
 		} = {},
 	): void {
-		for (const [key, value] of Object.entries(options.values ?? {})) {
-			addVariant(`${variantName}-${key}`, variantDesc({ value }), { postModifier: options.postModifier })
-		}
-
-		arbitraryVariantMap.set(variantName, value =>
-			createVariantSpec(toArray(variantDesc({ value })), options.postModifier),
-		)
-	}
-
-	function createVariantSpec(variantDesc: string[], postModifier?: PostModifier): VariantSpec {
-		const variants = variantDesc.map<VariantSpec>(desc => {
-			const reg = /{/gs
-			desc = desc.trim().replace(/\s{2,}/g, " ")
-			const match = reg.exec(desc)
-			if (!match) {
-				return (css = {}) => ({ [normalizeSelector(desc)]: css })
-			} else {
-				const rb = findRightBracket({ text: desc, start: reg.lastIndex - 1, brackets: [123, 125] })
-				if (rb == undefined) {
-					return (css = {}) => ({ [desc]: css })
-				}
-				const scope = desc.slice(0, reg.lastIndex - 1).trim()
-				const restDesc = desc.slice(reg.lastIndex, rb).trim()
-				if (scope) {
-					return (css = {}) => ({ [normalizeSelector(scope)]: createVariantSpec([restDesc])(css) })
-				} else {
-					return (css = {}) => createVariantSpec([restDesc])(css)
-				}
-			}
+		addVariantSpec(variantName, {
+			type: "lookup",
+			values,
+			pluginName: currentPluginName,
+			post,
+			filterDefault,
+			represent(restIndex, node) {
+				return representVariant({ restIndex, node, filterDefault, values, render, post })
+			},
 		})
-		return (css = {}) => {
-			if (postModifier) {
-				css = applyModifier(css, postModifier)
-			}
-			return mergeVariants(...variants)(css)
-		}
+		arbitraryVariantCollection.add(variantName)
 	}
 
 	function addComponents(
@@ -432,7 +446,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 			if (AT_SCREEN.test(key)) {
 				const input = key.replace(AT_SCREEN, "")
-				const fn = composeVariants(variantMap.get(input), expandAtRules)
+				const spec = variantMap.get(input) ?? []
+				const specs = toArray(spec)
+					.filter((s): s is VariantSpec => s.type === "static")
+					.map(v => v.variant)
+				const fn = composeVariants(...specs, expandAtRules)
 				merge(target, fn(value))
 				continue
 			}
@@ -443,7 +461,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function matchComponents(
-		components: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
+		components: Record<string, (value: unknown) => CSSProperties | CSSProperties[]>,
 		{
 			type = "any",
 			values = {},
@@ -453,7 +471,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			respectImportant = false,
 		}: {
 			type?: (ValueType | "any") | (ValueType | "any")[]
-			values?: ConfigObject
+			values?: Record<string, unknown>
 			supportsNegativeValues?: boolean
 			filterDefault?: boolean
 			respectPrefix?: boolean
@@ -471,7 +489,10 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function matchUtilities(
-		utilities: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
+		utilities: Record<
+			string,
+			(value: unknown, options: { modifier?: string; wrapped?: boolean }) => CSSProperties | CSSProperties[]
+		>,
 		{
 			type = "any",
 			values = {},
@@ -481,7 +502,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			respectImportant = true,
 		}: {
 			type?: (ValueType | "any") | (ValueType | "any")[]
-			values?: ConfigObject
+			values?: Record<string, unknown>
 			supportsNegativeValues?: boolean
 			filterDefault?: boolean
 			respectPrefix?: boolean
@@ -500,16 +521,16 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 					ambiguous = spec.length > 1
 				}
 
-				represent = (input, node, negative) => {
+				represent = (restIndex, node, negative) => {
 					if (negative && !supportsNegativeValues) return undefined
 					return representAny({
-						input,
+						restIndex,
 						node,
 						values,
 						negative,
 						ambiguous,
-						template(value) {
-							const css = fn(value)
+						render(...args) {
+							const css = fn(...args)
 							return merge({}, ...toArray(css).map(applyCamelCase))
 						},
 						filterDefault,
@@ -542,7 +563,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			}
 
 			const noAnyTypes = types.filter((t): t is ValueType => t !== "any")
-			represent = (input, node, negative) => {
+			represent = (restIndex, node, negative) => {
 				if (negative && !supportsNegativeValues) return undefined
 
 				let ambiguous = false
@@ -553,15 +574,15 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 
 				return representTypes({
-					input,
+					restIndex,
 					node,
 					values,
 					negative,
 					types: noAnyTypes,
 					filterDefault,
 					ambiguous,
-					template(value) {
-						const css = fn(value)
+					render(...args) {
+						const css = fn(...args)
 						return merge({}, ...toArray(css))
 					},
 				})
@@ -588,8 +609,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		}
 	}
 
-	function composeVariants(...variants: (VariantSpec | undefined)[]): VariantSpec {
-		let spec: VariantSpec = (css = {}) => css
+	function composeVariants(...variants: (Variant | undefined)[]): Variant {
+		let spec: Variant = (css = {}) => css
 		for (const f of variants.reverse()) {
 			if (f) {
 				const g = spec
@@ -599,81 +620,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return spec
 	}
 
-	function mergeVariants(...variants: Array<VariantSpec | undefined>): VariantSpec {
-		const _variants = variants.filter(isExists)
-		if (_variants.length === 0) {
-			return (css = {}) => css
-		}
-
-		const AtRule = /^\s*@\w/
-		const SPECIAL = ""
-		const anchor = { [SPECIAL]: SPECIAL }
-		const context = combineAndReplace(Object.assign({}, ..._variants.map(variant => variant(anchor))), anchor)
-		return (css = {}) => {
-			return combineAndReplace(context, css)
-		}
-
-		function combineAndReplace(source: CSSProperties, replaceValue: CSSProperties): CSSProperties {
-			const combined = new Set<string>()
-			const deep = new Map<string, CSSProperties>()
-			const order = new Map<string, CSSProperties[string]>()
-
-			const result: CSSProperties = {}
-
-			for (const key in source) {
-				const value = source[key]
-				if (isCSSValue(value)) {
-					order.set(key, value)
-					continue
-				}
-
-				if (value[SPECIAL] !== SPECIAL) {
-					order.set(key, value)
-					deep.set(key, value)
-					continue
-				}
-
-				if (Object.keys(value).length !== 1) {
-					const rest = { ...value }
-					delete rest[SPECIAL]
-					order.set(key, { ...replaceValue, ...rest })
-					continue
-				}
-
-				if (AtRule.test(key)) {
-					order.set(key, replaceValue)
-					continue
-				}
-
-				order.set(key, replaceValue)
-				combined.add(key)
-			}
-
-			if (combined.size <= 1) {
-				for (const [key, value] of order) {
-					const d = deep.get(key)
-					if (d !== undefined) {
-						result[key] = combineAndReplace(d, replaceValue)
-					} else {
-						result[key] = value
-					}
-				}
-			} else {
-				for (const [key, value] of order) {
-					const d = deep.get(key)
-					if (d !== undefined) {
-						result[key] = combineAndReplace(d, replaceValue)
-					} else if (!combined.has(key)) {
-						result[key] = value
-					}
-				}
-				Object.assign(result, { [Array.from(combined).join(", ")]: replaceValue })
-			}
-
-			return result
-		}
-	}
-
 	function getPluginName(value: string): string | undefined {
 		const program = parser.createProgram(value)
 		if (program.expressions.length !== 1) {
@@ -681,7 +627,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		}
 
 		const node = program.expressions[0]
-		if (node.type !== NodeType.ClassName && node.type !== NodeType.ArbitraryClassname) {
+		if (node.type !== nodes.NodeType.Classname && node.type !== nodes.NodeType.ArbitraryClassname) {
 			return undefined
 		}
 
@@ -707,7 +653,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			rootStyle[`${importantSelector} &`] = importantRootStyle
 		}
 
-		const rootFn: VariantSpec = (css = {}) => css
+		const rootFn: Variant = (css = {}) => css
 		const program = parser.createProgram(value)
 		for (let i = 0; i < program.expressions.length; i++) {
 			process(program.expressions[i], rootStyle, importantRootStyle, rootFn, false)
@@ -716,26 +662,29 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function process(
-		node: Expression,
+		node: nodes.Expression,
 		root: CSSProperties,
 		importantRoot: CSSProperties | undefined,
-		variantCtx: VariantSpec,
+		variantCtx: Variant,
 		important: boolean,
 	) {
 		switch (node.type) {
-			case NodeType.VariantSpan: {
-				let variant: VariantSpec | undefined
+			case nodes.NodeType.VariantSpan: {
+				let variant: Variant | undefined
 				switch (node.variant.type) {
-					case NodeType.SimpleVariant:
+					case nodes.NodeType.SimpleVariant:
 						variant = simpleVariant(node.variant)
 						break
-					case NodeType.ArbitraryVariant:
+					case nodes.NodeType.ArbitraryVariant:
 						variant = arbitraryVariant(node.variant)
 						break
-					case NodeType.ArbitrarySelector:
+					case nodes.NodeType.ArbitrarySelector:
 						variant = arbitrarySelector(node.variant)
 						break
-					case NodeType.GroupVariant:
+					case nodes.NodeType.UnknownVariant:
+						variant = unknownVariant(node.variant)
+						break
+					case nodes.NodeType.GroupVariant:
 						variant = wrapGroupVariant(node.variant)
 						break
 				}
@@ -744,7 +693,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 				break
 			}
-			case NodeType.Group: {
+			case nodes.NodeType.Group: {
 				if (validate) {
 					if (!node.closed) {
 						throw createParseError(node, "Bracket is not closed.")
@@ -755,14 +704,18 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 				break
 			}
-			case NodeType.ClassName:
-			case NodeType.ArbitraryClassname: {
-				if (validate && node.type === NodeType.ArbitraryClassname) {
+			case nodes.NodeType.Classname:
+				if (node.m?.closed === false) {
+					throw createParseError(node, "Bracket is not closed.")
+				}
+			// eslint-disable-next-line no-fallthrough
+			case nodes.NodeType.ArbitraryClassname: {
+				if (validate && node.type === nodes.NodeType.ArbitraryClassname) {
 					if (!node.closed) {
 						throw createParseError(node, "Bracket is not closed.")
 					}
-					if (node.e?.type === NodeType.WithOpacity && !node.e.closed) {
-						throw createParseError(node.e, "Bracket is not closed.")
+					if (node.m?.closed === false) {
+						throw createParseError(node.m, "Bracket is not closed.")
 					}
 				}
 				const [result, spec] = classname(node)
@@ -781,16 +734,16 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 				break
 			}
-			case NodeType.ArbitraryProperty: {
+			case nodes.NodeType.ArbitraryProperty: {
 				if (validate) {
 					if (!node.closed) {
 						throw createParseError(node, "Bracket is not closed.")
 					}
 				}
-				const i = node.decl.getText().indexOf(":")
+				const i = node.decl.text.indexOf(":")
 				if (i !== -1) {
-					const prop = node.decl.getText().slice(0, i).trim()
-					const value = renderThemeFunc(node.decl.getText().slice(i + 1)).trim()
+					const prop = node.decl.text.slice(0, i).trim()
+					const value = renderThemeFunc(node.decl.text.slice(i + 1)).trim()
 					if (prop && value) {
 						let css: CSSProperties = { [camelCase(prop)]: value }
 
@@ -808,7 +761,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 				break
 			}
-			case NodeType.ShortCss: {
+			case nodes.NodeType.UnknownClassname: {
 				if (validate) {
 					throw createParseError(node, "Not supported.")
 				}
@@ -817,171 +770,218 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		}
 	}
 
-	function simpleVariant(node: SimpleVariant) {
-		const variant = variantMap.get(node.id.getText())
+	function simpleVariant(node: nodes.SimpleVariant): Variant | undefined {
+		let ret: Variant | undefined
+		const [result] = variant(node)
+		if (result) {
+			ret = result
+		}
 		if (validate) {
-			if (variant == undefined) {
+			if (ret == undefined) {
 				throw createParseError(node, "Variant is not found.")
 			}
+		}
+		return ret
+	}
+
+	function arbitraryVariant(node: nodes.ArbitraryVariant): Variant | undefined {
+		let ret: Variant | undefined
+		const [result] = variant(node)
+		if (result) {
+			ret = result
+		}
+		if (validate) {
+			if (ret == undefined) {
+				throw createParseError(node, "Variant is not found.")
+			}
+		}
+		return ret
+	}
+
+	function arbitrarySelector(node: nodes.ArbitrarySelector) {
+		return createVariant([node.selector.text])
+	}
+
+	function unknownVariant(node: nodes.UnknownVariant) {
+		let variant: Variant | undefined
+		if (validate) {
+			throw createParseError(node, "Not supported.")
 		}
 		return variant
 	}
 
-	function arbitraryVariant(node: ArbitraryVariant) {
-		let variant: VariantSpec | undefined
-		const prefix = node.prefix.getText()
-		if (prefix.endsWith("-")) {
-			const key = prefix.slice(0, -1)
-			const spec = arbitraryVariantMap.get(key)
-			if (spec) {
-				const input = node.selector.getText()
-				variant = spec(input)
+	function variant(
+		node: nodes.SimpleVariant | nodes.ArbitraryVariant,
+	): [variant?: Variant | undefined, spec?: VariantSpec | LookupVariantSpec] {
+		if (node.type === nodes.NodeType.ArbitraryVariant) {
+			if (node.value.text) {
+				node.resolved = renderThemeFunc(node.value.text)
 			}
 		}
-		if (validate) {
-			if (variant == undefined) {
-				throw createParseError(node, "Variant is not found.")
+
+		const { spec, negative, restIndex } = parseInput(variantMap, node.key.text, node.key.start, node.key.end)
+		if (!spec) {
+			return []
+		}
+
+		if (negative) {
+			return []
+		}
+
+		const arr = toArray(spec)
+
+		for (const spec of arr) {
+			if (spec.type === "static") {
+				return [spec.variant, spec]
+			} else {
+				const variant = spec.represent(restIndex, node)
+				if (variant != undefined) {
+					return [variant, spec]
+				}
 			}
 		}
-		return variant
+
+		return []
 	}
 
-	function arbitrarySelector(node: ArbitrarySelector) {
-		return createVariantSpec([node.selector.getText()])
-	}
+	function classname(
+		node: nodes.Classname | nodes.ArbitraryClassname,
+	): [css?: CSSProperties, spec?: LookupSpec | StaticSpec] {
+		if (node.type === nodes.NodeType.ArbitraryClassname) {
+			if (node.value.text) {
+				node.resolved = renderThemeFunc(node.value.text)
+			}
+		}
 
-	function classname(node: Classname | ArbitraryClassname): [css?: CSSProperties, spec?: LookupSpec | StaticSpec] {
-		let value: string
-		if (node.type === NodeType.ClassName) {
-			value = node.getText()
+		const { spec, negative, restIndex } = parseInput(utilityMap, node.key.text, node.key.start, node.key.end)
+		let specs = toArray(spec ?? [])
+
+		if (node.type === nodes.NodeType.ArbitraryClassname) {
+			specs = specs.filter((c): c is LookupSpec => c?.type === "lookup")
+		}
+
+		if (specs.length === 1) {
+			const c = specs[0]
+			if (c.type === "lookup") {
+				const css = c.represent(restIndex, node, negative)
+				if (css) {
+					return [css, c]
+				}
+			} else {
+				return [{ ...c.css }, c]
+			}
+		} else if (specs.filter(c => c.type === "lookup").length > 1) {
+			const lookup = specs.filter((c): c is LookupSpec => c.type === "lookup")
+			const result = lookup
+				.map(c => {
+					const css = c.represent(restIndex, node, negative)
+					if (css) {
+						return [css, c]
+					}
+					return undefined
+				})
+				.filter((t): t is [CSSProperties, LookupSpec] => !!t)
+			if (result.length > 1) {
+				return []
+			} else if (result.length === 1) {
+				return result[0]
+			}
+
+			const statik = specs.filter((c): c is StaticSpec => c.type === "static")
+			if (statik.length > 0) {
+				const c = statik[0]
+				return [{ ...c.css }, c]
+			}
 		} else {
-			value = node.prefix.getText()
-			if (node.expr) {
-				node.expr.value = renderThemeFunc(node.expr.value)
-			}
-		}
-		const { spec, negative, restInput } = parseInput(value)
-
-		if (spec) {
-			const arr = toArray(spec)
-			if (arr.length === 1) {
-				const c = arr[0]
+			for (const c of specs) {
 				if (c.type === "lookup") {
-					const css = c.represent(restInput, node, negative)
+					const css = c.represent(restIndex, node, negative)
 					if (css) {
 						return [css, c]
 					}
 				} else {
 					return [{ ...c.css }, c]
 				}
-			} else if (arr.filter(c => c.type === "lookup").length > 1) {
-				const lookup = arr.filter((c): c is LookupSpec => c.type === "lookup")
-				const result = lookup
-					.map(c => {
-						const css = c.represent(restInput, node, negative)
-						if (css) {
-							return [css, c]
-						}
-						return undefined
-					})
-					.filter((t): t is [CSSProperties, LookupSpec] => !!t)
-				if (result.length > 1) {
-					return []
-				} else if (result.length === 1) {
-					return result[0]
-				}
-
-				const statik = arr.filter((c): c is StaticSpec => c.type === "static")
-				if (statik.length > 0) {
-					const c = statik[0]
-					return [{ ...c.css }, c]
-				}
-			} else {
-				for (const c of arr) {
-					if (c.type === "lookup") {
-						const css = c.represent(restInput, node, negative)
-						if (css) {
-							return [css, c]
-						}
-					} else {
-						return [{ ...c.css }, c]
-					}
-				}
 			}
 		}
 		return []
 	}
 
-	function parseInput(input: string) {
-		const spec = utilityMap.get(input)
-		const result = { spec, negative: false, restInput: "" }
-
+	function parseInput<S>(collection: Map<string, S | S[]>, text: string, start: number, end: number) {
+		let spec = collection.get(text)
+		const ret = { spec, negative: false, restIndex: end }
 		if (spec) {
-			return result
+			return ret
 		}
 
-		if (input[0] === "-") {
-			result.negative = true
-			input = input.slice(1)
-			const spec = utilityMap.get(input)
-			if (spec) {
-				result.spec = spec
-				result.restInput = input
-				return result
-			}
+		if (text[0] === "-") {
+			ret.negative = true
+			text = text.slice(1)
 		}
 
-		let i = input.length
+		const x = text.lastIndexOf("/")
+		if (x !== -1) {
+			text = text.slice(0, x)
+		}
+
+		spec = collection.get(text)
+		if (spec) {
+			ret.spec = spec
+			ret.restIndex = (ret.negative ? 1 : 0) + start + text.length
+			return ret
+		}
+
+		let i = text.length
 		while (i > 0) {
-			i = input.lastIndexOf("-", i - 1)
+			i = text.lastIndexOf("-", i - 1)
 			if (i === -1) {
 				break
 			}
 
-			const key = input.slice(0, i)
-			const spec = utilityMap.get(key)
+			const key = text.slice(0, i)
+			spec = collection.get(key)
 			if (!spec) {
 				continue
 			}
 
-			const lookupSpec = toArray(spec).filter((s): s is LookupSpec => s.type === "lookup")
+			const lookupSpec = toArray(spec).filter(s => s["type"] === "lookup")
 			if (lookupSpec.length === 0) {
 				continue
 			}
 
-			result.spec = lookupSpec
-			result.restInput = input.slice(i + 1)
-			return result
+			ret.spec = lookupSpec
+			ret.restIndex = (ret.negative ? 1 : 0) + start + i + 1
+			return ret
 		}
 
-		return result
+		return ret
 	}
 
-	function wrapExpression(expr: Expression, variantGroup = false) {
-		if (expr.type === NodeType.VariantSpan) {
+	function wrapExpression(expr: nodes.Expression, variantGroup = false) {
+		if (expr.type === nodes.NodeType.VariantSpan) {
 			return wrapVariantSpan(expr, variantGroup)
 		}
-		if (variantGroup && expr.type === NodeType.Group) {
+		if (variantGroup && expr.type === nodes.NodeType.Group) {
 			return mergeVariants(...expr.expressions.map(expr => wrapExpression(expr, true)))
 		}
 		return undefined
 	}
 
-	function wrapGroupVariant(node: GroupVariant): VariantSpec {
+	function wrapGroupVariant(node: nodes.GroupVariant): Variant {
 		return mergeVariants(...node.expressions.map(expr => wrapExpression(expr, true)))
 	}
 
-	function wrapVariantSpan({ variant, child }: VariantSpan, variantGroup = false): VariantSpec {
+	function wrapVariantSpan({ variant, child }: nodes.VariantSpan, variantGroup = false): Variant {
 		if (!child) {
 			return wrap(variant)
 		}
 		return composeVariants(
 			wrap(variant),
-			wrapExpression(child, variantGroup || variant.type === NodeType.GroupVariant),
+			wrapExpression(child, variantGroup || variant.type === nodes.NodeType.GroupVariant),
 		)
 	}
 
-	function wrap(variants: string | TemplateStringsArray | Variant, ...args: Variant[]): VariantSpec {
+	function wrap(variants: string | TemplateStringsArray | nodes.Variant, ...args: nodes.Variant[]): Variant {
 		if (variants == undefined) {
 			return (css = {}) => css
 		}
@@ -990,7 +990,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			return mergeVariants(...parser.createProgram(variants).expressions.map(expr => wrapExpression(expr)))
 		}
 
-		if (!isVariant(variants)) {
+		if (!nodes.isVariant(variants)) {
 			variants = variants[0]
 			return mergeVariants(...parser.createProgram(variants).expressions.map(expr => wrapExpression(expr)))
 		}
@@ -1001,16 +1001,20 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return composeVariants(
 			...args.map(value => {
 				const node = value
-				if (node.type === NodeType.SimpleVariant) {
+				if (node.type === nodes.NodeType.SimpleVariant) {
 					return simpleVariant(node)
 				}
 
-				if (node.type === NodeType.ArbitraryVariant) {
+				if (node.type === nodes.NodeType.ArbitraryVariant) {
 					return arbitraryVariant(node)
 				}
 
-				if (node.type === NodeType.ArbitrarySelector) {
+				if (node.type === nodes.NodeType.ArbitrarySelector) {
 					return arbitrarySelector(node)
+				}
+
+				if (node.type === nodes.NodeType.UnknownVariant) {
+					return unknownVariant(node)
 				}
 
 				return wrapGroupVariant(node)

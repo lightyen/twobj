@@ -1,7 +1,7 @@
-import { ConfigObject, CSSProperties, CSSValue, PostModifier } from "./base"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConfigJS, ResolvedConfigJS } from "./config"
 import { CorePluginFeatures } from "./features"
-import { VariantSpec } from "./specification"
+import { ArbitraryParameters, ConfigObject, CSSProperties, Post, Variant } from "./specification"
 import { ResolvePath } from "./theme"
 
 export type ValueType =
@@ -26,13 +26,18 @@ export interface AddOption {
 	respectImportant?: boolean
 }
 
-export interface MatchOption {
-	values?: ConfigObject
+export interface MatchOption<Value = any> {
+	values?: Record<string, Value>
 	type?: ValueType | ValueType[]
 	supportsNegativeValues?: boolean
 	filterDefault?: boolean
 	respectPrefix?: boolean
 	respectImportant?: boolean
+}
+
+export interface MatchVariantOption<Value = any> {
+	values?: Record<string, Value>
+	post?: Variant
 }
 
 export interface UserPluginOptions {
@@ -49,34 +54,31 @@ export interface UserPluginOptions {
 	addComponents(components: CSSProperties | CSSProperties[], options?: AddOption): void
 
 	/** Register new utilities. */
-	matchUtilities(
-		utilities: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
-		options?: MatchOption,
+	matchUtilities<Value = any>(
+		utilities: Record<string, (...args: ArbitraryParameters<Value>) => CSSProperties | CSSProperties[]>,
+		options?: MatchOption<Value>,
 	): void
 
 	/** Register new components. */
-	matchComponents(
-		components: Record<string, (value: CSSValue) => CSSProperties | CSSProperties[]>,
-		options?: MatchOption,
+	matchComponents<Value = any>(
+		components: Record<string, (...args: ArbitraryParameters<Value>) => CSSProperties | CSSProperties[]>,
+		options?: MatchOption<Value>,
 	): void
 
 	/** Register a custom variant. */
 	addVariant(
-		variantName: string,
-		variantDesc: string | (() => string | string[]) | Array<string | (() => string | string[])>,
+		name: string,
+		spec: string | (() => string | string[]) | Array<string | (() => string | string[])>,
 		options?: {
-			postModifier?: PostModifier
+			post?: Post
 		},
 	): void
 
 	/** Register an arbitrary variant */
-	matchVariant(
-		variantName: string,
-		variantDesc: (options: { value: string }) => string | string[],
-		options?: {
-			values?: ConfigObject
-			postModifier?: VariantSpec
-		},
+	matchVariant<Value = any>(
+		name: string,
+		spec: (...args: ArbitraryParameters<Value>) => string | string[],
+		options?: MatchVariantOption<Value>,
 	): void
 
 	/** Look up values in the user's theme configuration. */

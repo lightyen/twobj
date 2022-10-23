@@ -1,6 +1,6 @@
-import { ConfigObject } from "./base"
 import { CorePluginFeatures } from "./features"
 import { Plugin, UserPluginFunction, UserPluginFunctionWithOption, UserPluginObject } from "./plugin"
+import { ConfigObject } from "./specification"
 import { CustomTheme, ResolvedTheme, Theme } from "./theme"
 
 export interface ConfigJS extends StrictConfigJS, ConfigObject {}

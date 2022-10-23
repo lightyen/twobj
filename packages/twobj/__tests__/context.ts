@@ -1,6 +1,6 @@
 import { createContext } from "../src/core"
 import { resolveConfig } from "../src/resolveConfig"
-import type { Context, CSSProperties, VariantSpec } from "../src/types"
+import type { Context, CSSProperties, Variant } from "../src/types"
 
 export const context = createContext(resolveConfig())
 
@@ -16,8 +16,8 @@ export function tw(classname: string | TemplateStringsArray, ctx = context) {
 	return ctx.css(value)
 }
 
-export function wrap(variants: string, ctx?: Context): VariantSpec
-export function wrap(variants: TemplateStringsArray, ctx?: Context): VariantSpec
+export function wrap(variants: string, ctx?: Context): Variant
+export function wrap(variants: TemplateStringsArray, ctx?: Context): Variant
 export function wrap(variants: string | TemplateStringsArray, ctx = context) {
 	let value = ""
 	if (typeof variants !== "string") {

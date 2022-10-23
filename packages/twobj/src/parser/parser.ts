@@ -1,20 +1,34 @@
+import { HYPHEN, SLASH, SQUARE_BRACKETS } from "./charCode"
 import * as nodes from "./nodes"
-import { findRightBracket, isSpace, removeComments } from "./util"
+import { findRightBracket, generateKmpNext, isCharExclamationMark, isCharSpace, kmp, removeComments } from "./util"
 
-// "-" 45
-// "[" 91
-// "]" 93
-// " " 32
-// "/" 47
-// "*" 42
-// "(" 40
-// ")" 41
-// "!" 33
-// '"' 34
-// "'" 39
+export function isCharHyphen(char: number) {
+	return char === HYPHEN
+}
+
+export function isCharSlash(char: number) {
+	return char === SLASH
+}
 
 export function escapeRegexp(value: string) {
 	return value.replace(/[/\\^$+?.()|[\]{}]/g, "\\$&")
+}
+
+export function stripBrackets(value: string): [string, boolean] {
+	let a = 0
+	let b = value.length
+	let ok = false
+
+	if (value.charCodeAt(a) === SQUARE_BRACKETS[0]) {
+		a++
+		if (value.charCodeAt(b - 1) === SQUARE_BRACKETS[1]) {
+			ok = true
+			b--
+		}
+		return [value.slice(a, b), ok]
+	}
+
+	return [value, ok]
 }
 
 export const validChars = /[^\s:()[\]{}!]/
@@ -33,6 +47,7 @@ export function createParser(separator = ":") {
 		console.warn("[warn] invalid separator:", separator)
 	}
 	let regexp = compileRegexp(escapeRegexp(separator))
+	let kmpNext = generateKmpNext(separator)
 	return {
 		get separator() {
 			return separator
@@ -43,6 +58,7 @@ export function createParser(separator = ":") {
 			}
 			regexp = compileRegexp(escapeRegexp(sep))
 			separator = sep
+			kmpNext = generateKmpNext(sep)
 		},
 		validSeparator,
 		createProgram,
@@ -55,22 +71,14 @@ export function createParser(separator = ":") {
 
 	function compileRegexp(sep: string) {
 		return new RegExp(
-			`([\\w<>@#$%&=?-]+?${sep})|(!?\\[)|!?((?!\\/)(?:${validChars.source})+)\\[|(!?(?:${validChars.source})+)!?|(!?\\()|(\\S+)`,
+			`(${validChars.source}+?${sep})|(!?\\[)|!?((?!\\/)(?:${validChars.source})+)\\[|(!?(?:${validChars.source})+)!?|(!?\\()|(\\S+)`,
 			"gs",
 		)
 	}
 
 	function createProgram(source: string, [start = 0, end = source.length, breac = Infinity] = []): nodes.Program {
-		source = source.slice(0, start) + removeComments(source.slice(start, end), true) + source.slice(end)
-		return {
-			type: nodes.NodeType.Program,
-			source,
-			range: [start, end],
-			expressions: parseExpressions(source, [start, end, breac]),
-			getText() {
-				return source.slice(this.range[0], this.range[1])
-			},
-		}
+		const code = source.slice(0, start) + removeComments(source.slice(start, end), true) + source.slice(end)
+		return nodes.program(parseExpressions(code, [start, end, breac]), source, start, end)
 	}
 
 	function parseExpressions(source: string, [start = 0, end = source.length, breac = Infinity] = []) {
@@ -97,616 +105,504 @@ export function createParser(separator = ":") {
 		source = source.slice(0, end)
 
 		if ((match = regexp.exec(source))) {
-			const [, simpleVariant, leftSquareBracket, prefixLeftSquareBracket, classnames, group, others] = match
+			const [, simpleVariant, leftSquareBracket, prefixLeftSquareBracket, utility, group, others] = match
 			start = match.index
+			const exclamationLeft = isCharExclamationMark(source.charCodeAt(start))
+			const key_start = exclamationLeft ? start + 1 : start
+			const value_start = regexp.lastIndex
 
 			if (simpleVariant) {
-				start += simpleVariant.length
-				const variant: nodes.SimpleVariant = {
-					type: nodes.NodeType.SimpleVariant,
-					range: [match.index, start],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-					id: {
-						type: nodes.NodeType.Identifier,
-						range: [match.index, start - separator.length],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-					},
-				}
+				const variant = nodes.variant(
+					nodes.identifier(source, start, regexp.lastIndex - separator.length),
+					undefined,
+					source,
+					key_start,
+					start + simpleVariant.length,
+				)
 
-				if (isSpace(source.charCodeAt(start)) || isComment(start)) {
-					const span: nodes.VariantSpan = {
-						type: nodes.NodeType.VariantSpan,
-						variant: variant,
-						range: [match.index, regexp.lastIndex],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-					}
+				regexp.lastIndex = variant.end
+
+				// NOTE: variant is not support exclamation mark yet.
+				// if (exclamationLeft) {
+				// 	// ...
+				// }
+
+				if (isCharSpace(source.charCodeAt(variant.end))) {
+					const span = nodes.variantSpan(variant, null, source, start, variant.end)
 					return { expr: span, lastIndex: regexp.lastIndex }
 				}
 
-				const { expr, lastIndex } = parseExpression(source, [start])
-				const span: nodes.VariantSpan = {
-					type: nodes.NodeType.VariantSpan,
-					variant: variant,
-					range: [match.index, lastIndex],
-					child: expr,
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-				}
-
+				const { expr, lastIndex } = parseExpression(source, [variant.end])
+				const span = nodes.variantSpan(variant, expr, source, start, lastIndex)
 				return { expr: span, lastIndex }
 			}
 
 			if (leftSquareBracket) {
-				// ArbitraryProperty, ArbitrarySelector
-				let exclamationLeft = false
-				if (source.charCodeAt(start) === 33) {
-					exclamationLeft = true
-				}
 				const ar_rb = findRightBracket({
 					text: source,
-					start: exclamationLeft ? start + 1 : start,
+					start: key_start,
 					end,
-					brackets: [91, 93],
+					brackets: SQUARE_BRACKETS,
 				})
-				if (ar_rb == undefined) {
-					const expr: nodes.ArbitraryProperty = {
-						type: nodes.NodeType.ArbitraryProperty,
-						range: [match.index, end],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-						decl: {
-							type: nodes.NodeType.CssDeclaration,
-							range: [match.index + 1, end],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-						},
-						closed: false,
-						important: exclamationLeft,
-					}
 
-					return { expr, lastIndex: end }
+				const closed = ar_rb != undefined
+
+				if (!closed) {
+					const arbitraryProperty = nodes.arbitraryProperty(
+						nodes.value(source, value_start, end),
+						exclamationLeft,
+						closed,
+						source,
+						key_start,
+						end,
+					)
+					return { expr: arbitraryProperty, lastIndex: end }
 				}
 
-				// Does it end with separator?
+				let isVariant = true
 				for (let i = 0; i < separator.length; i++) {
 					if (source.charCodeAt(ar_rb + 1 + i) !== separator.charCodeAt(i)) {
-						let lastIndex = ar_rb + 1
-						let exclamationRight = false
-						if (source.charCodeAt(ar_rb + 1) === 33) {
-							exclamationRight = true
-							lastIndex += 1
-						}
-						if (exclamationLeft) start++
-						const expr: nodes.ArbitraryProperty = {
-							type: nodes.NodeType.ArbitraryProperty,
-							important: exclamationLeft || exclamationRight,
-							range: [start, ar_rb + 1],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-							decl: {
-								type: nodes.NodeType.CssDeclaration,
-								range: [start + 1, ar_rb],
-								getText() {
-									return source.slice(this.range[0], this.range[1])
-								},
-							},
-							closed: true,
-						}
-						return { expr, lastIndex }
+						isVariant = false
+						break
 					}
 				}
 
-				if (exclamationLeft) {
-					const classname: nodes.Classname = {
-						type: nodes.NodeType.ClassName,
-						important: false,
-						range: [start, start + 1],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
+				if (isVariant) {
+					const variant = nodes.arbitrarySelector(
+						nodes.value(source, value_start, ar_rb),
+						source,
+						key_start,
+						ar_rb + 1 + separator.length,
+					)
+
+					regexp.lastIndex = variant.end
+
+					// NOTE: variant is not support exclamation mark yet.
+					// if (exclamationLeft) {
+					// 	// ...
+					// }
+
+					if (isCharSpace(source.charCodeAt(variant.end))) {
+						const span = nodes.variantSpan(variant, null, source, start, variant.end)
+						return { expr: span, lastIndex: regexp.lastIndex }
 					}
-					return { expr: classname, lastIndex: start + 1 }
+
+					const { expr, lastIndex } = parseExpression(source, [variant.end])
+					const span = nodes.variantSpan(variant, expr, source, start, lastIndex)
+					return { expr: span, lastIndex }
 				}
 
-				start = ar_rb + 1 + separator.length
-				regexp.lastIndex = start
-
-				const variant: nodes.ArbitrarySelector = {
-					type: nodes.NodeType.ArbitrarySelector,
-					range: [match.index, regexp.lastIndex],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-					selector: {
-						type: nodes.NodeType.CssSelector,
-						range: [match.index + 1, ar_rb],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-					},
+				let lastIndex = ar_rb + 1
+				let exclamationRight = false
+				if (isCharExclamationMark(source.charCodeAt(lastIndex))) {
+					exclamationRight = true
+					lastIndex += 1
 				}
 
-				if (isSpace(source.charCodeAt(start)) || isComment(start)) {
-					const span: nodes.VariantSpan = {
-						type: nodes.NodeType.VariantSpan,
-						variant,
-						range: [match.index, regexp.lastIndex],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-					}
-					return { expr: span, lastIndex: regexp.lastIndex }
-				}
+				const arbitraryProperty = nodes.arbitraryProperty(
+					nodes.value(source, value_start, ar_rb),
+					exclamationLeft || exclamationRight,
+					closed,
+					source,
+					key_start,
+					ar_rb + 1,
+				)
 
-				const { expr, lastIndex } = parseExpression(source, [start])
-				const span: nodes.VariantSpan = {
-					type: nodes.NodeType.VariantSpan,
-					variant,
-					range: [match.index, lastIndex],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-					child: expr,
-				}
-				return { expr: span, lastIndex }
+				return { expr: arbitraryProperty, lastIndex }
 			}
 
 			if (prefixLeftSquareBracket) {
-				// ArbitraryClassname, ArbitraryVariant, ShortCss
+				// NOTE: `aaa-bbb/mmm` is a simple classname
 
-				// text-[___], text-[___]/opacity, text-[___]/[opacity]
-				const hyphen = source.charCodeAt(regexp.lastIndex - 2) === 45
-				// text-color/[opacity]
-				const slash = source.charCodeAt(regexp.lastIndex - 2) === 47
+				// List: ClassName, Variant, ArbitraryClassname, ArbitraryVariant, UnknownClassname, UnknownVariant
 
-				// NOTE: text-color/opacity is a normal classname.
+				const lastChar = source.charCodeAt(regexp.lastIndex - 2)
 
-				let exclamationLeft = false
-				if (source.charCodeAt(start) === 33) {
-					exclamationLeft = true
-				}
+				// aaa-[vvv], aaa-[vvv]/mmm, aaa-[vvv]/[mmm]
+				const hyphen = isCharHyphen(lastChar)
 
-				const prefix_start = exclamationLeft ? start + 1 : start
-				const prefix: nodes.Identifier = {
-					type: nodes.NodeType.Identifier,
-					range: [prefix_start, prefix_start + prefixLeftSquareBracket.length],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-				}
+				// aaa-bbb/[mmm]
+				const slash = isCharSlash(lastChar)
+
+				const key: nodes.Identifier = nodes.identifier(
+					source,
+					key_start,
+					key_start + prefixLeftSquareBracket.length + (slash || hyphen ? -1 : 0),
+				)
 
 				const ar_rb = findRightBracket({
 					text: source,
 					start: regexp.lastIndex - 1,
 					end,
-					brackets: [91, 93],
+					brackets: SQUARE_BRACKETS,
 					comments: false,
 				})
-				if (ar_rb == undefined) {
-					if (exclamationLeft) start++
-					const expr: nodes.CssExpression = {
-						type: nodes.NodeType.CssExpression,
-						range: [regexp.lastIndex, end],
-						value: source.slice(regexp.lastIndex, end),
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-					}
-					if (hyphen) {
-						// text-[
-						const node: nodes.ArbitraryClassname = {
-							type: nodes.NodeType.ArbitraryClassname,
-							prefix,
-							expr,
-							important: exclamationLeft,
-							range: [start, end],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-							closed: false,
-						}
-						return { expr: node, lastIndex: end }
-					}
 
-					if (slash) {
-						// text-color/[
-						prefix.range[1] = prefix.range[1] - 1
-						const node: nodes.ArbitraryClassname = {
-							type: nodes.NodeType.ArbitraryClassname,
-							prefix,
-							expr: undefined,
-							important: exclamationLeft,
-							range: [start, end],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-							closed: false,
-						}
-						return { expr: node, lastIndex: end }
-					}
+				const closed = ar_rb != undefined
+				const isUnknown = !slash && !hyphen
 
-					// color[
-					const shortcss: nodes.ShortCss = {
-						type: nodes.NodeType.ShortCss,
-						prefix,
-						expr,
-						important: exclamationLeft,
-						range: [start, regexp.lastIndex],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-						closed: false,
-					}
-					return { expr: shortcss, lastIndex: end }
-				}
-
-				// Does it end with separator?
-				let hasSeparator = true
-				for (let i = 0; i < separator.length; i++) {
-					if (source.charCodeAt(ar_rb + 1 + i) !== separator.charCodeAt(i)) {
-						hasSeparator = false
-						break
-					}
-				}
-
-				if (hasSeparator) {
-					if (exclamationLeft) {
-						const classname: nodes.Classname = {
-							type: nodes.NodeType.ClassName,
-							important: false,
-							range: [start, start + 1],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-						}
-						return { expr: classname, lastIndex: start + 1 }
-					}
-
-					// any-[]:
-					const prefix: nodes.Identifier = {
-						type: nodes.NodeType.Identifier,
-						range: [start, regexp.lastIndex - 1],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-					}
-
-					start = ar_rb + 1 + separator.length
-					const variant: nodes.ArbitraryVariant = {
-						type: nodes.NodeType.ArbitraryVariant,
-						range: [match.index, start],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-						prefix,
-						selector: {
-							type: nodes.NodeType.CssSelector,
-							range: [regexp.lastIndex, ar_rb],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-						},
-					}
-					regexp.lastIndex = start
-
-					if (isSpace(source.charCodeAt(start)) || isComment(start)) {
-						const span: nodes.VariantSpan = {
-							type: nodes.NodeType.VariantSpan,
-							variant,
-							range: [match.index, regexp.lastIndex],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-						}
-						return { expr: span, lastIndex: regexp.lastIndex }
-					}
-
-					const { expr, lastIndex } = parseExpression(source, [start])
-					const span: nodes.VariantSpan = {
-						type: nodes.NodeType.VariantSpan,
-						variant,
-						range: [match.index, lastIndex],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-						child: expr,
-					}
-					return { expr: span, lastIndex }
-				}
-
-				if (exclamationLeft) start++
-				const expr: nodes.CssExpression = {
-					type: nodes.NodeType.CssExpression,
-					range: [regexp.lastIndex, ar_rb],
-					value: source.slice(regexp.lastIndex, ar_rb),
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-				}
-				const lb = regexp.lastIndex - 1
-				regexp.lastIndex = ar_rb + 1
-
-				// shortcss
-				if (!slash && !hyphen) {
-					const exclamationRight = source.charCodeAt(regexp.lastIndex) === 33
-					if (exclamationRight) regexp.lastIndex += 1
-					const shortcss: nodes.ShortCss = {
-						type: nodes.NodeType.ShortCss,
-						prefix,
-						expr,
-						important: exclamationLeft || exclamationRight,
-						range: [start, exclamationRight ? regexp.lastIndex - 1 : regexp.lastIndex],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-						closed: true,
-					}
-					return { expr: shortcss, lastIndex: regexp.lastIndex }
-				}
-
-				let e: nodes.WithOpacity | nodes.EndOpacity | undefined
-				let exclamationRight = false
-
-				// text-[]/xxx
-				if (hyphen) {
-					if (source.charCodeAt(regexp.lastIndex) === 47) {
-						regexp.lastIndex += 1
-						if (source.charCodeAt(regexp.lastIndex) === 91) {
-							const rb = findRightBracket({
-								text: source,
-								start: regexp.lastIndex,
-								end,
-								brackets: [91, 93],
-								comments: false,
-							})
-							if (rb != undefined) {
-								e = {
-									type: nodes.NodeType.WithOpacity,
-									range: [regexp.lastIndex, rb + 1],
-									getText() {
-										return source.slice(this.range[0], this.range[1])
-									},
-									opacity: {
-										type: nodes.NodeType.Identifier,
-										range: [regexp.lastIndex + 1, rb],
-										getText() {
-											return source.slice(this.range[0], this.range[1])
-										},
-									},
-									closed: true,
-								}
-								regexp.lastIndex = rb + 1
-
-								if (source.charCodeAt(regexp.lastIndex) === 33) {
-									exclamationRight = true
-									regexp.lastIndex += 1
-								}
-							} else {
-								e = {
-									type: nodes.NodeType.WithOpacity,
-									range: [regexp.lastIndex, end],
-									getText() {
-										return source.slice(this.range[0], this.range[1])
-									},
-									opacity: {
-										type: nodes.NodeType.Identifier,
-										range: [regexp.lastIndex + 1, end],
-										getText() {
-											return source.slice(this.range[0], this.range[1])
-										},
-									},
-									closed: false,
-								}
-								regexp.lastIndex = end
-							}
-						} else {
-							let k = regexp.lastIndex
-							for (; k < end; k++) {
-								if (isSpace(source.charCodeAt(k))) {
-									break
-								}
-							}
-
-							let b = k
-							if (source.charCodeAt(k - 1) === 33) {
-								exclamationRight = true
-								b--
-							}
-							e = {
-								type: nodes.NodeType.EndOpacity,
-								range: [regexp.lastIndex, b],
-								getText() {
-									return source.slice(this.range[0], this.range[1])
-								},
-							}
-							regexp.lastIndex = k
-						}
-					} else if (source.charCodeAt(regexp.lastIndex) === 33) {
-						exclamationRight = true
-						regexp.lastIndex += 1
-					}
-				} else if (slash) {
-					e = {
-						type: nodes.NodeType.WithOpacity,
-						range: [lb, ar_rb + 1],
-						getText() {
-							return source.slice(this.range[0], this.range[1])
-						},
-						opacity: {
-							...expr,
-							type: nodes.NodeType.Identifier,
-						},
-						closed: true,
-					}
-
-					if (source.charCodeAt(regexp.lastIndex) === 33) {
-						exclamationRight = true
-						regexp.lastIndex += 1
-					}
-				}
-
-				const node: nodes.ArbitraryClassname = {
-					type: nodes.NodeType.ArbitraryClassname,
-					important: exclamationLeft || exclamationRight,
-					prefix,
-					expr: slash ? undefined : expr,
-					e,
-					closed: true,
-					range: [start, exclamationRight ? regexp.lastIndex - 1 : regexp.lastIndex],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-				}
-
+				// aaa-bbb/[mmm]
 				if (slash) {
-					prefix.range[1] = prefix.range[1] - 1
-				}
-				return { expr: node, lastIndex: regexp.lastIndex }
-			}
+					const modifier = nodes.modifier(closed, true, source, regexp.lastIndex, closed ? ar_rb : end)
 
-			let exclamationLeft = false
-			if (source.charCodeAt(start) === 33) {
-				exclamationLeft = true
-				start += 1
-			}
+					if (!closed) {
+						const classname = nodes.classname(
+							nodes.identifier(source, key_start, regexp.lastIndex - 2),
+							exclamationLeft,
+							modifier,
+							source,
+							key_start,
+							end,
+						)
+						return { expr: classname, lastIndex: end }
+					}
 
-			if (classnames) {
-				let exclamationRight = false
-				let _end = regexp.lastIndex
-				if (source.charCodeAt(regexp.lastIndex - 1) === 33) {
-					exclamationRight = true
-					_end -= 1
-				}
-
-				const classname: nodes.Classname = {
-					type: nodes.NodeType.ClassName,
-					range: [start, _end],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-					important: exclamationLeft || exclamationRight,
-				}
-
-				return { expr: classname, lastIndex: regexp.lastIndex }
-			}
-
-			if (group) {
-				const rb = findRightBracket({ text: source, start, end })
-				let hasSeparator = rb != undefined
-				if (rb != undefined) {
+					let isVariant = true
 					for (let i = 0; i < separator.length; i++) {
-						if (source.charCodeAt(rb + 1 + i) !== separator.charCodeAt(i)) {
-							hasSeparator = false
+						if (source.charCodeAt(ar_rb + 1 + i) !== separator.charCodeAt(i)) {
+							isVariant = false
 							break
 						}
 					}
 
-					// (variant1: variant2:):
-					if (hasSeparator) {
-						const expressions = parseExpressions(source, [start + 1, rb])
-						const variant: nodes.GroupVariant = {
-							type: nodes.NodeType.GroupVariant,
-							important: exclamationLeft,
-							range: [start + 1, rb],
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-							expressions,
-						}
+					if (isVariant) {
+						const variant = nodes.variant(key, modifier, source, key.start, ar_rb + 1 + separator.length)
 
-						regexp.lastIndex = rb + 1 + separator.length
+						regexp.lastIndex = variant.end
 
-						if (isSpace(source.charCodeAt(regexp.lastIndex)) || isComment(regexp.lastIndex)) {
-							const span: nodes.VariantSpan = {
-								type: nodes.NodeType.VariantSpan,
-								variant,
-								range: [start, regexp.lastIndex],
-								getText() {
-									return source.slice(this.range[0], this.range[1])
-								},
-							}
+						// NOTE: variant is not support exclamation mark yet.
+						// if (exclamationLeft) {
+						// 	// ...
+						// }
+
+						if (isCharSpace(source.charCodeAt(variant.end))) {
+							const span = nodes.variantSpan(variant, null, source, start, variant.end)
 							return { expr: span, lastIndex: regexp.lastIndex }
 						}
 
-						start = regexp.lastIndex
-
-						const { expr, lastIndex } = parseExpression(source, [start])
-						const span: nodes.VariantSpan = {
-							type: nodes.NodeType.VariantSpan,
-							variant: variant,
-							range: [match.index, lastIndex],
-							child: expr,
-							getText() {
-								return source.slice(this.range[0], this.range[1])
-							},
-						}
-
+						const { expr, lastIndex } = parseExpression(source, [variant.end])
+						const span = nodes.variantSpan(variant, expr, source, start, lastIndex)
 						return { expr: span, lastIndex }
 					}
+
+					let lastIndex = ar_rb + 1
+					let exclamationRight = false
+					if (isCharExclamationMark(source.charCodeAt(lastIndex))) {
+						exclamationRight = true
+						lastIndex += 1
+					}
+
+					const classname = nodes.classname(
+						nodes.identifier(source, key_start, regexp.lastIndex - 2),
+						exclamationLeft || exclamationRight,
+						modifier,
+						source,
+						key_start,
+						ar_rb + 1,
+					)
+					return { expr: classname, lastIndex }
 				}
 
-				let exclamationRight = false
+				// aaa-[vvv], aaa-[vvv]/mmm, aaa-[vvv]/[mmm]
+				const value = nodes.value(source, value_start, closed ? ar_rb : end)
 
-				if (rb != undefined) {
-					regexp.lastIndex = rb + 1
-					if (source.charCodeAt(rb + 1) === 33) {
-						exclamationRight = true
-						regexp.lastIndex += 1
+				if (!closed) {
+					const classname = nodes.arbitraryClassname(
+						isUnknown,
+						key,
+						value,
+						exclamationLeft,
+						closed,
+						null,
+						source,
+						key_start,
+						end,
+					)
+					return { expr: classname, lastIndex: end }
+				}
+
+				// aaa-[..]:
+				// aaa-[..]!
+				// aaa-[..]\s
+				// xxx-[..]/[mmm
+				// aaa-[..]/[mmm]:
+				// aaa-[..]/[mmm]!
+				// aaa-[..]/[mmm]\s
+				// aaa-[..]/mmm:
+				// aaa-[..]/mmm!
+				// aaa-[..]/mmm\s
+				let isVariant = true
+				for (let i = 0; i < separator.length; i++) {
+					if (source.charCodeAt(ar_rb + 1 + i) !== separator.charCodeAt(i)) {
+						isVariant = false
+						break
+					}
+				}
+
+				if (isVariant) {
+					const variant = nodes.arbitraryVariant(
+						isUnknown,
+						key,
+						value,
+						null,
+						source,
+						start,
+						ar_rb + 1 + separator.length,
+					)
+
+					regexp.lastIndex = variant.end
+
+					// NOTE: variant is not support exclamation mark yet.
+					// if (exclamationLeft) {
+					// 	// ...
+					// }
+
+					if (isCharSpace(source.charCodeAt(variant.end))) {
+						const span = nodes.variantSpan(variant, null, source, start, variant.end)
+						return { expr: span, lastIndex: regexp.lastIndex }
+					}
+
+					const { expr, lastIndex } = parseExpression(source, [variant.end])
+					const span = nodes.variantSpan(variant, expr, source, start, lastIndex)
+					return { expr: span, lastIndex }
+				}
+
+				const s = source.charCodeAt(ar_rb + 1)
+
+				if (isCharExclamationMark(s)) {
+					const arbitraryClassname = nodes.arbitraryClassname(
+						isUnknown,
+						key,
+						value,
+						true,
+						closed,
+						null,
+						source,
+						key_start,
+						ar_rb + 2,
+					)
+					return { expr: arbitraryClassname, lastIndex: ar_rb + 2 }
+				}
+
+				if (!isCharSlash(s)) {
+					const arbitraryClassname = nodes.arbitraryClassname(
+						isUnknown,
+						key,
+						value,
+						exclamationLeft,
+						closed,
+						null,
+						source,
+						key_start,
+						ar_rb + 1,
+					)
+					return { expr: arbitraryClassname, lastIndex: ar_rb + 1 }
+				}
+
+				// xxx-[..]/[mmm
+				// aaa-[..]/[mmm]:
+				// aaa-[..]/[mmm]!
+				// aaa-[..]/[mmm]\s
+				// aaa-[..]/mmm:
+				// aaa-[..]/mmm!
+				// aaa-[..]/mmm\s
+				const a = ar_rb + 2
+				let modifier: nodes.Modifier | undefined
+				let term = a
+
+				if (source.charCodeAt(a) === SQUARE_BRACKETS[0]) {
+					// tooltip-[foo]/[..]:mb-2
+					// bar:mb-2
+					const rb = findRightBracket({
+						text: source,
+						start: a,
+						end,
+						brackets: SQUARE_BRACKETS,
+						comments: false,
+					})
+					const closed = rb != undefined
+					if (closed) {
+						term = rb + 1
+					} else {
+						term = end
+					}
+
+					modifier = nodes.modifier(closed, true, source, a + 1, closed ? rb : end)
+
+					if (!closed) {
+						const arbitraryClassname = nodes.arbitraryClassname(
+							isUnknown,
+							key,
+							value,
+							exclamationLeft,
+							closed,
+							modifier,
+							source,
+							key_start,
+							end,
+						)
+						return { expr: arbitraryClassname, lastIndex: end }
+					}
+
+					isVariant = true
+					for (let i = 0; i < separator.length; i++) {
+						if (source.charCodeAt(term + i) !== separator.charCodeAt(i)) {
+							isVariant = false
+							break
+						}
 					}
 				} else {
-					regexp.lastIndex = end
+					// tooltip-[foo]/bar:mb-2
+					// bar:mb-2
+					// TODO: search separator
+					const { index, lastIndex } = kmp(separator, kmpNext, source.slice(a))
+					if (lastIndex > 0) {
+						modifier = nodes.modifier(true, false, source, a, a + lastIndex)
+					}
+					isVariant = index !== -1
+					term = a + lastIndex
 				}
 
-				const _end = rb != undefined ? rb : end
+				if (isVariant) {
+					const variant = nodes.arbitraryVariant(
+						isUnknown,
+						key,
+						value,
+						modifier,
+						source,
+						start,
+						term + separator.length,
+					)
 
-				const lastIndex = regexp.lastIndex
-				const expressions = parseExpressions(source, [start + 1, _end])
+					regexp.lastIndex = variant.end
 
-				const group: nodes.Group = {
-					type: nodes.NodeType.Group,
-					closed: rb != undefined,
-					important: exclamationLeft || exclamationRight,
-					range: [match.index, lastIndex],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
+					// NOTE: variant is not support exclamation mark yet.
+					// if (exclamationLeft) {
+					// 	// ...
+					// }
+
+					if (isCharSpace(source.charCodeAt(variant.end))) {
+						const span = nodes.variantSpan(variant, null, source, start, variant.end)
+						return { expr: span, lastIndex: regexp.lastIndex }
+					}
+
+					const { expr, lastIndex } = parseExpression(source, [variant.end])
+					const span = nodes.variantSpan(variant, expr, source, start, lastIndex)
+					return { expr: span, lastIndex }
+				}
+
+				let lastIndex = term
+				let exclamationRight = false
+				if (isCharExclamationMark(source.charCodeAt(lastIndex))) {
+					exclamationRight = true
+					lastIndex += 1
+				}
+
+				const arbitraryClassname = nodes.arbitraryClassname(
+					isUnknown,
+					key,
+					value,
+					exclamationLeft || exclamationRight,
+					closed,
+					modifier,
+					source,
+					key_start,
+					term,
+				)
+
+				return { expr: arbitraryClassname, lastIndex }
+			}
+
+			if (utility) {
+				let exclamationRight = false
+				let b = regexp.lastIndex
+				if (isCharExclamationMark(source.charCodeAt(b - 1))) {
+					exclamationRight = true
+					b -= 1
+				}
+				const classname = nodes.classname(
+					nodes.identifier(source, key_start, b),
+					exclamationLeft || exclamationRight,
+					null,
+					source,
+					key_start,
+					b,
+				)
+				return { expr: classname, lastIndex: regexp.lastIndex }
+			}
+
+			if (group) {
+				const rb = findRightBracket({ text: source, start: key_start, end })
+				const closed = rb != undefined
+
+				if (!closed) {
+					const expressions = parseExpressions(source, [key_start + 1, end])
+					const group = nodes.group(expressions, exclamationLeft, closed, source, start, end)
+					return { expr: group, lastIndex: end }
+				}
+
+				let isVariant = true
+				for (let i = 0; i < separator.length; i++) {
+					if (source.charCodeAt(rb + 1 + i) !== separator.charCodeAt(i)) {
+						isVariant = false
+						break
+					}
+				}
+
+				if (isVariant) {
+					const expressions = parseExpressions(source, [key_start + 1, rb])
+					const variant = nodes.groupVariant(expressions, source, start, rb + 1 + separator.length)
+
+					regexp.lastIndex = variant.end
+
+					// NOTE: variant is not support exclamation mark yet.
+					// if (exclamationLeft) {
+					// 	// ...
+					// }
+
+					if (isCharSpace(source.charCodeAt(variant.end))) {
+						const span = nodes.variantSpan(variant, null, source, start, variant.end)
+						return { expr: span, lastIndex: regexp.lastIndex }
+					}
+
+					const { expr, lastIndex } = parseExpression(source, [variant.end])
+					const span = nodes.variantSpan(variant, expr, source, start, lastIndex)
+					return { expr: span, lastIndex }
+				}
+
+				let lastIndex = rb + 1
+				let exclamationRight = false
+				if (isCharExclamationMark(source.charCodeAt(lastIndex))) {
+					exclamationRight = true
+					lastIndex += 1
+				}
+
+				const expressions = parseExpressions(source, [key_start + 1, rb])
+				const group = nodes.group(
 					expressions,
-				}
-
+					exclamationLeft || exclamationRight,
+					closed,
+					source,
+					start,
+					lastIndex,
+				)
 				return { expr: group, lastIndex }
 			}
 
 			if (others) {
-				const classname: nodes.Classname = {
-					type: nodes.NodeType.ClassName,
-					important: false,
-					range: [match.index, regexp.lastIndex],
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-				}
+				const classname = nodes.classname(
+					nodes.identifier(source, start, regexp.lastIndex),
+					false,
+					null,
+					source,
+					start,
+					regexp.lastIndex,
+				)
 				return { expr: classname, lastIndex: regexp.lastIndex }
 			}
 		}
 
 		return { lastIndex: regexp.lastIndex }
-
-		function isComment(i: number) {
-			if (source.charCodeAt(i) === 47) {
-				return source.charCodeAt(i) === 47 || source.charCodeAt(i) === 42
-			}
-			return false
-		}
 	}
 
 	function tokenize(source: string, [start = 0, end = source.length] = []): TokenExpr[] {
@@ -717,24 +613,24 @@ export function createParser(separator = ":") {
 			switch (expr.type) {
 				case nodes.NodeType.VariantSpan: {
 					if (expr.child) {
-						return [source.slice(...expr.variant.range), _tokennize(expr.child)]
+						return [source.slice(expr.variant.start, expr.variant.end), _tokennize(expr.child)]
 					}
-					return [source.slice(...expr.variant.range)]
+					return [source.slice(expr.variant.start, expr.variant.end)]
 				}
 				case nodes.NodeType.Group: {
 					return expr.expressions.map(_tokennize)
 				}
-				case nodes.NodeType.ClassName: {
-					return source.slice(...expr.range)
+				case nodes.NodeType.Classname: {
+					return source.slice(expr.start, expr.end)
 				}
 				case nodes.NodeType.ArbitraryClassname: {
-					return source.slice(...expr.range)
+					return source.slice(expr.start, expr.end)
 				}
 				case nodes.NodeType.ArbitraryProperty: {
-					return source.slice(...expr.range)
+					return source.slice(expr.start, expr.end)
 				}
-				case nodes.NodeType.ShortCss: {
-					return source.slice(...expr.range)
+				case nodes.NodeType.UnknownClassname: {
+					return source.slice(expr.start, expr.end)
 				}
 			}
 		}

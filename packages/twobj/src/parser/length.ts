@@ -1,10 +1,27 @@
 import { getUnitFromNumberFunction } from "./css"
 import { isValidNumber } from "./number"
 
-const units = ["px", "rem", "em", "vw", "vh", "vmin", "vmax", "ex", "cm", "mm", "in", "pt", "pc", "ch", "Q", "lh"]
+export const lengthUnits = [
+	"px",
+	"rem",
+	"em",
+	"vw",
+	"vh",
+	"vmin",
+	"vmax",
+	"ex",
+	"cm",
+	"mm",
+	"in",
+	"pt",
+	"pc",
+	"ch",
+	"Q",
+	"lh",
+]
 
 export function isValidLength(value: string): { num: string; unit: string } | undefined {
-	const unit = units.find(u => value.endsWith(u))
+	const unit = lengthUnits.find(u => value.endsWith(u))
 
 	if (!unit) {
 		if (value === "") {
@@ -14,7 +31,7 @@ export function isValidLength(value: string): { num: string; unit: string } | un
 			return { num: value, unit: "" }
 		}
 		const unit = getUnitFromNumberFunction(value)
-		if (unit && units.includes(unit)) {
+		if (unit && lengthUnits.includes(unit)) {
 			return { num: value, unit }
 		}
 		return undefined

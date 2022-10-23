@@ -10,7 +10,7 @@ import type {
 	LookupSpec,
 	Palette,
 	PlainCSSProperties,
-	PostModifier,
+	Post,
 	Primitive,
 	StaticSpec,
 } from "./types"
@@ -66,7 +66,7 @@ export function isPlainArray(value: unknown): value is Array<unknown> {
 export const IMPORTANT = "!important"
 
 export function applyImportant(css: CSSProperties): CSSProperties {
-	return applyModifier(css, (css = {}) => {
+	return applyPost(css, (css = {}) => {
 		return Object.fromEntries(
 			Object.entries(css).map(arr => {
 				const [, value] = arr
@@ -81,7 +81,7 @@ export function applyImportant(css: CSSProperties): CSSProperties {
 }
 
 export function applyCamelCase(css: CSSProperties): CSSProperties {
-	return applyModifier(css, (css = {}) => {
+	return applyPost(css, (css = {}) => {
 		return Object.fromEntries(
 			Object.entries(css).map(arr => {
 				const [prop, value] = arr
@@ -94,9 +94,9 @@ export function applyCamelCase(css: CSSProperties): CSSProperties {
 	})
 }
 
-export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSProperties {
+export function applyPost(css: CSSProperties, post: Post): CSSProperties {
 	if (isPlainCSSProperties(css)) {
-		return modifier(css)
+		return post(css)
 	}
 	for (const key in css) {
 		const value = css[key]
@@ -106,7 +106,7 @@ export function applyModifier(css: CSSProperties, modifier: PostModifier): CSSPr
 		if (isCSSValue(value)) {
 			continue
 		}
-		css[key] = applyModifier(value, modifier)
+		css[key] = applyPost(value, post)
 	}
 	return css
 }
@@ -195,53 +195,53 @@ export function toArray<T>(target: T | T[]): T[] {
 	return [target]
 }
 
-// Data types:
-//
-// { sm: '100px', md: '300px' }
-// { sm: ['100px', '200px'], md: ['300px', '400px'] }
-// { sm: { min: '100px', max: '200px' }, md: { min: '300px', max: '400px' } }
-
-// => ['sm', { min: '100px', max: '200px' }, 'md', { min: '300px', max: '400px' } }]
-
-export function normalizeScreens(screens: unknown) {
-	if (!screens || !isPlainObject(screens)) {
-		return {}
+export function parseLength(value: string): { value: number; unit: string } | undefined {
+	const unit = parser.lengthUnits.find(u => value.endsWith(u))
+	if (!unit) {
+		return undefined
 	}
 
-	const result: Record<string, { raw?: CSSValue; min?: CSSValue; max?: CSSValue }> = {}
+	value = value.slice(0, -unit.length)
+	const num = Number(value)
+	if (Number.isNaN(num)) {
+		return undefined
+	}
+
+	return { value: num, unit }
+}
+
+export interface Breakpoint {
+	key: string
+	value: number
+}
+
+export function normalizeScreens(screens: Record<string, CSSValue>): Array<Breakpoint> {
+	if (!screens || !isPlainObject(screens)) {
+		return []
+	}
+
+	const breakpoints: Array<{ key: string; value: number }> = []
 
 	for (const key in screens) {
 		const value = screens[key]
 		if (typeof value === "string") {
-			result[key] = { min: value }
-		} else if (isPlainArray(value)) {
-			const [min, max] = value
-			if (isCSSValue(min) || isCSSValue(max)) {
-				result[key] = {}
-				if (isCSSValue(min)) {
-					result[key].min = min
-				}
-				if (isCSSValue(max)) {
-					result[key].max = max
+			const val = parseLength(value)
+			if (val != undefined) {
+				const { value, unit } = val
+				if (value > 1 && unit === "px") {
+					breakpoints.push({ key, value })
 				}
 			}
-		} else if (isPlainObject(value)) {
-			const { raw, min, max } = value as Record<string, string>
-			if (isCSSValue(raw) || isCSSValue(min) || isCSSValue(max)) {
-				result[key] = {}
-				if (isCSSValue(raw)) {
-					result[key].raw = raw
-				}
-				if (isCSSValue(min)) {
-					result[key].min = min
-				}
-				if (isCSSValue(max)) {
-					result[key].max = max
-				}
+		} else if (typeof value === "number") {
+			if (value > 1) {
+				breakpoints.push({ key, value })
 			}
 		}
 	}
-	return result
+
+	breakpoints.sort((a, b) => a.value - b.value)
+
+	return breakpoints
 }
 
 const colorProps = new Set<string>([

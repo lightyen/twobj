@@ -60,14 +60,14 @@ const config: ConfigJS = {
 			},
 		),
 		function ({ matchUtilities, matchComponents, matchVariant, theme, e }) {
-			matchUtilities({
+			matchUtilities<CSSValue>({
 				tab(value) {
 					return {
 						tabSize: value,
 					}
 				},
 			})
-			matchComponents(
+			matchComponents<CSSValue>(
 				{
 					test(value) {
 						return {
@@ -79,7 +79,7 @@ const config: ConfigJS = {
 				},
 				{ values: theme("colors.cyan") },
 			)
-			matchComponents({
+			matchComponents<CSSValue>({
 				card: (value): CSSProperties[] => {
 					return [
 						{ color: value },
@@ -98,7 +98,7 @@ const config: ConfigJS = {
 					]
 				},
 			})
-			matchVariant("tab", ({ value }) => {
+			matchVariant<string>("tab", value => {
 				if (!value) return "& > *"
 				return `&.${e(value)} > *`
 			})

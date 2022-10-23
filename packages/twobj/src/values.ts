@@ -1,21 +1,6 @@
 import * as parser from "./parser"
-import type {
-	ColorValueFunc,
-	ConfigEntry,
-	ConfigObject,
-	ConfigValue,
-	CSSProperties,
-	Template,
-	ValueType,
-} from "./types"
+import type { ColorValueFunc, ConfigValue, CSSProperties, UtilityRender, ValueType } from "./types"
 import { isCSSValue, isNotEmpty, opacityToFloat, toArray } from "./util"
-
-interface LookupResult {
-	key?: string
-	opacity?: string
-	valueTag?: string
-	value?: string
-}
 
 interface ValueTypeSpec<T> {
 	type: ValueType
@@ -32,146 +17,145 @@ interface ValueTypeSpec<T> {
 		config: T,
 		options: {
 			negative: boolean
+			modifier?: string
 			opacity?: string
+			wrapped?: boolean
 		},
 	): unknown
 }
 
-function lookupValues(
-	input: string,
+interface LookupResult {
+	key?: string
+	value?: string
+	valueTag?: string
+	modifier?: string
+	wrapped?: boolean
+}
+
+function lookupConfigValues(
+	restIndex: number,
 	node: parser.Classname | parser.ArbitraryClassname,
 	values: Record<string, unknown>,
 	filterDefault?: boolean,
-): LookupResult | undefined {
-	const result: { key?: string; value?: string; valueTag?: string; opacity?: string } = {}
-	if (node.type === parser.NodeType.ArbitraryClassname) {
-		if (node.expr) {
-			result.value = node.expr.value
-			const tagRegexp = /^\s*([a-zA-Z][a-zA-Z-]+)\s*:/g
-			const match = tagRegexp.exec(node.expr.value)
-			if (match) {
-				const [, tag] = match
-				result.valueTag = tag
-				result.value = node.expr.value.slice(tagRegexp.lastIndex)
-			}
-		} else {
-			result.key = input
+): LookupResult {
+	const ret: LookupResult = {}
+
+	if (node.m) {
+		if (node.m.closed === false) {
+			return ret
 		}
-		if (node.e) {
-			if (node.e.type === parser.NodeType.WithOpacity) {
-				result.opacity = node.e.opacity.getText()
-			} else if (node.e.type === parser.NodeType.EndOpacity) {
-				const opacity = opacityToFloat(node.e.getText())
-				if (!Number.isNaN(opacity)) {
-					result.opacity = opacity.toString()
-				}
-			}
-		}
-		return result
+		ret.modifier = node.m.text
+		ret.wrapped = node.m.wrapped
 	}
 
-	if (node.type === parser.NodeType.ClassName) {
-		const exists = Object.prototype.hasOwnProperty.call(values, input)
+	if (node.type === parser.NodeType.Classname) {
+		const has = (key: string): boolean => Object.prototype.hasOwnProperty.call(values, key)
+		const valuesKey = node.source.slice(restIndex, node.end)
 
-		const existsDefault = Object.prototype.hasOwnProperty.call(values, "DEFAULT")
-		if (exists) {
-			result.key = input
-		} else if (existsDefault && input === "") {
+		if (has(valuesKey)) {
+			ret.key = valuesKey
+			return ret
+		}
+
+		if (valuesKey === "" && has("DEFAULT")) {
 			if (filterDefault) {
-				return
+				return ret
 			}
-			result.key = "DEFAULT"
+			ret.key = "DEFAULT"
+			return ret
+		}
+
+		// classname: 'vvv/foo', '1/4/foo', '/foo'
+		// key: 'vvv', '1/4', ''
+		// modifier: foo
+		const i = valuesKey.lastIndexOf("/")
+		if (i === -1) {
+			return ret
+		}
+
+		const key = valuesKey.slice(0, i)
+		if (key === "") {
+			if (has("DEFAULT")) {
+				if (filterDefault) return ret
+				ret.key = "DEFAULT"
+			}
+		} else if (has(key)) {
+			ret.key = key
 		} else {
-			const i = input.lastIndexOf("/")
-			if (i === -1) {
-				return undefined
-			}
-			const suffix = input.slice(i + 1)
-			const opacity = opacityToFloat(suffix)
-			if (!Number.isNaN(opacity)) {
-				result.opacity = String(opacity)
-				result.key = input.slice(0, i)
-			}
+			return ret
+		}
+
+		// text-black/100
+		if (ret.modifier == undefined) {
+			ret.wrapped = false
+			ret.modifier = valuesKey.slice(i + 1)
+		}
+
+		return ret
+	}
+
+	if (node.type === parser.NodeType.ArbitraryClassname) {
+		const value = node.resolved ?? node.value.text.trim()
+		ret.value = value
+		const tagRegexp = /^\s*([a-zA-Z][a-zA-Z-]+)\s*:/g
+		const match = tagRegexp.exec(value)
+		if (match) {
+			const [, tag] = match
+			ret.value = value.slice(tagRegexp.lastIndex)
+			ret.valueTag = tag
 		}
 	}
 
-	return result
+	return ret
 }
 
 export function representAny({
-	input,
+	restIndex,
 	node,
 	values,
 	negative,
-	template,
+	render,
 	ambiguous,
 	filterDefault,
 }: {
-	input: string
+	restIndex: number
 	node: parser.Classname | parser.ArbitraryClassname
-	values: ConfigObject
+	values: Record<string, unknown>
 	negative: boolean
-	template: Template
+	render: UtilityRender
 	ambiguous: boolean
 	filterDefault: boolean
 }) {
-	const result = lookupValues(input, node, values, filterDefault)
-	if (!result) {
-		return undefined
-	}
+	const { key, value, valueTag, modifier, wrapped } = lookupConfigValues(restIndex, node, values, filterDefault)
 
-	// lookup value
-	if (result.key != undefined) {
-		const exists = Object.prototype.hasOwnProperty.call(values, result.key)
-		if (!exists) {
-			return undefined
+	if (key != undefined) {
+		const config = values[key]
+		if (!isCSSValue(config)) {
+			return render(config, { modifier, wrapped })
 		}
-
-		if (result.opacity) {
-			// color types should be handled with representTypes()
-			return undefined
-		}
-
-		let value = values[result.key] ?? ""
-		if (typeof value !== "string" && typeof value !== "number") {
-			return undefined
-		}
-
-		value = value.toString().trim()
-
+		const value = config.toString().trim()
 		if (negative) {
 			const val = parser.reverseSign(value)
-			if (val != undefined) {
-				value = val
-			}
+			if (val != undefined) return render(val, { modifier, wrapped })
 		}
-		return template(value)
+		return render(value, { modifier, wrapped })
 	}
 
-	// arbitrary value
-	if (result.value != undefined) {
-		let value = result.value.trim()
-
+	if (value != undefined) {
 		if (!ambiguous) {
 			if (negative) {
 				const val = parser.reverseSign(value)
-				if (val != undefined) {
-					value = val
-				}
+				if (val != undefined) return render(val, { modifier, wrapped })
 			}
-
-			return template(value)
+			return render(value, { modifier, wrapped })
 		}
 
-		if (result.valueTag === "any") {
+		if (valueTag === "any") {
 			if (negative) {
 				const val = parser.reverseSign(value)
-				if (val != undefined) {
-					value = val
-				}
+				if (val != undefined) return render(val, { modifier, wrapped })
 			}
-
-			return template(value)
+			return render(value, { modifier, wrapped })
 		}
 	}
 
@@ -328,15 +312,15 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 		isTag(tag) {
 			return tag === "color"
 		},
-		handleConfig(config, options) {
-			if (options.negative) {
+		handleConfig(config, { negative, opacity }) {
+			if (negative) {
 				return ""
 			}
 
 			config = config ?? ""
 
 			if (typeof config === "function") {
-				return config({ opacityValue: options.opacity }).toString()
+				return config({ opacityValue: opacity }).toString()
 			}
 
 			if (!isCSSValue(config)) {
@@ -346,10 +330,10 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 			const value = config.toString().trim()
 
 			if (value.includes("<alpha-value>")) {
-				return value.replace("<alpha-value>", options.opacity ?? "1")
+				return value.replace("<alpha-value>", opacity ?? "1")
 			}
 
-			return parseColorValue(value, false, options.opacity) || value
+			return parseColorValue(value, false, opacity) || value
 		},
 		handleValue(value, { negative, opacity, unambiguous = false } = {}) {
 			if (value === "") {
@@ -777,8 +761,9 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 		},
 		handleValue(value, { unambiguous } = {}) {
 			if (value === "") {
-				return undefined
+				return unambiguous ? "" : undefined
 			}
+
 			const arr = parser.splitAtTopLevelOnly(value)
 			if (arr.length === 0) {
 				return undefined
@@ -907,7 +892,7 @@ const imageFunction: ValueTypeSpec<string | number | null | undefined> = (functi
 })()
 
 type Types = {
-	[P in Exclude<ValueType, "any">]: ValueTypeSpec<ConfigEntry>
+	[P in Exclude<ValueType, "any">]: ValueTypeSpec<unknown>
 }
 export const __types: Types = {
 	number,
@@ -930,85 +915,83 @@ export const __types: Types = {
 }
 
 export function representTypes({
-	input,
+	restIndex,
 	node,
 	values,
 	negative,
-	template,
+	render,
 	ambiguous,
 	filterDefault,
 	types,
 }: {
-	input: string
+	restIndex: number
 	node: parser.Classname | parser.ArbitraryClassname
-	values: ConfigObject
+	values: Record<string, unknown>
 	negative: boolean
-	template: Template
+	render: UtilityRender
 	ambiguous: boolean
 	filterDefault: boolean
 	types: ValueType[]
 }): CSSProperties | undefined {
-	const result = lookupValues(input, node, values, filterDefault)
+	const { key, value, valueTag, modifier, wrapped } = lookupConfigValues(restIndex, node, values, filterDefault)
 
-	if (!result) {
-		return undefined
+	let opacity: string | undefined
+	if (modifier) {
+		if (wrapped) {
+			opacity = modifier
+		} else {
+			const v = opacityToFloat(modifier)
+			if (!Number.isNaN(v)) {
+				opacity = String(v)
+			}
+		}
 	}
 
 	const options = {
 		negative,
 		unambiguous: !ambiguous,
-		opacity: result.opacity,
+		modifier,
+		opacity,
+		wrapped,
 	}
 
 	const _types = toArray(types)
 		.map(t => __types[t])
 		.filter(isNotEmpty)
 
-	// lookup value
-	if (result.key != undefined) {
-		const exists = Object.prototype.hasOwnProperty.call(values, result.key)
-		if (!exists) {
-			return undefined
-		}
-
-		const config = values[result.key]
-
+	if (key != undefined) {
+		let config = values[key]
+		if (isCSSValue(config)) config = config.toString().trim()
 		for (const h of _types) {
-			if (h !== color && result.opacity) {
-				continue
-			}
-			const value = h.handleConfig(config, options)
-			if (isCSSValue(value)) {
-				return template(value)
-			} else {
-				return template(result.key)
-			}
+			const output = h.handleConfig(config, options)
+			return render(output, { modifier: options.modifier, wrapped: options.wrapped })
 		}
 	}
 
-	// arbitrary value
-	if (result.value != undefined) {
-		result.value = result.value.trim()
-
+	if (value != undefined) {
 		for (const h of _types) {
-			if (h.isTag(result.valueTag)) {
+			if (h.isTag(valueTag)) {
 				options.unambiguous = true
 			}
-			const value = h.handleValue(result.value, options)
-			if (result.valueTag) {
-				if (h.isTag(result.valueTag)) {
-					return template(value || result.value)
+
+			const output = h.handleValue(value, options)
+			if (valueTag) {
+				if (h.isTag(valueTag)) {
+					return render(output || value, { modifier: options.modifier, wrapped: options.wrapped })
 				}
 				continue
 			}
-			if (!ambiguous && value != undefined) {
-				return template(value || result.value)
+
+			if (!ambiguous && output != undefined) {
+				return render(output || value, { modifier: options.modifier, wrapped: options.wrapped })
 			}
-			if (value != undefined) {
-				return template(value)
+
+			if (output != undefined) {
+				return render(output, { modifier: options.modifier, wrapped: options.wrapped })
 			}
 		}
 	}
+
 	return undefined
 }
 

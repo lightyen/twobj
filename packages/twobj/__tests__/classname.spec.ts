@@ -191,23 +191,11 @@ test("maxWidth", async () => {
 	expect(tw`max-w-screen-xl`).toEqual({ maxWidth: "1280px" })
 })
 
-test("invalid", async () => {
-	expect(tw`h-unknown`).toEqual({})
-	expect(tw`h-1/xx`).toEqual({})
-	expect(tw`h-1/3d`).toEqual({})
-	expect(tw`text-xl/2%`).toEqual({})
-	expect(tw`text-xl/[0.2]`).toEqual({})
-})
-
 test("container", async () => {
 	let ctx = createContext(
 		resolveConfig({
 			theme: {
 				extend: {
-					screens: {
-						raw: { raw: "(min-width: 200rem)" },
-						custom: { min: 3000, max: 6000 },
-					},
 					container: {
 						padding: {
 							lg: "30px",
@@ -239,14 +227,6 @@ test("container", async () => {
 		"@media (min-width: 1536px)": {
 			maxWidth: "1536px",
 		},
-		"@media (min-width: 3000px) and (max-width: 6000px)": {
-			maxWidth: "3000px",
-		},
-	})
-	expect(ctx.css`raw:text-black`).toEqual({
-		"@media (min-width: 200rem)": {
-			color: "#000",
-		},
 	})
 	ctx = createContext(
 		resolveConfig({
@@ -256,7 +236,6 @@ test("container", async () => {
 						center: true,
 						screens: {
 							lg: "1000px",
-							xl: { min: 1111, max: 1200 },
 						},
 						padding: {
 							lg: "42px",
@@ -275,11 +254,6 @@ test("container", async () => {
 			maxWidth: "1000px",
 			paddingLeft: "42px",
 			paddingRight: "42px",
-		},
-		"@media (min-width: 1111px) and (max-width: 1200px)": {
-			maxWidth: "1111px",
-			paddingLeft: "52px",
-			paddingRight: "52px",
 		},
 	})
 })

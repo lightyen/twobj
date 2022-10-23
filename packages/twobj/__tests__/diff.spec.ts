@@ -54,13 +54,17 @@ test("diff tailwindcss", async () => {
 
 	/** variants */
 
-	const s2 = new Set(ctx.variantMap.keys())
-	const s3 = new Set(context.variantMap.keys())
+	const s2 = new Set(
+		ctx.getVariants().flatMap(v => {
+			if (v.isArbitrary) {
+				return v.values.map(value => v.name + "-" + value)
+			}
+			return v.name
+		}),
+	)
+	const s3 = new Set(context.getVariantList())
 	for (const s of s2) {
 		expect(s3).toContain(s)
-	}
-	for (const s of s3) {
-		expect(s2).toContain(s)
 	}
 
 	const colors = context.getColorClasses()

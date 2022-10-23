@@ -1,8 +1,8 @@
 import type { ResolvedConfigJS } from "../types"
 import * as css from "./css"
 import * as nodes from "./nodes"
-import { NodeType, ThemePathNode } from "./nodes"
-import { dlv, findRightBracket, isSpace, splitAtTopLevelOnly } from "./util"
+import { ThemePathNode } from "./nodes"
+import { dlv, findRightBracket, isCharSpace, splitAtTopLevelOnly } from "./util"
 
 /**
  * @param source example: "theme(colors.black / 30%) theme(colors.white)"
@@ -44,17 +44,15 @@ function parse_theme_fn(source: string, [start = 0, end = source.length] = []) {
 				valueEnd = start + first.length
 			}
 		}
-		const node: nodes.ThemeFunctionNode = {
-			type: nodes.NodeType.ThemeFunction,
-			closed: false,
-			range: [match.index, end],
-			valueRange: [regexThemeFn.lastIndex, valueEnd],
-			value: parse_theme_val(source, [regexThemeFn.lastIndex, end]),
-			defaultValue,
-			getText() {
-				return source.slice(this.range[0], this.range[1])
-			},
-		}
+		const node = nodes.themeFunction(
+			false,
+			parse_theme_val(source, [regexThemeFn.lastIndex, end]),
+			source,
+			regexThemeFn.lastIndex,
+			valueEnd,
+			match.index,
+			end,
+		)
 		return { expr: node, lastIndex: end }
 	}
 
@@ -69,18 +67,16 @@ function parse_theme_fn(source: string, [start = 0, end = source.length] = []) {
 			end = start + first.length
 		}
 	}
-
-	const node: nodes.ThemeFunctionNode = {
-		type: nodes.NodeType.ThemeFunction,
-		closed: true,
-		range: [match.index, rb + 1],
-		valueRange: [start, end],
-		defaultValue,
-		value: parse_theme_val(source, [start, end]),
-		getText() {
-			return source.slice(this.range[0], this.range[1])
-		},
-	}
+	const node = nodes.themeFunction(
+		true,
+		parse_theme_val(source, [start, end]),
+		source,
+		start,
+		end,
+		match.index,
+		rb + 1,
+	)
+	node.defaultValue = defaultValue
 	return { expr: node, lastIndex: rb + 1 }
 }
 
@@ -88,8 +84,8 @@ function parse_theme_fn(source: string, [start = 0, end = source.length] = []) {
  * @param source example: "colors.black / 30%"
  */
 export function parse_theme_val(source: string, [start = 0, end = source.length] = []) {
-	while (start < end && isSpace(source.charCodeAt(start))) start++
-	while (start < end && isSpace(source.charCodeAt(end - 1))) end--
+	while (start < end && isCharSpace(source.charCodeAt(start))) start++
+	while (start < end && isCharSpace(source.charCodeAt(end - 1))) end--
 
 	// unquote
 	if (source.charCodeAt(start) === 34 || source.charCodeAt(start) === 39) {
@@ -101,14 +97,7 @@ export function parse_theme_val(source: string, [start = 0, end = source.length]
 		end--
 	}
 
-	const node: nodes.ThemeValueNode = {
-		type: nodes.NodeType.ThemeValue,
-		range: [start, end],
-		path: [],
-		getText() {
-			return source.slice(this.range[0], this.range[1])
-		},
-	}
+	const node = nodes.themeValue(source, start, end)
 
 	source = source.slice(0, end)
 
@@ -128,15 +117,7 @@ export function parse_theme_val(source: string, [start = 0, end = source.length]
 			if (rb == undefined) {
 				const a = match.index
 				const b = end
-				const n: nodes.ThemePathNode = {
-					type: nodes.NodeType.ThemePath,
-					range: [a, b],
-					value: source.slice(a + 1, b),
-					closed: false,
-					getText() {
-						return source.slice(this.range[0], this.range[1])
-					},
-				}
+				const n = nodes.themePath(source.slice(a + 1, b), false, source, a, b)
 				node.path = node.path.concat(n)
 				start = end
 				continue
@@ -144,15 +125,7 @@ export function parse_theme_val(source: string, [start = 0, end = source.length]
 
 			const a = match.index
 			const b = rb + 1
-			const n: nodes.ThemePathNode = {
-				type: nodes.NodeType.ThemePath,
-				range: [a, b],
-				value: source.slice(a + 1, b - 1),
-				closed: true,
-				getText() {
-					return source.slice(this.range[0], this.range[1])
-				},
-			}
+			const n = nodes.themePath(source.slice(a + 1, b - 1), true, source, a, b)
 			node.path = node.path.concat(n)
 			start = rb + 1
 			continue
@@ -161,15 +134,7 @@ export function parse_theme_val(source: string, [start = 0, end = source.length]
 		if (dotKey) {
 			const a = match.index
 			const b = regexThemePath.lastIndex
-			const n: nodes.ThemePathNode = {
-				type: nodes.NodeType.ThemePath,
-				range: [a, b],
-				value: source.slice(a + 1, b),
-				closed: true,
-				getText() {
-					return source.slice(this.range[0], this.range[1])
-				},
-			}
+			const n = nodes.themePath(source.slice(a + 1, b), true, source, a, b)
 			node.path = node.path.concat(n)
 			start = regexThemePath.lastIndex
 			continue
@@ -178,15 +143,7 @@ export function parse_theme_val(source: string, [start = 0, end = source.length]
 		if (firstKey) {
 			const a = match.index
 			const b = regexThemePath.lastIndex
-			const n: nodes.ThemePathNode = {
-				type: nodes.NodeType.ThemePath,
-				range: [a, b],
-				value: source.slice(a, b),
-				closed: true,
-				getText() {
-					return source.slice(this.range[0], this.range[1])
-				},
-			}
+			const n = nodes.themePath(source.slice(a, b), true, source, a, b)
 			node.path = node.path.concat(n)
 			start = regexThemePath.lastIndex
 			continue
@@ -208,13 +165,14 @@ export function renderThemeFunc(config: ResolvedConfigJS, source: string): strin
 	for (const node of parse_theme(source)) {
 		const [value, opacity] = theme(config, node.value.path)
 		const val = value !== undefined ? renderThemeValue(value, opacity) : node.defaultValue ?? ""
-		ret += source.slice(start, node.range[0]) + val
-		start = node.range[1]
+		ret += source.slice(start, node.start) + val
+		start = node.end
 	}
 
 	if (start < source.length) {
 		ret += source.slice(start)
 	}
+
 	return ret.trim()
 }
 
@@ -276,7 +234,7 @@ export function parseThemeValue(
 			node.path = ret.path
 		}
 	}
-	return { path: node.path, range: node.range }
+	return { path: node.path, start: node.start, end: node.end }
 }
 
 export function theme(
@@ -307,21 +265,21 @@ export function tryOpacity(path: ThemePathNode[]) {
 		const n = arr[i]
 		const x = n.value.lastIndexOf("/")
 		if (x === -1) {
-			if (end != undefined && end !== n.range[1]) {
+			if (end != undefined && end !== n.end) {
 				return { path }
 			}
-			end = n.range[0]
-			opacity = n.getText() + (opacity ?? "")
+			end = n.start
+			opacity = n.text + (opacity ?? "")
 			continue
 		}
 
 		opacity = n.value.slice(x + 1) + (opacity ?? "")
 
-		const raw = n.getText()
+		const raw = n.text
 		const k = raw.lastIndexOf("/")
 		const rest = raw.slice(0, k)
 
-		if (end != undefined && end !== n.range[1]) {
+		if (end != undefined && end !== n.end) {
 			if (k > 0 && k < raw.length - 1) {
 				return { path }
 			}
@@ -332,9 +290,9 @@ export function tryOpacity(path: ThemePathNode[]) {
 			break
 		}
 
-		const t: ThemePathNode = { ...n, range: [n.range[0], n.range[1]] }
+		const t: ThemePathNode = { ...n, start: n.start, end: n.end }
 		t.value = n.value.slice(0, n.value.lastIndexOf("/"))
-		t.range[1] = t.range[0] + k
+		t.end = t.start + k
 		arr[i] = t
 		arr = arr.slice(i)
 
@@ -354,15 +312,7 @@ export function renderThemePath(
 		if (typeof value !== "string") {
 			return value
 		}
-		return {
-			type: NodeType.ThemePath,
-			closed: true,
-			value,
-			range: [0, value.length],
-			getText() {
-				return "." + value
-			},
-		}
+		return nodes.themePath(value, true, "." + value)
 	})
 	return renderThemeValue(...theme(config, keys, useDefault))
 }

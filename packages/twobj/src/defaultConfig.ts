@@ -15,6 +15,8 @@ export const defaultConfig: ConfigJS = {
 			xl: "1280px",
 			"2xl": "1536px",
 		},
+		suppports: {},
+		data: {},
 		colors: ({ colors }) => ({
 			...colors,
 		}),
@@ -89,6 +91,16 @@ export const defaultConfig: ConfigJS = {
 			ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
 			pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
 			bounce: "bounce 1s infinite",
+		},
+		aria: {
+			checked: 'checked="true"',
+			disabled: 'disabled="true"',
+			expanded: 'expanded="true"',
+			hidden: 'hidden="true"',
+			pressed: 'pressed="true"',
+			readonly: 'readonly="true"',
+			required: 'required="true"',
+			selected: 'selected="true"',
 		},
 		aspectRatio: {
 			auto: "auto",

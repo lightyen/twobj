@@ -128,3 +128,16 @@ test("before and after", async () => {
 		},
 	})
 })
+
+test("supports", async () => {
+	expect(tw`supports-[display: grid]:bg-black`).toEqual({
+		"@supports (display: grid)": {
+			backgroundColor: "#000",
+		},
+	})
+	expect(tw`supports-[abc-def]:bg-black`).toEqual({
+		"@supports (abc-def: var(--tw))": {
+			backgroundColor: "#000",
+		},
+	})
+})

@@ -1,3 +1,17 @@
+import {
+	ASTERISK,
+	CURLY_BRACES,
+	DOUBLE_QUOTE,
+	EXCLAMATION_MARK,
+	l,
+	r,
+	ROUND_BRACKETS,
+	SINGLE_QUOTE,
+	SLASH,
+	SQUARE_BRACKETS,
+	u,
+} from "./charCode"
+
 export function kebab(value: string) {
 	return value.replace(/\B[A-Z][a-z]*/g, s => "-" + s.toLowerCase())
 }
@@ -12,13 +26,13 @@ export function findRightBracket({
 	text,
 	start = 0,
 	end = text.length,
-	brackets = [40, 41],
+	brackets = ROUND_BRACKETS,
 	comments = true,
 }: {
 	text: string
 	start?: number
 	end?: number
-	brackets?: [number, number]
+	brackets?: readonly [number, number]
 	comments?: boolean
 }): number | undefined {
 	let stack = 0
@@ -46,29 +60,31 @@ export function findRightBracket({
 		}
 
 		if (string === 0 && comment === 0) {
-			if (url === 0 && char === 117 && /\W/.test(text[i - 1] || " ")) {
+			if (url === 0 && char === u && /\W/.test(text[i - 1] || " ")) {
 				url = 1
-			} else if (url === 1 && char === 114) {
+			} else if (url === 1 && char === r) {
 				url = 2
-			} else if (url === 2 && char === 108) {
+			} else if (url === 2 && char === l) {
 				url = 3
-			} else if (url < 3 || (url === 3 && char === 41)) {
+			} else if (url === 3 && char === ROUND_BRACKETS[0]) {
+				url = 4
+			} else if (url < 4 || (url === 4 && char === ROUND_BRACKETS[1])) {
 				url = 0
 			}
 		}
 
 		if (comments) {
-			if (url < 3 && comment === 0) {
+			if (url < 4 && comment === 0) {
 				if (string === 0) {
-					if (char === 47 && text.charCodeAt(i + 1) === 47) {
+					if (char === SLASH && text.charCodeAt(i + 1) === SLASH) {
 						comment = 1
-					} else if (char === 47 && text.charCodeAt(i + 1) === 42) {
+					} else if (char === SLASH && text.charCodeAt(i + 1) === ASTERISK) {
 						comment = 2
 					}
 				}
 			} else if (comment === 1 && char === 10) {
 				comment = 0
-			} else if (comment === 2 && char === 42 && text.charCodeAt(i + 1) === 47) {
+			} else if (comment === 2 && char === ASTERISK && text.charCodeAt(i + 1) === SLASH) {
 				comment = 0
 				i += 1
 			}
@@ -76,22 +92,22 @@ export function findRightBracket({
 
 		if (string === 0) {
 			if (comment === 0) {
-				if (char === 34) {
+				if (char === DOUBLE_QUOTE) {
 					string = 1
-				} else if (char === 39) {
+				} else if (char === SINGLE_QUOTE) {
 					string = 2
 				}
 			}
-		} else if (string === 1 && char === 34) {
+		} else if (string === 1 && char === DOUBLE_QUOTE) {
 			string = 0
-		} else if (string === 2 && char === 39) {
+		} else if (string === 2 && char === SINGLE_QUOTE) {
 			string = 0
 		}
 	}
 	return undefined
 }
 
-export function isSpace(char: number) {
+export function isCharSpace(char: number) {
 	if (Number.isNaN(char)) return true
 	switch (char) {
 		case 32:
@@ -104,6 +120,10 @@ export function isSpace(char: number) {
 		default:
 			return false
 	}
+}
+
+export function isCharExclamationMark(char: number) {
+	return char === EXCLAMATION_MARK
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,8 +158,8 @@ export function splitAtTopLevelOnly(value: string, trim = true): Array<{ value: 
 			let start = base
 			let end = i
 			if (trim) {
-				while (start < end && isSpace(value.charCodeAt(start))) start++
-				while (start < end && isSpace(value.charCodeAt(end - 1))) end--
+				while (start < end && isCharSpace(value.charCodeAt(start))) start++
+				while (start < end && isCharSpace(value.charCodeAt(end - 1))) end--
 			}
 			const str = value.slice(start, end)
 			result.push({ value: str, range: [start, end] })
@@ -147,25 +167,25 @@ export function splitAtTopLevelOnly(value: string, trim = true): Array<{ value: 
 			continue
 		}
 
-		if (char === 40) {
-			stack.push(41)
-		} else if (char === 91) {
-			stack.push(93)
-		} else if (char === 123) {
-			stack.push(125)
+		if (char === ROUND_BRACKETS[0]) {
+			stack.push(ROUND_BRACKETS[1])
+		} else if (char === SQUARE_BRACKETS[0]) {
+			stack.push(SQUARE_BRACKETS[1])
+		} else if (char === CURLY_BRACES[0]) {
+			stack.push(CURLY_BRACES[1])
 		} else if (quoted) {
-			if (char === 34 || char === 39) {
+			if (char === DOUBLE_QUOTE || char === SINGLE_QUOTE) {
 				if (stack.pop() !== char) break
 				quoted = false
 			}
-		} else if (char === 34 || char === 39) {
+		} else if (char === DOUBLE_QUOTE || char === SINGLE_QUOTE) {
 			stack.push(char)
 			quoted = true
-		} else if (char === 41) {
+		} else if (char === ROUND_BRACKETS[1]) {
 			if (stack.pop() !== char) break
-		} else if (char === 93) {
+		} else if (char === SQUARE_BRACKETS[1]) {
 			if (stack.pop() !== char) break
-		} else if (char === 125) {
+		} else if (char === CURLY_BRACES[1]) {
 			if (stack.pop() !== char) break
 		}
 	}
@@ -173,8 +193,8 @@ export function splitAtTopLevelOnly(value: string, trim = true): Array<{ value: 
 	let start = base
 	let end = value.length
 	if (trim) {
-		while (start < end && isSpace(value.charCodeAt(start))) start++
-		while (start < end && isSpace(value.charCodeAt(end - 1))) end--
+		while (start < end && isCharSpace(value.charCodeAt(start))) start++
+		while (start < end && isCharSpace(value.charCodeAt(end - 1))) end--
 	}
 	const last = value.slice(start, end)
 	if (last) {
@@ -275,7 +295,7 @@ export function removeComments(
 	return buffer
 }
 
-// Ensure to work in any css-in-js library.
+/** Convert ":hover" to "&:hover" */
 export function normalizeSelector(selector: string): string {
 	const selectors = splitAtTopLevelOnly(selector)
 	const atRule = /^@/
@@ -297,4 +317,44 @@ export function normalizeSelector(selector: string): string {
 		return "&"
 	}
 	return selector
+}
+
+export function generateKmpNext(pattern: string): number[] {
+	let i = 0
+	let j = -1
+	const next: number[] = []
+	next[0] = -1
+	while (i < pattern.length) {
+		if (j === -1 || pattern[i] === pattern[j]) {
+			i++
+			j++
+			next[i] = j
+		} else {
+			j = next[j]
+		}
+	}
+	return next
+}
+
+export function kmp(pattern: string, kmpNext: number[], source: string) {
+	let i = 0
+	let j = 0
+	while (i < source.length && j < pattern.length) {
+		const char = source.charCodeAt(i)
+		if (isCharSpace(char) || isCharExclamationMark(char)) {
+			return { index: -1, lastIndex: i }
+		}
+		if (char === pattern.charCodeAt(j) || j === -1) {
+			i++
+			j++
+		} else {
+			j = kmpNext[j]
+		}
+	}
+	if (j === pattern.length) {
+		const ans = i - j
+		return { index: ans, lastIndex: ans }
+	} else {
+		return { index: -1, lastIndex: i }
+	}
 }

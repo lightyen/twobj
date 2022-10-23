@@ -223,7 +223,7 @@ test("matchVariant", async () => {
 		resolveConfig({
 			plugins: [
 				({ matchVariant, e }) => {
-					matchVariant("tab", ({ value }) => {
+					matchVariant("tab", value => {
 						if (!value) return "& > *"
 						return `&.${e(value)} > *`
 					})
