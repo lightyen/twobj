@@ -43,7 +43,7 @@ test("diff tailwindcss", async () => {
 		return true
 	})
 
-	const s0 = new Set(context.getClassList())
+	const s0 = new Set(context.getUtilities())
 	const s1 = new Set(tailwind)
 	for (const s of s0) {
 		expect(s1).toContain(s)
@@ -54,20 +54,23 @@ test("diff tailwindcss", async () => {
 
 	/** variants */
 
-	const s2 = new Set(
-		ctx.getVariants().flatMap(v => {
-			if (v.isArbitrary) {
-				return v.values.map(value => v.name + "-" + value)
+	const s2 = new Set<string>()
+	ctx.getVariants().forEach(v => {
+		if (v.isArbitrary) {
+			for (const value of v.values) {
+				s2.add(v.name + "-" + value)
 			}
-			return v.name
-		}),
-	)
-	const s3 = new Set(context.getVariantList())
+		} else {
+			s2.add(v.name)
+		}
+	})
+
+	const s3 = context.getVariants()
 	for (const s of s2) {
 		expect(s3).toContain(s)
 	}
 
-	const colors = context.getColorClasses()
+	const colors = context.getColorUtilities()
 	for (const c of tailwind.filter(classname => {
 		if (classname[0] === "-") return false
 		if (classname.startsWith("float")) return false

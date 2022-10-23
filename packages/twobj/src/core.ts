@@ -83,10 +83,17 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	const defaults = [globalStyles["*, ::before, ::after"], globalStyles["::backdrop"]]
-	const utilityMap = new Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>()
-	const variantMap = new Map<string, VariantSpec | LookupVariantSpec | Array<VariantSpec | LookupVariantSpec>>()
+	const utilitySpecCollection = new Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>()
+	const variantSpecCollection = new Map<
+		string,
+		VariantSpec | LookupVariantSpec | Array<VariantSpec | LookupVariantSpec>
+	>()
+
 	const arbitraryVariantCollection = new Set<string>()
-	const arbitraryUtilityMap = new Map<string, Set<ValueType | "any">>()
+	const arbitraryUtilityCollection = new Map<string, Set<ValueType | "any">>()
+
+	const __utilities = new Set<string>()
+	const __variants = new Set<string>()
 
 	const options: UserPluginOptions = {
 		addBase,
@@ -164,27 +171,37 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 	resolveGlobalTheme(globalStyles)
 
+	__utilities.clear()
+	__variants.clear()
+
 	return {
 		parser,
 		globalStyles,
-		utilities: utilityMap,
-		variantMap,
+		utilities: utilitySpecCollection,
+		variantMap: variantSpecCollection,
 		arbitraryVariants: arbitraryVariantCollection,
-		arbitraryUtilities: arbitraryUtilityMap,
+		arbitraryUtilities: arbitraryUtilityCollection,
 		css,
 		wrap,
-		getPluginName,
+		getUtilityPluginName,
+		getVariantPluginName,
+		isUtility(utility) {
+			return getUtilityPluginName(utility) != undefined
+		},
+		isVariant(variant) {
+			return getVariantPluginName(variant) != undefined
+		},
 		features,
 		renderTheme(value) {
 			return theme.renderTheme(config, value)
 		},
 		renderThemeFunc,
-		getClassList() {
-			return getClassListFrom(utilityMap)
+		getUtilities() {
+			return getClassListFrom(utilitySpecCollection)
 		},
-		getVariantList() {
+		getVariants() {
 			const c = new Set<string>()
-			for (const [variantName, spec] of variantMap) {
+			for (const [variantName, spec] of variantSpecCollection) {
 				if (Array.isArray(spec)) {
 					for (const s of spec) {
 						if (s.type === "static") {
@@ -203,13 +220,13 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 					}
 				}
 			}
-			return Array.from(c)
+			return c
 		},
-		getColorClasses() {
-			return getColorClassesFrom(utilityMap)
+		getColorUtilities() {
+			return getColorClassesFrom(utilitySpecCollection)
 		},
 		getAmbiguous() {
-			return getAmbiguousFrom(utilityMap)
+			return getAmbiguousFrom(utilitySpecCollection)
 		},
 		set throwError(e: boolean) {
 			validate = e
@@ -249,29 +266,59 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	}
 
 	function addVariantSpec(key: string, core: VariantSpec | LookupVariantSpec): void {
-		const obj = variantMap.get(key)
+		if (validate) {
+			if (core.type === "static") {
+				if (__utilities.has(key)) {
+					throw Error("Duplcate variant: " + key)
+				}
+				__utilities.add(key)
+			} else if (core.type === "lookup") {
+				for (const k in core.values) {
+					if (__utilities.has(key + "-" + k)) {
+						throw Error("Duplcate variant: " + key + "-" + k)
+					}
+				}
+			}
+		}
+
+		const obj = variantSpecCollection.get(key)
 		if (obj == null) {
-			variantMap.set(key, core)
+			variantSpecCollection.set(key, core)
 			return
 		}
 		if (Array.isArray(obj)) {
 			obj.push(core)
 			return
 		}
-		variantMap.set(key, [obj, core])
+		variantSpecCollection.set(key, [obj, core])
 	}
 
 	function addUtilitySpec(key: string, core: StaticSpec | LookupSpec): void {
-		const obj = utilityMap.get(key)
+		if (validate) {
+			if (core.type === "static") {
+				if (__utilities.has(key)) {
+					throw Error("Duplcate utility: " + key)
+				}
+				__utilities.add(key)
+			} else if (core.type === "lookup") {
+				for (const k in core.values) {
+					if (__utilities.has(key + "-" + k)) {
+						throw Error("Duplcate utility: " + key + "-" + k)
+					}
+				}
+			}
+		}
+
+		const obj = utilitySpecCollection.get(key)
 		if (obj == null) {
-			utilityMap.set(key, core)
+			utilitySpecCollection.set(key, core)
 			return
 		}
 		if (Array.isArray(obj)) {
 			obj.push(core)
 			return
 		}
-		utilityMap.set(key, [obj, core])
+		utilitySpecCollection.set(key, [obj, core])
 	}
 
 	function addBase(bases: CSSProperties | CSSProperties[]): void {
@@ -303,14 +350,22 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		} = {},
 	): void {
 		variantDesc = toArray(variantDesc)
-		const desc = variantDesc
-			.flatMap(variantFunc => {
-				if (typeof variantFunc === "function") {
-					return variantFunc()
+		const desc: string[] = []
+		for (const d of variantDesc) {
+			if (typeof d === "function") {
+				const ans = d()
+				if (Array.isArray(ans)) {
+					desc.push(...ans)
+				} else {
+					desc.push(ans)
 				}
-				return variantFunc
-			})
-			.map(v => v.replace(/:merge\((.*?)\)/g, "$1"))
+			} else {
+				desc.push(d)
+			}
+		}
+		for (let i = 0; i < desc.length; i++) {
+			desc[i] = desc[i].replace(/:merge\((.*?)\)/g, "$1")
+		}
 		addVariantSpec(variantName, {
 			type: "static",
 			variant: createVariant(desc, post),
@@ -379,7 +434,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 	function getKeyStylePairs(styles: CSSProperties[]): Map<string, CSSProperties> {
 		const ret = new Map<string, CSSProperties>()
-		const result = styles.flatMap(s => traverse(s)).filter((v): v is [string, CSSProperties] => v != undefined)
+		const result: [string, CSSProperties][] = []
+		for (const s of styles) {
+			const t = traverse(s)
+			if (t) result.push(...t)
+		}
 		for (const [key, css] of result) {
 			const value = ret.get(key)
 			if (value != undefined) {
@@ -446,7 +505,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 			if (AT_SCREEN.test(key)) {
 				const input = key.replace(AT_SCREEN, "")
-				const spec = variantMap.get(input) ?? []
+				const spec = variantSpecCollection.get(input) ?? []
 				const specs = toArray(spec)
 					.filter((s): s is VariantSpec => s.type === "static")
 					.map(v => v.variant)
@@ -515,7 +574,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			const types = toArray(type)
 			if (types.some(t => t === "any")) {
 				let ambiguous = false
-				let spec = utilityMap.get(key)
+				let spec = utilitySpecCollection.get(key)
 				if (spec) {
 					spec = toArray(spec).filter((s): s is LookupSpec => s.type === "lookup")
 					ambiguous = spec.length > 1
@@ -546,11 +605,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 					respectPrefix,
 					respectImportant,
 				})
-				const valueTypes = arbitraryUtilityMap.get(key)
+				const valueTypes = arbitraryUtilityCollection.get(key)
 				if (valueTypes) {
 					valueTypes.add("any")
 				} else {
-					arbitraryUtilityMap.set(key, new Set(["any"]))
+					arbitraryUtilityCollection.set(key, new Set(["any"]))
 				}
 				continue
 			}
@@ -567,7 +626,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				if (negative && !supportsNegativeValues) return undefined
 
 				let ambiguous = false
-				let spec = utilityMap.get(key)
+				let spec = utilitySpecCollection.get(key)
 				if (spec) {
 					spec = toArray(spec).filter((s): s is LookupSpec => s.type === "lookup")
 					ambiguous = spec.length > 1
@@ -598,13 +657,13 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				respectPrefix,
 				respectImportant,
 			})
-			const valueTypes = arbitraryUtilityMap.get(key)
+			const valueTypes = arbitraryUtilityCollection.get(key)
 			if (valueTypes) {
 				noAnyTypes.forEach(type => {
 					valueTypes.add(type)
 				})
 			} else {
-				arbitraryUtilityMap.set(key, new Set(noAnyTypes))
+				arbitraryUtilityCollection.set(key, new Set(noAnyTypes))
 			}
 		}
 	}
@@ -620,7 +679,28 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return spec
 	}
 
-	function getPluginName(value: string): string | undefined {
+	function getVariantPluginName(value: string): string | undefined {
+		const program = parser.createProgram(value)
+		if (program.expressions.length !== 1) {
+			return undefined
+		}
+
+		const node = program.expressions[0]
+		if (node.type !== nodes.NodeType.VariantSpan) {
+			return undefined
+		}
+		if (
+			node.variant.type !== nodes.NodeType.SimpleVariant &&
+			node.variant.type !== nodes.NodeType.ArbitraryVariant
+		) {
+			return undefined
+		}
+
+		const [, spec] = variant(node.variant)
+		return spec?.pluginName
+	}
+
+	function getUtilityPluginName(value: string): string | undefined {
 		const program = parser.createProgram(value)
 		if (program.expressions.length !== 1) {
 			return undefined
@@ -819,7 +899,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			}
 		}
 
-		const { spec, negative, restIndex } = parseInput(variantMap, node.key.text, node.key.start, node.key.end)
+		const { spec, negative, restIndex } = parseInput(
+			variantSpecCollection,
+			node.key.text,
+			node.key.start,
+			node.key.end,
+		)
 		if (!spec) {
 			return []
 		}
@@ -853,7 +938,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			}
 		}
 
-		const { spec, negative, restIndex } = parseInput(utilityMap, node.key.text, node.key.start, node.key.end)
+		const { spec, negative, restIndex } = parseInput(
+			utilitySpecCollection,
+			node.key.text,
+			node.key.start,
+			node.key.end,
+		)
 		let specs = toArray(spec ?? [])
 
 		if (node.type === nodes.NodeType.ArbitraryClassname) {

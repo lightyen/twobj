@@ -272,8 +272,8 @@ export const defaultConfig: ConfigJS = {
 			none: "drop-shadow(0 0 #0000)",
 		},
 		fill: ({ theme }) => ({
-			...theme("colors"),
 			none: "none",
+			...theme("colors"),
 		}),
 		grayscale: {
 			0: "0",
@@ -778,8 +778,8 @@ export const defaultConfig: ConfigJS = {
 			...theme("spacing"),
 		}),
 		stroke: ({ theme }) => ({
-			...theme("colors"),
 			none: "none",
+			...theme("colors"),
 		}),
 		strokeWidth: {
 			0: "0",

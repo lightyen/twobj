@@ -9185,11 +9185,7 @@ const source = [
 ]
 
 test("classList", async () => {
-	const classListSet = new Set<string>(
-		context.getClassList().filter(c => {
-			return Object.keys(context.css(c)).length > 0
-		}),
-	)
+	const classListSet = context.getUtilities()
 	const originSet = new Set<string>(source)
 
 	for (const s of classListSet) {

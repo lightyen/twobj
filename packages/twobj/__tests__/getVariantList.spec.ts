@@ -170,7 +170,7 @@ const source = [
 ]
 
 test("variantList", async () => {
-	const variantListSet = new Set<string>(context.getVariantList())
+	const variantListSet = context.getVariants()
 	const originSet = new Set<string>(source)
 
 	for (const s of variantListSet) {

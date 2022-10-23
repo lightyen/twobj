@@ -173,7 +173,7 @@ test("features", async () => {
 })
 
 it("snapshots", async () => {
-	const list = context.getClassList()
+	const list = context.getUtilities()
 	list.forEach(classname => {
 		expect(context.css(classname)).toMatchSnapshot(classname)
 	})

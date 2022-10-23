@@ -34,8 +34,11 @@ export interface Context extends UserPluginOptions {
 	wrap(...variants: parser.Variant[]): Variant
 	wrap(variants: string | TemplateStringsArray | parser.Variant, ...args: parser.Variant[]): Variant
 
-	/** Reverse utilities mapping. */
-	getPluginName(value: string): string | undefined
+	/** Reverse utility mapping. */
+	getUtilityPluginName(value: string): string | undefined
+
+	/** Reverse variant mapping. */
+	getVariantPluginName(value: string): string | undefined
 
 	/** Signature: `theme(colors.red.500, <default-value>)` */
 	renderThemeFunc(value: string): string
@@ -44,13 +47,19 @@ export interface Context extends UserPluginOptions {
 	renderTheme(value: string): string
 
 	/** List all utilities. */
-	getClassList(): string[]
+	getUtilities(): Set<string>
 
 	/** List all variants. */
-	getVariantList(): string[]
+	getVariants(): Set<string>
+
+	/** Test an utility. */
+	isUtility(utility: string): boolean
+
+	/** Test a variant. */
+	isVariant(variant: string): boolean
 
 	/** List all color utilities. */
-	getColorClasses(): Map<string, string[]>
+	getColorUtilities(): Map<string, string[]>
 
 	/** List all ambiguous utilities. */
 	getAmbiguous(): Map<string, LookupSpec[]>

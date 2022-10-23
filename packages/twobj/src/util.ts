@@ -270,7 +270,6 @@ const colorProps = new Set<string>([
 
 export function getColorClassesFrom(utilities: Map<string, LookupSpec | StaticSpec | (LookupSpec | StaticSpec)[]>) {
 	const collection = new Map<string, string[]>()
-
 	for (const entry of utilities.entries()) {
 		const key = entry[0]
 		let specs = entry[1]
@@ -324,41 +323,39 @@ export function getColorClassesFrom(utilities: Map<string, LookupSpec | StaticSp
 	}
 }
 
-export function getClassListFrom(utilities: Map<string, LookupSpec | StaticSpec | (LookupSpec | StaticSpec)[]>) {
-	return Array.from(utilities.entries()).flatMap(([key, specs]) => {
-		specs = toArray(specs)
-		return specs.flatMap(spec => {
+export function getClassListFrom(
+	utilities: Map<string, LookupSpec | StaticSpec | (LookupSpec | StaticSpec)[]>,
+): Set<string> {
+	const ret = new Set<string>()
+	for (const [key, specs] of utilities) {
+		for (const spec of toArray(specs)) {
+			const result: string[] = []
 			if (spec.type === "static") {
-				return [key]
-			}
-
-			const values = Object.keys(spec.values)
-			const results = values
-				.map(value => {
-					if (value === "DEFAULT") {
-						if (spec.filterDefault) return null
-						return key
+				result.push(key)
+			} else {
+				for (const [k, v] of Object.entries(spec.values)) {
+					if (k === "DEFAULT") {
+						if (spec.filterDefault !== true) {
+							result.push(key)
+						}
+					} else {
+						result.push(key + "-" + k)
+						if (
+							typeof v === "string" &&
+							spec.supportsNegativeValues &&
+							parser.reverseSign(v) != undefined
+						) {
+							result.push("-" + key + "-" + k)
+						}
 					}
-					return key + "-" + value
-				})
-				.filter((v): v is string => typeof v === "string")
-			if (spec.supportsNegativeValues) {
-				return results.concat(
-					values
-						.filter(val => parser.reverseSign(String(spec.values[val])) != undefined)
-						.map(value => {
-							if (value === "DEFAULT") {
-								if (spec.filterDefault) return null
-								return key
-							}
-							return "-" + key + "-" + value
-						})
-						.filter((v): v is string => typeof v === "string"),
-				)
+				}
 			}
-			return results
-		})
-	})
+			for (let i = 0; i < result.length; i++) {
+				ret.add(result[i])
+			}
+		}
+	}
+	return ret
 }
 
 export function getAmbiguousFrom(utilities: Map<string, LookupSpec | StaticSpec | (LookupSpec | StaticSpec)[]>) {
