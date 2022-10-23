@@ -324,7 +324,7 @@ const classnameCompletion: CompletionFeature = (
 		let shrinkB = end
 		const value = target.text
 		if (target.type === parser.NodeType.Classname) {
-			const pluginName = state.tw.context.getPluginName(value)
+			const pluginName = state.tw.context.getUtilityPluginName(value)
 			if (pluginName && /Color|fill|stroke/.test(pluginName)) {
 				const slash = value.lastIndexOf("/")
 				if (slash !== -1) shrinkB += slash - value.length

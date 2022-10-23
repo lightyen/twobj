@@ -132,7 +132,7 @@ function createTextDocumentContentProvider(h: ReturnType<typeof createWorkspaces
 					.map(v => v + ":relative")
 					.join("\n")
 			}
-			return state.tw.classnames.join("\n")
+			return Array.from(state.tw.utilitySet).join("\n")
 		},
 	}
 

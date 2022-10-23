@@ -122,14 +122,14 @@ export function createTwContext(config: ResolvedConfigJS) {
 	const context = createContext(config)
 	const screens = Object.keys(config.theme.screens).sort(screenSorter)
 
-	const __variants = new Set<string>(context.getVariantList())
-	const restVariants = Array.from(__variants).filter(
+	const variantSet = context.getVariants()
+	const restVariants = Array.from(variantSet).filter(
 		key => screens.indexOf(key) === -1 && key !== "dark" && key !== "light" && key !== "placeholder",
 	)
 
 	const decorationColors: Map<string, ColorDesc> = new Map()
 	const completionColors: Map<string, string | undefined> = new Map()
-	for (const [key, values] of context.getColorClasses().entries()) {
+	for (const [key, values] of context.getColorUtilities().entries()) {
 		const result = getDecorationColor(values)
 		if (result) {
 			decorationColors.set(key, { backgroundColor: result })
@@ -147,9 +147,9 @@ export function createTwContext(config: ResolvedConfigJS) {
 		["placeholder"],
 		restVariants,
 	]
-	const classnames = context.getClassList()
+	const utilitySet = context.getUtilities()
 
-	const arbitrary: Record<string, Partial<Record<ValueType | "any", string[]>>> = {}
+	const arbitrary: Record<string, Partial<Record<ValueType | "any", Set<string>>>> = {}
 
 	for (const [key, valueTypes] of context.arbitraryUtilities) {
 		const prefix = key
@@ -157,18 +157,16 @@ export function createTwContext(config: ResolvedConfigJS) {
 			arbitrary[prefix] = {}
 		}
 
-		const props = new Set<string>()
 		for (const type of valueTypes) {
 			const input = `${key}-[${guessValue(type)}]`
 			const { decls } = renderDecls(input)
-			for (const key of decls.keys()) {
-				props.add(key)
-			}
 			const types = arbitrary[prefix][type]
 			if (!types) {
-				arbitrary[prefix][type] = Array.from(props)
+				arbitrary[prefix][type] = new Set(decls.keys())
 			} else {
-				arbitrary[prefix][type] = types.concat(Array.from(props))
+				for (const prop of decls.keys()) {
+					types.add(prop)
+				}
 			}
 		}
 	}
@@ -179,9 +177,10 @@ export function createTwContext(config: ResolvedConfigJS) {
 		context,
 		tailwindConfig: config,
 		variants,
-		classnames,
+		variantSet,
+		utilitySet,
 		screens,
-		isVariant,
+		isSimpleVariant,
 		renderVariant,
 		renderVariantScope,
 		renderClassname,
@@ -471,7 +470,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 		}
 	}
 
-	function isVariant(value: string) {
-		return __variants.has(value)
+	function isSimpleVariant(value: string) {
+		return variantSet.has(value)
 	}
 }

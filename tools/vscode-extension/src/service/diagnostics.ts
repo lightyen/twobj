@@ -411,8 +411,10 @@ function checkVariants(
 
 	const { start, end, key } = node
 	const variant = key.text
-	const fn = state.tw.context.wrap(node)
-	if (Object.keys(fn()).length > 0) {
+	if (state.tw.isSimpleVariant(variant)) {
+		return
+	}
+	if (state.tw.context.isVariant(node.text)) {
 		return
 	}
 	const ret = state.variants.search(variant)
@@ -690,7 +692,7 @@ function guess(state: TailwindLoader, text: string): { kind: PredictionKind; val
 }
 
 function isLoose(state: TailwindLoader, label: string, decls: Map<string, string[]>) {
-	const pluginName = state.tw.context.getPluginName(label)
+	const pluginName = state.tw.context.getUtilityPluginName(label)
 	if (!pluginName) return true
 	switch (pluginName) {
 		case "lineHeight":

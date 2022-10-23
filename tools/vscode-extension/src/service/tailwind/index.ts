@@ -8,7 +8,6 @@ import { cssDataManager } from "~/common/vscode-css-languageservice"
 import { ICompletionItem } from "~/typings/completion"
 import { createConfigReader, LoadConfigOptions } from "../../common/config"
 import { createTwContext, TwContext } from "./tw"
-
 export type TailwindLoader = ReturnType<typeof createTailwindLoader>
 
 /**
@@ -101,8 +100,14 @@ export function createTailwindLoader() {
 	function createContext() {
 		tw = createTwContext(config)
 		classCompletionList = undefined
-		variants = new Fuse(tw.variants.flat(), { includeScore: true })
-		classnames = new Fuse(tw.classnames, { includeScore: true })
+		variants = new Fuse([], { includeScore: true })
+		classnames = new Fuse([], { includeScore: true })
+		for (const v of tw.variantSet) {
+			classnames.add(v)
+		}
+		for (const u of tw.utilitySet) {
+			classnames.add(u)
+		}
 	}
 
 	function formatLabel(label: string) {
@@ -125,23 +130,24 @@ export function createTailwindLoader() {
 			return classCompletionList
 		}
 
-		classCompletionList = tw.classnames.map(value => {
+		classCompletionList = []
+
+		for (const u of tw.utilitySet) {
 			const item: ICompletionItem = {
-				label: value,
+				label: u,
 				data: { type: "utility" },
 				kind: vscode.CompletionItemKind.Constant,
-				sortText: (value.startsWith("-") ? "~~" : "~") + formatLabel(value),
+				sortText: (u.startsWith("-") ? "~~" : "~") + formatLabel(u),
 			}
-
-			const isColor = tw.completionColors.has(value)
+			const isColor = tw.completionColors.has(u)
 			if (isColor) {
 				item.kind = vscode.CompletionItemKind.Color
 				item.data = { type: "color" }
-				item.documentation = tw.completionColors.get(value)
+				item.documentation = tw.completionColors.get(u)
 			}
+			classCompletionList.push(item)
+		}
 
-			return item
-		})
 		return classCompletionList
 	}
 

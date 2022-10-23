@@ -35,7 +35,7 @@
       "contentName": "comment.block.tw"
     },
     "variant": {
-      "match": "[\\w-]+:",
+      "match": "(?:(?!\\/\\/|\\/\\*)[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/])*[\\w\\-\\.%]+(?:\\/[\\w\\-\\.%]+)*:",
       "captures": {
         "0": { "name": "entity.other.inherited-class.variant.tw" }
       }
