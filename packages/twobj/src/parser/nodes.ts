@@ -218,6 +218,7 @@ export function isVariant(node: unknown): node is Variant {
 		case NodeType.SimpleVariant:
 		case NodeType.ArbitrarySelector:
 		case NodeType.ArbitraryVariant:
+		case NodeType.UnknownVariant:
 		case NodeType.GroupVariant:
 			return true
 		default:
