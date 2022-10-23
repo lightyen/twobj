@@ -114,41 +114,29 @@ export function createColorProvider(tw: TwContext, separator: string) {
 						items.push(node)
 					})
 					for (const node of items) {
-						if (node.type === parser.NodeType.ClassName) {
-							const color = tw.decorationColors.get(node.getText())
+						if (node.type === parser.NodeType.Classname) {
+							const color = tw.decorationColors.get(node.text)
 							if (!color) {
-								const i = node.getText().lastIndexOf("/")
+								const i = node.text.lastIndexOf("/")
 								if (i === -1) continue
 							}
 							if (color) {
 								const range = new vscode.Range(
-									document.positionAt(offset + node.range[0]),
-									document.positionAt(offset + node.range[1]),
+									document.positionAt(offset + node.start),
+									document.positionAt(offset + node.end),
 								)
 								colors.push([color, range])
 							} else {
-								const i = node.getText().lastIndexOf("/")
+								const i = node.text.lastIndexOf("/")
 								if (i === -1) continue
-								const value = node.getText().slice(0, i)
+								const value = node.text.slice(0, i)
 								const color = tw.decorationColors.get(value)
 								if (color) {
-									const start = offset + node.range[0]
+									const start = offset + node.start
 									const end = start + value.length
 									const range = new vscode.Range(document.positionAt(start), document.positionAt(end))
 									colors.push([color, range])
 								}
-							}
-						} else if (node.type === parser.NodeType.ArbitraryClassname) {
-							const [start] = node.range
-							const end = start + node.prefix.range[1] - node.prefix.range[0]
-							const value = token.value.slice(start, end)
-							const color = tw.decorationColors.get(value)
-							if (color) {
-								const range = new vscode.Range(
-									document.positionAt(offset + start),
-									document.positionAt(offset + end),
-								)
-								colors.push([color, range])
 							}
 						}
 					}
@@ -159,8 +147,8 @@ export function createColorProvider(tw: TwContext, separator: string) {
 					const color = getThemeDecoration(val, tw)
 					if (color) {
 						const range = new vscode.Range(
-							document.positionAt(offset + val.range[0]),
-							document.positionAt(offset + val.range[1]),
+							document.positionAt(offset + val.start),
+							document.positionAt(offset + val.end),
 						)
 						colors.push([{ backgroundColor: color }, range])
 					}

@@ -122,8 +122,8 @@ function walk(
 			| parser.Group
 			| parser.ArbitraryClassname
 			| parser.ArbitraryProperty
-			| parser.WithOpacity
-			| parser.ShortCss,
+			| parser.Modifier
+			| parser.UnknownClassname,
 	) => boolean | void,
 ) {
 	for (const expr of program.expressions) {
@@ -147,8 +147,8 @@ function walk(
 				| parser.Group
 				| parser.ArbitraryClassname
 				| parser.ArbitraryProperty
-				| parser.WithOpacity
-				| parser.ShortCss,
+				| parser.Modifier
+				| parser.UnknownClassname,
 		) => boolean | void,
 		variants: parser.Variant[],
 		important: boolean,
@@ -192,16 +192,16 @@ function walk(
 		}
 
 		important ||= expr.important
-		if (expr.type !== parser.NodeType.ClassName) {
+		if (expr.type !== parser.NodeType.Classname) {
 			if (expr.type === parser.NodeType.ArbitraryClassname) {
 				if (!expr.closed) {
 					if (!notClose(expr) === false) {
 						return false
 					}
 				}
-				if (expr.e && expr.e.type === parser.NodeType.WithOpacity) {
-					if (!expr.e.closed) {
-						if (!notClose(expr.e) === false) {
+				if (expr.m) {
+					if (expr.m.wrapped && !expr.m.closed) {
+						if (!notClose(expr.m) === false) {
 							return false
 						}
 					}
@@ -211,6 +211,12 @@ function walk(
 					if (!notClose(expr) === false) {
 						return false
 					}
+				}
+			}
+		} else if (expr.m) {
+			if (expr.m.wrapped && !expr.m.closed) {
+				if (!notClose(expr.m) === false) {
+					return false
 				}
 			}
 		}
@@ -265,8 +271,8 @@ function validateTw({
 			if (isUtility(node)) {
 				if (kind === "wrap" || variantGroup) {
 					const range = new vscode.Range(
-						document.positionAt(offset + node.range[0]),
-						document.positionAt(offset + node.range[1]),
+						document.positionAt(offset + node.start),
+						document.positionAt(offset + node.end),
 					)
 					if (
 						!diagnostics.push({
@@ -281,7 +287,7 @@ function validateTw({
 				}
 
 				switch (node.type) {
-					case parser.NodeType.ClassName: {
+					case parser.NodeType.Classname: {
 						const result = checkTwClassName(node, document, text, offset, state)
 						for (const r of result) {
 							if (!diagnostics.push(r)) return false
@@ -302,8 +308,8 @@ function validateTw({
 						}
 						break
 					}
-					case parser.NodeType.ShortCss: {
-						const result = rejectShortCss(node, document, offset)
+					case parser.NodeType.UnknownClassname: {
+						const result = rejectUnknownClassname(node, document, offset)
 						for (const r of result) {
 							if (!diagnostics.push(r)) return false
 						}
@@ -314,7 +320,7 @@ function validateTw({
 				// Check duplicate items
 				const hash = state.tw.renderVariantScope(...variants)
 				if (node.type === parser.NodeType.ArbitraryProperty) {
-					const value = node.decl.getText()
+					const value = node.decl.text
 					const i = value.indexOf(":")
 					if (i < 0) {
 						return
@@ -322,24 +328,24 @@ function validateTw({
 					const prop = value.slice(0, i).trim()
 					if (isLooseProperty(prop)) {
 						const key = [hash, prop].join(".")
-						addRange(key, node.range)
+						addRange(key, [node.start, node.end])
 						return
 					}
 					const key = [undefined, hash, prop].join(".")
-					addRange(key, node.range)
+					addRange(key, [node.start, node.end])
 				} else {
-					const classname = node.getText()
+					const classname = node.text
 					const { decls, scope } = state.tw.renderDecls(classname)
 					if (decls.size === 0) {
 						return
 					}
 					if (isLoose(state, classname, decls)) {
 						const key = [hash, scope, Array.from(decls.keys()).sort().join(":")].join(".")
-						addRange(key, node.range)
+						addRange(key, [node.start, node.end])
 					} else {
 						for (const [prop] of decls) {
 							const key = [undefined, hash, scope, prop].join(".")
-							addRange(key, node.range)
+							addRange(key, [node.start, node.end])
 						}
 					}
 				}
@@ -351,10 +357,10 @@ function validateTw({
 			}
 		},
 		node => {
-			const start = node.range[0]
-			let end = node.range[0]
+			const { start } = node
+			let end = node.end
 			if (node.type === parser.NodeType.ArbitraryClassname) {
-				end = node.prefix.range[1]
+				end = node.key.end + 1
 			}
 			return !!diagnostics.push({
 				source: DIAGNOSTICS_ID,
@@ -390,26 +396,28 @@ function validateTw({
 }
 
 function checkVariants(
-	node: parser.SimpleVariant | parser.ArbitrarySelector | parser.ArbitraryVariant,
+	node: Exclude<parser.Variant, parser.GroupVariant>,
 	document: TextDocument,
 	offset: number,
 	state: TailwindLoader,
 ) {
-	if (node.type === parser.NodeType.ArbitrarySelector || node.type === parser.NodeType.ArbitraryVariant) {
+	if (
+		node.type === parser.NodeType.ArbitrarySelector ||
+		node.type === parser.NodeType.ArbitraryVariant ||
+		node.type === parser.NodeType.UnknownVariant
+	) {
 		return
 	}
 
-	const {
-		id,
-		range: [a, b],
-	} = node
-	const variant = id.getText()
-	if (state.tw.isVariant(variant)) {
+	const { start, end, key } = node
+	const variant = key.text
+	const fn = state.tw.context.wrap(node)
+	if (Object.keys(fn()).length > 0) {
 		return
 	}
 	const ret = state.variants.search(variant)
 	const ans = ret?.[0]?.item
-	const range = new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))
+	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 	const diagnostic: IDiagnostic = {
 		message: "",
 		source: DIAGNOSTICS_ID,
@@ -439,60 +447,58 @@ function checkArbitraryClassname(
 ) {
 	const result: IDiagnostic[] = []
 
-	let prefix = item.prefix.getText()
-	if (item.expr == undefined) {
-		const [start, end] = item.prefix.range
-		const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end - 1))
-		const ret = guess(state, prefix)
-		if (ret.score === 0) {
-			if (item.e) {
-				const classname = item.getText()
-				const cssText = state.tw.renderClassname({ classname })
-				if (!cssText) {
-					const [start, end] = item.range
-					const range = new vscode.Range(
-						document.positionAt(offset + start),
-						document.positionAt(offset + end),
-					)
-					result.push({
-						source: DIAGNOSTICS_ID,
-						message: `'${classname}' is an unknown value.`,
-						range,
-						severity: vscode.DiagnosticSeverity.Error,
-					})
-				}
-			}
-			return result
-		}
-		if (ret.value) {
-			const action = new vscode.CodeAction(
-				`Replace '${prefix}' with '${ret.value}'`,
-				vscode.CodeActionKind.QuickFix,
-			)
-			action.edit = new vscode.WorkspaceEdit()
-			action.edit.replace(document.uri, range, ret.value)
-			result.push({
-				source: DIAGNOSTICS_ID,
-				message: `'${prefix}' is an unknown value, did you mean '${ret.value}'?`,
-				range,
-				codeActions: [action],
-				severity: vscode.DiagnosticSeverity.Error,
-			})
-		} else {
-			result.push({
-				source: DIAGNOSTICS_ID,
-				message: `'${prefix}' is an unknown value.`,
-				range,
-				severity: vscode.DiagnosticSeverity.Error,
-			})
-		}
-		return result
-	}
-
-	if (prefix[0] === "-") prefix = prefix.slice(1)
+	const prefix = item.key.text
+	// if (item.expr == undefined) {
+	// 	const [start, end] = item.prefix.range
+	// 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end - 1))
+	// 	const ret = guess(state, prefix)
+	// 	if (ret.score === 0) {
+	// 		if (item.e) {
+	// 			const classname = item.getText()
+	// 			const cssText = state.tw.renderClassname({ classname })
+	// 			if (!cssText) {
+	// 				const [start, end] = item.range
+	// 				const range = new vscode.Range(
+	// 					document.positionAt(offset + start),
+	// 					document.positionAt(offset + end),
+	// 				)
+	// 				result.push({
+	// 					source: DIAGNOSTICS_ID,
+	// 					message: `'${classname}' is an unknown value.`,
+	// 					range,
+	// 					severity: vscode.DiagnosticSeverity.Error,
+	// 				})
+	// 			}
+	// 		}
+	// 		return result
+	// 	}
+	// 	if (ret.value) {
+	// 		const action = new vscode.CodeAction(
+	// 			`Replace '${prefix}' with '${ret.value}'`,
+	// 			vscode.CodeActionKind.QuickFix,
+	// 		)
+	// 		action.edit = new vscode.WorkspaceEdit()
+	// 		action.edit.replace(document.uri, range, ret.value)
+	// 		result.push({
+	// 			source: DIAGNOSTICS_ID,
+	// 			message: `'${prefix}' is an unknown value, did you mean '${ret.value}'?`,
+	// 			range,
+	// 			codeActions: [action],
+	// 			severity: vscode.DiagnosticSeverity.Error,
+	// 		})
+	// 	} else {
+	// 		result.push({
+	// 			source: DIAGNOSTICS_ID,
+	// 			message: `'${prefix}' is an unknown value.`,
+	// 			range,
+	// 			severity: vscode.DiagnosticSeverity.Error,
+	// 		})
+	// 	}
+	// 	return result
+	// }
 
 	if (!state.tw.arbitrary[prefix]) {
-		const start = item.range[0]
+		const { start } = item
 		const end = start + prefix.length
 		const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 		result.push({
@@ -502,15 +508,15 @@ function checkArbitraryClassname(
 			severity: vscode.DiagnosticSeverity.Error,
 		})
 	} else {
-		const classname = text.slice(...item.range)
+		const classname = item.text
 		const cssText = state.tw.renderClassname({ classname })
 		if (!cssText) {
-			let [start, end] = item.expr.range
-			while (start < end && parser.isSpace(text.charCodeAt(start))) start++
-			while (start < end && parser.isSpace(text.charCodeAt(end - 1))) end--
+			let { start, end } = item.value
+			while (start < end && parser.isCharSpace(text.charCodeAt(start))) start++
+			while (start < end && parser.isCharSpace(text.charCodeAt(end - 1))) end--
 			if (start === end) {
-				start = item.expr.range[0]
-				end = item.expr.range[1]
+				start = item.value.start
+				end = item.value.end
 			}
 			const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 			result.push({
@@ -527,15 +533,15 @@ function checkArbitraryClassname(
 
 function checkArbitraryProperty(item: parser.ArbitraryProperty, document: TextDocument, offset: number) {
 	const result: IDiagnostic[] = []
-	let prop = item.decl.getText().trim()
+	let prop = item.decl.text.trim()
 	if (!prop) {
 		return result
 	}
 
-	const value = item.decl.getText()
+	const value = item.decl.text
 	const i = value.indexOf(":")
 	if (i >= 0) prop = value.slice(0, i).trim()
-	const start = item.decl.range[0] + value.search(/[\w-]/)
+	const start = item.decl.start + value.search(/[\w-]/)
 	const end = start + prop.length
 	if (prop.startsWith("-")) return result
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
@@ -563,9 +569,9 @@ function checkArbitraryProperty(item: parser.ArbitraryProperty, document: TextDo
 	return result
 }
 
-function rejectShortCss(item: parser.ShortCss, document: TextDocument, offset: number) {
+function rejectUnknownClassname(item: parser.UnknownClassname, document: TextDocument, offset: number) {
 	const result: IDiagnostic[] = []
-	const [start, end] = item.range
+	const { start, end } = item
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 	result.push({
 		source: DIAGNOSTICS_ID,
@@ -585,9 +591,7 @@ function checkTwClassName(
 ) {
 	const result: IDiagnostic[] = []
 
-	const {
-		range: [start, end],
-	} = item
+	const { start, end } = item
 	const value = text.slice(start, end)
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
 	if (state.tw.renderDecls(value).decls.size === 0) {
@@ -726,12 +730,11 @@ function validateTwTheme({
 	diagnostics: IDiagnostic[]
 }): boolean {
 	let diagnostic: IDiagnostic | undefined
-	const { path, range } = parser.parse_theme_val(text)
-	for (const { closed, range } of path) {
+	const { path, start, end } = parser.parse_theme_val(text)
+	for (const { closed, start } of path) {
 		if (!closed) {
-			const [a] = range
 			diagnostic = {
-				range: new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + a)),
+				range: new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + start)),
 				source: DIAGNOSTICS_ID,
 				message: "Syntax Error",
 				severity: vscode.DiagnosticSeverity.Error,
@@ -743,7 +746,7 @@ function validateTwTheme({
 		const [value] = parser.theme(state.config, path)
 		if (value === undefined) {
 			diagnostic = {
-				range: new vscode.Range(document.positionAt(offset + range[0]), document.positionAt(offset + range[1])),
+				range: new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end)),
 				source: DIAGNOSTICS_ID,
 				message: "value is undefined",
 				severity: vscode.DiagnosticSeverity.Error,

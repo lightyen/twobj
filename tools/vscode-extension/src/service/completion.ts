@@ -106,7 +106,7 @@ function walk(
 }
 
 function completeProgram(program: parser.Program, position: number) {
-	const inRange = (node: parser.Node) => position >= node.range[0] && position <= node.range[1]
+	const inRange = (node: parser.Node) => position >= node.start && position <= node.end
 	let _node: parser.Leaf | undefined
 	let _variantGroup = false
 	walk(
@@ -257,21 +257,28 @@ const classnameCompletion: CompletionFeature = (
 
 	if (!target) return state.provideClassCompletionList()
 
-	const [a, b] = target.range
+	const { start, end } = target
 	switch (target.type) {
 		case parser.NodeType.ArbitrarySelector:
 		case parser.NodeType.SimpleVariant:
-		case parser.NodeType.ArbitraryVariant: {
-			if (position > a && position < b) return
+		case parser.NodeType.ArbitraryVariant:
+		case parser.NodeType.UnknownVariant: {
+			if (position > start && position < end) return
 			break
 		}
 		case parser.NodeType.ArbitraryProperty: {
-			if (position > a && position <= b) return
+			if (position > start && position <= end) return
 			break
 		}
 		case parser.NodeType.ArbitraryClassname: {
-			if (position === b) return
-			const [, pb] = target.prefix.range
+			if (position === end) return
+			const pb = target.key.end
+			if (position > pb + 1) return
+			break
+		}
+		case parser.NodeType.UnknownClassname: {
+			if (position === end) return
+			const pb = target.key.end
 			if (position > pb) return
 			break
 		}
@@ -279,8 +286,8 @@ const classnameCompletion: CompletionFeature = (
 
 	const items = state.provideClassCompletionList()
 
-	const endChar = text.slice(b, b + 1)
-	const insertSpace = text.slice(a, b) !== "!" && endChar !== "" && endChar.match(/[\s)]/) == null
+	const endChar = text.slice(end, end + 1)
+	const insertSpace = text.slice(start, end) !== "!" && endChar !== "" && endChar.match(/[\s)]/) == null
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
 		for (const item of items) callback(item)
 	}
@@ -288,20 +295,19 @@ const classnameCompletion: CompletionFeature = (
 	switch (target.type) {
 		case parser.NodeType.ArbitrarySelector:
 		case parser.NodeType.SimpleVariant:
-		case parser.NodeType.ArbitraryVariant: {
+		case parser.NodeType.ArbitraryVariant:
+		case parser.NodeType.UnknownVariant: {
 			if (insertSpace) transfrom(appendSpace())
 			return items
 		}
-		case parser.NodeType.ArbitraryClassname: {
-			if (target.expr) {
-				if (position === a) {
-					if (insertSpace) transfrom(appendSpace())
-					return items
-				}
-				transfrom(replace(new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))))
+		case parser.NodeType.ArbitraryClassname:
+		case parser.NodeType.UnknownClassname: {
+			if (position === start) {
+				if (insertSpace) transfrom(appendSpace())
 				return items
 			}
-			break
+			transfrom(replace(new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))))
+			return items
 		}
 		case parser.NodeType.ArbitraryProperty: {
 			transfrom(appendSpace())
@@ -309,15 +315,15 @@ const classnameCompletion: CompletionFeature = (
 		}
 	}
 
-	if (insertSpace || position === a) {
+	if (insertSpace || position === start) {
 		transfrom(appendSpace())
-	} else if (position === b) {
-		transfrom(replace(new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))))
+	} else if (position === end) {
+		transfrom(replace(new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))))
 	} else {
 		// NOTE: for `bg-black/50`, `bg-black/[0.5]`
-		let shrinkB = b
-		const value = text.slice(...target.range)
-		if (target.type === parser.NodeType.ClassName || target.type === parser.NodeType.ArbitraryClassname) {
+		let shrinkB = end
+		const value = target.text
+		if (target.type === parser.NodeType.Classname) {
 			const pluginName = state.tw.context.getPluginName(value)
 			if (pluginName && /Color|fill|stroke/.test(pluginName)) {
 				const slash = value.lastIndexOf("/")
@@ -326,8 +332,8 @@ const classnameCompletion: CompletionFeature = (
 		}
 
 		transfrom(item => {
-			const end = item.kind === vscode.CompletionItemKind.Color && item.documentation ? shrinkB : b
-			item.range = new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + end))
+			const _end = item.kind === vscode.CompletionItemKind.Color && item.documentation ? shrinkB : end
+			item.range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + _end))
 		})
 	}
 	return items
@@ -345,25 +351,26 @@ const variantCompletion: CompletionFeature = (
 	{ preferVariantWithParentheses },
 ) => {
 	if (target) {
-		const [a, b] = target.range
+		const { start, end } = target
 		switch (target.type) {
 			case parser.NodeType.ArbitrarySelector: {
-				if (position !== a && position !== b) return
+				if (position !== start && position !== end) return
 				break
 			}
-			case parser.NodeType.ArbitraryVariant: {
-				const [, pb] = target.prefix.range
-				if (position > pb && position < b) return
+			case parser.NodeType.ArbitraryVariant:
+			case parser.NodeType.UnknownVariant: {
+				const pb = target.key.end
+				if (position >= pb && position < end) return
 				break
 			}
 			case parser.NodeType.ArbitraryClassname:
 			case parser.NodeType.ArbitraryProperty: {
-				if (position !== a) return
+				if (position !== start) return
 				break
 			}
-			case parser.NodeType.ClassName: {
-				if (position !== a && position !== b) return
-				if (text.charCodeAt(b - 1) === 47) return
+			case parser.NodeType.Classname: {
+				if (position !== start && position !== end) return
+				if (text.charCodeAt(end - 1) === 47) return
 				break
 			}
 		}
@@ -423,13 +430,13 @@ const variantCompletion: CompletionFeature = (
 
 	if (!target) return items
 
-	const [a, b] = target.range
+	const { start, end } = target
 	const nextCharacter = text.charCodeAt(position)
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
 		for (const item of items) callback(item)
 	}
 
-	const next = text.slice(b, b + 1)
+	const next = text.slice(end, end + 1)
 	const insertSpace = next != "" && next.match(/[\s)]/) == null
 
 	if (preferVariantWithParentheses) {
@@ -441,11 +448,11 @@ const variantCompletion: CompletionFeature = (
 	}
 
 	if (target.type === parser.NodeType.SimpleVariant || target.type === parser.NodeType.ArbitraryVariant) {
-		if (position > a && position < b) {
-			transfrom(replace(new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))))
+		if (position > start && position < end) {
+			transfrom(replace(new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))))
 		}
-	} else if (target.type === parser.NodeType.ClassName) {
-		transfrom(replace(new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))))
+	} else if (target.type === parser.NodeType.Classname) {
+		transfrom(replace(new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))))
 	}
 
 	return items
@@ -467,8 +474,8 @@ function getCssDeclarationCompletionList(
 	state: TailwindLoader,
 ): ICompletionItem[] {
 	for (const t of parser.parse_theme(text, exprRange)) {
-		if (position >= t.valueRange[0] && position <= t.valueRange[1]) {
-			return themeCompletion(document, offset, text, position, state, t.valueRange).items
+		if (position >= t.value.start && position <= t.value.end) {
+			return themeCompletion(document, offset, text, position, state, [t.value.start, t.value.end]).items
 		}
 	}
 
@@ -589,10 +596,10 @@ function getScssSelectorCompletionList(
 const arbitraryVariantValueCompletion: CompletionFeature = (document, kind, offset, text, position, target) => {
 	if (!target) return
 	if (target.type !== parser.NodeType.ArbitrarySelector) return
-	const [a, b] = target.selector.range
-	const value = target.selector.getText()
-	if (position < a || position > b) return
-	return getScssSelectorCompletionList(document, position, offset, a, value)
+	const { start, end } = target.selector
+	const value = target.selector.text
+	if (position < start || position > end) return
+	return getScssSelectorCompletionList(document, position, offset, start, value)
 }
 
 const arbitraryPropertyCompletion: CompletionFeature = (
@@ -609,29 +616,28 @@ const arbitraryPropertyCompletion: CompletionFeature = (
 	if (variantGroup) return
 
 	if (target) {
-		const [a, b] = target.range
+		const { start, end } = target
 		switch (target.type) {
 			case parser.NodeType.ArbitrarySelector:
 			case parser.NodeType.ArbitraryVariant:
+			case parser.NodeType.UnknownVariant:
 			case parser.NodeType.SimpleVariant: {
-				if (position > a && position < b) return
+				if (position > start && position < end) return
 				break
 			}
 			case parser.NodeType.ArbitraryProperty: {
-				if (position === b) return
+				if (position === end) return
 				break
 			}
 
-			case parser.NodeType.ArbitraryClassname: {
-				if (position === b) return
-				if (position === a) break
-				const expr = target.expr
-				if (!expr) return
-				const [pa, pb] = expr.range
+			case parser.NodeType.ArbitraryClassname:
+			case parser.NodeType.UnknownClassname: {
+				if (position === end) return
+				if (position === start) break
+				const { start: pa, end: pb } = target.value
 				if (position < pa || position > pb) return
 				const cssValueItems = new Map<string, ICompletionItem>()
-				let prefix = target.prefix.getText()
-				if (prefix[0] === "-") prefix = prefix.slice(1)
+				let prefix = target.key.text
 				if (prefix.startsWith(state.tw.prefix)) prefix = prefix.slice(state.tw.prefix.length)
 				const propAndTypes = state.tw.arbitrary[prefix]
 				if (!propAndTypes) return
@@ -643,8 +649,8 @@ const arbitraryPropertyCompletion: CompletionFeature = (
 							offset,
 							text,
 							position,
-							expr.range,
-							[prop, expr.value],
+							[target.value.start, target.value.end],
+							[prop, target.value.text],
 							state,
 						).forEach(item => {
 							cssValueItems.set(item.label, item)
@@ -656,15 +662,15 @@ const arbitraryPropertyCompletion: CompletionFeature = (
 		}
 
 		if (target.type === parser.NodeType.ArbitraryProperty) {
-			const [a, b] = target.range
-			if (position > a && position < b) {
+			const { start, end } = target
+			if (position > start && position < end) {
 				return getCssDeclarationCompletionList(
 					document,
 					offset,
 					text,
 					position,
-					[target.range[0] + 1, target.range[1] - 1],
-					target.decl.getText(),
+					[target.start + 1, target.end - 1],
+					target.decl.text,
 					state,
 				)
 			}
@@ -675,33 +681,35 @@ const arbitraryPropertyCompletion: CompletionFeature = (
 
 	if (!target) return items
 
-	const [a, b] = target.range
-	const endChar = text.slice(b, b + 1)
-	const insertSpace = text.slice(a, b) !== "!" && endChar !== "" && endChar.match(/[\s)]/) == null
+	const { start, end } = target
+	const endChar = text.slice(end, end + 1)
+	const insertSpace = text.slice(start, end) !== "!" && endChar !== "" && endChar.match(/[\s)]/) == null
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
 		for (const item of items) callback(item)
 	}
 
-	const oldValue = target.type === parser.NodeType.ShortCss ? target.expr.value : ""
+	const oldValue = target.type === parser.NodeType.UnknownClassname ? target.value.text : ""
 	transfrom(item => (item.insertText = new vscode.SnippetString(`[${item.label}: ${oldValue}$0]`)))
 
 	switch (target.type) {
 		case parser.NodeType.ArbitrarySelector:
 		case parser.NodeType.ArbitraryVariant:
+		case parser.NodeType.UnknownVariant:
 		case parser.NodeType.SimpleVariant: {
-			if (position === a) transfrom(prependSpace())
+			if (position === start) transfrom(prependSpace())
 			if (insertSpace) transfrom(appendSpace())
 			return items
 		}
 		case parser.NodeType.ArbitraryProperty:
-		case parser.NodeType.ArbitraryClassname: {
+		case parser.NodeType.ArbitraryClassname:
+		case parser.NodeType.UnknownClassname: {
 			transfrom(appendSpace())
 			return items
 		}
 	}
-	if (position > a && position <= b) {
-		transfrom(replace(new vscode.Range(document.positionAt(offset + a), document.positionAt(offset + b))))
-	} else if (position === a) {
+	if (position > start && position <= end) {
+		transfrom(replace(new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))))
+	} else if (position === start) {
 		transfrom(appendSpace())
 	}
 	return items
@@ -717,7 +725,7 @@ function themeCompletion(
 ): vscode.CompletionList<ICompletionItem> {
 	const node = parser.parseThemeValue(state.config, text, [start, end])
 
-	const i = node.path.findIndex(p => position >= p.range[0] && position <= p.range[1])
+	const i = node.path.findIndex(p => position >= p.start && position <= p.end)
 	if (i === -1 && node.path.length !== 0) {
 		return { items: [] }
 	}
@@ -770,7 +778,7 @@ function themeCompletion(
 		}
 
 		if (hit) {
-			const [a, b] = hit.range
+			const { start: a, end: b } = hit
 			if (label.match(/[.]/)) {
 				item.insertText = `[${label}]`
 				item.filterText = item.insertText

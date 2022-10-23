@@ -69,18 +69,19 @@ function walk(
 
 function isVariant(
 	node: parser.Leaf,
-): node is parser.SimpleVariant | parser.ArbitraryVariant | parser.ArbitrarySelector {
+): node is parser.SimpleVariant | parser.ArbitraryVariant | parser.ArbitrarySelector | parser.UnknownVariant {
 	switch (node.type) {
 		case parser.NodeType.SimpleVariant:
 		case parser.NodeType.ArbitraryVariant:
 		case parser.NodeType.ArbitrarySelector:
+		case parser.NodeType.UnknownVariant:
 			return true
 	}
 	return false
 }
 
 function hoverProgram(program: parser.Program, position: number) {
-	const inRange = (node: parser.Node) => position >= node.range[0] && position < node.range[1]
+	const inRange = (node: parser.Node) => position >= node.start && position < node.end
 	let _node: parser.Leaf | undefined
 	let _important = false
 	let variantGroup = false
@@ -122,8 +123,8 @@ export default async function hover(
 			if (kind === "theme") {
 				const node = parser.parse_theme_val(token.value)
 				const range = new vscode.Range(
-					document.positionAt(token.start + node.range[0]),
-					document.positionAt(token.start + node.range[1]),
+					document.positionAt(token.start + node.start),
+					document.positionAt(token.start + node.end),
 				)
 				return resolveThemeValue({ kind, range, node, state, options })
 			} else if (kind === "globalStyles") {
@@ -151,7 +152,7 @@ export default async function hover(
 				)
 				if (!target) return undefined
 
-				const [start, end] = target.range
+				const { start, end } = target
 
 				const range = new vscode.Range(
 					document.positionAt(token.start + start),
@@ -161,7 +162,7 @@ export default async function hover(
 				if (isVariant(target)) {
 					const header = new vscode.MarkdownString()
 					if (target.type === parser.NodeType.SimpleVariant) {
-						const variant = target.id.getText()
+						const variant = target.key.text
 						if (options.references) {
 							const isScreens = state.tw.screens.indexOf(variant) === -1
 							const desc = isScreens ? getDescription(variant) : getDescription("screens")
@@ -176,10 +177,10 @@ export default async function hover(
 								header.appendMarkdown(links.map(ref => `[Reference](${ref.url}) `).join("\n"))
 							}
 						}
-					} else if (target.type === parser.NodeType.ArbitraryVariant) {
-						header.appendMarkdown("**arbitrary variant**")
 					} else if (target.type === parser.NodeType.ArbitrarySelector) {
 						header.appendMarkdown("**arbitrary selector**")
+					} else {
+						header.appendMarkdown("**arbitrary variant**")
 					}
 
 					const code = state.tw.renderVariant(target, tabSize)
@@ -198,7 +199,7 @@ export default async function hover(
 
 				const header = new vscode.MarkdownString()
 				if (target.type === parser.NodeType.ArbitraryProperty) {
-					const rawText = target.decl.getText()
+					const rawText = target.decl.text
 					let prop = rawText.trim()
 					const i = rawText.indexOf(":")
 					if (i >= 0) {
@@ -215,7 +216,7 @@ export default async function hover(
 					}
 				}
 
-				const value = target.getText()
+				const value = target.text
 
 				if (options.references) {
 					const pluginName = state.tw.context.getPluginName(value)
