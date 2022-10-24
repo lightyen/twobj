@@ -15,7 +15,7 @@ export function Header(props: React.PropsWithChildren<{ className?: string }>) {
 export function A() {
 	return (
 		<div className="flex justify-center mx-auto" css={wrap`md:`({ borderTopWith: "1px", ...tw`bg-red-500` })}>
-			<span>{theme`colors.blue.500 / 30%` as string}</span>
+			<span className="text-gray-700 bg-gray-100">{theme`colors.blue.500 / 30%` as string}</span>
 			<Header className="bg-red-300">Header</Header>
 		</div>
 	)

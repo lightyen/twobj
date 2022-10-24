@@ -56,7 +56,17 @@ export function A() {
 				}),
 			]}
 		>
-			<span>{"rgb(59 130 246 / 30%)"}</span>
+			<span
+				className="text-gray-700 bg-gray-100"
+				css={[
+					{
+						color: "#374151",
+						backgroundColor: "#f3f4f6",
+					},
+				]}
+			>
+				{"rgb(59 130 246 / 30%)"}
+			</span>
 			<Header
 				className="bg-red-300"
 				css={[

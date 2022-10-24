@@ -288,7 +288,18 @@ export function A() {
 				}),
 			]}
 		>
-			<span>{"rgb(59 130 246 / 30%)"}</span>
+			<span
+				css={[
+					{
+						color: "#374151",
+					},
+					{
+						backgroundColor: "#f3f4f6",
+					},
+				]}
+			>
+				{"rgb(59 130 246 / 30%)"}
+			</span>
 			<Header
 				css={[
 					{
