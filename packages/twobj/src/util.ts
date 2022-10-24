@@ -3,6 +3,7 @@
 import * as parser from "./parser"
 import type {
 	ColorValue,
+	ColorValueFunc,
 	CSSProperties,
 	CSSValue,
 	CustomPalette,
@@ -143,25 +144,27 @@ export function merge(target: CSSProperties, ...sources: CSSProperties[string][]
 	return merge(target, ...sources)
 }
 
-export function flattenColorPalette(colors: Palette | null | undefined): {
+export function flattenColorPalette(colors: Palette = {}): {
 	[color: string | string]: Exclude<ColorValue, CustomPalette>
 } {
-	return Object.assign(
-		{},
-		...Object.entries(colors ?? {}).flatMap(([key, child]) => {
-			if (typeof child !== "object" || child === null) {
-				if (child == undefined) {
-					return []
-				}
-				return [{ [key]: child }]
+	return Object.fromEntries(__flatten(colors))
+	function __flatten(colors: Palette = {}) {
+		const ret: Array<[key: string, value: Primitive | ColorValueFunc]> = []
+		for (const key in colors) {
+			const value = colors[key]
+			if (value == undefined) {
+				continue
 			}
-			return Object.entries(flattenColorPalette(child as Palette | null | undefined)).map(([k, v]) => {
-				return {
-					[key + (k === "DEFAULT" ? "" : "-" + k)]: v,
-				}
-			})
-		}),
-	)
+			if (typeof value !== "object") {
+				ret.push([key, value])
+				continue
+			}
+			for (const [k, v] of __flatten(value)) {
+				ret.push([key + (k === "DEFAULT" ? "" : "-" + k), v])
+			}
+		}
+		return ret
+	}
 }
 
 export function excludeDefaultPalette(palette: ReturnType<typeof flattenColorPalette>) {
