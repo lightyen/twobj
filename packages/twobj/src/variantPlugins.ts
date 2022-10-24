@@ -114,7 +114,7 @@ export const variantPlugins: VariantPlugins = {
 			if (b != undefined) {
 				addVariant(`@${key}`, `@media (min-width: ${a}px) and (max-width: ${b}px)`)
 			} else {
-				addVariant(`@${key}`, `@media (min-width: ${a})`)
+				addVariant(`@${key}`, `@media (min-width: ${a}px)`)
 			}
 		}
 	}),
