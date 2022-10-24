@@ -144,11 +144,13 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 											}
 											return 1
 										})
+
 									expression.replaceWith(
 										t.arrayExpression(
-											sorted.flatMap<babel.Expression | babel.SpreadElement | null>(
-												s => s.elements,
-											),
+											sorted.reduce((acc, s) => {
+												acc.push(...s.elements)
+												return acc
+											}, [] as Array<babel.Expression | babel.SpreadElement | null>),
 										),
 									)
 								}

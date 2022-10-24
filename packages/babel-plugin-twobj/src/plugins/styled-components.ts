@@ -153,9 +153,10 @@ export const styledComponents: Plugin = function ({
 										})
 									expression.replaceWith(
 										t.arrayExpression(
-											sorted.flatMap<babel.Expression | babel.SpreadElement | null>(
-												s => s.elements,
-											),
+											sorted.reduce((acc, s) => {
+												acc.push(...s.elements)
+												return acc
+											}, [] as Array<babel.Expression | babel.SpreadElement | null>),
 										),
 									)
 								}
