@@ -1,6 +1,6 @@
 {
   "name": "twobj",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "homepage": "https://github.com/lightyen/twobj",
   "author": {
     "name": "lightyen",
@@ -23,7 +23,8 @@
     "doit": "pnpm update --interactive --latest",
     "compile": "del ./index.* ./parser ./config *.d.ts **/*.d.ts && tsup",
     "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
-    "build": "npm run compile && npm run format"
+    "build": "npm run compile && npm run format",
+    "prepublish": "npm run build"
   },
   "files": [
     "parser",

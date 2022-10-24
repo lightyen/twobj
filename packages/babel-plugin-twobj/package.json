@@ -19,7 +19,8 @@
     "doit": "pnpm update --interactive --latest",
     "compile": "del ./index.* *.d.ts *.d.cts *.d.mts **/*.d.*ts !./types/*.d.ts && tsup",
     "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
-    "build": "npm run compile && npm run format"
+    "build": "npm run compile && npm run format",
+    "prepublish": "npm run build"
   },
   "peerDependencies": {
     "twobj": ">= 2.0.0 < 3"
