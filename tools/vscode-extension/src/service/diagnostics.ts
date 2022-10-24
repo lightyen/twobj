@@ -225,16 +225,6 @@ function walk(
 	}
 }
 
-function isUtility(leaf: parser.Leaf): leaf is parser.Utility {
-	switch (leaf.type) {
-		case parser.NodeType.SimpleVariant:
-		case parser.NodeType.ArbitraryVariant:
-		case parser.NodeType.ArbitrarySelector:
-			return false
-	}
-	return true
-}
-
 function validateTw({
 	document,
 	text,
@@ -268,7 +258,7 @@ function validateTw({
 	walk(
 		program,
 		(node, variants, important, variantGroup) => {
-			if (isUtility(node)) {
+			if (!parser.isVariant(node)) {
 				if (kind === "wrap" || variantGroup) {
 					const range = new vscode.Range(
 						document.positionAt(offset + node.start),
@@ -401,22 +391,32 @@ function checkVariants(
 	offset: number,
 	state: TailwindLoader,
 ) {
-	if (
-		node.type === parser.NodeType.ArbitrarySelector ||
-		node.type === parser.NodeType.ArbitraryVariant ||
-		node.type === parser.NodeType.UnknownVariant
-	) {
+	if (node.type === parser.NodeType.ArbitrarySelector) {
 		return
+	}
+
+	if (node.type === parser.NodeType.UnknownVariant) {
+		const range = new vscode.Range(document.positionAt(offset + node.start), document.positionAt(offset + node.end))
+		const diagnostic: IDiagnostic = {
+			message: `'${node.text}' is an unknown variant.`,
+			source: DIAGNOSTICS_ID,
+			range,
+			severity: vscode.DiagnosticSeverity.Error,
+		}
+		return diagnostic
 	}
 
 	const { start, end, key } = node
 	const variant = key.text
-	if (state.tw.isSimpleVariant(variant)) {
+	if (node.type === parser.NodeType.SimpleVariant && state.tw.isSimpleVariant(variant)) {
 		return
 	}
-	if (state.tw.context.isVariant(node.text)) {
+
+	const [variantFn] = state.tw.context.resolveVariant(node.text)
+	if (variantFn != undefined) {
 		return
 	}
+
 	const ret = state.variants.search(variant)
 	const ans = ret?.[0]?.item
 	const range = new vscode.Range(document.positionAt(offset + start), document.positionAt(offset + end))
@@ -692,7 +692,9 @@ function guess(state: TailwindLoader, text: string): { kind: PredictionKind; val
 }
 
 function isLoose(state: TailwindLoader, label: string, decls: Map<string, string[]>) {
-	const pluginName = state.tw.context.getUtilityPluginName(label)
+	const [, spec] = state.tw.context.resolveUtility(label)
+	const pluginName = spec?.pluginName
+
 	if (!pluginName) return true
 	switch (pluginName) {
 		case "lineHeight":
