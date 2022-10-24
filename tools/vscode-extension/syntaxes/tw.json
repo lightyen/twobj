@@ -7,7 +7,7 @@
       "patterns": [
         { "include": "#line-comment" },
         { "include": "#block-comment" },
-        { "include": "#arbitrary-variant-or-property" },
+        { "include": "#arbitrary-selector-or-property" },
         { "include": "#variant" },
         { "include": "#short-css" },
         { "include": "#arbitrary-classname" },
@@ -35,12 +35,12 @@
       "contentName": "comment.block.tw"
     },
     "variant": {
-      "match": "(?:(?!\\/\\/|\\/\\*)[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/])*[\\w\\-\\.%]+(?:\\/[\\w\\-\\.%]+)*:",
+      "match": "(?:(?!\\/\\/|\\/\\*)[^\\s:\\(\\)\\[\\]\\{\\}!?+*/])*[\\w\\-\\.%]+(?:\\/[\\w\\-\\.%<>@=]+)*:",
       "captures": {
         "0": { "name": "entity.other.inherited-class.variant.tw" }
       }
     },
-    "arbitrary-variant-or-property": {
+    "arbitrary-selector-or-property": {
       "begin": "(?<!/)(!?)\\[",
       "end": "(?<=\\]:)|(?<=\\])(!?)(?<!:)",
       "beginCaptures": {
@@ -84,7 +84,7 @@
     },
     "arbitrary-classname": {
       "begin": "(!?)((?:(?:(?!\\/\\/)-?[^\\s:\\(\\)\\[\\]\\{\\}<>!?+*=/-])+-)+)\\[",
-      "end": "\\](?:(\\/\\d+)|\\/\\[(\\s*\\d*\\.?\\d*\\s*)\\])?(!?)",
+      "end": "\\](?:(\\/\\d+)|\\/\\[(\\s*\\d*\\.?\\d*\\s*)\\])?(!?)([:]?)",
       "beginCaptures": {
         "1": { "name": "support.function.important-bang.before.tw" },
         "2": { "name": "support.type.arbitrary-style.prop.tw" }
@@ -92,7 +92,8 @@
       "endCaptures": {
         "1": { "name": "support.constant.classname.tw" },
         "2": { "patterns": [{ "include": "source.css.scss.tw#property_values" }] },
-        "3": { "name": "support.function.important-bang.after.tw" }
+        "3": { "name": "support.function.important-bang.after.tw" },
+        "4": { "name": "entity.other.inherited-class.variant.tw" }
       },
       "patterns": [
         {
