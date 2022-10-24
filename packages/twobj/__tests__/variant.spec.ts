@@ -136,6 +136,19 @@ test("before and after", async () => {
 	})
 })
 
+test("screens", async () => {
+	expect(tw`@xl:bg-black`).toEqual({
+		"@media (min-width: 1280px) and (max-width: 1535.98px)": {
+			backgroundColor: "#000",
+		},
+	})
+	expect(tw`@2xl:bg-black`).toEqual({
+		"@media (min-width: 1536px)": {
+			backgroundColor: "#000",
+		},
+	})
+})
+
 test("supports", async () => {
 	expect(tw`supports-[display: grid]:bg-black`).toEqual({
 		"@supports (display: grid)": {
