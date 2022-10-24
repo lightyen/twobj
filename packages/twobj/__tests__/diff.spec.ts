@@ -33,7 +33,6 @@ test("diff tailwindcss", async () => {
 		}
 
 		switch (classname) {
-			case "*":
 			case "overflow-ellipsis": // Deprecated, replace with 'text-ellipsis'
 			case "decoration-slice": // Deprecated, replace with 'box-decoration-slice'
 			case "decoration-clone": // Deprecated, replace with 'box-decoration-clone'
