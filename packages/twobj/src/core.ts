@@ -183,14 +183,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		arbitraryUtilities: arbitraryUtilityCollection,
 		css,
 		wrap,
-		getUtilityPluginName,
-		getVariantPluginName,
-		isUtility(utility) {
-			return getUtilityPluginName(utility) != undefined
-		},
-		isVariant(variant) {
-			return getVariantPluginName(variant) != undefined
-		},
+		resolveUtility,
+		resolveVariant,
 		features,
 		renderTheme(value) {
 			return theme.renderTheme(config, value)
@@ -679,40 +673,42 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return spec
 	}
 
-	function getVariantPluginName(value: string): string | undefined {
+	function resolveVariant(
+		value: string,
+	): [variant?: Variant | undefined, spec?: LookupVariantSpec | VariantSpec | undefined] {
 		const program = parser.createProgram(value)
 		if (program.expressions.length !== 1) {
-			return undefined
+			return []
 		}
 
 		const node = program.expressions[0]
 		if (node.type !== nodes.NodeType.VariantSpan) {
-			return undefined
+			return []
 		}
 		if (
 			node.variant.type !== nodes.NodeType.SimpleVariant &&
 			node.variant.type !== nodes.NodeType.ArbitraryVariant
 		) {
-			return undefined
+			return []
 		}
 
-		const [, spec] = variant(node.variant)
-		return spec?.pluginName
+		return variant(node.variant)
 	}
 
-	function getUtilityPluginName(value: string): string | undefined {
+	function resolveUtility(
+		value: string,
+	): [style?: CSSProperties | undefined, spec?: LookupSpec | StaticSpec | undefined] {
 		const program = parser.createProgram(value)
 		if (program.expressions.length !== 1) {
-			return undefined
+			return []
 		}
 
 		const node = program.expressions[0]
 		if (node.type !== nodes.NodeType.Classname && node.type !== nodes.NodeType.ArbitraryClassname) {
-			return undefined
+			return []
 		}
 
-		const [, spec] = classname(node)
-		return spec?.pluginName
+		return classname(node)
 	}
 
 	function css(strings: string): CSSProperties

@@ -35,10 +35,10 @@ export interface Context extends UserPluginOptions {
 	wrap(variants: string | TemplateStringsArray | parser.Variant, ...args: parser.Variant[]): Variant
 
 	/** Reverse utility mapping. */
-	getUtilityPluginName(value: string): string | undefined
+	resolveUtility(value: string): [style?: CSSProperties | undefined, spec?: LookupSpec | StaticSpec | undefined]
 
 	/** Reverse variant mapping. */
-	getVariantPluginName(value: string): string | undefined
+	resolveVariant(value: string): [variant?: Variant | undefined, spec?: LookupVariantSpec | VariantSpec | undefined]
 
 	/** Signature: `theme(colors.red.500, <default-value>)` */
 	renderThemeFunc(value: string): string
@@ -51,12 +51,6 @@ export interface Context extends UserPluginOptions {
 
 	/** List all variants. */
 	getVariants(): Set<string>
-
-	/** Test an utility. */
-	isUtility(utility: string): boolean
-
-	/** Test a variant. */
-	isVariant(variant: string): boolean
 
 	/** List all color utilities. */
 	getColorUtilities(): Map<string, string[]>

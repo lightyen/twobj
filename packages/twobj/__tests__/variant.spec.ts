@@ -1,10 +1,10 @@
 import { context, tw } from "./context"
 
 test("plugin name", async () => {
-	expect(context.getVariantPluginName("group-hover:")).toEqual("pseudoClassVariants")
-	expect(context.getVariantPluginName("group-hover/xxx:")).toEqual("pseudoClassVariants")
-	expect(context.getVariantPluginName("group-hover/[xxx]:")).toEqual("pseudoClassVariants")
-	expect(context.getVariantPluginName("group-[xxx]:")).toEqual("pseudoClassVariants")
+	expect(context.resolveVariant("group-hover:")[1]?.pluginName).toEqual("pseudoClassVariants")
+	expect(context.resolveVariant("group-hover/xxx:")[1]?.pluginName).toEqual("pseudoClassVariants")
+	expect(context.resolveVariant("group-hover/[xxx]:")[1]?.pluginName).toEqual("pseudoClassVariants")
+	expect(context.resolveVariant("group-[xxx]:")[1]?.pluginName).toEqual("pseudoClassVariants")
 })
 
 test("hover", async () => {
