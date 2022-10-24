@@ -1,4 +1,11 @@
-import { tw } from "./context"
+import { context, tw } from "./context"
+
+test("plugin name", async () => {
+	expect(context.getVariantPluginName("group-hover:")).toEqual("pseudoClassVariants")
+	expect(context.getVariantPluginName("group-hover/xxx:")).toEqual("pseudoClassVariants")
+	expect(context.getVariantPluginName("group-hover/[xxx]:")).toEqual("pseudoClassVariants")
+	expect(context.getVariantPluginName("group-[xxx]:")).toEqual("pseudoClassVariants")
+})
 
 test("hover", async () => {
 	expect(tw`hover:bg-black`).toEqual({
@@ -138,6 +145,57 @@ test("supports", async () => {
 	expect(tw`supports-[abc-def]:bg-black`).toEqual({
 		"@supports (abc-def: var(--tw))": {
 			backgroundColor: "#000",
+		},
+	})
+})
+
+test("group", async () => {
+	expect(tw`group-invalid:block`).toEqual({
+		".group:invalid &": {
+			display: "block",
+		},
+	})
+	expect(tw`group-[]:block`).toEqual({
+		".group &": {
+			display: "block",
+		},
+	})
+	expect(tw`group-[.is-published]:block`).toEqual({
+		".group.is-published &": {
+			display: "block",
+		},
+	})
+	expect(tw`group-[:nth-of-type(3) &]:block`).toEqual({
+		":nth-of-type(3) .group &": {
+			display: "block",
+		},
+	})
+})
+
+test("peer", async () => {
+	expect(tw`peer-invalid:block`).toEqual({
+		".peer:invalid ~ &": {
+			display: "block",
+		},
+	})
+	expect(tw`peer-[]:block`).toEqual({
+		".peer ~ &": {
+			display: "block",
+		},
+	})
+	expect(tw`peer-[xxx]:block`).toEqual({
+		".peerxxx ~ &": {
+			display: "block",
+		},
+	})
+	expect(tw`peer-[.is-published]:block`).toEqual({
+		".peer.is-published ~ &": {
+			display: "block",
+		},
+	})
+	expect(tw`peer-[:nth-of-type(3) &]:block`).toEqual({
+		":nth-of-type(3) .peer ~ &": {
+			display: "block",
 		},
 	})
 })

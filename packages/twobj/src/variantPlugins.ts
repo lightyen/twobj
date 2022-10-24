@@ -125,7 +125,7 @@ export const variantPlugins: VariantPlugins = {
 		}
 
 		const variants: Record<string, VariantRender> = {
-			group: (_, { modifier, wrapped }) => {
+			group: (_, { modifier, wrapped }): [string, string] => {
 				if (modifier) {
 					if (wrapped) {
 						return [".group\\/[" + modifier + "]", " &"]
@@ -134,7 +134,7 @@ export const variantPlugins: VariantPlugins = {
 				}
 				return [".group", " &"]
 			},
-			peer: (_, { modifier, wrapped }) => {
+			peer: (_, { modifier, wrapped }): [string, string] => {
 				if (modifier) {
 					if (wrapped) {
 						return [".peer\\/[" + modifier + "]", " ~ &"]
@@ -150,8 +150,11 @@ export const variantPlugins: VariantPlugins = {
 				variantName,
 				(value, options) => {
 					const [a, b] = render(undefined, options)
-					value = parser.normalizeSelector(value)
-					return value.replace(/&(\S+)?/g, (_, pseudo = "") => a + pseudo + b)
+					if (!value.includes("&")) {
+						value = "&" + value
+					}
+					value = value.replace(/&(\S+)?/g, (_, pseudo = "") => a + pseudo + b)
+					return value
 				},
 				{ values: Object.fromEntries(pseudoVariants) },
 			)
