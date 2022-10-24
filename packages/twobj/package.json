@@ -24,7 +24,7 @@
     "compile": "del ./index.* ./parser ./config *.d.ts **/*.d.ts && tsup",
     "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
     "build": "npm run compile && npm run format",
-    "prepublish": "npm run build"
+    "prepack": "npm run build"
   },
   "files": [
     "parser",
