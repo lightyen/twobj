@@ -5081,7 +5081,7 @@ exports[`defaultConfig 1`] = `
       "1": "1",
       "2": "2",
     },
-    "suppports": {},
+    "supports": {},
     "textColor": {
       "amber": {
         "100": "#fef3c7",
