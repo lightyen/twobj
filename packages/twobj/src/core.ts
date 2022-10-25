@@ -262,18 +262,20 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	function addVariantSpec(key: string, core: VariantSpec | LookupVariantSpec): void {
 		if (validate) {
 			if (core.type === "static") {
-				if (__utilities.has(key)) {
+				if (__variants.has(key)) {
 					throw Error("Duplcate variant: " + key)
 				}
-				__utilities.add(key)
+				__variants.add(key)
 			} else if (core.type === "lookup") {
 				for (const k in core.values) {
-					if (__utilities.has(key + "-" + k)) {
+					if (__variants.has(key + "-" + k)) {
 						throw Error("Duplcate variant: " + key + "-" + k)
 					}
 				}
 			}
 		}
+
+		core.pluginName = currentPluginName
 
 		const obj = variantSpecCollection.get(key)
 		if (obj == null) {
@@ -302,6 +304,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 			}
 		}
+
+		core.pluginName = currentPluginName
 
 		const obj = utilitySpecCollection.get(key)
 		if (obj == null) {
@@ -363,7 +367,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		addVariantSpec(variantName, {
 			type: "static",
 			variant: createVariant(desc, post),
-			pluginName: currentPluginName,
 			post,
 		})
 	}
@@ -386,7 +389,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		addVariantSpec(variantName, {
 			type: "lookup",
 			values,
-			pluginName: currentPluginName,
 			post,
 			filterDefault,
 			represent(restIndex, node) {
@@ -418,7 +420,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				type: "static",
 				css: expandAtRules(css),
 				supportsNegativeValues: false,
-				pluginName: currentPluginName,
 				respectPrefix,
 				respectImportant,
 			})
@@ -595,7 +596,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 					represent,
 					supportsNegativeValues,
 					filterDefault,
-					pluginName: currentPluginName,
 					respectPrefix,
 					respectImportant,
 				})
@@ -647,7 +647,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				supportsNegativeValues,
 				filterDefault,
 				isColor,
-				pluginName: currentPluginName,
 				respectPrefix,
 				respectImportant,
 			})
