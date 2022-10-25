@@ -240,14 +240,12 @@ export const GlobalStyles = createGlobalStyle`${globalStyles}`
 		content: "var(--tw-content)",
 	},
 })
-
 e => ({
 	"@media (hover: hover) and (pointer: fine)": {
 		"&:hover": e,
 	},
 	"&:focus": e,
 })
-
 export function Header(props) {
 	return (
 		<h1
