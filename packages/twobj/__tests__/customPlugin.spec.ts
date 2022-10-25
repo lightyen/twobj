@@ -100,6 +100,35 @@ test("addUtilities with array", async () => {
 	})
 })
 
+test("addVariant and addUtilities", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			plugins: [
+				function ({ addUtilities, addVariant }) {
+					addVariant("test", () => ["@media (test)"])
+					addUtilities({
+						".foo": {
+							display: "grid",
+							"& > *": {
+								"grid-column": "span 2",
+							},
+						},
+					})
+				},
+			],
+		}),
+	)
+
+	expect(ctx.css("test:foo")).toEqual({
+		"@media (test)": {
+			display: "grid",
+			"& > *": {
+				gridColumn: "span 2",
+			},
+		},
+	})
+})
+
 test("addComponents", async () => {
 	const ctx = createContext(
 		resolveConfig({
