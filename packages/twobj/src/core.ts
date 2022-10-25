@@ -1,4 +1,4 @@
-import { classPlugins } from "./classPlugins"
+import { classPlugins, variantPlugins } from "./corePlugins"
 import { camelCase, createParser } from "./parser"
 import * as nodes from "./parser/nodes"
 import * as theme from "./parser/theme"
@@ -39,7 +39,6 @@ import {
 } from "./util"
 import { representAny, representTypes } from "./values"
 import { createVariant, mergeVariants, representVariant } from "./variant"
-import { variantPlugins } from "./variantPlugins"
 
 /** Create a tailwind context. */
 export function createContext(config: ResolvedConfigJS, { throwError = false }: CreateContextOptions = {}): Context {
@@ -106,9 +105,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		matchVariant,
 		config: legacyConfig,
 		theme: resolveTheme,
-		e(value) {
-			return escapeCss(value)
-		},
+		e: escapeCss,
 		variants(corePlugin) {
 			return []
 		},
