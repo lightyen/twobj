@@ -1,4 +1,4 @@
-import { createContext, resolveConfig } from "../src"
+import { createContext, defaultConfig, resolveConfig } from "../src"
 import { tw } from "./context"
 
 test("content", async () => {
@@ -143,7 +143,7 @@ test("fontSize", async () => {
 })
 
 test("fontFamily", async () => {
-	const ctx = createContext(
+	let ctx = createContext(
 		resolveConfig({
 			theme: {
 				extend: {
@@ -161,6 +161,28 @@ test("fontFamily", async () => {
 	expect(ctx.css`font-custom`).toEqual({
 		fontFamily: "Helvetica, Arial, sans-serif",
 		fontFeatureSettings: '"cv11", "ss01"',
+	})
+
+	const { fontFamily } = defaultConfig.theme ?? {}
+	const sans = fontFamily?.["sans"]
+	const defaultSans = Array.isArray(sans) ? sans : []
+	ctx = createContext(
+		resolveConfig({
+			theme: {
+				extend: {
+					fontFamily: {
+						inter: [
+							["Inter var", ...defaultSans],
+							{ fontFeatureSettings: '"case", "ss01", "ss02", "ss03"' },
+						],
+					},
+				},
+			},
+		}),
+	)
+	expect(ctx.css`font-inter`).toEqual({
+		fontFamily: `Inter var, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+		fontFeatureSettings: `"case", "ss01", "ss02", "ss03"`,
 	})
 })
 

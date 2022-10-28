@@ -512,7 +512,10 @@ export const classPlugins: ClassPlugins = {
 				.map(([key, value]) => {
 					const valueArray = Array.isArray(value) ? value : [value]
 					const [fontFamily, options = {}] = valueArray
-					if (!util.isCSSValue(fontFamily)) {
+					if (
+						!util.isCSSValue(fontFamily) &&
+						!(Array.isArray(fontFamily) && fontFamily.every(util.isCSSValue))
+					) {
 						return undefined
 					}
 					if (util.isCSSValue(options)) {
