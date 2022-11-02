@@ -180,6 +180,30 @@ test("fontFamily", async () => {
 			},
 		}),
 	)
+	expect(ctx.css`font-sans`).toEqual({
+		fontFamily: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+	})
+	expect(ctx.css`font-inter`).toEqual({
+		fontFamily: `Inter var, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+		fontFeatureSettings: `"case", "ss01", "ss02", "ss03"`,
+	})
+
+	ctx = createContext(
+		resolveConfig({
+			theme: {
+				extend: {
+					fontFamily: {
+						sans: [["Inter"], { fontFeatureSettings: '"cv11"' }],
+						inter: [["Inter var", ...sans], { fontFeatureSettings: '"case", "ss01", "ss02", "ss03"' }],
+					},
+				},
+			},
+		}),
+	)
+	expect(ctx.css`font-sans`).toEqual({
+		fontFamily: `Inter`,
+		fontFeatureSettings: `"cv11"`,
+	})
 	expect(ctx.css`font-inter`).toEqual({
 		fontFamily: `Inter var, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
 		fontFeatureSettings: `"case", "ss01", "ss02", "ss03"`,

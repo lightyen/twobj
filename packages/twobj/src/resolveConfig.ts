@@ -12,7 +12,7 @@ import type {
 	ResolvedConfigJS,
 	ResolveThemePath,
 } from "./types"
-import { isFunction } from "./util"
+import { isFunction, isPlainObject } from "./util"
 
 function getAllConfigs(config: ConfigJS): ConfigJS[] {
 	const presets = (config.presets ?? [defaultConfig])
@@ -190,18 +190,14 @@ function mergeExtensions({ theme, extend }: { extend: ConfigObject; theme: Confi
 		extend,
 	)
 
-	function isObject(value: unknown): value is Array<ConfigEntry | ConfigObject> | ConfigObject {
-		return typeof value === "object" && value !== null
-	}
-
 	function mergeExtensionCustomizer(merged: ConfigArray | ConfigObject, value: ConfigArray | ConfigObject) {
 		// When we have an array of objects, we do want to merge it
-		if (Array.isArray(merged) && isObject(merged[0])) {
+		if (Array.isArray(merged) && isPlainObject(merged[0])) {
 			return merged.concat(value)
 		}
 
 		// When the incoming value is an array, and the existing config is an object, prepend the existing object
-		if (Array.isArray(value) && isObject(value[0]) && isObject(merged)) {
+		if (Array.isArray(value) && isPlainObject(value[0]) && isPlainObject(merged)) {
 			return [merged, ...value]
 		}
 
