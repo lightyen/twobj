@@ -2,14 +2,19 @@
 
 Convert tailwind declarations to a style object
 
+[npm:latest]: https://www.npmjs.com/package/twobj/v/latest
+[npm:latest:badge]: https://img.shields.io/npm/v/twobj/latest?style=flat-square
+
+[![Latest Version][npm:latest:badge]][npm:latest]
+
 ## Demo
 
 - [CodeSandbox](https://codesandbox.io/s/tailwind-and-css-in-js-twobj-6txkjh)
 
 ## Differ from tailwindcss
 
-- Not support [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
-- Drop some useless features, you can NOT use `flex-grow`, `text-opacity-0` ...
+- Reject [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
+- Reject some useless features, you can NOT use `flex-grow`, `text-opacity-0` ...
 
 ### Syntaxes
 
@@ -94,3 +99,7 @@ const ctx = createContext(
   }),
 )
 ```
+
+### VSCode extension
+
+[Install via the Marketplace](https://marketplace.visualstudio.com/items?itemName=lightyen.twobj-intellisense)
