@@ -75,7 +75,7 @@ sm:(hover: focus:):bg-black
 (sm:hover: focus:):bg-black
 ```
 
-### Tailwind Plugins
+## Tailwind Plugins
 
 ```js
 const ctx = createContext(
@@ -100,6 +100,6 @@ const ctx = createContext(
 )
 ```
 
-### VSCode extension
+## VSCode extension
 
 [Install via the Marketplace](https://marketplace.visualstudio.com/items?itemName=lightyen.twobj-intellisense)
