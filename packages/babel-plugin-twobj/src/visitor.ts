@@ -55,7 +55,8 @@ export function createVisitor({
 							parent.isExpression() ||
 							parent.isAssignmentPattern() ||
 							parent.isVariableDeclarator() ||
-							parent.isExpressionStatement()
+							parent.isExpressionStatement() ||
+							parent.isJSXExpressionContainer()
 						) {
 							if (!state.globalInserted) {
 								if (isObject(ctx.globalStyles)) {
@@ -266,11 +267,10 @@ export function createVisitor({
 			case NodeType.ArbitraryClassname:
 			case NodeType.ArbitraryProperty:
 			case NodeType.Group:
-			case NodeType.WithOpacity:
-				loc = getLocation(file.code, loc, [error.node.range[0], error.node.range[0] + 1])
+				loc = getLocation(file.code, loc, [error.node.start, error.node.start + 1])
 				break
 			default:
-				loc = getLocation(file.code, loc, error.node.range)
+				loc = getLocation(file.code, loc, [error.node.start, error.node.end])
 				break
 		}
 
