@@ -7,5 +7,6 @@
   },
   "search.exclude": {
     "**/*.spec.ts.snap": true
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
