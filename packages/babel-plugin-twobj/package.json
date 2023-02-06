@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-twobj",
   "version": "2.1.0",
-  "homepage": "https://github.com/lightyen/babel-plugin-twobj",
+  "homepage": "https://github.com/lightyen/twobj/tree/main/packages/babel-plugin-twobj",
   "author": {
     "name": "lightyen",
     "url": "https://github.com/lightyen"
