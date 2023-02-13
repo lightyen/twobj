@@ -35177,6 +35177,12 @@ exports[`snapshots: max-h-min 1`] = `
 }
 `;
 
+exports[`snapshots: max-h-none 1`] = `
+{
+  "maxHeight": "none",
+}
+`;
+
 exports[`snapshots: max-h-px 1`] = `
 {
   "maxHeight": "1px",

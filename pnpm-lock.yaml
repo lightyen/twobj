@@ -91,14 +91,14 @@ importers:
       csstype: 3.1.1
       parsel-js: 1.0.2
       postcss: 8.4.18
-      tailwindcss: 3.2.4
+      tailwindcss: 3.2.7
     devDependencies:
       '@types/cssesc': 3.0.0
       cssesc: 3.0.0
       csstype: 3.1.1
       parsel-js: 1.0.2
       postcss: 8.4.18
-      tailwindcss: 3.2.4_postcss@8.4.18
+      tailwindcss: 3.2.7_postcss@8.4.18
 
   tools/vscode-extension:
     specifiers:
@@ -7080,6 +7080,14 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
+  /postcss-selector-parser/6.0.11:
+    resolution: {integrity: sha512-zbARubNdogI9j7WY4nQJBiNqQf3sLS3wCP4WfOidu+p28LofJqDH1tcXypGrcmMHhDk2t9wGhCsYe/+szLTy1g==}
+    engines: {node: '>=4'}
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+    dev: true
+
   /postcss-value-parser/4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
     dev: true
@@ -7883,8 +7891,8 @@ packages:
       webpack: 5.75.0_3xnfyofozkah664y36mvrz43pu
     dev: true
 
-  /tailwindcss/3.2.4_postcss@8.4.18:
-    resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
+  /tailwindcss/3.2.7_postcss@8.4.18:
+    resolution: {integrity: sha512-B6DLqJzc21x7wntlH/GsZwEXTBttVSl1FtCzC8WP4oBc/NKef7kaax5jeihkkCEWc831/5NDJ9gRNDK6NEioQQ==}
     engines: {node: '>=12.13.0'}
     hasBin: true
     peerDependencies:
@@ -7909,7 +7917,7 @@ packages:
       postcss-js: 4.0.0_postcss@8.4.18
       postcss-load-config: 3.1.4_postcss@8.4.18
       postcss-nested: 6.0.0_postcss@8.4.18
-      postcss-selector-parser: 6.0.10
+      postcss-selector-parser: 6.0.11
       postcss-value-parser: 4.2.0
       quick-lru: 5.1.1
       resolve: 1.22.1

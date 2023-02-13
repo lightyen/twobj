@@ -21,7 +21,7 @@
   },
   "scripts": {
     "doit": "pnpm update --interactive --latest",
-    "compile": "del ./index.* ./parser ./config *.d.ts **/*.d.ts && tsup",
+    "compile": "del index.* parser config *.d.ts **/*.d.ts && tsup",
     "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
     "build": "npm run compile && npm run format",
     "prepack": "npm run build"
@@ -38,6 +38,6 @@
     "csstype": "3.1.1",
     "parsel-js": "1.0.2",
     "postcss": "8.4.18",
-    "tailwindcss": "3.2.4"
+    "tailwindcss": "3.2.7"
   }
 }

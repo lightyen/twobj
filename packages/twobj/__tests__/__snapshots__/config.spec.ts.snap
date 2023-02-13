@@ -3373,6 +3373,7 @@ exports[`defaultConfig 1`] = `
       "full": "100%",
       "max": "max-content",
       "min": "min-content",
+      "none": "none",
       "px": "1px",
       "screen": "100vh",
     },

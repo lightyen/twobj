@@ -42,13 +42,13 @@ test("diff tailwindcss", async () => {
 		return true
 	})
 
-	const s0 = new Set(context.getUtilities())
-	const s1 = new Set(tailwind)
-	for (const s of s0) {
-		expect(s1).toContain(s)
+	const twobjSet = new Set(context.getUtilities())
+	const tailwindSet = new Set(tailwind)
+	for (const name of twobjSet) {
+		expect(tailwindSet).toContain(name)
 	}
-	for (const s of s1) {
-		expect(s0).toContain(s)
+	for (const name of tailwindSet) {
+		expect(twobjSet).toContain(name)
 	}
 
 	/** variants */

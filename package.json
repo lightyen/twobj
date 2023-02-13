@@ -4,8 +4,8 @@
   "scripts": {
     "doit": "pnpm update --interactive --latest",
     "test": "jest",
-    "build-core": "cd packages/twobj && npm run build",
-    "build-babel-plugin": "cd packages/babel-plugin-twobj && npm run build",
+    "build-core": "cd ./packages/twobj && npm run build",
+    "build-babel-plugin": "cd ./packages/babel-plugin-twobj && npm run build",
     "build": "npm run build-core && npm run build-babel-plugin"
   },
   "devDependencies": {

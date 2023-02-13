@@ -598,6 +598,7 @@ export const defaultTheme: ConfigJS["theme"] = {
 	}),
 	maxHeight: ({ theme }) => ({
 		...theme("spacing"),
+		none: "none",
 		full: "100%",
 		screen: "100vh",
 		min: "min-content",

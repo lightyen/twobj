@@ -1,6 +1,6 @@
 import { context } from "./context"
 
-const source = [
+const checkListArray = [
 	"container",
 	"sr-only",
 	"not-sr-only",
@@ -1341,6 +1341,7 @@ const source = [
 	"max-h-1.5",
 	"max-h-2.5",
 	"max-h-3.5",
+	"max-h-none",
 	"max-h-full",
 	"max-h-screen",
 	"max-h-min",
@@ -9185,14 +9186,14 @@ const source = [
 ]
 
 test("classList", async () => {
-	const classListSet = context.getUtilities()
-	const originSet = new Set<string>(source)
+	const twobjSet = context.getUtilities()
+	const checkList = new Set<string>(checkListArray)
 
-	for (const s of classListSet) {
-		expect(originSet).toContain(s)
+	for (const s of twobjSet) {
+		expect(checkList).toContain(s)
 	}
 
-	for (const s of originSet) {
-		expect(classListSet).toContain(s)
+	for (const s of checkList) {
+		expect(twobjSet).toContain(s)
 	}
 })
