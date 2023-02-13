@@ -83,10 +83,12 @@ export interface FontFamilyValueExtension extends ConfigObject {
 
 export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValue[], options: FontFamilyValueExtension]
 
+export type ScreenValue = CSSValue | { raw: string }
+
 export interface ContainerConfig {
 	center?: boolean
 	padding?: CSSValue | { [key: string]: CSSValue }
-	screens?: { [key: string]: CSSValue }
+	screens?: { [key: string]: ScreenValue }
 }
 
 export interface Theme {
@@ -1467,7 +1469,7 @@ export interface ResolvedThemeObject<V = ConfigEntry> {
 export interface ResolvedCustomTheme {}
 
 export interface ResolvedTheme extends ResolvedCustomTheme {
-	screens: ResolvedThemeObject<CSSValue>
+	screens: ResolvedThemeObject<ScreenValue>
 	container: ContainerConfig
 	colors: Palette
 	borderColor: Palette

@@ -77,3 +77,20 @@ test("overwrite default colors", async () => {
 	expect(ctx.css("text-blue")).toEqual({})
 	expect(ctx.css("text-blue-100")).toEqual({})
 })
+
+test("raw screen value", async () => {
+	const ctx = createContext(
+		resolveConfig({
+			theme: {
+				extend: {
+					screens: {
+						"ar-1/10": { raw: "(min-aspect-ratio: 1/10)" },
+						"ar-1_10": { raw: "(min-aspect-ratio: 1/10)" },
+					},
+				},
+			},
+		}),
+	)
+	expect(ctx.css("ar-1/10:text-blue-500")).toEqual({ "@media (min-aspect-ratio: 1/10)": { color: "#3b82f6" } })
+	expect(ctx.css("ar-1_10:text-blue-500")).toEqual({ "@media (min-aspect-ratio: 1/10)": { color: "#3b82f6" } })
+})

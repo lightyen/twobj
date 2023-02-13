@@ -13,6 +13,7 @@ import type {
 	PlainCSSProperties,
 	Post,
 	Primitive,
+	ScreenValue,
 	StaticSpec,
 } from "./types"
 
@@ -216,14 +217,15 @@ export function parseLength(value: string): { value: number; unit: string } | un
 export interface Breakpoint {
 	key: string
 	value: number
+	raw?: string
 }
 
-export function normalizeScreens(screens: Record<string, CSSValue>): Array<Breakpoint> {
+export function normalizeScreens(screens: Record<string, ScreenValue>): Breakpoint[] {
 	if (!screens || !isPlainObject(screens)) {
 		return []
 	}
 
-	const breakpoints: Array<{ key: string; value: number }> = []
+	const breakpoints: Breakpoint[] = []
 
 	for (const key in screens) {
 		const value = screens[key]
@@ -239,6 +241,8 @@ export function normalizeScreens(screens: Record<string, CSSValue>): Array<Break
 			if (value > 1) {
 				breakpoints.push({ key, value })
 			}
+		} else if (value != undefined && typeof value.raw === "string") {
+			breakpoints.push({ key, value: 0, raw: value.raw })
 		}
 	}
 

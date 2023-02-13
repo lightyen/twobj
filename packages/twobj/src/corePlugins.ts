@@ -218,11 +218,14 @@ export const classPlugins: ClassPlugins = {
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
 	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
-		const screens = util.normalizeScreens(themeObject.screens).reduce((breakpoints, { key, value }) => {
-			return Object.assign(breakpoints, { [`screen-${key}`]: value + "px" })
+		const normalized = util.normalizeScreens(themeObject.screens).reduce((breakpoints, { key, value }) => {
+			if (value > 0) {
+				return Object.assign(breakpoints, { [`screen-${key}`]: value + "px" })
+			}
+			return breakpoints
 		}, {})
 
-		const values = Object.assign({}, themeObject.maxWidth, screens)
+		const values = Object.assign({}, themeObject.maxWidth, normalized)
 		matchUtilities(
 			spec({
 				"max-w"(value) {
@@ -918,17 +921,19 @@ export const classPlugins: ClassPlugins = {
 			}
 		}
 
-		const others = screens.map<CSSProperties>(({ key, value }) => {
-			const width = value + "px"
-			return {
-				[`@media (min-width: ${width})`]: {
-					".container": {
-						maxWidth: width,
-						...generatePaddingFor(key),
-					} as CSSProperties,
-				},
-			}
-		})
+		const others = screens
+			.filter(e => e.value > 0)
+			.map<CSSProperties>(({ key, value }) => {
+				const width = value + "px"
+				return {
+					[`@media (min-width: ${width})`]: {
+						".container": {
+							maxWidth: width,
+							...generatePaddingFor(key),
+						} as CSSProperties,
+					},
+				}
+			})
 
 		addComponents([
 			{
@@ -2147,13 +2152,18 @@ export const variantPlugins: VariantPlugins = {
 	 *   - only  =>  `@{sm,md,lg.xl,2xl}:`
 	 */
 	screenVariants: plugin("screenVariants", ({ themeObject, addVariant, matchVariant }) => {
-		const screens = util.normalizeScreens(themeObject.screens)
-		interface Range {
+		interface ScreenRange {
 			a: number
 			b?: number
 		}
 
-		const values: Record<string, Range> = {}
+		const normalized = util.normalizeScreens(themeObject.screens)
+		const screens = normalized.filter(e => e.value > 0)
+		const rawMediaQueries = normalized.filter(
+			(e): e is { key: string; value: number; raw: string } => e.value == 0 && typeof e.raw === "string",
+		)
+
+		const values: Record<string, ScreenRange> = {}
 
 		for (let i = 0; i < screens.length - 1; i++) {
 			const a = screens[i]
@@ -2215,6 +2225,10 @@ export const variantPlugins: VariantPlugins = {
 			} else {
 				addVariant(`@${key}`, `@media (min-width: ${a}px)`)
 			}
+		}
+
+		for (const { key, raw } of rawMediaQueries) {
+			addVariant(key, "@media " + raw)
 		}
 	}),
 
