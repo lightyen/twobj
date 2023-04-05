@@ -112,14 +112,22 @@ export const defaultTheme: ConfigJS["theme"] = {
 	backdropOpacity: ({ theme }) => theme("opacity"),
 	backgroundImage: {
 		none: "none",
-		"gradient-to-t": "linear-gradient(to top, var(--tw-gradient-stops))",
-		"gradient-to-tr": "linear-gradient(to top right, var(--tw-gradient-stops))",
-		"gradient-to-r": "linear-gradient(to right, var(--tw-gradient-stops))",
-		"gradient-to-br": "linear-gradient(to bottom right, var(--tw-gradient-stops))",
-		"gradient-to-b": "linear-gradient(to bottom, var(--tw-gradient-stops))",
-		"gradient-to-bl": "linear-gradient(to bottom left, var(--tw-gradient-stops))",
-		"gradient-to-l": "linear-gradient(to left, var(--tw-gradient-stops))",
-		"gradient-to-tl": "linear-gradient(to top left, var(--tw-gradient-stops))",
+		"gradient-to-t":
+			"linear-gradient(to top, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-tr":
+			"linear-gradient(to top right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-r":
+			"linear-gradient(to right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-br":
+			"linear-gradient(to bottom right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-b":
+			"linear-gradient(to bottom, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-bl":
+			"linear-gradient(to bottom left, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-l":
+			"linear-gradient(to left, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+		"gradient-to-tl":
+			"linear-gradient(to top left, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
 	},
 	backgroundPosition: {
 		bottom: "bottom",
@@ -385,6 +393,29 @@ export const defaultTheme: ConfigJS["theme"] = {
 		black: "900",
 	},
 	gap: ({ theme }) => theme("spacing"),
+	gradientColorStopPositions: {
+		"0%": "0%",
+		"5%": "5%",
+		"10%": "10%",
+		"15%": "15%",
+		"20%": "20%",
+		"25%": "25%",
+		"30%": "30%",
+		"35%": "35%",
+		"40%": "40%",
+		"45%": "45%",
+		"50%": "50%",
+		"55%": "55%",
+		"60%": "60%",
+		"65%": "65%",
+		"70%": "70%",
+		"75%": "75%",
+		"80%": "80%",
+		"85%": "85%",
+		"90%": "90%",
+		"95%": "95%",
+		"100%": "100%",
+	},
 	gradientColorStops: ({ theme }) => theme("colors"),
 	gridAutoColumns: {
 		auto: "auto",
@@ -571,6 +602,14 @@ export const defaultTheme: ConfigJS["theme"] = {
 		wider: "0.05em",
 		widest: "0.1em",
 	},
+	lineClamp: {
+		1: "1",
+		2: "2",
+		3: "3",
+		4: "4",
+		5: "5",
+		6: "6",
+	},
 	lineHeight: {
 		none: "1",
 		tight: "1.25",
@@ -586,6 +625,9 @@ export const defaultTheme: ConfigJS["theme"] = {
 		8: "2rem",
 		9: "2.25rem",
 		10: "2.5rem",
+	},
+	listStyleImage: {
+		none: "none",
 	},
 	listStyleType: {
 		none: "none",
@@ -814,6 +856,7 @@ export const defaultTheme: ConfigJS["theme"] = {
 		"top-left": "top left",
 	},
 	transitionDelay: {
+		0: "0s",
 		75: "75ms",
 		100: "100ms",
 		150: "150ms",
@@ -825,6 +868,7 @@ export const defaultTheme: ConfigJS["theme"] = {
 	},
 	transitionDuration: {
 		DEFAULT: "150ms",
+		0: "0s",
 		75: "75ms",
 		100: "100ms",
 		150: "150ms",

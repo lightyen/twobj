@@ -333,10 +333,16 @@ export function renderThemeValue(target: unknown, opacity?: string): string {
 
 	if (typeof target === "object") {
 		if (Array.isArray(target)) {
-			if (target.every(v => typeof v === "string")) {
-				return target.join(", ")
+			if (target.some(v => typeof v !== "string")) {
+				const first = target[0]
+				if (Array.isArray(first)) {
+					return renderThemeValue(first)
+				}
 			}
-			return `Array[${target.join(", ")}]`
+			const isString = (v: unknown): v is string => {
+				return typeof v === "string"
+			}
+			return target.filter(isString).join(", ")
 		}
 		return (
 			`Object{\n` +

@@ -77,6 +77,8 @@ export function createLogger({
 		logLevel = levelString2LogLevel(logLevel)
 	}
 
+	const current = logLevel
+
 	return {
 		error: (...args: unknown[]) => log(LogLevel.Error, args),
 		warn: (...args: unknown[]) => log(LogLevel.Warning, args),
@@ -99,7 +101,7 @@ export function createLogger({
 	} as const
 
 	function log(level: LogLevel, args: unknown[]) {
-		if (logLevel < level) {
+		if (current < level) {
 			return
 		}
 		const datetime = `[${new Date().toLocaleString()}]`

@@ -73,15 +73,17 @@ export interface FontSizeValueExtension extends ConfigObject {
 
 export type FontSizeValue =
 	| CSSValue
-	| [fontSize: CSSValue, lineHeight: CSSValue]
-	| [fontSize: CSSValue, options: FontSizeValueExtension]
+	| [fontSize: CSSValue, lineHeight?: CSSValue]
+	| [fontSize: CSSValue, options?: FontSizeValueExtension]
 
 export interface FontFamilyValueExtension extends ConfigObject {
 	/** https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings */
 	fontFeatureSettings?: CSSValue
+	/** https://developer.mozilla.org/en-US/docs/Web/CSS/font-variation-settings */
+	fontVariationSettings?: CSSValue
 }
 
-export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValue[], options: FontFamilyValueExtension]
+export type FontFamilyValue = CSSValue | CSSValue[] | [value: CSSValue | CSSValue[], options?: FontFamilyValueExtension]
 
 export type ScreenValue = CSSValue | { raw: string }
 
@@ -610,6 +612,34 @@ export interface Theme {
 	 */
 	gradientColorStops?: WithResolvePathPalette
 
+	/** Utilities for controlling the color stops in background gradients.
+	 *
+	 * {@link https://tailwindcss.com/docs/gradient-color-stops Reference}
+	 */
+	gradientColorStopPositions?: CoreThemeObject<{
+		"0%": "0%"
+		"5%": "5%"
+		"10%": "10%"
+		"15%": "15%"
+		"20%": "20%"
+		"25%": "25%"
+		"30%": "30%"
+		"35%": "35%"
+		"40%": "40%"
+		"45%": "45%"
+		"50%": "50%"
+		"55%": "55%"
+		"60%": "60%"
+		"65%": "65%"
+		"70%": "70%"
+		"75%": "75%"
+		"80%": "80%"
+		"85%": "85%"
+		"90%": "90%"
+		"95%": "95%"
+		"100%": "100%"
+	}>
+
 	/** Utilities for applying grayscale filters to an element.
 	 *
 	 * {@link https://tailwindcss.com/docs/grayscale Reference}
@@ -895,6 +925,19 @@ export interface Theme {
 		widest: "0.1em"
 	}>
 
+	/** Utilities for clamping text to a specific number of lines.
+	 *
+	 * {@link https://tailwindcss.com/docs/line-clamp Reference}
+	 */
+	lineClamp?: CoreThemeObject<{
+		1: "1"
+		2: "2"
+		3: "3"
+		4: "4"
+		5: "5"
+		6: "6"
+	}>
+
 	/** Utilities for controlling the leading (line height) of an element.
 	 *
 	 * {@link https://tailwindcss.com/docs/line-height Reference}
@@ -914,6 +957,14 @@ export interface Theme {
 		8: "2rem"
 		9: "2.25rem"
 		10: "2.5rem"
+	}>
+
+	/** Utilities for controlling the marker images for list items.
+	 *
+	 * {@link https://tailwindcss.com/docs/list-style-image Reference}
+	 */
+	listStyleImage?: CoreThemeObject<{
+		none: "none"
 	}>
 
 	/** Utilities for controlling the bullet/number style of a list.
@@ -1522,6 +1573,7 @@ export interface ResolvedTheme extends ResolvedCustomTheme {
 	fontSize: ResolvedThemeObject<FontSizeValue>
 	fontWeight: ResolvedThemeObject
 	gap: ResolvedThemeObject
+	gradientColorStopPositions: ResolvedThemeObject
 	gridAutoColumns: ResolvedThemeObject
 	gridAutoRows: ResolvedThemeObject
 	gridColumn: ResolvedThemeObject
@@ -1536,7 +1588,9 @@ export interface ResolvedTheme extends ResolvedCustomTheme {
 	inset: ResolvedThemeObject
 	keyframes: ResolvedThemeObject<CSSProperties> & ConfigObject
 	letterSpacing: ResolvedThemeObject
+	lineClamp: ResolvedThemeObject
 	lineHeight: ResolvedThemeObject
+	listStyleImage: ResolvedThemeObject
 	listStyleType: ResolvedThemeObject
 	margin: ResolvedThemeObject
 	maxHeight: ResolvedThemeObject

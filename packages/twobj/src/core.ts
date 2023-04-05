@@ -5,11 +5,11 @@ import * as theme from "./parser/theme"
 import { isPluginWithOptions } from "./plugin"
 import { escapeCss, findClasses } from "./postcss"
 import type {
+	CSSProperties,
 	Context,
 	CorePluginFeatures,
 	CorePluginOptions,
 	CreateContextOptions,
-	CSSProperties,
 	LookupSpec,
 	LookupVariantSpec,
 	Palette,

@@ -42,6 +42,7 @@ export interface CorePluginFeatures {
 	breakBefore: boolean
 	breakInside: boolean
 	brightness: boolean
+	captionSide: boolean
 	caretColor: boolean
 	clear: boolean
 	columns: boolean
@@ -85,6 +86,7 @@ export interface CorePluginFeatures {
 	gridTemplateRows: boolean
 	height: boolean
 	hueRotate: boolean
+	hyphens: boolean
 	inset: boolean
 	invert: boolean
 	isolation: boolean
@@ -92,8 +94,10 @@ export interface CorePluginFeatures {
 	justifyItems: boolean
 	justifySelf: boolean
 	letterSpacing: boolean
+	lineClamp: boolean
 	lineHeight: boolean
 	listStylePosition: boolean
+	listStyleImage: boolean
 	listStyleType: boolean
 	margin: boolean
 	maxHeight: boolean

@@ -123,9 +123,23 @@ export function createTwContext(config: ResolvedConfigJS) {
 	const screens = Object.keys(config.theme.screens).sort(screenSorter)
 
 	const variantSet = context.getVariants()
-	const restVariants = Array.from(variantSet).filter(
-		key => screens.indexOf(key) === -1 && key !== "dark" && key !== "light" && key !== "placeholder",
-	)
+
+	const variants: [string[], string[], string[], string[]] = [screens, [], [], []]
+	for (const k of variantSet) {
+		switch (k) {
+			case "dark":
+				variants[1].push(k)
+				break
+			case "placeholder":
+				variants[2].push(k)
+				break
+			default:
+				if (screens.indexOf(k) === -1) {
+					variants[3].push(k)
+				}
+				break
+		}
+	}
 
 	const decorationColors: Map<string, ColorDesc> = new Map()
 	const completionColors: Map<string, string | undefined> = new Map()
@@ -140,13 +154,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 	}
 
 	const declsCache: Map<string, ReturnType<typeof renderDecls>> = new Map()
-	// sorted variants
-	const variants: [string[], string[], string[], string[]] = [
-		screens,
-		["dark", "light"],
-		["placeholder"],
-		restVariants,
-	]
+
 	const utilitySet = context.getUtilities()
 
 	const arbitrary: Record<string, Partial<Record<ValueType | "any", Set<string>>>> = {}

@@ -15,7 +15,7 @@ import type {
 	UtilityRender,
 	VariantRender,
 } from "./types"
-import * as util from "./util"
+import { isCSSValue, isNotEmpty, isObject, normalizeScreens } from "./util"
 import { withAlphaValue } from "./values"
 import { pseudoVariants } from "./variant"
 
@@ -81,7 +81,7 @@ function createColorPlugin(
 }
 
 const cssTransformValue = [
-	"var(--tw-transfrom-translate, var(--tw-transfrom-translate-default))",
+	"var(--tw-transfrom-translate, translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)))",
 	"rotate(var(--tw-rotate, 0))",
 	"skewX(var(--tw-skew-x, 0))",
 	"skewY(var(--tw-skew-y, 0))",
@@ -109,12 +109,14 @@ export const classPlugins: ClassPlugins = {
 		"borderColor",
 		[
 			["border", "borderColor"],
+			["border-x", ["borderLeftColor", "borderRightColor"]],
+			["border-y", ["borderTopColor", "borderBottomColor"]],
+			["border-s", "borderInlineStartColor"],
+			["border-e", "borderInlineEndColor"],
 			["border-t", "borderTopColor"],
 			["border-r", "borderRightColor"],
 			["border-b", "borderBottomColor"],
 			["border-l", "borderLeftColor"],
-			["border-x", ["borderLeftColor", "borderRightColor"]],
-			["border-y", ["borderTopColor", "borderBottomColor"]],
 		],
 		theme => ({
 			type: "color",
@@ -165,9 +167,11 @@ export const classPlugins: ClassPlugins = {
 	inset: createUtilityPlugin(
 		"inset",
 		[
-			["inset", ["top", "right", "bottom", "left"]],
+			["inset", "inset"],
 			["inset-x", ["left", "right"]],
 			["inset-y", ["top", "bottom"]],
+			["start", "insetInlineStart"],
+			["end", "insetInlineEnd"],
 			["top", "top"],
 			["right", "right"],
 			["bottom", "bottom"],
@@ -203,6 +207,8 @@ export const classPlugins: ClassPlugins = {
 			["m", "margin"],
 			["mx", ["marginLeft", "marginRight"]],
 			["my", ["marginTop", "marginBottom"]],
+			["ms", "marginInlineStart"],
+			["me", "marginInlineEnd"],
 			["mt", "marginTop"],
 			["mr", "marginRight"],
 			["mb", "marginBottom"],
@@ -218,7 +224,7 @@ export const classPlugins: ClassPlugins = {
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
 	width: createUtilityPlugin("width", [["w", "width"]], theme => ({ values: theme.width })),
 	maxWidth: plugin("maxWidth", ({ themeObject, matchUtilities }) => {
-		const normalized = util.normalizeScreens(themeObject.screens).reduce((breakpoints, { key, value }) => {
+		const normalized = normalizeScreens(themeObject.screens).reduce((breakpoints, { key, value }) => {
 			if (value > 0) {
 				return Object.assign(breakpoints, { [`screen-${key}`]: value + "px" })
 			}
@@ -243,9 +249,6 @@ export const classPlugins: ClassPlugins = {
 	flexGrow: createUtilityPlugin("flexGrow", [["grow", "flexGrow"]], theme => ({ values: theme.flexGrow })),
 	flexBasis: createUtilityPlugin("flexBasis", [["basis", "flexBasis"]], theme => ({ values: theme.flexBasis })),
 	transform: plugin("transform", ({ addDefaults, addUtilities }) => {
-		addDefaults("transform", {
-			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
-		})
 		addUtilities({
 			".transform": {
 				transform: cssTransformValue,
@@ -350,6 +353,8 @@ export const classPlugins: ClassPlugins = {
 			["scroll-m", "scrollMargin"],
 			["scroll-mx", ["scrollMarginLeft", "scrollMarginRight"]],
 			["scroll-my", ["scrollMarginTop", "scrollMarginBottom"]],
+			["scroll-ms", "scrollMarginInlineStart"],
+			["scroll-me", "scrollMarginInlineEnd"],
 			["scroll-mt", "scrollMarginTop"],
 			["scroll-mr", "scrollMarginRight"],
 			["scroll-mb", "scrollMarginBottom"],
@@ -366,6 +371,8 @@ export const classPlugins: ClassPlugins = {
 			["scroll-p", "scrollPadding"],
 			["scroll-px", ["scrollPaddingLeft", "scrollPaddingRight"]],
 			["scroll-py", ["scrollPaddingTop", "scrollPaddingBottom"]],
+			["scroll-ps", "scrollPaddingInlineStart"],
+			["scroll-pe", "scrollPaddingInlineEnd"],
 			["scroll-pt", "scrollPaddingTop"],
 			["scroll-pr", "scrollPaddingRight"],
 			["scroll-pb", "scrollPaddingBottom"],
@@ -375,6 +382,9 @@ export const classPlugins: ClassPlugins = {
 			values: theme.scrollPadding,
 		}),
 	),
+	listStyleImage: createUtilityPlugin("listStyleImage", [["list-image", "listStyleImage"]], theme => ({
+		values: theme.listStyleImage,
+	})),
 	listStyleType: createUtilityPlugin("listStyleType", [["list", "listStyleType"]], theme => ({
 		values: theme.listStyleType,
 	})),
@@ -406,10 +416,16 @@ export const classPlugins: ClassPlugins = {
 		"borderRadius",
 		[
 			["rounded", "borderRadius"],
+			["rounded-s", ["border-start-start-radius", "border-end-start-radius"]],
+			["rounded-e", ["border-start-end-radius", "border-end-end-radius"]],
 			["rounded-t", ["border-top-left-radius", "border-top-right-radius"]],
 			["rounded-r", ["border-top-right-radius", "border-bottom-right-radius"]],
 			["rounded-b", ["border-bottom-right-radius", "border-bottom-left-radius"]],
 			["rounded-l", ["border-top-left-radius", "border-bottom-left-radius"]],
+			["rounded-ss", "border-start-start-radius"],
+			["rounded-se", "border-start-end-radius"],
+			["rounded-ee", "border-end-end-radius"],
+			["rounded-es", "border-end-start-radius"],
 			["rounded-tl", "border-top-left-radius"],
 			["rounded-tr", "border-top-right-radius"],
 			["rounded-br", "border-bottom-right-radius"],
@@ -421,12 +437,14 @@ export const classPlugins: ClassPlugins = {
 		"borderWidth",
 		[
 			["border", "borderWidth"],
+			["border-x", ["borderLeftWidth", "borderRightWidth"]],
+			["border-y", ["borderTopWidth", "borderBottomWidth"]],
+			["border-s", "borderInlineStartWidth"],
+			["border-e", "borderInlineEndWidth"],
 			["border-t", "borderTopWidth"],
 			["border-r", "borderRightWidth"],
 			["border-b", "borderBottomWidth"],
 			["border-l", "borderLeftWidth"],
-			["border-x", ["borderLeftWidth", "borderRightWidth"]],
-			["border-y", ["borderTopWidth", "borderBottomWidth"]],
 		],
 		theme => ({ type: ["line-width", "length"], values: theme.borderWidth }),
 	),
@@ -495,6 +513,8 @@ export const classPlugins: ClassPlugins = {
 			["p", "padding"],
 			["px", ["paddingLeft", "paddingRight"]],
 			["py", ["paddingTop", "paddingBottom"]],
+			["ps", "paddingInlineStart"],
+			["pe", "paddingInlineEnd"],
 			["pt", "paddingTop"],
 			["pr", "paddingRight"],
 			["pb", "paddingBottom"],
@@ -507,30 +527,22 @@ export const classPlugins: ClassPlugins = {
 		supportsNegativeValues: true,
 	})),
 	fontFamily: plugin("fontFamily", ({ matchUtilities, themeObject }) => {
-		interface Template {
-			fontFeatureSettings?: CSSValue
-		}
 		const values = Object.fromEntries(
 			Object.entries(themeObject.fontFamily)
 				.map(([key, value]) => {
 					const valueArray = Array.isArray(value) ? value : [value]
 					const [fontFamily, options = {}] = valueArray
-					if (
-						!util.isCSSValue(fontFamily) &&
-						!(Array.isArray(fontFamily) && fontFamily.every(util.isCSSValue))
-					) {
+					if (!isCSSValue(fontFamily) && !(Array.isArray(fontFamily) && fontFamily.every(isCSSValue))) {
 						return undefined
 					}
-					if (util.isCSSValue(options)) {
+					if (isCSSValue(options)) {
 						return [key, { fontFamily: valueArray.join(", ") }] as [string, CSSProperties]
 					}
-					const tmp: Template = options
-
 					return [
 						key,
 						{
 							fontFamily: Array.isArray(fontFamily) ? fontFamily.join(", ") : fontFamily,
-							...tmp,
+							...options,
 						},
 					] as [string, CSSProperties]
 				})
@@ -595,14 +607,14 @@ export const classPlugins: ClassPlugins = {
 			Object.entries(themeObject.fontSize)
 				.map(([key, value]) => {
 					const [fontSize, options = {}] = Array.isArray(value) ? value : [value]
-					if (!util.isCSSValue(fontSize)) {
+					if (!isCSSValue(fontSize)) {
 						return undefined
 					}
-					if (!util.isCSSValue(options) && !util.isObject(options)) {
+					if (!isCSSValue(options) && !isObject(options)) {
 						return undefined
 					}
-					const tmp: Template = util.isCSSValue(options) ? { lineHeight: options } : options
-					if (Object.values(tmp).some(v => !util.isCSSValue(v))) {
+					const tmp: Template = isCSSValue(options) ? { lineHeight: options } : options
+					if (Object.values(tmp).some(v => !isCSSValue(v))) {
 						return undefined
 					}
 
@@ -618,11 +630,12 @@ export const classPlugins: ClassPlugins = {
 		)
 		matchUtilities(
 			{
-				text(value) {
+				text(value, { modifier, wrapped }) {
+					const lineHeight = modifier ? (wrapped ? modifier : themeObject.lineHeight[modifier]) : ""
 					if (typeof value === "string") {
-						return { fontSize: value }
+						return (lineHeight ? { fontSize: value, lineHeight } : { fontSize: value }) as CSSProperties
 					}
-					return value
+					return (lineHeight ? { ...value, lineHeight } : value) as CSSProperties
 				},
 			},
 			{
@@ -752,7 +765,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				ring(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-ring-offset-shadow":
 							"var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)",
@@ -789,6 +802,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			spec({
 				"divide-x"(value) {
+					// TODO: tailwindcss with Lightning CSS
 					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
@@ -820,7 +834,8 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"space-x"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					// TODO: tailwindcss with Lightning CSS
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
@@ -831,7 +846,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 				"space-y"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
@@ -846,32 +861,50 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	gradientColorStops: plugin("gradientColorStops", ({ matchUtilities, themeObject }) => {
-		function transparentTo(color: string) {
-			return withAlphaValue(color, "0")
-		}
-
 		matchUtilities(
 			spec({
 				from(value) {
 					return {
-						"--tw-gradient-from": value,
-						"--tw-gradient-to": transparentTo(value.toString()),
-						"--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to)`,
+						"--tw-gradient-from": value + " var(--tw-gradient-from-position,)",
 					}
 				},
 				via(value) {
 					return {
-						"--tw-gradient-to": transparentTo(value.toString()),
-						"--tw-gradient-stops": `var(--tw-gradient-from), ${value}, var(--tw-gradient-to)`,
+						"--tw-gradient-via": ", " + value + " var(--tw-gradient-via-position,)",
 					}
 				},
 				to(value) {
-					return { "--tw-gradient-to": value }
+					return {
+						"--tw-gradient-to": value + " var(--tw-gradient-to-position,)",
+					}
 				},
 			}),
 			{
 				type: "color",
 				values: themeObject.gradientColorStops,
+			},
+		)
+		matchUtilities(
+			spec({
+				from(value) {
+					return {
+						"--tw-gradient-from-position": value,
+					}
+				},
+				via(value) {
+					return {
+						"--tw-gradient-via-position": value,
+					}
+				},
+				to(value) {
+					return {
+						"--tw-gradient-to-position": value,
+					}
+				},
+			}),
+			{
+				type: ["length", "percentage"],
+				values: themeObject.gradientColorStopPositions,
 			},
 		)
 	}),
@@ -896,7 +929,7 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	container: plugin("container", ({ addComponents, themeObject, theme }) => {
-		const screens = util.normalizeScreens(theme("container.screens", themeObject.screens) ?? {})
+		const screens = normalizeScreens(theme("container.screens", themeObject.screens) ?? {})
 		const container = themeObject.container
 		const center = container.center ?? false
 		const padding = (container.padding as Record<string, string> | string | undefined) ?? {}
@@ -904,11 +937,11 @@ export const classPlugins: ClassPlugins = {
 		const generatePaddingFor = (key: string): CSSProperties => {
 			let value: CSSValue = ""
 
-			if (util.isCSSValue(padding)) {
+			if (isCSSValue(padding)) {
 				value = padding
 			} else if (typeof padding === "object") {
 				const p = padding[key]
-				if (util.isCSSValue(p)) {
+				if (isCSSValue(p)) {
 					value = p
 				} else {
 					return {}
@@ -957,7 +990,7 @@ export const classPlugins: ClassPlugins = {
 				animate(value) {
 					const names = parser.parseAnimations(typeof value === "string" ? value : "")
 					return {
-						...Object.assign({}, ...names.map(name => keyframes[name]).filter(util.isNotEmpty)),
+						...Object.assign({}, ...names.map(name => keyframes[name]).filter(isNotEmpty)),
 						animation: value,
 					}
 				},
@@ -1008,7 +1041,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				blur(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-blur": `blur(${value})`,
 						filter: cssFilterValue,
@@ -1033,7 +1066,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				brightness(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-brightness": `brightness(${value})`,
 						filter: cssFilterValue,
@@ -1058,7 +1091,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				contrast(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-contrast": `contrast(${value})`,
 						filter: cssFilterValue,
@@ -1083,7 +1116,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				grayscale(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-grayscale": `grayscale(${value})`,
 						filter: cssFilterValue,
@@ -1108,7 +1141,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"hue-rotate"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-hue-rotate": `hue-rotate(${value})`,
 						filter: cssFilterValue,
@@ -1133,7 +1166,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				invert(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-invert": `invert(${value})`,
 						filter: cssFilterValue,
@@ -1158,7 +1191,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				saturate(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-saturate": `saturate(${value})`,
 						filter: cssFilterValue,
@@ -1183,7 +1216,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				sepia(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-sepia": `sepia(${value})`,
 						filter: cssFilterValue,
@@ -1260,7 +1293,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-blur"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-blur": `blur(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1285,7 +1318,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-brightness"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-brightness": `brightness(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1310,7 +1343,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-contrast"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-contrast": `contrast(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1335,7 +1368,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-grayscale"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-grayscale": `grayscale(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1360,7 +1393,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-hue-rotate"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-hue-rotate": `hue-rotate(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1385,7 +1418,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-invert"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-invert": `invert(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1410,7 +1443,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-saturate"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-saturate": `saturate(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1435,7 +1468,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-sepia"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-sepia": `sepia(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1460,7 +1493,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-opacity"(value) {
-					if (!util.isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
 						"--tw-backdrop-opacity": `opacity(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1634,6 +1667,7 @@ export const classPlugins: ClassPlugins = {
 	}),
 	alignContent: plugin("alignContent", ({ addUtilities }) => {
 		addUtilities({
+			".content-normal": { alignContent: "normal" },
 			".content-center": { alignContent: "center" },
 			".content-start": { alignContent: "flex-start" },
 			".content-end": { alignContent: "flex-end" },
@@ -1641,6 +1675,7 @@ export const classPlugins: ClassPlugins = {
 			".content-around": { alignContent: "space-around" },
 			".content-evenly": { alignContent: "space-evenly" },
 			".content-baseline": { alignContent: "baseline" },
+			".content-stretch": { alignContent: "stretch" },
 		})
 	}),
 	alignItems: plugin("alignItems", ({ addUtilities }) => {
@@ -1848,12 +1883,14 @@ export const classPlugins: ClassPlugins = {
 	}),
 	justifyContent: plugin("justifyContent", ({ addUtilities }) => {
 		addUtilities({
+			".justify-normal": { justifyContent: "normal" },
 			".justify-start": { justifyContent: "flex-start" },
 			".justify-end": { justifyContent: "flex-end" },
 			".justify-center": { justifyContent: "center" },
 			".justify-between": { justifyContent: "space-between" },
 			".justify-around": { justifyContent: "space-around" },
 			".justify-evenly": { justifyContent: "space-evenly" },
+			".justify-stretch": { justifyContent: "stretch" },
 		})
 	}),
 	justifyItems: plugin("justifyItems", ({ addUtilities }) => {
@@ -1871,6 +1908,29 @@ export const classPlugins: ClassPlugins = {
 			".justify-self-end": { justifySelf: "end" },
 			".justify-self-center": { justifySelf: "center" },
 			".justify-self-stretch": { justifySelf: "stretch" },
+		})
+	}),
+	lineClamp: plugin("lineClamp", ({ matchUtilities, addUtilities, themeObject }) => {
+		matchUtilities(
+			spec({
+				"line-clamp"(value) {
+					return {
+						overflow: "hidden",
+						display: "-webkit-box",
+						"-webkit-box-orient": "vertical",
+						"-webkit-line-clamp": `${value}`,
+					}
+				},
+			}),
+			{ values: themeObject.lineClamp },
+		)
+		addUtilities({
+			".line-clamp-none": {
+				overflow: "visible",
+				display: "block",
+				"-webkit-box-orient": "horizontal",
+				"-webkit-line-clamp": "none",
+			},
 		})
 	}),
 	listStylePosition: plugin("listStylePosition", ({ addUtilities }) => {
@@ -2032,6 +2092,12 @@ export const classPlugins: ClassPlugins = {
 			".table-fixed": { tableLayout: "fixed" },
 		})
 	}),
+	captionSide: plugin("captionSide", ({ addUtilities }) => {
+		addUtilities({
+			".caption-top": { captionSide: "top" },
+			".caption-bottom": { captionSide: "bottom" },
+		})
+	}),
 	textAlign: plugin("textAlign", ({ addUtilities }) => {
 		addUtilities({
 			".text-left": { textAlign: "left" },
@@ -2074,6 +2140,13 @@ export const classPlugins: ClassPlugins = {
 			".normal-case": { textTransform: "none" },
 		})
 	}),
+	hyphens: plugin("hyphens", ({ addUtilities }) => {
+		addUtilities({
+			".hyphens-none": { hyphens: "none" },
+			".hyphens-manual": { hyphens: "manual" },
+			".hyphens-auto": { hyphens: "auto" },
+		})
+	}),
 	userSelect: plugin("userSelect", ({ addUtilities }) => {
 		addUtilities({
 			".select-none": { userSelect: "none" },
@@ -2096,6 +2169,7 @@ export const classPlugins: ClassPlugins = {
 			".whitespace-pre": { whiteSpace: "pre" },
 			".whitespace-pre-line": { whiteSpace: "pre-line" },
 			".whitespace-pre-wrap": { whiteSpace: "pre-wrap" },
+			".whitespace-break-spaces": { whiteSpace: "break-spaces" },
 		})
 	}),
 	wordBreak: plugin("wordBreak", ({ addUtilities }) => {
@@ -2114,17 +2188,17 @@ type VariantPlugins = {
 
 export const variantPlugins: VariantPlugins = {
 	darkVariants: plugin("darkVariants", ({ configObject, addVariant }) => {
+		if (configObject.darkMode === "class") {
+			addVariant("dark", ":is(.dark &)")
+			return
+		}
+
 		if (Array.isArray(configObject.darkMode)) {
 			const [mode, className = ".dark"] = configObject.darkMode
 			if (mode === "class") {
-				addVariant("dark", `${className} &`)
+				addVariant("dark", `:is(${className} &)`)
 				return
 			}
-		}
-
-		if (configObject.darkMode === "class") {
-			addVariant("dark", `.dark &`)
-			return
 		}
 
 		addVariant("dark", "@media (prefers-color-scheme: dark)")
@@ -2157,7 +2231,7 @@ export const variantPlugins: VariantPlugins = {
 			b?: number
 		}
 
-		const normalized = util.normalizeScreens(themeObject.screens)
+		const normalized = normalizeScreens(themeObject.screens)
 		const screens = normalized.filter(e => e.value > 0)
 		const rawMediaQueries = normalized.filter(
 			(e): e is { key: string; value: number; raw: string } => e.value == 0 && typeof e.raw === "string",
@@ -2301,8 +2375,8 @@ export const variantPlugins: VariantPlugins = {
 	}),
 
 	directionVariants: plugin("directionVariants", ({ addVariant }) => {
-		addVariant("ltr", '[dir="ltr"] &')
-		addVariant("rtl", '[dir="rtl"] &')
+		addVariant("ltr", ':is([dir="ltr"] &)')
+		addVariant("rtl", ':is([dir="rtl"] &)')
 	}),
 
 	reducedMotionVariants: plugin("reducedMotionVariants", ({ addVariant }) => {

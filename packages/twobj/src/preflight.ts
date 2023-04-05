@@ -1,19 +1,30 @@
 import { CSSProperties } from "./types"
 
+const box: CSSProperties = {
+	boxSizing: "border-box",
+	borderWidth: "0",
+	borderStyle: "solid",
+	borderColor: "theme('borderColor.DEFAULT', currentColor)",
+}
+
 export const preflight: CSSProperties = {
-	"*,::before,::after": {
-		boxSizing: "border-box",
-		borderWidth: "0",
-		borderStyle: "solid",
-		borderColor: "theme('borderColor.DEFAULT', currentColor)",
+	"*": { ...box },
+	"::before": {
+		...box,
+		"--tw-content": "''",
 	},
-	"::before,::after": { "--tw-content": "''" },
+	"::after": {
+		...box,
+		"--tw-content": "''",
+	},
 	html: {
 		lineHeight: "1.5",
 		WebkitTextSizeAdjust: "100%",
 		MozTabSize: "4",
 		tabSize: "4",
 		fontFamily: `theme('fontFamily.sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji")`,
+		fontFeatureSettings: `theme('fontFamily.sans.1.fontFeatureSettings', normal)`,
+		fontVariationSettings: `theme('fontFamily.sans.1.fontVariationSettings', normal)`,
 	},
 	body: { margin: "0", lineHeight: "inherit" },
 	hr: { height: "0", color: "inherit", borderTopWidth: "1px" },
