@@ -46,7 +46,6 @@ test("preflight", async () => {
 			"--tw-scroll-snap-strictness": "proximity",
 			"--tw-sepia": "var(--tw-empty,/**/ /**/)",
 			"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		},
 		"::backdrop": {
 			"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
@@ -84,7 +83,6 @@ test("preflight", async () => {
 			"--tw-scroll-snap-strictness": "proximity",
 			"--tw-sepia": "var(--tw-empty,/**/ /**/)",
 			"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		},
 	})
 
@@ -127,7 +125,6 @@ test("preflight", async () => {
 			"--tw-scroll-snap-strictness": "proximity",
 			"--tw-sepia": "var(--tw-empty,/**/ /**/)",
 			"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		},
 		"::backdrop": {
 			"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
@@ -165,7 +162,6 @@ test("preflight", async () => {
 			"--tw-scroll-snap-strictness": "proximity",
 			"--tw-sepia": "var(--tw-empty,/**/ /**/)",
 			"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-			"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		},
 	})
 })

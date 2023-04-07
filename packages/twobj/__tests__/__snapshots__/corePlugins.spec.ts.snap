@@ -2,6 +2,12 @@
 
 exports[`preflight 1`] = `
 {
+  "*": {
+    "borderColor": "#e5e7eb",
+    "borderStyle": "solid",
+    "borderWidth": "0",
+    "boxSizing": "border-box",
+  },
   "*, ::before, ::after": {
     "--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
     "--tw-backdrop-brightness": "var(--tw-empty,/**/ /**/)",
@@ -38,13 +44,6 @@ exports[`preflight 1`] = `
     "--tw-scroll-snap-strictness": "proximity",
     "--tw-sepia": "var(--tw-empty,/**/ /**/)",
     "--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-    "--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
-  },
-  "*,::before,::after": {
-    "borderColor": "#e5e7eb",
-    "borderStyle": "solid",
-    "borderWidth": "0",
-    "boxSizing": "border-box",
   },
   ":-moz-focusring": {
     "outline": "auto",
@@ -61,6 +60,13 @@ exports[`preflight 1`] = `
   },
   "::-webkit-search-decoration": {
     "WebkitAppearance": "none",
+  },
+  "::after": {
+    "--tw-content": "''",
+    "borderColor": "#e5e7eb",
+    "borderStyle": "solid",
+    "borderWidth": "0",
+    "boxSizing": "border-box",
   },
   "::backdrop": {
     "--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
@@ -98,10 +104,13 @@ exports[`preflight 1`] = `
     "--tw-scroll-snap-strictness": "proximity",
     "--tw-sepia": "var(--tw-empty,/**/ /**/)",
     "--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-    "--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
   },
-  "::before,::after": {
+  "::before": {
     "--tw-content": "''",
+    "borderColor": "#e5e7eb",
+    "borderStyle": "solid",
+    "borderWidth": "0",
+    "boxSizing": "border-box",
   },
   ":disabled": {
     "cursor": "default",
@@ -171,6 +180,8 @@ exports[`preflight 1`] = `
     "MozTabSize": "4",
     "WebkitTextSizeAdjust": "100%",
     "fontFamily": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"",
+    "fontFeatureSettings": "normal",
+    "fontVariationSettings": "normal",
     "lineHeight": "1.5",
     "tabSize": "4",
   },

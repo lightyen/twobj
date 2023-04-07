@@ -11,12 +11,12 @@ test("darkMode", async () => {
 		},
 	})
 	expect(ctx1.css("dark:bg-black")).toEqual({
-		".dark &": {
+		":is(.dark &)": {
 			backgroundColor: "#000",
 		},
 	})
 	expect(ctx2.css("dark:bg-black")).toEqual({
-		".test-dark &": {
+		":is(.test-dark &)": {
 			backgroundColor: "#000",
 		},
 	})

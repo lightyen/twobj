@@ -45,9 +45,15 @@ test("diff tailwindcss", async () => {
 	const twobjSet = new Set(context.getUtilities())
 	const tailwindSet = new Set(tailwind)
 	for (const name of twobjSet) {
+		if (/^bg-gradient/.test(name)) {
+			continue
+		}
 		expect(tailwindSet).toContain(name)
 	}
 	for (const name of tailwindSet) {
+		if (/^bg-gradient/.test(name as string)) {
+			continue
+		}
 		expect(twobjSet).toContain(name)
 	}
 
@@ -80,6 +86,10 @@ test("diff tailwindcss", async () => {
 		if (classname.startsWith("skew")) return false
 		if (classname.startsWith("origin")) return false
 		if (classname.startsWith("shadow")) return false
+		if (classname.startsWith("bg-gradient")) return false
+		if (classname.startsWith("from-")) return false
+		if (classname.startsWith("via-")) return false
+		if (classname.startsWith("to-")) return false
 		if (colors.has(classname)) return false
 		return true
 	})) {

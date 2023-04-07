@@ -1,7 +1,6 @@
 import { createGlobalStyle } from "styled-components"
 const globalStyles = {
 	"*, ::before, ::after": {
-		"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		"--tw-border-spacing-x": "0",
 		"--tw-border-spacing-y": "0",
 		"--tw-ring-inset": "var(--tw-empty,/**/ /**/)",
@@ -39,7 +38,6 @@ const globalStyles = {
 		"--tw-pinch-zoom": "var(--tw-empty,/**/ /**/)",
 	},
 	"::backdrop": {
-		"--tw-transfrom-translate-default": "translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))",
 		"--tw-border-spacing-x": "0",
 		"--tw-border-spacing-y": "0",
 		"--tw-ring-inset": "var(--tw-empty,/**/ /**/)",
@@ -76,13 +74,24 @@ const globalStyles = {
 		"--tw-pan-y": "var(--tw-empty,/**/ /**/)",
 		"--tw-pinch-zoom": "var(--tw-empty,/**/ /**/)",
 	},
-	"*,::before,::after": {
+	"*": {
 		boxSizing: "border-box",
 		borderWidth: "0",
 		borderStyle: "solid",
 		borderColor: "#e5e7eb",
 	},
-	"::before,::after": {
+	"::before": {
+		boxSizing: "border-box",
+		borderWidth: "0",
+		borderStyle: "solid",
+		borderColor: "#e5e7eb",
+		"--tw-content": "''",
+	},
+	"::after": {
+		boxSizing: "border-box",
+		borderWidth: "0",
+		borderStyle: "solid",
+		borderColor: "#e5e7eb",
 		"--tw-content": "''",
 	},
 	html: {
@@ -92,6 +101,8 @@ const globalStyles = {
 		tabSize: "4",
 		fontFamily:
 			'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+		fontFeatureSettings: "normal",
+		fontVariationSettings: "normal",
 	},
 	body: {
 		margin: "0",

@@ -70,7 +70,8 @@ test("backgroundColor", async () => {
 test("backgroundImage", async () => {
 	expect(tw`bg-none`).toEqual({ backgroundImage: "none" })
 	expect(tw`bg-gradient-to-tr`).toEqual({
-		backgroundImage: "linear-gradient(to top right, var(--tw-gradient-stops))",
+		backgroundImage:
+			"linear-gradient(to top right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
 	})
 	expect(tw`bg-[url('/img/hero-pattern.svg')]`).toEqual({
 		backgroundImage: "url('/img/hero-pattern.svg')",
