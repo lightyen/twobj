@@ -40,6 +40,10 @@ import {
 import { representAny, representTypes } from "./values"
 import { createVariant, mergeVariants, representVariant } from "./variant"
 
+interface Options {
+	internal?: boolean
+}
+
 /** Create a tailwind context. */
 export function createContext(config: ResolvedConfigJS, { throwError = false }: CreateContextOptions = {}): Context {
 	let validate = throwError
@@ -491,7 +495,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 			if (AT_APPLY.test(key)) {
 				const input = key.replace(AT_APPLY, "")
-				merge(target, merge(css(input), expandAtRules(value)))
+				merge(target, merge(css(input, { internal: true }), expandAtRules(value)))
 				continue
 			}
 
@@ -707,9 +711,9 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return classname(node)
 	}
 
-	function css(strings: string): CSSProperties
-	function css(strings: TemplateStringsArray): CSSProperties
-	function css(strings: string | TemplateStringsArray): CSSProperties {
+	function css(strings: string, options?: Options): CSSProperties
+	function css(strings: TemplateStringsArray, options?: Options): CSSProperties
+	function css(strings: string | TemplateStringsArray, options: Options): CSSProperties {
 		let value = ""
 		if (typeof strings !== "string") {
 			value = strings[0] as string
@@ -719,10 +723,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		const rootStyle: CSSProperties = {}
 		let importantRootStyle: CSSProperties | undefined
 
-		const importantSelector: string = typeof config.important === "string" ? config.important : ""
-		if (importantSelector) {
-			importantRootStyle = {}
-			rootStyle[`${importantSelector} &`] = importantRootStyle
+		if (!options?.internal) {
+			const importantSelector: string = typeof config.important === "string" ? config.important : ""
+			if (importantSelector) {
+				importantRootStyle = {}
+				rootStyle[`${importantSelector} &`] = importantRootStyle
+			}
 		}
 
 		const rootFn: Variant = (css = {}) => css
