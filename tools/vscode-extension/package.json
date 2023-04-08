@@ -2,7 +2,7 @@
   "name": "twobj-intellisense",
   "displayName": "Twobj IntelliSense",
   "markdownDescription": "IntelliSense extension for twobj",
-  "version": "2.3.7",
+  "version": "2.4.0",
   "author": "lightyen",
   "license": "MIT",
   "private": true,

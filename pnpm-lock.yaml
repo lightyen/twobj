@@ -257,7 +257,7 @@ importers:
         specifier: 5.9.1
         version: 5.9.1(typescript@5.0.4)(webpack@5.78.0)
       twobj:
-        specifier: ../../packages/twobj
+        specifier: 2.4.0
         version: link:../../packages/twobj
       typescript:
         specifier: 5.0.4
