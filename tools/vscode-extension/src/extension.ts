@@ -5,7 +5,7 @@ import { defaultLogger as console } from "~/common/logger"
 import packageInfo from "../package.json"
 import { workspaceClient } from "./client"
 import { intl } from "./locale"
-import { createTailwindLanguageService } from "./service"
+import type { Service } from "./service"
 import { NAME } from "./shared"
 
 const outputChannel = vscode.window.createOutputChannel(NAME)
@@ -115,7 +115,7 @@ export async function deactivate() {
 
 function createTextDocumentContentProvider(h: ReturnType<typeof createWorkspacesHandler>) {
 	let previewType: string | undefined
-	let srv: ReturnType<typeof createTailwindLanguageService> | undefined = undefined
+	let srv: Service | undefined = undefined
 
 	const emitter = new vscode.EventEmitter<URI>()
 
@@ -146,7 +146,7 @@ function createTextDocumentContentProvider(h: ReturnType<typeof createWorkspaces
 		if (!type) return
 
 		srv = undefined
-		const twInstances = new Map<string, { srv: ReturnType<typeof createTailwindLanguageService> }>()
+		const twInstances = new Map<string, { srv: Service }>()
 		for (const c of h.clients.values()) {
 			for (const srv of c.services.values()) {
 				const configPath = srv.getConfigPath()

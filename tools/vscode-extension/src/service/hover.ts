@@ -117,7 +117,7 @@ export default async function hover(
 
 	return doHover(result)
 
-	function doHover(result: ExtractedToken) {
+	async function doHover(result: ExtractedToken) {
 		try {
 			const { kind, ...token } = result
 			if (kind === "theme") {
@@ -131,7 +131,7 @@ export default async function hover(
 				const range = new vscode.Range(document.positionAt(token.start), document.positionAt(token.end))
 				const codes = new vscode.MarkdownString()
 				codes.appendCodeblock(
-					state.tw.renderGlobalStyles({
+					await state.tw.renderGlobalStyles({
 						rootFontSize: options.rootFontSize,
 						colorHint: options.hoverColorHint,
 						tabSize,
@@ -183,7 +183,7 @@ export default async function hover(
 						header.appendMarkdown("**arbitrary variant**")
 					}
 
-					const code = state.tw.renderVariant(target, tabSize)
+					const code = await state.tw.renderVariant(target, tabSize)
 					const codes = new vscode.MarkdownString()
 					if (code) codes.appendCodeblock(code, "scss")
 					if (!header.value && !codes.value) return undefined
@@ -236,7 +236,7 @@ export default async function hover(
 					}
 				}
 
-				const code = state.tw.renderClassname({
+				const code = await state.tw.renderClassname({
 					classname: value,
 					variants: context,
 					important,

@@ -19,10 +19,10 @@ import { createTailwindLoader } from "./service/tailwind"
 
 const context = { console, typescriptExtractor, typescript }
 
-export function createTailwindLanguageService(options: ServiceOptions) {
+export async function createTailwindLanguageService(options: ServiceOptions) {
 	const configPath = options.configPath
 	const isDefault = options.configPath == undefined
-	const state = createTailwindLoader()
+	const state = await createTailwindLoader()
 	const configPathMessage = configPath == undefined ? "defaultConfig" : configPath.path
 	let loading = false
 	let _colorProvider: ReturnType<typeof createColorProvider> | undefined
@@ -249,3 +249,5 @@ export function createTailwindLanguageService(options: ServiceOptions) {
 		return callback(defaultValue)
 	}
 }
+
+export type Service = Awaited<ReturnType<typeof createTailwindLanguageService>>

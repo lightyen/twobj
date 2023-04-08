@@ -3,6 +3,7 @@ import vscode from "vscode"
 import { URI, Utils } from "vscode-uri"
 import { defaultLogger as console } from "~/common/logger"
 import { findPnpApi } from "./common/config"
+import type { Service } from "./service"
 import { createTailwindLanguageService } from "./service"
 import { IDiagnostic } from "./service/diagnostics"
 import { SECTION_ID, Settings } from "./shared"
@@ -21,7 +22,7 @@ const prioritySorter = (a: URI, b: URI) => {
 	return b.toString().length - a.toString().length
 }
 
-function matchService(uri: URI, services: Map<string, ReturnType<typeof createTailwindLanguageService>>) {
+function matchService(uri: URI, services: Map<string, Service>) {
 	const uriString = uri.toString()
 	const list = Array.from(services)
 		.filter(([configDir]) => {
@@ -88,7 +89,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 	const serverSourceMapUri = Utils.joinPath(context.extensionUri, "dist", "extension.js.map")
 	const workspaceConfiguration = vscode.workspace.getConfiguration("", ws)
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection("tw")
-	const services: Map<string, ReturnType<typeof createTailwindLanguageService>> = new Map()
+	const services: Map<string, Service> = new Map()
 	const configFolders: Map<string, URI[]> = new Map()
 	let defaultServiceRunning = false
 	let activeTextEditor = vscode.window.activeTextEditor
@@ -170,10 +171,10 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			// const buffer = await fs.readFile(configPath)
 			// const code = new TextDecoder().decode(buffer)
 			// console.log(code)
-			addService(URI.parse(configPath.toString()), settings)
+			await addService(URI.parse(configPath.toString()), settings)
 		}
 
-		addDefaultService(settings)
+		await addDefaultService(settings)
 
 		const completionItemProvider: vscode.CompletionItemProvider<ICompletionItem> = {
 			provideCompletionItems(document, position, token, context) {
@@ -408,12 +409,8 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			new vscode.RelativePattern(ws, "**/{tailwind,tailwind.config}.{ts,js,cjs}"),
 		)
 		disposes.push(
-			watcher.onDidDelete(uri => {
-				removeService(uri, settings, true)
-			}),
-			watcher.onDidCreate(uri => {
-				addService(uri, settings, true)
-			}),
+			watcher.onDidDelete(uri => removeService(uri, settings, true)),
+			watcher.onDidCreate(uri => addService(uri, settings, true)),
 			watcher,
 		)
 
@@ -486,7 +483,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		}
 	}
 
-	function addDefaultService(settings: Settings, startNow = false) {
+	async function addDefaultService(settings: Settings, startNow = false) {
 		if (!settings.fallbackDefaultConfig) {
 			return
 		}
@@ -497,7 +494,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		if (services.has(ws.uri.toString())) {
 			return
 		}
-		const srv = createTailwindLanguageService({
+		const srv = await createTailwindLanguageService({
 			...settings,
 			serverSourceMapUri,
 			extensionUri,
@@ -510,7 +507,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		defaultServiceRunning = true
 	}
 
-	function addService(configPath: URI, settings: Settings, startNow = false) {
+	async function addService(configPath: URI, settings: Settings, startNow = false) {
 		const folder = Utils.dirname(configPath).toString()
 		const set = configFolders.get(folder)
 		if (!set) {
@@ -523,7 +520,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		const srv = services.get(key)
 
 		if (!srv) {
-			const srv = createTailwindLanguageService({
+			const srv = await createTailwindLanguageService({
 				...settings,
 				configPath,
 				serverSourceMapUri,
@@ -538,7 +535,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			const ext = Utils.extname(configPath)
 			const srvExt = Utils.extname(srv.configPath)
 			if (priority.indexOf(ext) < priority.indexOf(srvExt)) {
-				const s = createTailwindLanguageService({
+				const s = await createTailwindLanguageService({
 					...settings,
 					configPath,
 					serverSourceMapUri,
@@ -558,7 +555,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		}
 	}
 
-	function removeService(configPath: URI, settings: Settings, startNow = false) {
+	async function removeService(configPath: URI, settings: Settings, startNow = false) {
 		const folder = Utils.dirname(configPath).toString()
 		const srv = services.get(folder)
 		if (srv && srv.configPath.toString() === configPath.toString()) {
@@ -574,7 +571,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 				}
 				if (set.length > 0) {
 					const configPath = set.sort(prioritySorter)[0]
-					const srv = createTailwindLanguageService({
+					const srv = await createTailwindLanguageService({
 						...settings,
 						configPath,
 						serverSourceMapUri,

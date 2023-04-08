@@ -7,7 +7,7 @@ import type { ExtractedToken, TextDocument } from "~/common/extractors/types"
 import { defaultLogger as console } from "~/common/logger"
 import type { ServiceOptions } from "~/shared"
 import { Now } from "../common/time"
-import { ColorDesc, createTwContext, TwContext } from "./tailwind/tw"
+import { ColorDesc, TwContext } from "./tailwind/tw"
 
 function walk(program: parser.Program, check: (node: parser.Leaf) => boolean | void) {
 	for (const expr of program.expressions) {
@@ -222,10 +222,7 @@ export function createColorProvider(tw: TwContext, separator: string) {
 		}
 	}
 
-	function getThemeDecoration(
-		node: parser.ThemeValueNode,
-		tw: ReturnType<typeof createTwContext>,
-	): string | undefined {
+	function getThemeDecoration(node: parser.ThemeValueNode, tw: TwContext): string | undefined {
 		const out = parser.renderThemePath(tw.tailwindConfig, node.path)
 		if (out === "transparent") return out
 		const color = culori.parse(out)

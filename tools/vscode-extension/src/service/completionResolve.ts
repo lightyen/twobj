@@ -7,12 +7,12 @@ import { ICompletionItem } from "~/typings/completion"
 import { getName, getReferenceLinks } from "./referenceLink"
 import type { TailwindLoader } from "./tailwind"
 
-export default function completionResolve(
+export default async function completionResolve(
 	item: ICompletionItem,
 	state: TailwindLoader,
 	tabSize: number,
 	options: ServiceOptions,
-): ICompletionItem {
+): Promise<ICompletionItem> {
 	try {
 		const payload = item.data
 		if (!payload) return item
@@ -23,7 +23,7 @@ export default function completionResolve(
 		let keyword = item.label
 		if (pluginName) keyword = pluginName
 
-		item = resolve(item, keyword, state, tabSize, options, payload)
+		item = await resolve(item, keyword, state, tabSize, options, payload)
 
 		if (options.references && item.documentation) {
 			if (typeof item.documentation === "object") {
@@ -41,14 +41,14 @@ export default function completionResolve(
 	}
 }
 
-function resolve(
+async function resolve(
 	item: ICompletionItem,
 	keyword: string,
 	state: TailwindLoader,
 	tabSize: number,
 	options: ServiceOptions,
 	payload: ICompletionItem["data"],
-): ICompletionItem {
+): Promise<ICompletionItem> {
 	const { type, entry } = payload
 	if (type === "css") return item
 	if (type === "cssProp") {
@@ -75,7 +75,7 @@ function resolve(
 	}
 
 	if (type === "variant" || type === "screen") {
-		const code = state.tw.renderVariant(item.label, tabSize)
+		const code = await state.tw.renderVariant(item.label, tabSize)
 		if (!code) return item
 
 		const fencedCodeBlock = createFencedCodeBlock(code, CodeKind.SCSS)
@@ -100,7 +100,7 @@ function resolve(
 		}
 	}
 
-	const code = state.tw.renderClassname({ classname: item.label, rootFontSize: options.rootFontSize, tabSize })
+	const code = await state.tw.renderClassname({ classname: item.label, rootFontSize: options.rootFontSize, tabSize })
 	if (!code) return item
 
 	const fencedCodeBlock = createFencedCodeBlock(code, CodeKind.SCSS)

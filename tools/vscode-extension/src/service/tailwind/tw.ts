@@ -3,17 +3,20 @@ import { sha1 } from "object-hash"
 import type { AtRule, Root, Rule } from "postcss"
 import postcss from "postcss"
 import postcssJs from "postcss-js"
-import cssPrettier from "prettier/parser-postcss"
-import prettier from "prettier/standalone"
+import type { Plugin } from "prettier"
+import cssPrettier from "prettier/plugins/postcss"
+import * as prettier from "prettier/standalone"
 import type { CSSProperties, ResolvedConfigJS, ValueType } from "twobj"
 import { createContext } from "twobj"
 import * as parser from "twobj/parser"
 import { isColorFunction, isColorHexValue, isColorIdentifier, parse as parseColors } from "~/common/color"
 import { defaultLogger as console } from "~/common/logger"
 
-function beautify(root: Root, tabSize: number) {
+async function beautify(root: Root, tabSize: number) {
+	const text = root.toString()
 	try {
-		const result = postcss().process(format(root.toString()), { from: undefined })
+		const formatted = await format(text)
+		const result = postcss().process(formatted, { from: undefined })
 		root = result.root
 		const raws = root.raws
 		raws.indent = "".padStart(tabSize)
@@ -26,7 +29,7 @@ function beautify(root: Root, tabSize: number) {
 	function format(code: string) {
 		return prettier.format(code, {
 			parser: "scss",
-			plugins: [cssPrettier],
+			plugins: [cssPrettier as unknown as Plugin],
 			useTabs: false,
 			tabWidth: tabSize,
 		})
@@ -67,7 +70,7 @@ export type ColorDesc = {
 	borderColor?: string
 }
 
-export type TwContext = ReturnType<typeof createTwContext>
+export type TwContext = Awaited<ReturnType<typeof createTwContext>>
 
 export type CssText = string
 export type ScssText = string
@@ -109,7 +112,7 @@ function guessValue(typ: ValueType | "any") {
 	}
 }
 
-export function createTwContext(config: ResolvedConfigJS) {
+export async function createTwContext(config: ResolvedConfigJS) {
 	if (typeof config.prefix === "function") {
 		console.info("function prefix is not supported.")
 		config.prefix = ""
@@ -120,7 +123,15 @@ export function createTwContext(config: ResolvedConfigJS) {
 	}
 
 	const context = createContext(config)
-	const screens = Object.keys(config.theme.screens).sort(screenSorter)
+
+	const s = Object.keys(config.theme.screens).map(key => ({ key, value: "" }))
+	await Promise.all(
+		s.map(o => async () => {
+			o.value = await renderVariant(o.key)
+		}),
+	)
+	s.sort((a, b) => screenSorter(a.value, b.value))
+	const screens = s.map(o => o.key)
 
 	const variantSet = context.getVariants()
 
@@ -200,14 +211,14 @@ export function createTwContext(config: ResolvedConfigJS) {
 		arbitrary,
 	} as const
 
-	function renderVariant(value: string | parser.Variant, tabSize = 4): ScssText {
+	async function renderVariant(value: string | parser.Variant, tabSize = 4) {
 		const fn = context.wrap(value)
 		let { root } = postcss().process(fn(), {
 			from: undefined,
 			parser: postcssJs,
 		})
 
-		root = beautify(root, tabSize)
+		root = await beautify(root, tabSize)
 		comment(root)
 		return root.toString()
 	}
@@ -326,7 +337,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 		}
 	}
 
-	function renderClassname({
+	async function renderClassname({
 		classname,
 		variants = [],
 		important = false,
@@ -342,9 +353,9 @@ export function createTwContext(config: ResolvedConfigJS) {
 		tabSize?: number
 		colorHint?: "none" | "hex" | "rgb" | "hsl"
 		showVariants?: boolean
-	}): ScssText {
+	}) {
 		let { root } = render(classname, tabSize, showVariants, variants)
-		root = beautify(root, tabSize)
+		root = await beautify(root, tabSize)
 		if (important || rootFontSize) {
 			root.walkDecls(decl => {
 				decl.important ||= important
@@ -405,7 +416,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 			}
 			return 0
 		}
-		return getWidth(renderVariant(a)) - getWidth(renderVariant(b))
+		return getWidth(a) - getWidth(b)
 	}
 
 	function renderDecls(classname: string): {
@@ -441,7 +452,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 		return ret
 	}
 
-	function renderGlobalStyles({
+	async function renderGlobalStyles({
 		rootFontSize = 0,
 		tabSize = 4,
 		colorHint = "none",
@@ -461,7 +472,7 @@ export function createTwContext(config: ResolvedConfigJS) {
 			parser: postcssJs,
 		})
 
-		globalStyles = beautify(root, tabSize)
+		globalStyles = await beautify(root, tabSize)
 		const clone = globalStyles.clone()
 		decorate(clone)
 		return clone.toString()

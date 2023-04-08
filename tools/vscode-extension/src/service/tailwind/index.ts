@@ -6,9 +6,9 @@ import { calcFraction } from "~/common"
 import type { Extractor } from "~/common/extractors/types"
 import { cssDataManager } from "~/common/vscode-css-languageservice"
 import { ICompletionItem } from "~/typings/completion"
-import { createConfigReader, LoadConfigOptions } from "../../common/config"
-import { createTwContext, TwContext } from "./tw"
-export type TailwindLoader = ReturnType<typeof createTailwindLoader>
+import { LoadConfigOptions, createConfigReader } from "../../common/config"
+import { TwContext, createTwContext } from "./tw"
+export type TailwindLoader = Awaited<ReturnType<typeof createTailwindLoader>>
 
 /**
  * Completion item tags are extra annotations that tweak the rendering of a completion
@@ -35,7 +35,7 @@ function isExtrator(value: unknown): value is Extractor {
 	return true
 }
 
-export function createTailwindLoader() {
+export async function createTailwindLoader() {
 	let classCompletionList: ICompletionItem[] | undefined
 	let cssPropsCompletionList: ICompletionItem[] | undefined
 
@@ -89,16 +89,16 @@ export function createTailwindLoader() {
 				throw error
 			} finally {
 				config = resolveConfig(__config)
-				createContext()
+				await createContext()
 			}
 		} else {
 			config = resolveConfig(defaultConfig)
-			createContext()
+			await createContext()
 		}
 	}
 
-	function createContext() {
-		tw = createTwContext(config)
+	async function createContext() {
+		tw = await createTwContext(config)
 		classCompletionList = undefined
 		variants = new Fuse([], { includeScore: true })
 		classnames = new Fuse([], { includeScore: true })
