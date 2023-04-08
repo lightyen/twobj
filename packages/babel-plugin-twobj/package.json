@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-twobj",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "homepage": "https://github.com/lightyen/twobj/tree/main/packages/babel-plugin-twobj",
   "author": {
     "name": "lightyen",
@@ -24,7 +24,7 @@
     "prepack": "npm run build"
   },
   "peerDependencies": {
-    "twobj": ">= 2.3.0 < 3"
+    "twobj": ">= 2.4.0 < 3"
   },
   "devDependencies": {
     "@babel/core": "7.19.6",
