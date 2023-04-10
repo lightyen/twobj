@@ -103,12 +103,31 @@ export function findClasses(selector: string): Map<string, string> {
 
 	return classes
 
-	function isObject(node: Node | undefined): node is Node {
-		return typeof node === "object" && node !== null
+	function isExist(node: parsel.AST | null | undefined): node is parsel.AST {
+		return typeof node === "object" && node != null
 	}
 
-	function walk(node: Node) {
-		if (!isObject(node)) {
+	function isTokens(node: parsel.AST): node is parsel.Tokens {
+		switch (node.type) {
+			case "complex":
+			case "compound":
+			case "list":
+				return false
+			default:
+				return true
+		}
+	}
+
+	function isList(node: parsel.AST): node is parsel.List {
+		return node.type === "list" || Array.isArray(node["list"])
+	}
+
+	function isComplex(node: parsel.AST): node is parsel.Complex {
+		return node.type === "complex" || node["left"] != null || node["right"] != null
+	}
+
+	function walk(node: parsel.AST | null | undefined) {
+		if (!isExist(node)) {
 			return
 		}
 
@@ -116,26 +135,26 @@ export function findClasses(selector: string): Map<string, string> {
 			return
 		}
 
-		if (Array.isArray(node.list)) {
+		if (isList(node)) {
 			node.list.forEach(walk)
 			return
 		}
 
-		if (isObject(node.subtree)) {
+		if (isTokens(node)) {
 			walk(node.subtree)
 			return
 		}
 
-		if (isObject(node.left)) {
+		if (isComplex(node) && isExist(node.left)) {
 			walk(node.left)
 		}
 
-		if (isObject(node.right)) {
+		if (isComplex(node) && isExist(node.right)) {
 			walk(node.right)
 		}
 	}
 
-	function callback(node: Node): boolean | void {
+	function callback(node: parsel.AST): boolean | void {
 		if (node.type === "class") {
 			if (!classes.has(node.name)) {
 				const replaced = selector.replace(new RegExp(`[.]${escapeRegexp(node.name)}(?!-)\\b`, "g"), "&")
