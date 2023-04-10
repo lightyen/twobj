@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConfigJS, ResolvedConfigJS } from "./config"
 import { CorePluginFeatures } from "./features"
-import { ArbitraryParameters, ConfigObject, CSSProperties, Post, Variant } from "./specification"
+import { ArbitraryParameters, CSSProperties, ConfigObject, Post, Variant } from "./specification"
 import { ResolvePath } from "./theme"
 
 export type ValueType =
@@ -30,6 +30,7 @@ export interface MatchOption<Value = any> {
 	values?: Record<string, Value>
 	type?: ValueType | ValueType[]
 	supportsNegativeValues?: boolean
+	/** Exclude 'DEFAULT' value. */
 	filterDefault?: boolean
 	respectPrefix?: boolean
 	respectImportant?: boolean

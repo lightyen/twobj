@@ -23,8 +23,6 @@ type ClassPlugins = {
 	[P in keyof CorePluginFeatures]?: UnnamedPlugin
 }
 
-const emptyCssValue: CSSValue = "var(--tw-empty,/**/ /**/)"
-
 function spec(
 	utilities: Record<
 		string,
@@ -33,6 +31,45 @@ function spec(
 ) {
 	return utilities as Record<string, (...args: ArbitraryParameters) => CSSProperties>
 }
+
+const cssFilterValue = [
+	"var(--tw-blur,)",
+	"var(--tw-brightness,)",
+	"var(--tw-contrast,)",
+	"var(--tw-grayscale,)",
+	"var(--tw-hue-rotate,)",
+	"var(--tw-invert,)",
+	"var(--tw-saturate,)",
+	"var(--tw-sepia,)",
+	"var(--tw-drop-shadow,)",
+].join(" ")
+
+const cssBackdropFilterValue = [
+	"var(--tw-backdrop-blur,)",
+	"var(--tw-backdrop-brightness,)",
+	"var(--tw-backdrop-contrast,)",
+	"var(--tw-backdrop-grayscale,)",
+	"var(--tw-backdrop-hue-rotate,)",
+	"var(--tw-backdrop-invert,)",
+	"var(--tw-backdrop-opacity,)",
+	"var(--tw-backdrop-saturate,)",
+	"var(--tw-backdrop-sepia,)",
+].join(" ")
+
+const cssTransformValue = [
+	"var(--tw-transfrom-translate, translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)))",
+	"rotate(var(--tw-rotate, 0))",
+	"skewX(var(--tw-skew-x, 0))",
+	"skewY(var(--tw-skew-y, 0))",
+	"scaleX(var(--tw-scale-x, 1))",
+	"scaleY(var(--tw-scale-y, 1))",
+].join(" ")
+
+const cssFontVariantNumericValue =
+	"var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,)"
+
+const cssBoxShadowValue =
+	"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)"
 
 function createUtilityPlugin<Value = unknown>(
 	pluginName: string,
@@ -79,15 +116,6 @@ function createColorPlugin(
 		values: getValues(themeObject) as ConfigObject,
 	}))
 }
-
-const cssTransformValue = [
-	"var(--tw-transfrom-translate, translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)))",
-	"rotate(var(--tw-rotate, 0))",
-	"skewX(var(--tw-skew-x, 0))",
-	"skewY(var(--tw-skew-y, 0))",
-	"scaleX(var(--tw-scale-x, 1))",
-	"scaleY(var(--tw-scale-y, 1))",
-].join(" ")
 
 export const classPlugins: ClassPlugins = {
 	preflight: plugin("preflight", ({ addBase }) => {
@@ -248,7 +276,7 @@ export const classPlugins: ClassPlugins = {
 	flexShrink: createUtilityPlugin("flexShrink", [["shrink", "flexShrink"]], theme => ({ values: theme.flexShrink })),
 	flexGrow: createUtilityPlugin("flexGrow", [["grow", "flexGrow"]], theme => ({ values: theme.flexGrow })),
 	flexBasis: createUtilityPlugin("flexBasis", [["basis", "flexBasis"]], theme => ({ values: theme.flexBasis })),
-	transform: plugin("transform", ({ addDefaults, addUtilities }) => {
+	transform: plugin("transform", ({ addUtilities }) => {
 		addUtilities({
 			".transform": {
 				transform: cssTransformValue,
@@ -448,30 +476,26 @@ export const classPlugins: ClassPlugins = {
 		],
 		theme => ({ type: ["line-width", "length"], values: theme.borderWidth }),
 	),
-	borderSpacing: plugin("borderSpacing", ({ addDefaults, matchUtilities, themeObject }) => {
-		addDefaults("border-spacing", {
-			"--tw-border-spacing-x": "0",
-			"--tw-border-spacing-y": "0",
-		})
+	borderSpacing: plugin("borderSpacing", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			spec({
 				"border-spacing": value => {
 					return {
 						"--tw-border-spacing-x": value,
 						"--tw-border-spacing-y": value,
-						borderSpacing: "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
+						borderSpacing: "var(--tw-border-spacing-x, 0) var(--tw-border-spacing-y, 0)",
 					}
 				},
 				"border-spacing-x": value => {
 					return {
 						"--tw-border-spacing-x": value,
-						borderSpacing: "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
+						borderSpacing: "var(--tw-border-spacing-x, 0) var(--tw-border-spacing-y, 0)",
 					}
 				},
 				"border-spacing-y": value => {
 					return {
 						"--tw-border-spacing-y": value,
-						borderSpacing: "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
+						borderSpacing: "var(--tw-border-spacing-x, 0) var(--tw-border-spacing-y, 0)",
 					}
 				},
 			}),
@@ -678,33 +702,23 @@ export const classPlugins: ClassPlugins = {
 			filterDefault: true,
 		}),
 	),
-	boxShadow: plugin("boxShadow", ({ addDefaults, matchUtilities, themeObject }) => {
-		addDefaults("box-shadow", {
-			"--tw-ring-inset": emptyCssValue,
-			"--tw-ring-offset-shadow": "0 0 #0000",
-			"--tw-ring-shadow": "0 0 #0000",
-		})
-
+	boxShadow: plugin("boxShadow", ({ matchUtilities, themeObject }) => {
 		matchUtilities(
 			{
 				shadow(value): CSSProperties {
 					if (typeof value !== "string") {
 						return {
-							boxShadow:
-								"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+							boxShadow: cssBoxShadowValue,
 						}
 					}
 					if (value === "none") {
 						return {
 							"--tw-shadow": "0 0 #0000",
-							boxShadow: `var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)`,
+							boxShadow: cssBoxShadowValue,
 						}
 					}
 
 					// NOTE: DEFAULT shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)
-
-					const _color: parser.Param[] = []
-					let index = 0
 
 					const shadowColored = parser
 						.parseBoxShadowValues(value)
@@ -712,30 +726,15 @@ export const classPlugins: ClassPlugins = {
 							if (typeof val === "string") {
 								return val
 							}
-							const { color, value } = val
-							if (color) {
-								_color.push(color)
-								return value.replace(
-									"--tw-shadow-default-color",
-									"--tw-shadow-default-color-" + index++,
-								)
-							}
+							const { value } = val
 							return value
 						})
 						.join(", ")
 
 					return {
-						..._color.reduce((current, color, index) => {
-							if (typeof color !== "string") {
-								current["--tw-shadow-default-color-" + index] = value.slice(...color.range)
-							} else {
-								current["--tw-shadow-default-color-" + index] = color
-							}
-							return current
-						}, {}),
 						"--tw-shadow-colored": shadowColored,
 						"--tw-shadow": "var(--tw-shadow-colored)",
-						boxShadow: `var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)`,
+						boxShadow: cssBoxShadowValue,
 					}
 				},
 			},
@@ -749,28 +748,27 @@ export const classPlugins: ClassPlugins = {
 		filterDefault: true, // 'shadow' already exists
 		values: theme.boxShadowColor,
 	})),
-	ringWidth: plugin("ringWidth", ({ matchUtilities, addDefaults, addUtilities, themeObject, theme }) => {
-		const ringColorDefault = withAlphaValue(theme("ringColor.DEFAULT", "rgb(147 197 253)") as string, "0.5")
-		addDefaults("ring-width", {
-			"--tw-ring-inset": emptyCssValue,
-			"--tw-ring-offset-width": (theme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString(),
-			"--tw-ring-offset-color": (theme("ringOffsetColor.DEFAULT", "#fff") as CSSValue).toString(),
-			"--tw-ring-color": ringColorDefault.toString(),
-			"--tw-ring-offset-shadow": "0 0 #0000",
-			"--tw-ring-shadow": "0 0 #0000",
-		})
+	ringWidth: plugin("ringWidth", ({ matchUtilities, addUtilities, themeObject, theme }) => {
+		const defaultRingOffsetWidth = (theme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString()
+		const defaultRingOffsetColor = (theme("ringOffsetWidth.DEFAULT", "#fff") as CSSValue).toString()
+		const defaultRingColor = withAlphaValue(theme("ringColor.DEFAULT", "#3b82f6") as string, "0.5").toString()
+
 		addUtilities({
 			".ring-inset": { "--tw-ring-inset": "inset" },
 		})
+
+		const ringOffsetShadowValue = `var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, ${defaultRingOffsetWidth}) var(--tw-ring-offset-color, ${defaultRingOffsetColor})`
+		const ringShadowValue = (value: CSSValue) =>
+			`var(--tw-ring-inset,) 0 0 0 calc(${value} + var(--tw-ring-offset-width, ${defaultRingOffsetWidth})) var(--tw-ring-color, ${defaultRingColor})`
+
 		matchUtilities(
 			{
 				ring(value) {
 					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
-						"--tw-ring-offset-shadow":
-							"var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)",
-						"--tw-ring-shadow": `var(--tw-ring-inset) 0 0 0 calc(${value} + var(--tw-ring-offset-width)) var(--tw-ring-color)`,
-						boxShadow: "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)",
+						"--tw-ring-offset-shadow": ringOffsetShadowValue,
+						"--tw-ring-shadow": ringShadowValue(value),
+						boxShadow: cssBoxShadowValue,
 					}
 				},
 			},
@@ -998,46 +996,13 @@ export const classPlugins: ClassPlugins = {
 			{ values: themeObject.animation },
 		)
 	}),
-	filter: plugin("filter", ({ addDefaults, addUtilities }) => {
-		addDefaults("filter", {
-			"--tw-blur": emptyCssValue,
-			"--tw-brightness": emptyCssValue,
-			"--tw-contrast": emptyCssValue,
-			"--tw-grayscale": emptyCssValue,
-			"--tw-hue-rotate": emptyCssValue,
-			"--tw-invert": emptyCssValue,
-			"--tw-saturate": emptyCssValue,
-			"--tw-sepia": emptyCssValue,
-			"--tw-drop-shadow": emptyCssValue,
-		})
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
+	filter: plugin("filter", ({ addUtilities }) => {
 		addUtilities({
 			".filter": { filter: cssFilterValue },
 			".filter-none": { filter: "none" },
 		})
 	}),
 	blur: plugin("blur", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				blur(value) {
@@ -1052,17 +1017,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	brightness: plugin("brightness", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				brightness(value) {
@@ -1077,17 +1031,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	contrast: plugin("contrast", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				contrast(value) {
@@ -1102,17 +1045,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	grayscale: plugin("grayscale", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				grayscale(value) {
@@ -1127,17 +1059,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	hueRotate: plugin("hueRotate", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				"hue-rotate"(value) {
@@ -1152,17 +1073,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	invert: plugin("invert", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				invert(value) {
@@ -1177,17 +1087,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	saturate: plugin("saturate", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				saturate(value) {
@@ -1202,17 +1101,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	sepia: plugin("sepia", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			{
 				sepia(value) {
@@ -1227,17 +1115,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	dropShadow: plugin("dropShadow", ({ matchUtilities, themeObject }) => {
-		const cssFilterValue = [
-			"var(--tw-blur)",
-			"var(--tw-brightness)",
-			"var(--tw-contrast)",
-			"var(--tw-grayscale)",
-			"var(--tw-hue-rotate)",
-			"var(--tw-invert)",
-			"var(--tw-saturate)",
-			"var(--tw-sepia)",
-			"var(--tw-drop-shadow)",
-		].join(" ")
 		matchUtilities(
 			spec({
 				"drop-shadow"(value) {
@@ -1250,46 +1127,13 @@ export const classPlugins: ClassPlugins = {
 			{ values: themeObject.dropShadow },
 		)
 	}),
-	backdropFilter: plugin("backdropFilter", ({ addDefaults, addUtilities }) => {
-		addDefaults("backdrop-filter", {
-			"--tw-backdrop-blur": emptyCssValue,
-			"--tw-backdrop-brightness": emptyCssValue,
-			"--tw-backdrop-contrast": emptyCssValue,
-			"--tw-backdrop-grayscale": emptyCssValue,
-			"--tw-backdrop-hue-rotate": emptyCssValue,
-			"--tw-backdrop-invert": emptyCssValue,
-			"--tw-backdrop-opacity": emptyCssValue,
-			"--tw-backdrop-saturate": emptyCssValue,
-			"--tw-backdrop-sepia": emptyCssValue,
-		})
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
+	backdropFilter: plugin("backdropFilter", ({ addUtilities }) => {
 		addUtilities({
 			".backdrop-filter": { backdropFilter: cssBackdropFilterValue },
 			".backdrop-filter-none": { backdropFilter: "none" },
 		})
 	}),
 	backdropBlur: plugin("backdropBlur", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-blur"(value) {
@@ -1304,17 +1148,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropBrightness: plugin("backdropBrightness", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-brightness"(value) {
@@ -1329,17 +1162,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropContrast: plugin("backdropContrast", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-contrast"(value) {
@@ -1354,17 +1176,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropGrayscale: plugin("backdropGrayscale", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-grayscale"(value) {
@@ -1379,17 +1190,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropHueRotate: plugin("backdropHueRotate", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-hue-rotate"(value) {
@@ -1404,17 +1204,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropInvert: plugin("backdropInvert", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-invert"(value) {
@@ -1429,17 +1218,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropSaturate: plugin("backdropSaturate", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-saturate"(value) {
@@ -1454,17 +1232,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropSepia: plugin("backdropSepia", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-sepia"(value) {
@@ -1479,17 +1246,6 @@ export const classPlugins: ClassPlugins = {
 		)
 	}),
 	backdropOpacity: plugin("backdropOpacity", ({ matchUtilities, themeObject }) => {
-		const cssBackdropFilterValue = [
-			"var(--tw-backdrop-blur)",
-			"var(--tw-backdrop-brightness)",
-			"var(--tw-backdrop-contrast)",
-			"var(--tw-backdrop-grayscale)",
-			"var(--tw-backdrop-hue-rotate)",
-			"var(--tw-backdrop-invert)",
-			"var(--tw-backdrop-opacity)",
-			"var(--tw-backdrop-saturate)",
-			"var(--tw-backdrop-sepia)",
-		].join(" ")
 		matchUtilities(
 			{
 				"backdrop-opacity"(value) {
@@ -1503,16 +1259,7 @@ export const classPlugins: ClassPlugins = {
 			{ type: ["number", "percentage"], values: themeObject.backdropOpacity },
 		)
 	}),
-	fontVariantNumeric: plugin("fontVariantNumeric", ({ addDefaults, addUtilities }) => {
-		const cssFontVariantNumericValue =
-			"var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction)"
-		addDefaults("font-variant-numeric", {
-			"--tw-ordinal": emptyCssValue,
-			"--tw-slashed-zero": emptyCssValue,
-			"--tw-numeric-figure": emptyCssValue,
-			"--tw-numeric-spacing": emptyCssValue,
-			"--tw-numeric-fraction": emptyCssValue,
-		})
+	fontVariantNumeric: plugin("fontVariantNumeric", ({ addUtilities }) => {
 		addUtilities({
 			".normal-nums": { fontVariantNumeric: "normal" },
 			".ordinal": {
@@ -1549,33 +1296,24 @@ export const classPlugins: ClassPlugins = {
 			},
 		})
 	}),
-	scrollSnapType: plugin("scrollSnapType", ({ addDefaults, addUtilities }) => {
-		addDefaults("scroll-snap-type", {
-			"--tw-scroll-snap-strictness": "proximity",
-		})
-
+	scrollSnapType: plugin("scrollSnapType", ({ addUtilities }) => {
 		addUtilities({
 			".snap-none": { scrollSnapType: "none" },
 			".snap-x": {
-				scrollSnapType: "x var(--tw-scroll-snap-strictness)",
+				scrollSnapType: "x var(--tw-scroll-snap-strictness, proximity)",
 			},
 			".snap-y": {
-				scrollSnapType: "y var(--tw-scroll-snap-strictness)",
+				scrollSnapType: "y var(--tw-scroll-snap-strictness, proximity)",
 			},
 			".snap-both": {
-				scrollSnapType: "both var(--tw-scroll-snap-strictness)",
+				scrollSnapType: "both var(--tw-scroll-snap-strictness, proximity)",
 			},
 			".snap-mandatory": { "--tw-scroll-snap-strictness": "mandatory" },
 			".snap-proximity": { "--tw-scroll-snap-strictness": "proximity" },
 		})
 	}),
-	touchAction: plugin("touchAction", ({ addDefaults, addUtilities }) => {
-		addDefaults("touch-action", {
-			"--tw-pan-x": emptyCssValue,
-			"--tw-pan-y": emptyCssValue,
-			"--tw-pinch-zoom": emptyCssValue,
-		})
-		const cssTouchActionValue = "var(--tw-pan-x) var(--tw-pan-y) var(--tw-pinch-zoom)"
+	touchAction: plugin("touchAction", ({ addUtilities }) => {
+		const cssTouchActionValue = "var(--tw-pan-x,) var(--tw-pan-y,) var(--tw-pinch-zoom,)"
 		addUtilities({
 			".touch-auto": { touchAction: "auto" },
 			".touch-none": { touchAction: "none" },

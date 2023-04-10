@@ -80,12 +80,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		})(),
 	)
 
-	const globalStyles: Record<string, CSSProperties> = {
-		"*, ::before, ::after": {},
-		"::backdrop": {},
-	}
+	const globalStyles: Record<string, CSSProperties> = {}
 
-	const defaults = [globalStyles["*, ::before, ::after"], globalStyles["::backdrop"]]
 	const utilitySpecCollection = new Map<string, LookupSpec | StaticSpec | Array<LookupSpec | StaticSpec>>()
 	const variantSpecCollection = new Map<
 		string,
@@ -334,9 +330,15 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				return value.map(value => ({ [camelCase(key)]: value }))
 			})
 			.flat()
-		for (let i = 0; i < defaults.length; i++) {
-			merge(defaults[i], ...decls)
+
+		if (globalStyles["*, ::before, ::after"] == null) {
+			globalStyles["*, ::before, ::after"] = {}
 		}
+		if (globalStyles["::backdrop"] == null) {
+			globalStyles["::backdrop"] = {}
+		}
+		merge(globalStyles["*, ::before, ::after"], ...decls)
+		merge(globalStyles["::backdrop"], ...decls)
 	}
 
 	function addVariant(

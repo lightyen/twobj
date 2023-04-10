@@ -90,6 +90,40 @@ test("diff tailwindcss", async () => {
 		if (classname.startsWith("from-")) return false
 		if (classname.startsWith("via-")) return false
 		if (classname.startsWith("to-")) return false
+		if (classname.startsWith("touch-")) return false
+		if (classname.startsWith("snap-")) return false
+		if (classname.startsWith("border-spacing-")) return false
+		if (classname.startsWith("shadow")) return false
+		if (classname.startsWith("ring")) return false
+		if (classname.startsWith("filter")) return false
+		if (classname.startsWith("blur")) return false
+		if (classname.startsWith("brightness")) return false
+		if (classname.startsWith("contrast")) return false
+		if (classname.startsWith("grayscale")) return false
+		if (classname.startsWith("hue-rotate")) return false
+		if (classname.startsWith("invert")) return false
+		if (classname.startsWith("saturate")) return false
+		if (classname.startsWith("sepia")) return false
+		if (classname.startsWith("drop-shadow")) return false
+		if (classname.startsWith("backdrop-filter")) return false
+		if (classname.startsWith("backdrop-blur")) return false
+		if (classname.startsWith("backdrop-brightness")) return false
+		if (classname.startsWith("backdrop-contrast")) return false
+		if (classname.startsWith("backdrop-grayscale")) return false
+		if (classname.startsWith("backdrop-hue-rotate")) return false
+		if (classname.startsWith("backdrop-invert")) return false
+		if (classname.startsWith("backdrop-saturate")) return false
+		if (classname.startsWith("backdrop-sepia")) return false
+		if (classname.startsWith("backdrop-drop-shadow")) return false
+		if (classname.startsWith("backdrop-opacity")) return false
+		if (classname === "ordinal") return false
+		if (classname === "slashed-zero") return false
+		if (classname === "lining-nums") return false
+		if (classname === "oldstyle-nums") return false
+		if (classname === "proportional-nums") return false
+		if (classname === "tabular-nums") return false
+		if (classname === "diagonal-fractions") return false
+		if (classname === "stacked-fractions") return false
 		if (colors.has(classname)) return false
 		return true
 	})) {

@@ -56,7 +56,7 @@ export function isValidShadow(value: string): boolean {
 }
 
 /**
- * @returns 3px 5px 5px 10px var(--tw-shadow-color, var(--tw-shadow-default-color))
+ * @returns 3px 5px 5px 10px var(--tw-shadow-color, <color-raw>)
  */
 export function parseBoxShadowValues(source: string) {
 	return splitAtTopLevelOnly(source).map(({ value, range }) => {
@@ -119,10 +119,10 @@ export function parseBoxShadow(source: string, range: [number, number]): Shadow 
 		return undefined
 	}
 
+	const replacement = typeof color === "string" ? color : source.slice(...color.range)
+
 	return {
 		color,
-		value: [keyword, x, y, blur, spread, "var(--tw-shadow-color, var(--tw-shadow-default-color))"]
-			.filter(isNotEmpty)
-			.join(" "),
+		value: [keyword, x, y, blur, spread, `var(--tw-shadow-color, ${replacement})`].filter(isNotEmpty).join(" "),
 	}
 }
