@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.0] - `2023-04-10`
+
+Remove default core css variables like `--tw-*` in global css
+
 ## [2.4.0] - `2023-04-08`
 
 Support tailwindcss v3.3.1
