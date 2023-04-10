@@ -519,7 +519,7 @@ export const classPlugins: ClassPlugins = {
 		values: theme.strokeWidth,
 	})),
 	outlineWidth: createUtilityPlugin("outlineWidth", [["outline", "outlineWidth"]], theme => ({
-		type: ["length", "number", "percentage"],
+		type: ["length", "line-width"],
 		values: theme.outlineWidth,
 	})),
 
@@ -821,7 +821,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 			}),
-			{ type: ["line-width", "length"], values: themeObject.divideWidth },
+			{ values: themeObject.divideWidth },
 		)
 	}),
 	space: plugin("space", ({ addUtilities, matchUtilities, themeObject }) => {

@@ -133,6 +133,7 @@ test("url", async () => {
 	expect(
 		__types.url.handleValue("url(https://interactive-examples.mdn.mozilla.net/media/examples/lizard.png)"),
 	).not.toBeUndefined()
+	expect(__types.url.handleValue("url(#lizard.png) 10px 20px, url(#lizard.png)")).not.toBeUndefined()
 	expect(__types.url.handleValue("url(https://interactive-examples.mdn.mozilla.net/")).not.toBeUndefined()
 	expect(
 		__types.url.handleValue("rgb(https://interactive-examples.mdn.mozilla.net/media/examples/lizard.png)"),

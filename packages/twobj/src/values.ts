@@ -2,26 +2,21 @@ import * as parser from "./parser"
 import type { ColorValueFunc, ConfigValue, CSSProperties, UtilityRender, ValueType } from "./types"
 import { isCSSValue, isNotEmpty, opacityToFloat, toArray } from "./util"
 
+interface HandleOptions {
+	negative?: boolean
+	valueTag?: string
+	modifier?: string
+	opacity?: string
+	wrapped?: boolean
+	unambiguous?: boolean
+	values?: ReturnType<typeof parser.splitAtTopLevelOnly>
+}
+
 interface ValueTypeSpec<T> {
 	type: ValueType
 	isTag(tag?: string): boolean
-	handleValue(
-		value: string,
-		options?: {
-			negative?: boolean
-			unambiguous?: boolean
-			opacity?: string
-		},
-	): string | number | undefined
-	handleConfig(
-		config: T,
-		options: {
-			negative: boolean
-			modifier?: string
-			opacity?: string
-			wrapped?: boolean
-		},
-	): unknown
+	handleValue(value: string, options?: HandleOptions): string | number | undefined
+	handleConfig(config: T, options: HandleOptions): unknown
 }
 
 interface LookupResult {
@@ -415,12 +410,17 @@ const lineWidth: ValueTypeSpec<string | number | null | undefined> = (function (
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
-			const keyword = keywords.find(u => value.endsWith(u))
-			if (!keyword) {
-				return undefined
+		handleValue(value, { unambiguous, values } = {}) {
+			if (value === "") {
+				return unambiguous ? value : undefined
 			}
-			return value
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
+			}
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -436,12 +436,17 @@ const absoluteSize: ValueTypeSpec<string | number | null | undefined> = (functio
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
-			const keyword = keywords.find(u => value.endsWith(u))
-			if (!keyword) {
-				return undefined
+		handleValue(value, { unambiguous, values } = {}) {
+			if (value === "") {
+				return unambiguous ? value : undefined
 			}
-			return value
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
+			}
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -471,15 +476,17 @@ const genericName: ValueTypeSpec<string | number | null | undefined> = (function
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? value : undefined
 			}
-			const keyword = keywords.find(u => value.endsWith(u))
-			if (!keyword) {
-				return undefined
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-			return value
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -494,23 +501,20 @@ const familyName: ValueTypeSpec<string | number | null | undefined> = (function 
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? value : undefined
 			}
-			const fields = parser.splitAtTopLevelOnly(value)
-			if (fields.length === 0) {
-				return undefined
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-			if (fields.length > 1) {
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			if (values.length > 1) {
 				return value
 			}
-
-			if (!Number.isNaN(Number(fields[0].value))) {
-				return undefined
-			}
-
-			return value
+			return Number.isNaN(Number(values[0].value)) ? value : undefined
 		},
 	}
 })()
@@ -526,12 +530,17 @@ const relativeSize: ValueTypeSpec<string | number | null | undefined> = (functio
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value) {
-			const keyword = keywords.find(u => value.endsWith(u))
-			if (!keyword) {
-				return undefined
+		handleValue(value, { unambiguous, values } = {}) {
+			if (value === "") {
+				return unambiguous ? "" : undefined
 			}
-			return value
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
+			}
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -546,25 +555,25 @@ const url: ValueTypeSpec<string | number | null | undefined> = (function () {
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-			const params = parser.splitCssParams(value)
-			if (
-				params.some(p => {
-					if (typeof p === "string") {
-						return true
-					}
-					if (p.fn !== "url") {
-						return true
-					}
-					return p.params.some(v => typeof v !== "string")
-				})
-			) {
-				return undefined
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-			return value
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => {
+				const params = parser.splitCssParams(v.value)
+				if (!parser.isParamObject(params[0])) {
+					return false
+				}
+				return params[0].fn === "url"
+			})
+				? value
+				: undefined
 		},
 	}
 })()
@@ -582,14 +591,17 @@ const shadow: ValueTypeSpec<string | string[] | number | null | undefined> = (fu
 			}
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-			if (!parser.splitAtTopLevelOnly(value).every(v => parser.isValidShadow(v.value))) {
-				return undefined
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-			return value
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => parser.isValidShadow(v.value)) ? value : undefined
 		},
 	}
 })()
@@ -604,32 +616,33 @@ const backgroundPosition: ValueTypeSpec<string | number | null | undefined> = (f
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-			const arr = parser.splitAtTopLevelOnly(value)
-
-			if (
-				arr.every(v => {
-					const params = parser.splitCssParams(v.value)
-					switch (params.length) {
-						case 1:
-							return one(params[0])
-						case 2:
-							return two(params[0], params[1])
-						case 3:
-							return three(params[0], params[1], params[2])
-						case 4:
-							return four(params[0], params[1], params[2], params[3])
-						default:
-							return false
-					}
-				})
-			) {
-				return value
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-			return undefined
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => {
+				const params = parser.splitCssParams(v.value)
+				switch (params.length) {
+					case 1:
+						return one(params[0])
+					case 2:
+						return two(params[0], params[1])
+					case 3:
+						return three(params[0], params[1], params[2])
+					case 4:
+						return four(params[0], params[1], params[2], params[3])
+					default:
+						return false
+				}
+			})
+				? value
+				: undefined
 		},
 	}
 
@@ -759,32 +772,29 @@ const backgroundSize: ValueTypeSpec<string | number | null | undefined> = (funct
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-
-			const arr = parser.splitAtTopLevelOnly(value)
-			if (arr.length === 0) {
-				return undefined
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-
-			if (
-				arr.every(v => {
-					const params = parser.splitCssParams(v.value)
-					switch (params.length) {
-						case 1:
-							return one(params[0])
-						case 2:
-							return two(params[0], params[1])
-						default:
-							return false
-					}
-				})
-			) {
-				return value
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
 			}
-			return undefined
+			return values.every(v => {
+				const params = parser.splitCssParams(v.value)
+				switch (params.length) {
+					case 1:
+						return one(params[0])
+					case 2:
+						return two(params[0], params[1])
+					default:
+						return false
+				}
+			})
+				? value
+				: undefined
 		},
 	}
 
@@ -868,25 +878,29 @@ const imageFunction: ValueTypeSpec<string | number | null | undefined> = (functi
 			if (negative) return ""
 			return config ?? ""
 		},
-		handleValue(value, { unambiguous } = {}) {
+		handleValue(value, { unambiguous, values } = {}) {
 			if (value === "") {
 				return unambiguous ? "" : undefined
 			}
-			const params = parser.splitCssParams(value)
-			if (
-				!params.every(p => {
-					if (typeof p === "string") {
-						return false
-					}
-					if (imageFunctions.findIndex(fn => fn === p.fn) === -1) {
-						return false
-					}
-					return true
-				})
-			) {
-				return undefined
+			if (values == undefined) {
+				values = parser.splitAtTopLevelOnly(value)
 			}
-			return value
+			if (values.length === 0) {
+				return unambiguous ? "" : undefined
+			}
+			return values.every(v => {
+				const params = parser.splitCssParams(v.value)
+				if (typeof params[0] === "string") {
+					return false
+				}
+				const fn = params[0].fn
+				if (imageFunctions.findIndex(v => v === fn) === -1) {
+					return false
+				}
+				return true
+			})
+				? value
+				: undefined
 		},
 	}
 })()
@@ -947,7 +961,8 @@ export function representTypes({
 		}
 	}
 
-	const options = {
+	const options: HandleOptions = {
+		valueTag,
 		negative,
 		unambiguous: !ambiguous,
 		modifier,
@@ -964,35 +979,51 @@ export function representTypes({
 		if (isCSSValue(config)) config = config.toString().trim()
 		for (const h of _types) {
 			const output = h.handleConfig(config, options)
-			return render(output, { modifier: options.modifier, wrapped: options.wrapped })
+			return render(output, options)
 		}
 	}
 
 	if (value != undefined) {
+		if (hasMulti(types)) {
+			options.values = parser.splitAtTopLevelOnly(value)
+		}
+
 		for (const h of _types) {
 			if (h.isTag(valueTag)) {
 				options.unambiguous = true
 			}
 
 			const output = h.handleValue(value, options)
+
 			if (valueTag) {
 				if (h.isTag(valueTag)) {
-					return render(output || value, { modifier: options.modifier, wrapped: options.wrapped })
+					return render(output || value, options)
 				}
 				continue
 			}
 
-			if (!ambiguous && output != undefined) {
-				return render(output || value, { modifier: options.modifier, wrapped: options.wrapped })
-			}
-
 			if (output != undefined) {
-				return render(output, { modifier: options.modifier, wrapped: options.wrapped })
+				return render(output, options)
 			}
 		}
 	}
 
 	return undefined
+
+	function hasMulti(types: ValueType[]): boolean {
+		return types.some(v => {
+			switch (v) {
+				case "color":
+				case "number":
+				case "percentage":
+				case "length":
+				case "angle":
+					return false
+				default:
+					return true
+			}
+		})
+	}
 }
 
 export function withAlphaValue(color: string | ((options: { opacityValue?: string }) => string), opacity?: string) {

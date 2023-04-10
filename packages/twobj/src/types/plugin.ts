@@ -9,8 +9,8 @@ export type ValueType =
 	| "percentage"
 	| "length"
 	| "angle"
-	| "url"
 	| "color"
+	| "url"
 	| "image" // backgroundImage
 	| "line-width" // borderWidth
 	| "absolute-size" // fontSize

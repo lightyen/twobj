@@ -304,3 +304,9 @@ test("container", async () => {
 		},
 	})
 })
+
+test("outlineWidth", async () => {
+	expect(tw`outline-0`).toEqual({ outlineWidth: "0px" })
+	expect(tw`outline-[11px]`).toEqual({ outlineWidth: "11px" })
+	expect(tw`outline-[thick]`).toEqual({ outlineWidth: "thick" })
+})

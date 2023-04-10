@@ -9,6 +9,13 @@ export interface ParamObject {
 	getText(): string
 }
 
+export function isParamObject(param: Param | null | undefined): param is ParamObject {
+	if (param == null) {
+		return false
+	}
+	return typeof param !== "string"
+}
+
 export function parseColor(css: string): ParamObject | undefined {
 	let color = parseHex(css)
 	if (color) {
