@@ -37,7 +37,7 @@
     "cssesc": "3.0.0",
     "csstype": "3.1.2",
     "parsel-js": "1.0.3",
-    "postcss": "8.4.21",
-    "tailwindcss": "3.3.1"
+    "postcss": "8.4.23",
+    "tailwindcss": "3.3.2"
   }
 }
