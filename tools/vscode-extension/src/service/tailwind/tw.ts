@@ -247,7 +247,7 @@ export async function createTwContext(config: ResolvedConfigJS) {
 		if (rootFontSize <= 0) {
 			return cssValue
 		}
-		const reg = /(-?\d[.\d+e]*)rem/
+		const reg = /(-?\d[.\d+e]*)rem/g
 		const match = reg.exec(cssValue)
 		if (!match) {
 			return cssValue
