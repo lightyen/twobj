@@ -2,19 +2,19 @@
 
 import * as parser from "./parser"
 import type {
-	ColorValue,
-	ColorValueFunc,
 	CSSProperties,
 	CSSValue,
+	ColorValue,
+	ColorValueFunc,
 	CustomPalette,
 	Func,
 	LookupSpec,
 	Palette,
 	PlainCSSProperties,
-	Post,
 	Primitive,
 	ScreenValue,
 	StaticSpec,
+	Variant,
 } from "./types"
 
 export function isCSSValue(value: unknown): value is CSSValue {
@@ -96,7 +96,7 @@ export function applyCamelCase(css: CSSProperties): CSSProperties {
 	})
 }
 
-export function applyPost(css: CSSProperties, post: Post): CSSProperties {
+export function applyPost(css: CSSProperties, post: Variant): CSSProperties {
 	if (isPlainCSSProperties(css)) {
 		return post(css)
 	}

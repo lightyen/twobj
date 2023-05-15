@@ -59,10 +59,6 @@ export interface Variant {
 	(css?: CSSProperties): CSSProperties
 }
 
-export interface Post {
-	(css?: PlainCSSProperties): PlainCSSProperties
-}
-
 export interface LookupSpec {
 	type: "lookup"
 	values: Record<string, unknown>
@@ -73,6 +69,7 @@ export interface LookupSpec {
 	): CSSProperties | undefined
 	pluginName?: string
 	isColor?: boolean
+	post?: Variant
 	filterDefault: boolean
 	supportsNegativeValues: boolean
 	respectPrefix: boolean
@@ -87,7 +84,7 @@ export interface LookupVariantSpec {
 		node: parser.SimpleVariant | parser.ArbitraryVariant | parser.UnknownVariant,
 	): Variant | undefined
 	pluginName?: string
-	post?: Post
+	post?: Variant
 	filterDefault: boolean
 }
 
@@ -95,6 +92,7 @@ export interface StaticSpec {
 	type: "static"
 	css: CSSProperties
 	pluginName?: string
+	post?: Variant
 	supportsNegativeValues: false
 	respectPrefix: boolean
 	respectImportant: boolean
@@ -104,5 +102,5 @@ export interface VariantSpec {
 	type: "static"
 	variant: Variant
 	pluginName?: string
-	post?: Post
+	post?: Variant
 }

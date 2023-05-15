@@ -24,6 +24,7 @@ test("important", async () => {
 	expect(ctx.css("after:(text-black)")).toEqual({
 		"#app &": {
 			"&::after": {
+				"--tw-content": "''",
 				color: "#000",
 				content: "var(--tw-content)",
 			},

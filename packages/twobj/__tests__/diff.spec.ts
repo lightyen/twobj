@@ -116,6 +116,12 @@ test("diff tailwindcss", async () => {
 		if (classname.startsWith("backdrop-sepia")) return false
 		if (classname.startsWith("backdrop-drop-shadow")) return false
 		if (classname.startsWith("backdrop-opacity")) return false
+		if (classname.startsWith("space-x")) return false
+		if (classname.startsWith("space-y")) return false
+		if (classname.startsWith("divide-x")) return false
+		if (classname.startsWith("divide-y")) return false
+		if (classname === "bg-none") return false
+		if (classname === "normal-nums") return false
 		if (classname === "ordinal") return false
 		if (classname === "slashed-zero") return false
 		if (classname === "lining-nums") return false

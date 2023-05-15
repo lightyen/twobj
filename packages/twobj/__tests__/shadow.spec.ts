@@ -4,6 +4,12 @@ import { tw } from "./context"
 
 test("boxShadow", async () => {
 	expect(tw`shadow`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored":
 			"0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
@@ -11,30 +17,60 @@ test("boxShadow", async () => {
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
 	expect(tw`shadow-[0 0 1px 2px rgb(66 225 106 / 0.5)]`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored": "0 0 1px 2px var(--tw-shadow-color, rgb(66 225 106 / 0.5))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
 	expect(tw`shadow-[10px 10px 5px rgba(66, 225, 106, 0.5)]`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, rgba(66, 225, 106, 0.5))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
 	expect(tw`shadow-[10px 10px 5px #22121242]`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, #22121242)",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
 	expect(tw`shadow-[10px 10px 5px theme(colors.red.500)]`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, #ef4444)",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
 	expect(tw`shadow-[10px 10px 5px theme(colors.red.500 / 50%)]`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, rgb(239 68 68 / 50%))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
@@ -49,6 +85,12 @@ test("boxShadow array value", async () => {
 		}),
 	)
 	expect(ctx.css`shadow`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-ring-offset-shadow": "initial",
+		"--tw-ring-shadow": "initial",
 		"--tw-shadow-colored":
 			"0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.3)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.3))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
@@ -94,6 +136,11 @@ test("shadow value", async () => {
 
 test("ring", async () => {
 	expect(tw`ring`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-shadow": "initial",
 		"--tw-ring-offset-shadow":
 			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
 		"--tw-ring-shadow":
@@ -102,6 +149,11 @@ test("ring", async () => {
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
 	expect(tw`ring-2`).toEqual({
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-ring-inset": "initial",
+		"--tw-shadow": "initial",
 		"--tw-ring-offset-shadow":
 			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
 		"--tw-ring-shadow":
@@ -109,7 +161,12 @@ test("ring", async () => {
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
-	expect(tw`ring-[3.7px]`).toEqual({
+	expect(tw`ring-inset ring-[3.7px]`).toEqual({
+		"--tw-ring-inset": "inset",
+		"--tw-ring-offset-color": "initial",
+		"--tw-ring-offset-width": "initial",
+		"--tw-ring-color": "initial",
+		"--tw-shadow": "initial",
 		"--tw-ring-offset-shadow":
 			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
 		"--tw-ring-shadow":

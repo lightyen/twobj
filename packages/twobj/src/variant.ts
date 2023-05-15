@@ -1,5 +1,5 @@
 import * as parser from "./parser"
-import { CSSProperties, Post, Variant, VariantRender } from "./types"
+import { CSSProperties, Variant, VariantRender } from "./types"
 import { applyPost, isCSSValue, isExists, toArray } from "./util"
 
 export const pseudoVariants: Array<[variantName: string, desc: string]> = [
@@ -133,7 +133,7 @@ export function representVariant({
 	values: Record<string, unknown>
 	render: VariantRender
 	filterDefault: boolean
-	post?: Post | undefined
+	post?: Variant | undefined
 }) {
 	const { key, value, modifier, wrapped } = lookupVariantValues(restIndex, node, values, filterDefault)
 
@@ -223,7 +223,7 @@ export function mergeVariants(...variants: Array<Variant | undefined>): Variant 
 	}
 }
 
-export function createVariant(variantDesc: string | string[], post?: Post): Variant {
+export function createVariant(variantDesc: string | string[], post?: Variant): Variant {
 	variantDesc = toArray(variantDesc)
 	const variants = variantDesc.map<Variant>(desc => {
 		const reg = /{/gs

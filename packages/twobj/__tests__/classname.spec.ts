@@ -68,10 +68,8 @@ test("backgroundColor", async () => {
 })
 
 test("backgroundImage", async () => {
-	expect(tw`bg-none`).toEqual({ backgroundImage: "none" })
-	expect(tw`bg-gradient-to-tr`).toEqual({
-		backgroundImage:
-			"linear-gradient(to top right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+	expect(tw`bg-none`).toEqual({
+		backgroundImage: "none",
 	})
 	expect(tw`bg-[url('/img/hero-pattern.svg')]`).toEqual({
 		backgroundImage: "url('/img/hero-pattern.svg')",
@@ -79,10 +77,25 @@ test("backgroundImage", async () => {
 	expect(tw`bg-[url(/img/hero-pattern.svg)]`).toEqual({
 		backgroundImage: "url(/img/hero-pattern.svg)",
 	})
+	expect(tw`bg-[image:var(--image)]`).toEqual({
+		backgroundImage: "var(--image)",
+	})
 	expect(tw`bg-[linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))]`).toEqual({
 		backgroundImage: "linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5))",
 	})
-	expect(tw`bg-[image:var(--image)]`).toEqual({ backgroundImage: "var(--image)" })
+})
+
+test("backgroundGradient", async () => {
+	expect(tw`bg-gradient-to-tr`).toEqual({
+		"--tw-gradient-from-position": "initial",
+		"--tw-gradient-via-position": "initial",
+		"--tw-gradient-to-position": "initial",
+		"--tw-gradient-from": "initial",
+		"--tw-gradient-via": "initial",
+		"--tw-gradient-to": "initial",
+		backgroundImage:
+			"linear-gradient(to top right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
+	})
 })
 
 test("backgroundPosition", async () => {

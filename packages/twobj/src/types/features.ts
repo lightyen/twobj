@@ -23,6 +23,7 @@ export interface CorePluginFeatures {
 	backgroundClip: boolean
 	backgroundColor: boolean
 	backgroundImage: boolean
+	backgroundGradient: boolean
 	backgroundOrigin: boolean
 	backgroundPosition: boolean
 	backgroundRepeat: boolean

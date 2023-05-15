@@ -112,22 +112,6 @@ export const defaultTheme: ConfigJS["theme"] = {
 	backdropOpacity: ({ theme }) => theme("opacity"),
 	backgroundImage: {
 		none: "none",
-		"gradient-to-t":
-			"linear-gradient(to top, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-tr":
-			"linear-gradient(to top right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-r":
-			"linear-gradient(to right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-br":
-			"linear-gradient(to bottom right, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-b":
-			"linear-gradient(to bottom, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-bl":
-			"linear-gradient(to bottom left, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-l":
-			"linear-gradient(to left, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
-		"gradient-to-tl":
-			"linear-gradient(to top left, var(--tw-gradient-from,) var(--tw-gradient-via,), var(--tw-gradient-to,))",
 	},
 	backgroundPosition: {
 		bottom: "bottom",

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConfigJS, ResolvedConfigJS } from "./config"
 import { CorePluginFeatures } from "./features"
-import { ArbitraryParameters, CSSProperties, ConfigObject, Post, Variant } from "./specification"
+import { ArbitraryParameters, CSSProperties, ConfigObject, Variant } from "./specification"
 import { ResolvePath } from "./theme"
 
 export type ValueType =
@@ -24,6 +24,7 @@ export type ValueType =
 export interface AddOption {
 	respectPrefix?: boolean
 	respectImportant?: boolean
+	post?: Variant
 }
 
 export interface MatchOption<Value = any> {
@@ -34,6 +35,7 @@ export interface MatchOption<Value = any> {
 	filterDefault?: boolean
 	respectPrefix?: boolean
 	respectImportant?: boolean
+	post?: Variant
 }
 
 export interface MatchVariantOption<Value = any> {
@@ -71,7 +73,7 @@ export interface UserPluginOptions {
 		name: string,
 		spec: string | (() => string | string[]) | Array<string | (() => string | string[])>,
 		options?: {
-			post?: Post
+			post?: Variant
 		},
 	): void
 

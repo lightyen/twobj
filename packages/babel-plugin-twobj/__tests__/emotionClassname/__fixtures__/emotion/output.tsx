@@ -10,8 +10,9 @@
 	fontSize: "1.125rem",
 	lineHeight: "1.75rem",
 	"&::after": {
-		color: "#22d3ee",
+		"--tw-content": "''",
 		content: "var(--tw-content)",
+		color: "#22d3ee",
 	},
 })
 export function Header(props) {

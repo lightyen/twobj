@@ -52,12 +52,14 @@ test("indeterminate", async () => {
 test("before and after", async () => {
 	expect(tw`before:bg-black`).toEqual({
 		"&::before": {
+			"--tw-content": "''",
 			backgroundColor: "#000",
 			content: "var(--tw-content)",
 		},
 	})
 	expect(tw`after:bg-black`).toEqual({
 		"&::after": {
+			"--tw-content": "''",
 			backgroundColor: "#000",
 			content: "var(--tw-content)",
 		},

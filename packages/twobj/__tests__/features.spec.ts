@@ -92,6 +92,7 @@ const features = [
 	"borderColor",
 	"backgroundColor",
 	"backgroundImage",
+	"backgroundGradient",
 	"gradientColorStops",
 	"boxDecorationBreak",
 	"backgroundSize",

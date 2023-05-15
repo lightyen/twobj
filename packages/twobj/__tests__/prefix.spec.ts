@@ -11,6 +11,7 @@ test("prefix", async () => {
 	expect(ctx.css("after:(xt-text-black)")).toEqual({
 		"#app &": {
 			"&::after": {
+				"--tw-content": "''",
 				color: "#000",
 				content: "var(--tw-content)",
 			},
