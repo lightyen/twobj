@@ -330,7 +330,13 @@ function validateTw({
 						return
 					}
 					if (isLoose(state, classname, decls)) {
-						const key = [hash, scope, Array.from(decls.keys()).sort().join(":")].join(".")
+						const props: string[] = []
+						decls.forEach((values, key) => {
+							if (!(key.startsWith("--tw") && values.some(v => v === "initial"))) {
+								props.push(key)
+							}
+						})
+						const key = [hash, scope, props.sort().join(":")].join(".")
 						addRange(key, [node.start, node.end])
 					} else {
 						for (const [prop] of decls) {
