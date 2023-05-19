@@ -746,10 +746,23 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 		const importantSelector: string = typeof config.important === "string" ? config.important : ""
 		const program = parser.createProgram(value)
-		const [rootStyle, importantRootStyle] = process(program.expressions, {
+		const result = process(program.expressions, {
 			important: false,
 			importantRootStyle: !!importantSelector,
 		})
+		let rootStyle = result[0]
+		let importantRootStyle = result[1]
+		const fn = result[2]
+		const importantFn = result[3]
+
+		for (const f of fn) {
+			rootStyle = f(rootStyle)
+		}
+
+		for (const f of importantFn) {
+			importantRootStyle = f(importantRootStyle)
+		}
+
 		if (!options?.internal) {
 			if (importantSelector) {
 				rootStyle[`${importantSelector} &`] = importantRootStyle
@@ -763,13 +776,17 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		{
 			important,
 			importantRootStyle,
+			depth = 0,
 		}: {
 			important: boolean
 			importantRootStyle: boolean
+			depth?: number
 		},
-	): [root: CSSProperties, importantRoot: CSSProperties] {
-		let root: CSSProperties = {}
-		let importantRoot: CSSProperties = {}
+	): [root: CSSProperties, importantRoot: CSSProperties, fn: Set<Variant>, importantFn: Set<Variant>] {
+		const root: CSSProperties = {}
+		const importantRoot: CSSProperties = {}
+		const fn = new Set<Variant>()
+		const importantFn = new Set<Variant>()
 
 		for (const expr of expressions) {
 			switch (expr.type) {
@@ -804,10 +821,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 							break
 					}
 					if (expr.child) {
-						let [localRoot, localImportantRoot] = process([expr.child], {
+						const result = process([expr.child], {
 							important,
 							importantRootStyle,
+							depth: depth + 1,
 						})
+						let [localRoot, localImportantRoot] = result
 						if (importantRootStyle) {
 							if (spec?.post) {
 								localImportantRoot = spec.post(localImportantRoot)
@@ -819,11 +838,13 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 							}
 							merge(root, composeVariants(variant)(localRoot))
 						}
+						for (const v of result[2]) {
+							fn.add(v)
+						}
+						for (const v of result[3]) {
+							importantFn.add(v)
+						}
 					}
-					//  else {
-					// 	merge(root, composeVariants(variant)({}))
-					// 	merge(importantRoot, composeVariants(variant)({}))
-					// }
 					break
 				}
 				case nodes.NodeType.Group: {
@@ -832,12 +853,18 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 							throw createParseError(expr, "Bracket is not closed.")
 						}
 					}
-					const [localRoot, localImportantRoot] = process(expr.expressions, {
+					const [localRoot, localImportantRoot, localFn, localImportantFn] = process(expr.expressions, {
 						important: important || expr.important,
 						importantRootStyle,
 					})
 					merge(root, localRoot)
 					merge(importantRoot, localImportantRoot)
+					for (const v of localFn) {
+						fn.add(v)
+					}
+					for (const v of localImportantFn) {
+						importantFn.add(v)
+					}
 					break
 				}
 				case nodes.NodeType.Classname:
@@ -854,7 +881,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 							throw createParseError(expr.m, "Bracket is not closed.")
 						}
 					}
-					// TODO:
 					const result = classname(expr)
 					if (result == undefined) {
 						if (validate) {
@@ -868,12 +894,12 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 					if (result?.spec.respectImportant && importantRootStyle) {
 						merge(importantRoot, css)
 						if (result?.spec.post) {
-							importantRoot = result.spec.post(importantRoot)
+							importantFn.add(result.spec.post)
 						}
 					} else {
 						merge(root, css)
 						if (result?.spec.post) {
-							root = result.spec.post(root)
+							fn.add(result.spec.post)
 						}
 					}
 					break
@@ -913,7 +939,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				}
 			}
 		}
-		return [root, importantRoot]
+		return [root, importantRoot, fn, importantFn]
 	}
 
 	function simpleVariant(node: nodes.SimpleVariant): VariantWithSpec | undefined {
