@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.3] - `2023-05-20`
+
+Fix css variable isolation
+
 ## [2.5.2] - `2023-05-16`
 
 Fix tw variables
