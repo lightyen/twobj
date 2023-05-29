@@ -315,7 +315,7 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 			config = config ?? ""
 
 			if (typeof config === "function") {
-				return config({ opacityValue: opacity }).toString()
+				return config({ opacityValue: opacity ?? "1" }).toString()
 			}
 
 			if (!isCSSValue(config)) {
