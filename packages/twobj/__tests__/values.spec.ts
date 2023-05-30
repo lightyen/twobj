@@ -1,4 +1,5 @@
 import { __types } from "../src/values"
+import { tw } from "./context"
 
 test("number", async () => {
 	expect(__types.number.handleValue("0")).not.toBeUndefined()
@@ -194,4 +195,9 @@ test("family-name", async () => {
 	expect(__types["family-name"].handleValue("monospace, abc, def")).not.toBeUndefined()
 	expect(__types["family-name"].handleValue("sans-serif")).not.toBeUndefined()
 	expect(__types["family-name"].handleValue("123")).toBeUndefined()
+})
+
+test("color opacity", async () => {
+	expect(tw`caret-[#fef2f2]/20`).toEqual({ caretColor: "rgb(254 242 242 / 0.2)" })
+	expect(tw`fill-[#fef2f2]/40`).toEqual({ fill: "rgb(254 242 242 / 0.4)" })
 })

@@ -342,60 +342,42 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 	}
 
 	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
-		if (unambiguous) {
-			// like: fill, stroke, ...
-			if (opacity == undefined) {
+		const color = parser.parseColor(value)
+		const canAlpha = color != undefined && parser.isOpacityFunction(color.fn)
+
+		if (opacity == undefined) {
+			if (unambiguous) {
 				return value
 			}
-			const opacityValue = " / " + opacity
-			const result = parser.unwrapCssFunction(value)
-			if (result) {
-				const { fn, params } = result
-				if (parser.isOpacityFunction(fn)) {
-					return fn + "(" + params + opacityValue + ")"
-				}
-				// prefer rgb()
-				return "rgb(" + value + opacityValue + ")"
+			if (canAlpha) {
+				return value
 			}
-			return value
-		}
-
-		const color = parser.parseColor(value)
-		if (!color) {
 			return undefined
 		}
 
-		if (!parser.isOpacityFunction(color.fn)) {
-			if (opacity == undefined) {
-				return undefined
-			}
-			if (!unambiguous) {
-				return undefined
-			}
-			const opacityValue = " / " + opacity
-			// prefer rgb()
-			return "rgb(" + value + opacityValue + ")"
-		}
-
-		if (opacity == undefined) {
-			return value
-		}
-
 		const opacityValue = " / " + opacity
-		const { fn, params } = color
-		if (params.every(p => typeof p === "string")) {
-			return fn + "(" + params.slice(0, 3).join(" ") + opacityValue + ")"
+
+		if (!canAlpha) {
+			if (unambiguous) {
+				const result = parser.unwrapCssFunction(value)
+				if (result && parser.isOpacityFunction(result.fn)) {
+					return "rgb(" + result.params + opacityValue + ")"
+				}
+				return "rgb(" + value + opacityValue + ")"
+			}
+			return undefined
+		}
+
+		if (color.params.every(v => typeof v === "string")) {
+			return color.fn + "(" + color.params.slice(0, 3).join(" ") + opacityValue + ")"
 		}
 
 		const result = parser.unwrapCssFunction(value)
-		if (result) {
-			const { fn, params } = result
-			if (parser.isOpacityFunction(fn)) {
-				return fn + "(" + params + opacityValue + ")"
-			}
-			return "rgb(" + params + opacityValue + ")"
+		if (result && parser.isOpacityFunction(result.fn)) {
+			return "rgb(" + result.params + opacityValue + ")"
 		}
-		return undefined
+
+		return "rgb(" + value + opacityValue + ")"
 	}
 })()
 

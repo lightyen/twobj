@@ -16,7 +16,7 @@ export function isParamObject(param: Param | null | undefined): param is ParamOb
 	return typeof param !== "string"
 }
 
-export function parseColor(css: string): ParamObject | undefined {
+export function parseColor(css: string) {
 	let color = parseHex(css)
 	if (color) {
 		return color
