@@ -1,6 +1,6 @@
 {
   "name": "twobj",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "homepage": "https://github.com/lightyen/twobj",
   "author": {
     "name": "lightyen",
@@ -12,11 +12,13 @@
   "exports": {
     ".": {
       "require": "./index.js",
-      "import": "./index.mjs"
+      "import": "./index.mjs",
+      "types": "./index.d.ts"
     },
     "./parser": {
       "require": "./parser/index.js",
-      "import": "./parser/index.mjs"
+      "import": "./parser/index.mjs",
+      "types": "./parser/index.d.ts"
     }
   },
   "scripts": {
