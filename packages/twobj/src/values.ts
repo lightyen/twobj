@@ -346,38 +346,29 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 		const canAlpha = color != undefined && parser.isOpacityFunction(color.fn)
 
 		if (opacity == undefined) {
-			if (unambiguous) {
-				return value
-			}
-			if (canAlpha) {
-				return value
-			}
-			return undefined
+			return unambiguous || canAlpha ? value : undefined
 		}
 
 		const opacityValue = " / " + opacity
 
 		if (!canAlpha) {
-			if (unambiguous) {
-				const result = parser.unwrapCssFunction(value)
-				if (result && parser.isOpacityFunction(result.fn)) {
-					return "rgb(" + result.params + opacityValue + ")"
-				}
-				return "rgb(" + value + opacityValue + ")"
-			}
-			return undefined
+			return unambiguous ? injectOpacity(value, opacityValue) : undefined
 		}
 
 		if (color.params.every(v => typeof v === "string")) {
 			return color.fn + "(" + color.params.slice(0, 3).join(" ") + opacityValue + ")"
 		}
 
-		const result = parser.unwrapCssFunction(value)
-		if (result && parser.isOpacityFunction(result.fn)) {
-			return "rgb(" + result.params + opacityValue + ")"
-		}
+		return injectOpacity(value, opacityValue)
 
-		return "rgb(" + value + opacityValue + ")"
+		function injectOpacity(value: string, opacityValue: string) {
+			const result = parser.unwrapCssFunction(value)
+			if (result && parser.isOpacityFunction(result.fn)) {
+				return "rgb(" + result.params + opacityValue + ")"
+			}
+			// prefer sRGB
+			return "rgb(" + value + opacityValue + ")"
+		}
 	}
 })()
 
@@ -1006,28 +997,4 @@ export function representTypes({
 			}
 		})
 	}
-}
-
-export function withAlphaValue(color: string | ((options: { opacityValue?: string }) => string), opacity?: string) {
-	if (typeof color === "function") {
-		return color({ opacityValue: opacity })
-	}
-	if (typeof color === "number") {
-		return color
-	}
-	if (!opacity) {
-		return color
-	}
-	const result = parser.parseColor(color)
-	if (!result) {
-		return color
-	}
-	if (result.params.length > 3) {
-		return color
-	}
-	if (!parser.isOpacityFunction(result.fn)) {
-		return color
-	}
-	const opacityValue = " / " + opacity
-	return result.fn + "(" + result.params.slice(0, 3).join(" ") + opacityValue + ")"
 }

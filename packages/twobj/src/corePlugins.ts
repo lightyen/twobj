@@ -3,6 +3,7 @@ import { plugin } from "./plugin"
 import { preflight } from "./preflight"
 import type {
 	ArbitraryParameters,
+	ColorValueFunc,
 	ConfigEntry,
 	ConfigObject,
 	CorePluginFeatures,
@@ -10,14 +11,40 @@ import type {
 	CSSValue,
 	MatchOption,
 	PlainCSSProperties,
+	Primitive,
 	StrictResolvedConfigJS,
 	UnnamedPlugin,
 	UtilityRender,
 	VariantRender,
 } from "./types"
 import { isCSSValue, isNotEmpty, isObject, normalizeScreens } from "./util"
-import { withAlphaValue } from "./values"
 import { pseudoVariants } from "./variant"
+
+function withAlphaValue(value: Primitive | ColorValueFunc, opacityValue: string) {
+	if (typeof value === "function") {
+		const valueFn = value
+		value = valueFn({ opacityValue })
+	}
+	if (typeof value === "number") {
+		return String(value)
+	}
+	if (!opacityValue) {
+		return String(value)
+	}
+	opacityValue = " / " + opacityValue
+	const color = parser.parseColor(String(value))
+	const canAlpha = color != undefined && parser.isOpacityFunction(color.fn)
+	if (canAlpha) {
+		if (color.params.every(v => typeof v === "string")) {
+			return color.fn + "(" + color.params.slice(0, 3).join(" ") + opacityValue + ")"
+		}
+	}
+	const result = parser.unwrapCssFunction(String(value))
+	if (result && parser.isOpacityFunction(result.fn)) {
+		return "rgb(" + result.params + opacityValue + ")"
+	}
+	return "rgb(" + String(value) + opacityValue + ")"
+}
 
 type ClassPlugins = {
 	[P in keyof CorePluginFeatures]?: UnnamedPlugin
@@ -957,7 +984,7 @@ export const classPlugins: ClassPlugins = {
 	ringWidth: plugin("ringWidth", ({ matchUtilities, addUtilities, themeObject, theme }) => {
 		const defaultRingOffsetWidth = (theme("ringOffsetWidth.DEFAULT", "0px") as CSSValue).toString()
 		const defaultRingOffsetColor = (theme("ringOffsetWidth.DEFAULT", "#fff") as CSSValue).toString()
-		const defaultRingColor = withAlphaValue(theme("ringColor.DEFAULT", "#3b82f6") as string, "0.5").toString()
+		const defaultRingColor = withAlphaValue(theme("ringColor.DEFAULT", "#3b82f6"), "0.5").toString()
 
 		addUtilities({
 			".ring-inset": { "--tw-ring-inset": "inset" },
