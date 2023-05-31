@@ -267,12 +267,12 @@ const colorProps = new Set<string>([
 	"stroke",
 	"stop-color",
 	"column-rule-color",
+	"--tw-shadow-color",
 	"--tw-ring-color",
 	"--tw-ring-offset-color",
 	"--tw-gradient-from",
 	"--tw-gradient-to",
-	"--tw-gradient-stops",
-	"--tw-shadow-color",
+	"--tw-gradient-via",
 ])
 
 export function getColorClassesFrom(utilities: Map<string, LookupSpec | StaticSpec | (LookupSpec | StaticSpec)[]>) {
