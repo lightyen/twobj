@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.5.5] - `2023-10-21`
+
+- Fix color value with variables
+- tailwindcss v3.3.3
+
+## [2.5.4] - `2023-05-30`
+
+Fix color parser
+
 ## [2.5.3] - `2023-05-20`
 
 Fix css variable isolation

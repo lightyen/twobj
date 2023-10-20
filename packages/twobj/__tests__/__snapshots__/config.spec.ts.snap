@@ -311,6 +311,7 @@ exports[`defaultConfig 1`] = `
       "spin": "spin 1s linear infinite",
     },
     "aria": {
+      "busy": "busy="true"",
       "checked": "checked="true"",
       "disabled": "disabled="true"",
       "expanded": "expanded="true"",

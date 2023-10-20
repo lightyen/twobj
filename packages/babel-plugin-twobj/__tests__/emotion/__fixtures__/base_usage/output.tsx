@@ -134,6 +134,9 @@ const globalStyles = {
 		margin: "0",
 		padding: "0",
 	},
+	dialog: {
+		padding: "0",
+	},
 	textarea: {
 		resize: "vertical",
 	},

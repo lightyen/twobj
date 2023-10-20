@@ -89,6 +89,9 @@ exports[`preflight 1`] = `
     "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace",
     "fontSize": "1em",
   },
+  "dialog": {
+    "padding": "0",
+  },
   "fieldset": {
     "margin": "0",
     "padding": "0",
