@@ -307,7 +307,7 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 		isTag(tag) {
 			return tag === "color"
 		},
-		handleConfig(config, { negative, opacity }) {
+		handleConfig(config, { negative, opacity, unambiguous = false }) {
 			if (negative) {
 				return ""
 			}
@@ -328,7 +328,7 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 				return value.replace("<alpha-value>", opacity ?? "1")
 			}
 
-			return parseColorValue(value, false, opacity) || value
+			return parseColorValue(value, unambiguous, opacity) || value
 		},
 		handleValue(value, { negative, opacity, unambiguous = false } = {}) {
 			if (value === "") {
@@ -346,27 +346,46 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 		const canAlpha = color != undefined && parser.isOpacityFunction(color.fn)
 
 		if (opacity == undefined) {
-			return unambiguous || canAlpha ? value : undefined
+			if (canAlpha) {
+				return value
+			}
+			if (unambiguous) {
+				return value
+			}
+			if (value === "transparent" || value === "currentColor" || value === "none") {
+				return value
+			}
+			return undefined
 		}
 
 		const opacityValue = " / " + opacity
 
 		if (!canAlpha) {
-			return unambiguous ? injectOpacity(value, opacityValue) : undefined
+			if (unambiguous) {
+				return forceRGB(value, opacityValue)
+			}
+			return undefined
 		}
 
 		if (color.params.every(v => typeof v === "string")) {
 			return color.fn + "(" + color.params.slice(0, 3).join(" ") + opacityValue + ")"
 		}
 
-		return injectOpacity(value, opacityValue)
+		if (color.params.length === 1 && parser.isParamObject(color.params[0]) && color.params[0].fn === "var") {
+			return color.fn + "(" + color.params[0].getText() + opacityValue + ")"
+		}
 
-		function injectOpacity(value: string, opacityValue: string) {
+		return forceRGB(value, opacityValue)
+
+		// prefer sRGB
+		function forceRGB(value: string, opacityValue?: string) {
 			const result = parser.unwrapCssFunction(value)
 			if (result && parser.isOpacityFunction(result.fn)) {
 				return "rgb(" + result.params + opacityValue + ")"
 			}
-			// prefer sRGB
+			if (opacityValue == undefined) {
+				return "rgb(" + value + ")"
+			}
 			return "rgb(" + value + opacityValue + ")"
 		}
 	}
