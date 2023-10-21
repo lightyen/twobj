@@ -2,7 +2,9 @@ declare module "vscode-css-languageservice/lib/esm/languageFacts/colors" {
 	import { Color } from "vscode-css-languageservice/lib/esm/cssLanguageService"
 	import * as nodes from "vscode-css-languageservice/lib/esm/parser/cssNodes"
 	export const colorFunctions: {
+		label: string
 		func: string
+		insertText: string
 		desc: string
 	}[]
 	export const colors: {
