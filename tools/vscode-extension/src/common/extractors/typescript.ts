@@ -166,6 +166,7 @@ function checkImportTw(source: ts.SourceFile, importLabels: string[]): Features 
 									themeIds.add(localName)
 									break
 								case "tw":
+								case "tx":
 									twIds.add(localName)
 									break
 								case "wrap":

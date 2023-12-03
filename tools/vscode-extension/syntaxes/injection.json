@@ -4,7 +4,7 @@
   "injectionSelector": "L:source -comment",
   "patterns": [
     {
-      "begin": "\\s*(tw|wrap)(?:(?:(?:\\.[\\w$]+)*|(\\([^\\)]*\\))))*(`)",
+      "begin": "\\s*(tw|tx|wrap)(?:(?:(?:\\.[\\w$]+)*|(\\([^\\)]*\\))))*(`)",
       "end": "`",
       "contentName": "meta.embedded.tw",
       "beginCaptures": {
