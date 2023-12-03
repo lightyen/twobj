@@ -1,54 +1,53 @@
-import type { BabelFile, NodePath, Visitor } from "@babel/core"
-import type babel from "@babel/types"
+import type { BabelFile, Node, NodePath, Visitor } from "@babel/core"
+import babel from "@babel/types"
+import { Context } from "twobj"
+import { Keyword } from "./base"
 
 export interface PluginOptions {
 	tailwindConfig?: unknown
 	throwError?: boolean
 	debug?: boolean
 	thirdParty?: ThirdParty | "auto"
-	/** experimental */
-	useClassName?: boolean
 }
 
-export interface ImportLibrary {
-	path: NodePath<babel.ImportDeclaration>
-	libName: string
-	defaultName?: string
-	variables: Array<{ localName: string; importedName: string }>
-}
-
-export interface State {
-	file: BabelFile
-	imports: Array<ImportLibrary>
-	globalInserted?: boolean
-}
-
-export interface PluginState {
-	styled: {
-		localName: string
-		imported: boolean
-	}
-}
-
-export type ThirdPartyName = "emotion" | "styled-components" | "linaria"
+export type ThirdPartyName = "emotion"
 
 export interface ThirdParty {
-	name: ThirdPartyName // ex: emotion
+	name: string // ex: emotion
 	cssProp?: string // ex: @emotion/babel-plugin
 	styled?: string // ex: @emotion/styled
 	className?: string // ex: @emotion/css
+	plugin?: Plugin
+}
+
+export interface ImportDeclaration {
+	path: NodePath<babel.ImportDeclaration>
+	source: string
+	variables: { local: string; imported: string }[]
+	defaultId?: string
+}
+
+export interface ProgramState {
+	types: typeof import("babel__core").types
+	thirdParty?: ThirdParty
+	file: BabelFile
+	styles: Map<string, babel.MemberExpression>
+	imports: ImportDeclaration[]
+	globalStyles?: boolean
+	twIdentifiers: Record<Keyword, Map<string, NodePath<babel.ImportDeclaration>>>
+	added: Node[]
+	cssLocalName: string
+	styledLocalName: string
 }
 
 export interface Plugin {
-	(options: {
-		thirdParty: ThirdParty
-		t: typeof babel
-		buildStyle: (input: string, errPath: NodePath, file: BabelFile) => babel.ObjectExpression
-		buildWrap: (input: string, errPath: NodePath, file: BabelFile) => babel.ObjectExpression
-		addImportDeclaration: (declaration: babel.ImportDeclaration) => void
-		useClassName: boolean
-	}): Visitor<State & PluginState>
-	id: ThirdPartyName
+	(args: {
+		context: Context
+		types: typeof import("babel__core").types
+		buildStyle(twDeclaration: string, path: NodePath): babel.ObjectExpression
+		buildWrap(twDeclaration: string, path: NodePath): babel.ArrowFunctionExpression
+	}): Visitor<ProgramState>
+	id: string
 	lookup: string[]
 	manifest: {
 		cssProp?: string

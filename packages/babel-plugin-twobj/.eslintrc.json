@@ -1,9 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -12,19 +10,13 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "ignorePatterns": [
-    "index.js",
-    "index.mjs",
-    "__tests__/**/*"
-  ],
+  "ignorePatterns": ["index.js", "index.mjs", "__tests__/**/*"],
   "rules": {
     "spaced-comment": [
       "error",
       "always",
       {
-        "markers": [
-          "/"
-        ]
+        "markers": ["/"]
       }
     ],
     "no-var": "error",
@@ -36,12 +28,9 @@
         "allowEmptyCatch": true
       }
     ],
-    "no-mixed-spaces-and-tabs": [
-      "error",
-      "smart-tabs"
-    ],
+    "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
     "@typescript-eslint/no-unused-vars": [
-      "error",
+      "warn",
       {
         "vars": "all",
         "args": "none",

@@ -12,7 +12,7 @@ pluginTester({
 			name: "emotion",
 			cssProp: "@emotion/babel-plugin",
 			styled: "@emotion/styled",
-			className: "@emotion/css",
+			className: "@emotion/react",
 		},
 	},
 	babelOptions: {

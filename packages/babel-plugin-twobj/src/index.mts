@@ -4,7 +4,7 @@ import path from "node:path"
 import { pathToFileURL } from "node:url"
 import * as plugins from "./plugins"
 import { PluginOptions, ThirdParty } from "./types"
-import { createVisitor } from "./visitor"
+import { visitor } from "./visitor"
 
 async function readConfig({ tailwindConfig, debug }: PluginOptions): Promise<unknown> {
 	if (typeof tailwindConfig === "object" && tailwindConfig !== null) {
@@ -80,11 +80,9 @@ export default async function babelPlugin(
 	const thirdParty = options.thirdParty ?? "auto"
 	return {
 		name: "tw",
-		visitor: createVisitor({
+		visitor: visitor({
 			babel,
-			options,
 			config,
-			moduleType: "esm",
 			thirdParty: thirdParty === "auto" ? await findThirdParty() : thirdParty,
 			throwError: options.throwError ?? false,
 		}),

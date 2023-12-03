@@ -1,4 +1,107 @@
+import { css } from "@emotion/react"
+const __tw = {}
+__tw[0] = css({
+	borderTopWidth: "4px",
+	borderBottomWidth: "4px",
+	borderColor: "#818cf8",
+	"@media (min-width: 640px)": {
+		borderRadius: "1rem",
+		borderLeftColor: "#a5b4fc",
+		display: "flex",
+		justifyContent: "space-around",
+	},
+})
+__tw[1] = css({
+	display: "flex",
+	justifyContent: "center",
+	marginLeft: "auto",
+	marginRight: "auto",
+})
+__tw[2] = css({
+	"&:active, &:first-of-type": {
+		backgroundColor: "#fca5a5",
+	},
+})
+__tw[3] = css({})
+import styled from "@emotion/styled"
+__tw[4] = css({
+	display: "none",
+})
 const globalStyles = {
+	"*, ::before, ::after": {
+		"--tw-border-spacing-x": "0",
+		"--tw-border-spacing-y": "0",
+		"--tw-ring-inset": "var(--tw-empty,/**/ /**/)",
+		"--tw-ring-offset-shadow": "0 0 #0000",
+		"--tw-ring-shadow": "0 0 #0000",
+		"--tw-ring-offset-width": "0px",
+		"--tw-ring-offset-color": "#fff",
+		"--tw-ring-color": "rgb(59 130 246 / 0.5)",
+		"--tw-blur": "var(--tw-empty,/**/ /**/)",
+		"--tw-brightness": "var(--tw-empty,/**/ /**/)",
+		"--tw-contrast": "var(--tw-empty,/**/ /**/)",
+		"--tw-grayscale": "var(--tw-empty,/**/ /**/)",
+		"--tw-hue-rotate": "var(--tw-empty,/**/ /**/)",
+		"--tw-invert": "var(--tw-empty,/**/ /**/)",
+		"--tw-saturate": "var(--tw-empty,/**/ /**/)",
+		"--tw-sepia": "var(--tw-empty,/**/ /**/)",
+		"--tw-drop-shadow": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-brightness": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-contrast": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-grayscale": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-hue-rotate": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-invert": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-opacity": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-saturate": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-sepia": "var(--tw-empty,/**/ /**/)",
+		"--tw-ordinal": "var(--tw-empty,/**/ /**/)",
+		"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
+		"--tw-numeric-figure": "var(--tw-empty,/**/ /**/)",
+		"--tw-numeric-spacing": "var(--tw-empty,/**/ /**/)",
+		"--tw-numeric-fraction": "var(--tw-empty,/**/ /**/)",
+		"--tw-scroll-snap-strictness": "proximity",
+		"--tw-pan-x": "var(--tw-empty,/**/ /**/)",
+		"--tw-pan-y": "var(--tw-empty,/**/ /**/)",
+		"--tw-pinch-zoom": "var(--tw-empty,/**/ /**/)",
+	},
+	"::backdrop": {
+		"--tw-border-spacing-x": "0",
+		"--tw-border-spacing-y": "0",
+		"--tw-ring-inset": "var(--tw-empty,/**/ /**/)",
+		"--tw-ring-offset-shadow": "0 0 #0000",
+		"--tw-ring-shadow": "0 0 #0000",
+		"--tw-ring-offset-width": "0px",
+		"--tw-ring-offset-color": "#fff",
+		"--tw-ring-color": "rgb(59 130 246 / 0.5)",
+		"--tw-blur": "var(--tw-empty,/**/ /**/)",
+		"--tw-brightness": "var(--tw-empty,/**/ /**/)",
+		"--tw-contrast": "var(--tw-empty,/**/ /**/)",
+		"--tw-grayscale": "var(--tw-empty,/**/ /**/)",
+		"--tw-hue-rotate": "var(--tw-empty,/**/ /**/)",
+		"--tw-invert": "var(--tw-empty,/**/ /**/)",
+		"--tw-saturate": "var(--tw-empty,/**/ /**/)",
+		"--tw-sepia": "var(--tw-empty,/**/ /**/)",
+		"--tw-drop-shadow": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-brightness": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-contrast": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-grayscale": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-hue-rotate": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-invert": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-opacity": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-saturate": "var(--tw-empty,/**/ /**/)",
+		"--tw-backdrop-sepia": "var(--tw-empty,/**/ /**/)",
+		"--tw-ordinal": "var(--tw-empty,/**/ /**/)",
+		"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
+		"--tw-numeric-figure": "var(--tw-empty,/**/ /**/)",
+		"--tw-numeric-spacing": "var(--tw-empty,/**/ /**/)",
+		"--tw-numeric-fraction": "var(--tw-empty,/**/ /**/)",
+		"--tw-scroll-snap-strictness": "proximity",
+		"--tw-pan-x": "var(--tw-empty,/**/ /**/)",
+		"--tw-pan-y": "var(--tw-empty,/**/ /**/)",
+		"--tw-pinch-zoom": "var(--tw-empty,/**/ /**/)",
+	},
 	"*": {
 		boxSizing: "border-box",
 		borderWidth: "0",
@@ -134,9 +237,6 @@ const globalStyles = {
 		margin: "0",
 		padding: "0",
 	},
-	dialog: {
-		padding: "0",
-	},
 	textarea: {
 		resize: "vertical",
 	},
@@ -175,9 +275,8 @@ globalStyles
 	fontSize: "1.125rem",
 	lineHeight: "1.75rem",
 	"&::after": {
-		"--tw-content": "''",
-		content: "var(--tw-content)",
 		color: "#22d3ee",
+		content: "var(--tw-content)",
 	},
 })
 e => ({
@@ -187,39 +286,17 @@ e => ({
 	"&:focus": e,
 })
 export function Header(props) {
-	return (
-		<h1
-			css={[
-				{
-					borderTopWidth: "4px",
-					borderBottomWidth: "4px",
-					borderColor: "#818cf8",
-					"@media (min-width: 640px)": {
-						borderRadius: "1rem",
-						borderLeftColor: "#a5b4fc",
-						display: "flex",
-						justifyContent: "space-around",
-					},
-				},
-			]}
-			{...props}
-		/>
-	)
+	return <h1 css={__tw[0]} {...props} />
 }
 export function A() {
 	return (
 		<div
 			css={[
-				{
-					display: "flex",
-					justifyContent: "center",
-					marginLeft: "auto",
-					marginRight: "auto",
-				},
+				__tw[1],
 				(e => ({
 					"@media (min-width: 768px)": e,
 				}))({
-					borderTopWith: "1px",
+					borderTopWidth: "1px",
 					...{
 						backgroundColor: "#ef4444",
 					},
@@ -238,17 +315,19 @@ export function A() {
 			>
 				{"rgb(59 130 246 / 30%)"}
 			</span>
-			<Header
-				css={[
-					{
-						"&:active, &:first-of-type": {
-							backgroundColor: "#fca5a5",
-						},
-					},
-				]}
-			>
-				Header
-			</Header>
+			<Header css={__tw[2]}>Header</Header>
+			<div css={__tw[3]}>Empty</div>
 		</div>
 	)
 }
+const style = {
+	a: {
+		color: "#000",
+	},
+	b: {
+		backgroundColor: "#fff",
+	},
+}
+const Styled1 = styled(Header)(style.a, style.b)
+const Styled2 = styled.input(__tw[4])
+const Styled3 = styled("input")(__tw[4])

@@ -1,5 +1,5 @@
-import { PropsOf, Theme } from "@emotion/react"
-import { CSSInterpolation, CSSObject, Interpolation } from "@emotion/serialize"
+import { CSSObject, Interpolation, PropsOf, SerializedStyles, Theme } from "@emotion/react"
+import { CSSInterpolation } from "@emotion/serialize"
 import { StyledComponent, StyledOptions } from "@emotion/styled"
 import { FilteringStyledOptions } from "@emotion/styled/types/base"
 import {} from "react"
@@ -34,11 +34,9 @@ declare module "twobj" {
 		/**
 		 * @typeparam AdditionalProps  Additional props to add to your styled component
 		 */
-		<AdditionalProps extends {}>(template: TemplateStringsArray): StyledComponent<
-			ComponentProps & AdditionalProps,
-			SpecificComponentProps,
-			JSXProps
-		>
+		<AdditionalProps extends {}>(
+			template: TemplateStringsArray,
+		): StyledComponent<ComponentProps & AdditionalProps, SpecificComponentProps, JSXProps>
 	}
 
 	export interface CreateStyled {
@@ -182,4 +180,5 @@ declare module "twobj" {
 	export const globalStyles: CSSObject
 	export function theme(arr: TemplateStringsArray): unknown
 	export function wrap(arr: TemplateStringsArray): (arg: CSSInterpolation) => CSSObject
+	export function tx(arr: TemplateStringsArray): SerializedStyles
 }

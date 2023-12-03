@@ -1,211 +1,84 @@
-import type { BabelFile, NodePath, Visitor } from "@babel/core"
+import type { BabelFile, NodePath, PluginPass, Visitor } from "@babel/core"
 import babel from "@babel/types"
-import type { CSSProperties, ParseError } from "twobj"
-import { createContext, resolveConfig } from "twobj"
+import { createContext, resolveConfig, type CSSProperties, type ParseError } from "twobj"
 import { NodeType } from "twobj/parser"
+import { basePlugin, createProgramState, isKeyword, mypackage } from "./base"
 import * as plugins from "./plugins"
-import type { ImportLibrary, PluginOptions, PluginState, State, ThirdParty } from "./types"
-import { buildArrayExpression, buildObjectExpression, buildPrimitive, getFirstQuasi, isObject } from "./util"
+import type { ProgramState, ThirdParty } from "./types"
+import { buildObjectExpression } from "./util"
 
-export const packageName = "twobj"
-
-function getPlugin({ name }: ThirdParty) {
-	switch (name) {
+function getThirdPartyPlugin(t: typeof import("babel__core").types, p?: ThirdParty) {
+	switch (p?.name) {
 		case "emotion":
+			p.plugin = plugins.emotion
 			return plugins.emotion
-		case "styled-components":
-			return plugins.styledComponents
-		case "linaria":
-			return plugins.linaria
 		default:
 			return undefined
 	}
 }
 
-export function createVisitor({
+export function visitor({
 	babel,
-	options: { useClassName = false },
 	config,
-	moduleType,
-	thirdParty,
 	throwError,
+	thirdParty,
 }: {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	config: any
 	babel: typeof import("babel__core")
-	options: PluginOptions
-	config: unknown
-	moduleType: "esm" | "cjs"
-	thirdParty: ThirdParty | undefined
 	throwError: boolean
-}): Visitor<import("@babel/core").PluginPass> {
-	const t = babel.types
-	const resolved = resolveConfig(config as Parameters<typeof resolveConfig>[0])
-	const ctx = createContext(resolved, { throwError })
+	thirdParty?: ThirdParty
+}): Visitor<PluginPass> {
+	const context = createContext(resolveConfig(config), { throwError })
 
-	const visitor: Visitor<State> = {
-		// add globalStyles to global scope
-		Identifier(path, state) {
-			if (state.imports.length === 0) return
-			if (path.parentPath.isImportSpecifier()) return
-
-			for (const { variables, path: importPath } of state.imports) {
-				for (const { localName, importedName } of variables) {
-					if (importedName === "globalStyles" && path.node.name === localName) {
-						const parent = path.parentPath
-						if (
-							parent.isExpression() ||
-							parent.isAssignmentPattern() ||
-							parent.isVariableDeclarator() ||
-							parent.isExpressionStatement() ||
-							parent.isJSXExpressionContainer()
-						) {
-							if (!state.globalInserted) {
-								if (isObject(ctx.globalStyles)) {
-									const result = buildObjectExpression(t, ctx.globalStyles)
-									importPath.insertBefore(
-										t.variableDeclaration("const", [
-											t.variableDeclarator(t.identifier(localName), result),
-										]),
-									)
-								}
-								state.globalInserted = true
-							}
-						} else {
-							throw Error("not match")
-						}
-						break
-					}
-				}
-			}
-		},
-
-		/**
-		 * tw`` ==> {...}
-		 * wrap`` ==> (e) => ({ ... })
-		 */
-		TaggedTemplateExpression(path, state) {
-			if (state.imports.length === 0) return
-
-			const { node } = path
-			const { tag } = node
-			let skip = false
-			for (const { variables } of state.imports) {
-				for (const { localName, importedName } of variables) {
-					if (t.isIdentifier(tag) && localName === tag.name) {
-						switch (importedName) {
-							case "tw": {
-								const quasi = getFirstQuasi(path)
-								if (quasi) {
-									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-									path.replaceWith(buildStyle(value, quasi, state.file))
-								}
-								skip = true
-								break
-							}
-							case "wrap": {
-								const quasi = getFirstQuasi(path)
-								if (quasi) {
-									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-									const expr = t.arrowFunctionExpression(
-										[t.identifier("e")],
-										buildWrap(value, quasi, state.file),
-									)
-									path.replaceWith(expr)
-								}
-								skip = true
-								break
-							}
-							case "theme": {
-								const quasi = getFirstQuasi(path)
-								if (quasi) {
-									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-									let themeValue = ctx.theme(value)
-									if (Array.isArray(themeValue) && themeValue.every(v => typeof v === "string")) {
-										themeValue = themeValue.join(", ")
-									}
-
-									let expr: babel.Expression
-									if (Array.isArray(themeValue)) {
-										expr = buildArrayExpression(t, themeValue)
-									} else if (typeof themeValue === "object" && themeValue !== null) {
-										expr = buildObjectExpression(t, themeValue as Record<string, unknown>)
-									} else {
-										expr = buildPrimitive(t, themeValue)
-									}
-
-									if (expr) {
-										path.replaceWith(expr)
-									}
-								}
-								skip = true
-								break
-							}
-							case "css":
-							case "createGlobalStyle": {
-								// no skip
-								break
-							}
-							default:
-								skip = true
-								break
-						}
-						break
-					}
-				}
-			}
-
-			if (skip) {
-				path.skip()
-			}
-		},
-	}
-
-	const lookup = new Set([packageName])
-
-	if (thirdParty) {
-		Object.values(plugins).forEach(plugin => {
-			for (const keyword of plugin.lookup) {
-				lookup.add(keyword)
-			}
-		})
-	}
+	const thirdPartyPlugin = getThirdPartyPlugin(babel.types, thirdParty)
 
 	return {
 		Program(program) {
-			const state: State = { file: this.file, imports: [] }
-			program.get("body").forEach(path => {
-				if (!path.isImportDeclaration()) return
-				const lib = getImportLibrary(t, lookup, path)
-				if (lib) {
-					state.imports.push(lib)
-				}
+			const state = createProgramState({
+				types: babel.types,
+				thirdParty,
+				file: this.file,
+				program,
 			})
 
-			function addImportDeclaration(declaration: babel.ImportDeclaration) {
-				program.unshiftContainer("body", declaration)
+			if (thirdPartyPlugin) {
+				program.traverse<ProgramState>(
+					thirdPartyPlugin({
+						types: babel.types,
+						context,
+						buildStyle(twDeclaration, path) {
+							return buildStyle(twDeclaration, path, state.file)
+						},
+						buildWrap(twDeclaration, path) {
+							return buildWrap(twDeclaration, path, state.file)
+						},
+					}),
+					state,
+				)
 			}
 
-			if (thirdParty) {
-				const plugin = getPlugin(thirdParty)
-				if (plugin) {
-					program.traverse<State & PluginState>(
-						plugin({
-							thirdParty,
-							t,
-							buildStyle,
-							buildWrap,
-							addImportDeclaration,
-							useClassName,
-						}),
-						Object.assign(state, { styled: { imported: false, localName: "styled" } }),
-					)
-				}
-			}
+			program.traverse<ProgramState>(
+				basePlugin({
+					types: babel.types,
+					context,
+					buildStyle(twDeclaration, path) {
+						return buildStyle(twDeclaration, path, state.file)
+					},
+					buildWrap(twDeclaration, path) {
+						return buildWrap(twDeclaration, path, state.file)
+					},
+				}),
+				state,
+			)
 
-			// transfrom tw template tag
-			program.traverse<State>(visitor, state)
+			state.added.reverse().forEach(node => {
+				program.unshiftContainer("body", node)
+			})
 
-			for (const { path, libName } of state.imports) {
-				if (packageName === libName) {
+			for (const { path, source } of state.imports) {
+				if (source === mypackage) {
+					const t = babel.types
 					for (const p of path.get("specifiers")) {
 						if (!p.isImportSpecifier()) {
 							p.remove()
@@ -213,13 +86,8 @@ export function createVisitor({
 						}
 						const imported = p.node.imported
 						const importedName = t.isIdentifier(imported) ? imported.name : imported.value
-						switch (importedName) {
-							case "tw":
-							case "theme":
-							case "globalStyles":
-							case "wrap":
-								p.remove()
-								break
+						if (isKeyword(importedName)) {
+							p.remove()
 						}
 					}
 					if (path.get("specifiers").length === 0) {
@@ -229,22 +97,31 @@ export function createVisitor({
 			}
 
 			program.scope.crawl()
+
+			return
 		},
 	}
 
-	function buildStyle(input: string, errPath: NodePath, file: BabelFile) {
+	function buildStyle(twDeclaration: string, path: NodePath, file: BabelFile): babel.ObjectExpression {
 		try {
-			return buildObjectExpression(t, ctx.css(input))
+			return buildObjectExpression(babel.types, context.css(twDeclaration))
 		} catch (error) {
-			throw createError(error as ParseError, errPath, file)
+			throw createError(error as ParseError, path, file)
 		}
 	}
 
-	function buildWrap(input: string, errPath: NodePath, file: BabelFile) {
+	function buildWrap(twDeclaration: string, path: NodePath, file: BabelFile): babel.ArrowFunctionExpression {
 		try {
-			return buildObjectExpression(t, ctx.wrap(input)(Math.E as unknown as CSSProperties), true)
+			return babel.types.arrowFunctionExpression(
+				[babel.types.identifier("e")],
+				buildObjectExpression(
+					babel.types,
+					context.wrap(twDeclaration)(Math.E as unknown as CSSProperties),
+					true,
+				),
+			)
 		} catch (error) {
-			throw createError(error as ParseError, errPath, file)
+			throw createError(error as ParseError, path, file)
 		}
 	}
 
@@ -283,17 +160,17 @@ export function createVisitor({
 
 	function getLocation(
 		rawLines: string,
-		{ start, end }: babel.SourceLocation,
+		{ start, end, ...rest }: babel.SourceLocation,
 		[a, b]: [number, number],
 	): babel.SourceLocation {
 		const lineOffsets = computeLineOffsets(rawLines)
 		start.line -= 1
 		end.line -= 1
-		end = positionAt(offsetAt(start) + b)
-		start = positionAt(offsetAt(start) + a)
+		end = { ...end, ...positionAt(offsetAt(start) + b) }
+		start = { ...start, ...positionAt(offsetAt(start) + a) }
 		start.line += 1
 		end.line += 1
-		return { start, end }
+		return { start, end, ...rest }
 
 		function offsetAt(position: { line: number; column: number }) {
 			if (position.line >= lineOffsets.length) {
@@ -328,46 +205,6 @@ export function createVisitor({
 			return { line, column: offset - lineOffsets[line] }
 		}
 	}
-}
-
-function getImportLibrary(
-	t: typeof babel,
-	lookup: Set<string>,
-	path: NodePath<babel.ImportDeclaration>,
-): ImportLibrary | null {
-	const { node } = path
-	if (!lookup.has(node.source.value)) {
-		return null
-	}
-
-	const lib: ImportLibrary = {
-		path,
-		libName: node.source.value,
-		variables: [],
-	}
-
-	const specifiers = path.get("specifiers")
-
-	for (let i = 0; i < specifiers.length; i++) {
-		const spec = specifiers[i]
-		if (spec.isImportSpecifier()) {
-			const local = spec.get("local")
-			const imported = spec.get("imported")
-			if (local.isIdentifier() && imported.isIdentifier()) {
-				lib.variables.push({
-					localName: local.node.name,
-					importedName: imported.node.name,
-				})
-			}
-		} else if (spec.isImportDefaultSpecifier()) {
-			const local = spec.get("local")
-			if (local.isIdentifier()) {
-				lib.defaultName = local.node.name
-			}
-		}
-	}
-
-	return lib
 }
 
 function computeLineOffsets(text: string): number[] {

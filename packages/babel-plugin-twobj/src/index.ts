@@ -3,7 +3,7 @@ import Module from "module"
 import path from "path"
 import * as plugins from "./plugins"
 import type { PluginOptions, ThirdParty } from "./types"
-import { createVisitor } from "./visitor"
+import { visitor } from "./visitor"
 
 function readConfig({ tailwindConfig, debug }: PluginOptions): unknown {
 	if (typeof tailwindConfig === "object" && tailwindConfig !== null) {
@@ -68,11 +68,9 @@ function babelPlugin(babel: typeof import("babel__core"), options: PluginOptions
 	const thirdParty = options.thirdParty ?? "auto"
 	return {
 		name: "tw",
-		visitor: createVisitor({
+		visitor: visitor({
 			babel,
-			options,
 			config,
-			moduleType: "cjs",
 			thirdParty: thirdParty === "auto" ? findThirdParty() : thirdParty,
 			throwError: options.throwError ?? false,
 		}),

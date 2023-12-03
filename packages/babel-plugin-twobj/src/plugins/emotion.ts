@@ -1,276 +1,366 @@
 import type { NodePath } from "@babel/core"
-import type babel from "@babel/types"
-import type { Plugin, State } from "../types"
+import babel from "@babel/types"
+import type { Plugin, ProgramState } from "../types"
 import { getFirstQuasi } from "../util"
 
-export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap, addImportDeclaration, useClassName }) {
-	const styled = t.importDeclaration(
+const styleVarName = "__tw"
+
+export const SQUARE_BRACKETS = [91, 93] as const
+
+import { findRightBracket, isCharSpace } from "twobj/parser"
+
+function normalize(value: string): string {
+	const tokens: string[] = []
+
+	const len = value.length
+	let a = -1
+	for (let i = 0; i < len; i++) {
+		const char = value.charCodeAt(i)
+		if (isCharSpace(char)) {
+			if (a !== -1) {
+				tokens.push(value.slice(a, i))
+				a = -1
+			}
+			continue
+		}
+
+		if (a === -1) {
+			a = i
+		}
+
+		if (char === 91) {
+			const r = findRightBracket({ text: value, brackets: SQUARE_BRACKETS, comments: true, start: i })
+			if (r == undefined) {
+				tokens.push(value.slice(a))
+				break
+			}
+
+			i = r
+		}
+	}
+
+	if (a !== -1) {
+		tokens.push(value.slice(a))
+	}
+
+	return tokens.join(" ")
+}
+
+export const emotion: Plugin = ({ types: t, buildStyle }) => {
+	const hideTwAttribute = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test"
+
+	const importCss = t.importDeclaration(
+		[t.importSpecifier(t.identifier("css"), t.identifier("css"))],
+		t.stringLiteral("@emotion/react"),
+	)
+
+	const importStyled = t.importDeclaration(
 		[t.importDefaultSpecifier(t.identifier("styled"))],
 		t.stringLiteral("@emotion/styled"),
 	)
 
-	const removeTwAttr = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test"
+	interface TwAttribute {
+		kind: "tw"
+		value: string
+		index: number
+		path: NodePath<babel.JSXAttribute>
+	}
+
+	interface CssAttribute {
+		kind: "css"
+		index: number
+		path: NodePath<babel.JSXAttribute>
+	}
+
+	// interface ClassNameAttribute {
+	// 	kind: "className"
+	// 	index: number
+	// 	path: NodePath<babel.JSXAttribute>
+	// 	value: string
+	// }
+
+	type XAttribute = TwAttribute | CssAttribute // | ClassNameAttribute
+
+	let styleIndex = 0
+
+	function addImportStyled(state: ProgramState) {
+		state.styledLocalName = "styled"
+		state.added.push(importStyled)
+	}
+
+	function addStyle(t: typeof import("babel__core").types, state: ProgramState, value: string, path: NodePath) {
+		if (styleIndex === 0) {
+			if (!state.cssLocalName) {
+				state.cssLocalName = "css"
+				state.added.push(importCss)
+			}
+			state.added.push(
+				t.variableDeclaration("const", [
+					t.variableDeclarator(t.identifier(styleVarName), t.objectExpression([])),
+				]),
+			)
+		}
+
+		value = normalize(value)
+		let member = state.styles.get(value)
+		if (!member) {
+			// $__tw[<index>]
+			member = t.memberExpression(t.identifier(styleVarName), t.identifier(String(styleIndex)), true)
+
+			// $__tw[<index>] = css(styleObject)
+			const statement = t.expressionStatement(
+				t.assignmentExpression(
+					"=",
+					member,
+					t.callExpression(t.identifier(state.cssLocalName), [buildStyle(value, path)]),
+				),
+			)
+
+			state.added.push(statement)
+			state.styles.set(value, member)
+			styleIndex++
+		}
+
+		return member
+	}
 
 	return {
+		/**
+		 * <div tw="bg-black" /> ==> <div css={$__tw[<index>]} />
+		 */
 		JSXOpeningElement(path, state) {
-			if (thirdParty.cssProp) {
-				/** <div tw="bg-black" /> ==> <div css={{...}} /> */
-				const attrs = path.get("attributes")
+			const t = state.types
+			const attrs = path.get("attributes")
 
-				interface TwAttr {
-					kind: "tw"
-					index: number
-					path: NodePath<babel.JSXAttribute>
-					value: string
+			let tw: TwAttribute | undefined
+			let css: CssAttribute | undefined
+			const collection: XAttribute[] = []
+
+			for (let i = 0; i < attrs.length; i++) {
+				if (collection.length >= 2) {
+					break
 				}
 
-				interface ClassNameAttr {
-					kind: "className"
-					index: number
-					path: NodePath<babel.JSXAttribute>
-					value: string
+				const attr = attrs[i]
+				if (!attr.isJSXAttribute()) {
+					continue
 				}
 
-				interface CssAttr {
-					kind: "css"
-					index: number
-					path: NodePath<babel.JSXAttribute>
-				}
+				const attrName = attr.get("name").node.name
+				const attrValue = attr.get("value")
 
-				type JSXAttr = TwAttr | ClassNameAttr | CssAttr
-
-				const attributes: JSXAttr[] = []
-
-				for (let i = 0; i < attrs.length; i++) {
-					if ((!useClassName && attributes.length >= 2) || (useClassName && attributes.length >= 3)) {
-						break
-					}
-
-					const attr = attrs[i]
-					if (!attr.isJSXAttribute()) {
-						continue
-					}
-
-					const name = attr.get("name").node.name
-					const value = attr.get("value")
-
-					if (name === "tw") {
-						if (value.isStringLiteral()) {
-							if (!attributes.find(a => a.kind === "tw")) {
-								attributes.push({
+				if (tw == null && attrName === "tw") {
+					// tw=""
+					if (attrValue.isStringLiteral()) {
+						collection.push(
+							(tw = {
+								kind: "tw",
+								index: i,
+								value: attrValue.node.value,
+								path: attr,
+							}),
+						)
+					} else if (attrValue.isJSXExpressionContainer()) {
+						const expression = attrValue.get("expression")
+						// tw={""}
+						if (expression.isStringLiteral()) {
+							collection.push(
+								(tw = {
 									kind: "tw",
 									index: i,
-									value: value.node.value,
+									value: expression.node.value,
 									path: attr,
-								})
-							}
-						} else if (value.isJSXExpressionContainer()) {
-							const expression = value.get("expression")
-							if (expression.isStringLiteral()) {
-								if (!attributes.find(a => a.kind === "tw")) {
-									attributes.push({
+								}),
+							)
+						} else if (expression.isTemplateLiteral()) {
+							// tw={``}
+							const quasi = getFirstQuasi(expression)
+							if (quasi) {
+								collection.push(
+									(tw = {
 										kind: "tw",
 										index: i,
-										value: expression.node.value,
+										value: quasi.node.value.cooked ?? quasi.node.value.raw,
 										path: attr,
-									})
-								}
-							} else if (expression.isTemplateLiteral()) {
-								const quasi = getFirstQuasi(expression)
-								if (quasi) {
-									if (!attributes.find(a => a.kind === "tw")) {
-										attributes.push({
-											kind: "tw",
-											index: i,
-											value: quasi.node.value.cooked ?? quasi.node.value.raw,
-											path: attr,
-										})
-									}
-								}
+									}),
+								)
 							}
-						}
-					} else if (name === "css") {
-						if (!attributes.find(a => a.kind === "css")) {
-							attributes.push({
-								kind: "css",
-								index: i,
-								path: attr,
-							})
-						}
-					} else if (useClassName && name === "className" && value.isStringLiteral()) {
-						if (!attributes.find(a => a.kind === "className")) {
-							attributes.push({
-								kind: "className",
-								index: i,
-								value: value.node.value,
-								path: attr,
-							})
 						}
 					}
+				} else if (css == null && attrName === "css") {
+					collection.push(
+						(css = {
+							kind: "css",
+							index: i,
+							path: attr,
+						}),
+					)
 				}
+			}
 
-				const cssProp = attributes.find(a => a.kind === "css")
-				const targets = attributes.filter((a): a is TwAttr | ClassNameAttr => a.kind !== "css")
+			if (tw == null) {
+				return
+			}
 
-				if (targets.length > 0) {
-					if (cssProp) {
-						const value = cssProp.path.get("value")
-						if (value.isJSXExpressionContainer()) {
-							const expression = value.get("expression")
-							if (expression.isArrayExpression()) {
-								const elements = expression.get("elements")
-								if (elements.length === 0) {
-									const expr =
-										targets.length === 1
-											? buildStyle(targets[0].value, targets[0].path, state.file)
-											: t.arrayExpression(
-													targets.map(t => buildStyle(t.value, t.path, state.file)),
-											  )
-									expression.replaceWith(expr)
-								} else {
-									interface A {
-										index: number
-										elements: Array<babel.Expression | babel.SpreadElement | null>
-									}
-									const sorted = targets
-										.map<A>(t => ({
-											index: t.index,
-											elements: [buildStyle(t.value, t.path, state.file)],
-										}))
-										.concat({ index: cssProp.index, elements: elements.map(e => e.node) })
-										.sort((a, b) => {
-											if (a.index < b.index) {
-												return -1
-											}
-											return 1
-										})
+			if (css == null) {
+				const member = addStyle(t, state, tw.value, tw.path)
+				// <div css={$__tw[<index>]} />
+				tw.path.insertAfter(t.jsxAttribute(t.jsxIdentifier("css"), t.jsxExpressionContainer(member)))
+				if (hideTwAttribute) {
+					tw.path.remove()
+				}
+				return
+			}
 
-									expression.replaceWith(
-										t.arrayExpression(
-											sorted.reduce((acc, s) => {
-												acc.push(...s.elements)
-												return acc
-											}, [] as Array<babel.Expression | babel.SpreadElement | null>),
-										),
-									)
-								}
-							} else if (expression.isExpression()) {
-								interface B {
-									index: number
-									element: babel.Expression | babel.SpreadElement
-								}
-								const sorted = targets
-									.map<B>(t => ({
-										index: t.index,
-										element: buildStyle(t.value, t.path, state.file),
-									}))
-									.concat({ index: cssProp.index, element: expression.node })
-									.sort((a, b) => {
-										if (a.index < b.index) {
-											return -1
-										}
-										return 1
-									})
-								expression.replaceWith(t.arrayExpression(sorted.map(s => s.element)))
-							}
-						}
+			const value = css.path.get("value")
+			// css={...}
+			if (value.isJSXExpressionContainer()) {
+				const expression = value.get("expression")
+				const member = addStyle(t, state, tw.value, tw.path)
+				// css={[...]}
+				if (expression.isArrayExpression()) {
+					const elements = expression.get("elements")
+					if (elements.length === 0) {
+						expression.replaceWith(member)
 					} else {
-						const attr = t.jsxAttribute(
-							t.jsxIdentifier("css"),
-							t.jsxExpressionContainer(
-								t.arrayExpression(targets.map(t => buildStyle(t.value, t.path, state.file))),
+						interface A {
+							index: number
+							elements: Array<babel.Expression | babel.SpreadElement | null>
+						}
+						const sorted = [tw]
+							.map<A>(v => ({
+								index: v.index,
+								elements: [member],
+							}))
+							.concat({ index: css.index, elements: elements.map(e => e.node) })
+							.sort((a, b) => {
+								if (a.index < b.index) {
+									return -1
+								}
+								return 1
+							})
+
+						expression.replaceWith(
+							t.arrayExpression(
+								sorted.reduce(
+									(acc, s) => {
+										acc.push(...s.elements)
+										return acc
+									},
+									[] as Array<babel.Expression | babel.SpreadElement | null>,
+								),
 							),
 						)
-						const last = targets[targets.length - 1]
-						last.path.insertAfter(attr)
 					}
-
-					if (removeTwAttr) {
-						const tw = attributes.find(a => a.kind === "tw")
-						if (tw) {
-							tw.path.remove()
-						}
+				} else if (expression.isExpression()) {
+					interface B {
+						index: number
+						element: babel.Expression | babel.SpreadElement
 					}
+					const sorted = [tw]
+						.map<B>(t => ({
+							index: t.index,
+							element: member,
+						}))
+						.concat({ index: css.index, element: expression.node })
+						.sort((a, b) => {
+							if (a.index < b.index) {
+								return -1
+							}
+							return 1
+						})
+					expression.replaceWith(t.arrayExpression(sorted.map(s => s.element)))
 				}
+			}
+
+			if (hideTwAttribute) {
+				tw.path.remove()
 			}
 		},
 		/**
-		 * tw.any`` ==> styled.any({...})
-		 * tw(<any>)`` ==> styled(<any>)({...})
+		 * tw(<element>)`` ==> styled(<element>)($__tw[<index>])
+		 * tw.element`` ==> styled.element($__tw[<index>])
+		 * tx`` => css({...})
 		 */
 		TaggedTemplateExpression(path, state) {
-			if (state.imports.length === 0) return
+			if (!state.thirdParty?.styled) {
+				return
+			}
+
+			const t = state.types
+
+			const tag = path.get("tag")
+			let tagName = ""
+
+			if (tag.isCallExpression()) {
+				const callee = tag.get("callee")
+				if (callee.isIdentifier()) {
+					tagName = callee.node.name
+				}
+			} else if (tag.isMemberExpression()) {
+				const object = tag.get("object")
+				const property = tag.get("property")
+				if (object.isIdentifier() && property.isIdentifier()) {
+					tagName = object.node.name
+				}
+			} else if (tag.isIdentifier()) {
+				tagName = tag.node.name
+			}
+
+			if (tagName === "") {
+				return
+			}
+
 			let skip = false
-			for (const { variables } of state.imports) {
-				for (const { localName, importedName } of variables) {
-					if (thirdParty.styled) {
-						const tag = path.get("tag")
-						if (tag.isCallExpression()) {
-							const callee = tag.get("callee")
-							if (callee.isIdentifier() && callee.node.name === localName && importedName === "tw") {
-								const args = tag.get("arguments")
-								const quasi = getFirstQuasi(path)
-								if (quasi) {
-									if (!state.styled.imported) {
-										state.styled.imported = true
-										const imported = getStyledDefaultName(state)
-										if (!imported) {
-											addImportDeclaration(styled)
-										} else {
-											state.styled.localName = imported.defaultName
-										}
-									}
 
-									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-									const expr = t.callExpression(
-										t.callExpression(
-											t.identifier(state.styled.localName),
-											args.map(a => a.node),
-										),
-										[buildStyle(value, quasi, state.file)],
-									)
-									path.replaceWith(expr)
-								}
-								skip = true
-								break
+			if (state.twIdentifiers["tw"].get(tagName)) {
+				const quasi = getFirstQuasi(path)
+				if (quasi) {
+					if (tag.isCallExpression()) {
+						if (!state.styledLocalName) {
+							addImportStyled(state)
+						}
+						const args = tag.get("arguments")
+						const value = quasi.node.value.cooked ?? quasi.node.value.raw
+						const member = addStyle(t, state, value, quasi)
+						const expr = t.callExpression(
+							t.callExpression(
+								t.identifier(state.styledLocalName),
+								args.map(a => a.node),
+							),
+							[member],
+						)
+						path.replaceWith(expr)
+					} else if (tag.isMemberExpression()) {
+						const property = tag.get("property")
+						if (property.isIdentifier()) {
+							if (!state.styledLocalName) {
+								addImportStyled(state)
 							}
-						} else if (tag.isMemberExpression()) {
-							const object = tag.get("object")
-							const property = tag.get("property")
-							if (
-								object.isIdentifier() &&
-								property.isIdentifier() &&
-								object.node.name === localName &&
-								importedName === "tw"
-							) {
-								const quasi = getFirstQuasi(path)
-								if (quasi) {
-									if (!state.styled.imported) {
-										state.styled.imported = true
-										const imported = getStyledDefaultName(state)
-										if (!imported) {
-											addImportDeclaration(styled)
-										} else {
-											state.styled.localName = imported.defaultName
-										}
-									}
-
-									const value = quasi.node.value.cooked ?? quasi.node.value.raw
-									const expr = t.callExpression(
-										t.memberExpression(
-											t.identifier(state.styled.localName),
-											t.identifier(property.node.name),
-										),
-										[buildStyle(value, quasi, state.file)],
-									)
-									path.replaceWith(expr)
-								}
-								skip = true
-								break
-							}
+							const value = quasi.node.value.cooked ?? quasi.node.value.raw
+							const member = addStyle(t, state, value, quasi)
+							const expr = t.callExpression(
+								t.memberExpression(
+									t.identifier(state.styledLocalName),
+									t.identifier(property.node.name),
+								),
+								[member],
+							)
+							path.replaceWith(expr)
 						}
 					}
 				}
+				skip = true
+			} else if (state.twIdentifiers["tx"].get(tagName)) {
+				const quasi = getFirstQuasi(path)
+				if (quasi) {
+					if (tag.isIdentifier()) {
+						const value = quasi.node.value.cooked ?? quasi.node.value.raw
+						const member = addStyle(t, state, value, quasi)
+						path.replaceWith(member)
+					}
+				}
+				skip = true
 			}
 
 			if (skip) {
@@ -282,51 +372,54 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 		 * tw.div(props => ({ width: props.width })) ==> styled.div(props => ({ width: props.width }))
 		 */
 		CallExpression(path, state) {
-			if (state.imports.length === 0) return
+			if (!state.thirdParty?.styled) {
+				return
+			}
+
+			const t = state.types
+
+			const callee = path.get("callee")
+			let tagName = ""
+
+			if (callee.isCallExpression()) {
+				const c = callee.get("callee")
+				if (c.isIdentifier()) {
+					tagName = c.node.name
+				}
+			} else if (callee.isMemberExpression()) {
+				const object = callee.get("object")
+				const property = callee.get("property")
+				if (object.isIdentifier() && property.isIdentifier()) {
+					tagName = object.node.name
+				}
+			}
+
+			if (tagName === "") {
+				return
+			}
+
 			let skip = false
-			for (const { variables } of state.imports) {
-				for (const { localName, importedName } of variables) {
-					if (thirdParty.styled) {
-						let callee = path.get("callee")
-						if (callee.isCallExpression()) {
-							callee = callee.get("callee")
-							if (callee.isIdentifier() && callee.node.name === localName && importedName === "tw") {
-								if (!state.styled.imported) {
-									state.styled.imported = true
-									const imported = getStyledDefaultName(state)
-									if (!imported) {
-										addImportDeclaration(styled)
-									} else {
-										state.styled.localName = imported.defaultName
-									}
-								}
-								callee.replaceWith(t.identifier(state.styled.localName))
-								skip = true
-								break
-							}
-						} else if (callee.isMemberExpression()) {
-							const object = callee.get("object")
-							const property = callee.get("property")
-							if (
-								object.isIdentifier() &&
-								property.isIdentifier() &&
-								object.node.name === localName &&
-								importedName === "tw"
-							) {
-								if (!state.styled.imported) {
-									state.styled.imported = true
-									const imported = getStyledDefaultName(state)
-									if (!imported) {
-										addImportDeclaration(styled)
-									} else {
-										state.styled.localName = imported.defaultName
-									}
-								}
-								object.replaceWith(t.identifier(state.styled.localName))
-							}
+
+			if (state.twIdentifiers["tw"].get(tagName)) {
+				if (callee.isCallExpression()) {
+					const c = callee.get("callee")
+					if (c.isIdentifier()) {
+						if (!state.styledLocalName) {
+							addImportStyled(state)
 						}
+						c.replaceWith(t.identifier(state.styledLocalName))
+					}
+				} else if (callee.isMemberExpression()) {
+					const object = callee.get("object")
+					const property = callee.get("property")
+					if (property.isIdentifier()) {
+						if (!state.styledLocalName) {
+							addImportStyled(state)
+						}
+						object.replaceWith(t.identifier(state.styledLocalName))
 					}
 				}
+				skip = true
 			}
 
 			if (skip) {
@@ -334,17 +427,7 @@ export const emotion: Plugin = function ({ thirdParty, t, buildStyle, buildWrap,
 			}
 		},
 	}
-
-	function getStyledDefaultName({ imports }: State): { defaultName: string } | undefined {
-		for (const { libName, defaultName } of imports) {
-			if (libName !== "@emotion/styled") continue
-			if (defaultName) {
-				return { defaultName }
-			}
-		}
-		return undefined
-	}
 }
 emotion.id = "emotion"
-emotion.lookup = ["@emotion/styled", "@emotion/css"]
-emotion.manifest = { cssProp: "@emotion/babel-plugin", styled: "@emotion/styled", className: "@emotion/css" }
+emotion.lookup = ["@emotion/styled", "@emotion/react"]
+emotion.manifest = { cssProp: "@emotion/babel-plugin", styled: "@emotion/styled", className: "@emotion/react" }
