@@ -1,31 +1,31 @@
 import { css } from "@emotion/react"
 import { CheckIcon, DividerHorizontalIcon } from "@radix-ui/react-icons"
 import { InputHTMLAttributes, forwardRef, useEffect, useId, useRef } from "react"
-import { tw, tx } from "twobj"
+import { tw } from "twobj"
 
 const InputControl = tw.input`hidden`
 
 const effects = css`
 	${InputControl}:focus-visible + & {
-		${tx`outline-none ring-1 ring-ring`}
+		${tw`outline-none ring-1 ring-ring`}
 	}
 	${InputControl}:disabled + & {
-		${tx`cursor-not-allowed opacity-50`}
+		${tw`cursor-not-allowed opacity-50`}
 	}
 	${InputControl}:checked + &, ${InputControl}:indeterminate + & {
-		${tx`bg-primary text-primary-foreground`}
+		${tw`bg-primary text-primary-foreground`}
 	}
 	${InputControl}:not(:checked) + & .checked_icon {
-		${tx`hidden`}
+		${tw`hidden`}
 	}
 	${InputControl}:indeterminate + & .checked_icon {
-		${tx`hidden`}
+		${tw`hidden`}
 	}
 	${InputControl}:not(:indeterminate) + & .indeterminated_icon {
-		${tx`hidden`}
+		${tw`hidden`}
 	}
 	${InputControl}:indeterminate + & .indeterminated_icon {
-		${tx`visible`}
+		${tw`visible`}
 	}
 `
 

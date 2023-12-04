@@ -1,43 +1,56 @@
 import styled from "@emotion/styled"
-const __tw = {}
-__tw[0] = css({
+const _tw = {}
+_tw[0] = css({
 	display: "none",
 })
-__tw[1] = css({
+_tw[1] = css({
+	"--tw-ring-offset-color": "initial",
+	"--tw-ring-offset-width": "initial",
+	"--tw-ring-color": "initial",
+	"--tw-ring-inset": "initial",
+	"--tw-ring-offset-shadow":
+		"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
+	"--tw-ring-shadow":
+		"var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, rgb(59 130 246 / 0.5))",
+	"--tw-shadow": "initial",
 	outline: "2px solid transparent",
 	outlineOffset: "2px",
-	"--tw-ring-offset-shadow": "var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)",
-	"--tw-ring-shadow": "var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)",
-	boxShadow: "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)",
+	boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 })
-__tw[2] = css({
+_tw[2] = css({
 	cursor: "not-allowed",
 	opacity: "0.5",
 })
-__tw[3] = css({})
-__tw[4] = css({
+_tw[3] = css({})
+_tw[4] = css({
 	visibility: "visible",
 })
-__tw[5] = css({
+_tw[5] = css({
+	"--tw-ring-offset-color": "initial",
+	"--tw-ring-offset-width": "initial",
+	"--tw-ring-color": "initial",
+	"--tw-ring-inset": "initial",
+	"--tw-ring-offset-shadow": "initial",
+	"--tw-ring-shadow": "initial",
+	"--tw-shadow": "var(--tw-shadow-colored)",
 	height: "1rem",
 	width: "1rem",
 	flexShrink: "0",
 	borderRadius: "0.5rem",
 	borderWidth: "1px",
-	"--tw-shadow-default-color-0": "rgb(0 0 0 / 0.1)",
-	"--tw-shadow-default-color-1": "rgb(0 0 0 / 0.1)",
 	"--tw-shadow-colored":
-		"0 1px 3px 0 var(--tw-shadow-color, var(--tw-shadow-default-color-0)), 0 1px 2px -1px var(--tw-shadow-color, var(--tw-shadow-default-color-1))",
-	"--tw-shadow": "var(--tw-shadow-colored)",
-	boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+		"0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1))",
+	boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	userSelect: "none",
 	cursor: "pointer",
 	"&:focus-visible": {
 		outline: "2px solid transparent",
 		outlineOffset: "2px",
-		"--tw-ring-offset-shadow": "var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)",
-		"--tw-ring-shadow": "var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)",
-		boxShadow: "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)",
+		"--tw-ring-offset-shadow":
+			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
+		"--tw-ring-shadow":
+			"var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, rgb(59 130 246 / 0.5))",
+		boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	},
 	display: "flex",
 	alignItems: "center",
@@ -46,28 +59,28 @@ __tw[5] = css({
 import { css } from "@emotion/react"
 import { CheckIcon, DividerHorizontalIcon } from "@radix-ui/react-icons"
 import { forwardRef, useEffect, useId, useRef } from "react"
-const InputControl = styled.input(__tw[0])
+const InputControl = styled.input(_tw[0])
 const effects = css`
 	${InputControl}:focus-visible + & {
-		${__tw[1]}
+		${_tw[1]}
 	}
 	${InputControl}:disabled + & {
-		${__tw[2]}
+		${_tw[2]}
 	}
 	${InputControl}:checked + &, ${InputControl}:indeterminate + & {
-		${__tw[3]}
+		${_tw[3]}
 	}
 	${InputControl}:not(:checked) + & .checked_icon {
-		${__tw[0]}
+		${_tw[0]}
 	}
 	${InputControl}:indeterminate + & .checked_icon {
-		${__tw[0]}
+		${_tw[0]}
 	}
 	${InputControl}:not(:indeterminate) + & .indeterminated_icon {
-		${__tw[0]}
+		${_tw[0]}
 	}
 	${InputControl}:indeterminate + & .indeterminated_icon {
-		${__tw[4]}
+		${_tw[4]}
 	}
 `
 export const Checkbox = forwardRef(({ id, className, intermediate, onFocus, onBlur, onKeyDown, ...props }, ref) => {
@@ -101,7 +114,7 @@ export const Checkbox = forwardRef(({ id, className, intermediate, onFocus, onBl
 				htmlFor={id}
 				tabIndex={0}
 				role="checkbox"
-				css={[__tw[5], effects]}
+				css={[_tw[5], effects]}
 				className={className}
 				onFocus={_ => {
 					isFocus.current = true

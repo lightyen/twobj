@@ -79,13 +79,13 @@ importers:
         version: 11.11.0
       '@emotion/react':
         specifier: 11.11.1
-        version: 11.11.1(@types/react@18.2.40)(react@18.2.0)
+        version: 11.11.1(@types/react@18.2.41)(react@18.2.0)
       '@emotion/serialize':
         specifier: 1.1.2
         version: 1.1.2
       '@emotion/styled':
         specifier: 11.11.0
-        version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.40)(react@18.2.0)
+        version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.41)(react@18.2.0)
       '@types/babel-plugin-tester':
         specifier: 9.0.10
         version: 9.0.10
@@ -93,8 +93,8 @@ importers:
         specifier: 7.20.5
         version: 7.20.5
       '@types/react':
-        specifier: 18.2.40
-        version: 18.2.40
+        specifier: 18.2.41
+        version: 18.2.41
       babel-plugin-tester:
         specifier: 11.0.4
         version: 11.0.4(@babel/core@7.23.5)
@@ -108,8 +108,8 @@ importers:
         specifier: 18.2.0
         version: 18.2.0
       twobj:
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.5.6
+        version: link:../twobj
 
   packages/twobj:
     devDependencies:
@@ -250,7 +250,7 @@ importers:
         version: 5.9.2(typescript@5.2.2)(webpack@5.89.0)
       twobj:
         specifier: 2.5.5
-        version: link:../../packages/twobj
+        version: 2.5.5
       typescript:
         specifier: 5.2.2
         version: 5.2.2
@@ -1677,7 +1677,7 @@ packages:
     resolution: {integrity: sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==}
     dev: true
 
-  /@emotion/react@11.11.1(@types/react@18.2.40)(react@18.2.0):
+  /@emotion/react@11.11.1(@types/react@18.2.41)(react@18.2.0):
     resolution: {integrity: sha512-5mlW1DquU5HaxjLkfkGN1GA/fvVGdyHURRiX/0FHl2cfIfRxSOfmxEH5YS43edp0OldZrZ+dkBKbngxcNCdZvA==}
     peerDependencies:
       '@types/react': '*'
@@ -1693,7 +1693,7 @@ packages:
       '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.2.0)
       '@emotion/utils': 1.2.1
       '@emotion/weak-memoize': 0.3.1
-      '@types/react': 18.2.40
+      '@types/react': 18.2.41
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
     dev: true
@@ -1712,7 +1712,7 @@ packages:
     resolution: {integrity: sha512-0QBtGvaqtWi+nx6doRwDdBIzhNdZrXUppvTM4dtZZWEGTXL/XE/yJxLMGlDT1Gt+UHH5IX1n+jkXyytE/av7OA==}
     dev: true
 
-  /@emotion/styled@11.11.0(@emotion/react@11.11.1)(@types/react@18.2.40)(react@18.2.0):
+  /@emotion/styled@11.11.0(@emotion/react@11.11.1)(@types/react@18.2.41)(react@18.2.0):
     resolution: {integrity: sha512-hM5Nnvu9P3midq5aaXj4I+lnSfNi7Pmd4EWk1fOZ3pxookaQTNew6bp4JaCBYM4HVFZF9g7UjJmsUmC2JlxOng==}
     peerDependencies:
       '@emotion/react': ^11.0.0-rc.0
@@ -1725,11 +1725,11 @@ packages:
       '@babel/runtime': 7.21.5
       '@emotion/babel-plugin': 11.11.0
       '@emotion/is-prop-valid': 1.2.1
-      '@emotion/react': 11.11.1(@types/react@18.2.40)(react@18.2.0)
+      '@emotion/react': 11.11.1(@types/react@18.2.41)(react@18.2.0)
       '@emotion/serialize': 1.1.2
       '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.2.0)
       '@emotion/utils': 1.2.1
-      '@types/react': 18.2.40
+      '@types/react': 18.2.41
       react: 18.2.0
     dev: true
 
@@ -3004,8 +3004,8 @@ packages:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
 
-  /@types/react@18.2.40:
-    resolution: {integrity: sha512-H+BUhb9C1zBtogDLAk+KCNRKiHDrqSwQT/0z0PVTwMFBxqg3011ByLomADtgkgMkfwj4AMOiXBReyLTUBg681g==}
+  /@types/react@18.2.41:
+    resolution: {integrity: sha512-CwOGr/PiLiNBxEBqpJ7fO3kocP/2SSuC9fpH5K7tusrg4xPSRT/193rzolYwQnTN02We/ATXKnb6GqA5w4fRxw==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
@@ -8343,8 +8343,8 @@ packages:
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
 
-  /twobj@2.4.0:
-    resolution: {integrity: sha512-EnrbfKN32Ogh42KgIQEKUfxFVMVhrci7CXC1kgTUJGdUEI5VjnYj1KZ7nObkt2QopHHne4+8sQQwfkzYqTibog==}
+  /twobj@2.5.5:
+    resolution: {integrity: sha512-iDAEXzHh2qUZnBSIEl9+2eX7gMoHdhKozUukr2WHD1ShH7ua5wZ4HMfpklQY9/R1l/IeXCpjR1PyEehcPrAvdg==}
     dev: true
 
   /type-check@0.4.0:

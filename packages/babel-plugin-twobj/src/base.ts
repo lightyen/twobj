@@ -1,6 +1,6 @@
 import type { BabelFile, NodePath } from "@babel/core"
 import babel from "@babel/types"
-import type { ImportDeclaration, Plugin, ProgramState, ThirdParty } from "./types"
+import type { ImportDeclaration, Parser, Plugin, ProgramState, ThirdParty } from "./types"
 import { buildArrayExpression, buildObjectExpression, buildPrimitive, getFirstQuasi, isObject } from "./util"
 
 export const mypackage = "twobj"
@@ -61,7 +61,7 @@ export const basePlugin: Plugin = ({ context, buildStyle, buildWrap }) => {
 			}
 		},
 		/**
-		 * tw`` ==> {...}
+		 * tx`` ==> {...}
 		 * wrap`` ==> (e) => ({...})
 		 * theme`` ==> {...}
 		 */
@@ -75,7 +75,7 @@ export const basePlugin: Plugin = ({ context, buildStyle, buildWrap }) => {
 
 			const tag = path.node.tag.name
 
-			if (state.twIdentifiers["tw"].get(tag)) {
+			if (state.twIdentifiers["tx"].get(tag)) {
 				const quasi = getFirstQuasi(path)
 				if (quasi) {
 					const value = quasi.node.value.cooked ?? quasi.node.value.raw
@@ -128,11 +128,12 @@ basePlugin.manifest = {}
 
 export function createProgramState(args: {
 	types: typeof import("babel__core").types
+	parser: Parser
 	file: BabelFile
 	program: NodePath<babel.Program>
 	thirdParty?: ThirdParty
 }): ProgramState {
-	const { types, program, file, thirdParty } = args
+	const { types, parser, program, file, thirdParty } = args
 	const lookup = new Set([mypackage])
 	if (thirdParty?.plugin) {
 		thirdParty.plugin.lookup.forEach(k => {
@@ -179,6 +180,7 @@ export function createProgramState(args: {
 
 	return {
 		types,
+		parser,
 		file,
 		styles: new Map(),
 		imports,

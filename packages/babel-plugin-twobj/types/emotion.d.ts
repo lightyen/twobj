@@ -173,12 +173,12 @@ declare module "twobj" {
 	}
 
 	interface CreateStyledTw extends StyledTags, CreateStyled {
-		(arr: TemplateStringsArray): CSSObject
+		(arr: TemplateStringsArray): SerializedStyles
 	}
 
 	export const tw: CreateStyledTw
 	export const globalStyles: CSSObject
 	export function theme(arr: TemplateStringsArray): unknown
 	export function wrap(arr: TemplateStringsArray): (arg: CSSInterpolation) => CSSObject
-	export function tx(arr: TemplateStringsArray): SerializedStyles
+	export function tx(arr: TemplateStringsArray): CSSObject
 }

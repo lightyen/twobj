@@ -1,50 +1,10 @@
 import type { NodePath } from "@babel/core"
 import babel from "@babel/types"
+import { normalize } from "twobj/parser"
 import type { Plugin, ProgramState } from "../types"
 import { getFirstQuasi } from "../util"
 
-const styleVarName = "__tw"
-
-export const SQUARE_BRACKETS = [91, 93] as const
-
-import { findRightBracket, isCharSpace } from "twobj/parser"
-
-function normalize(value: string): string {
-	const tokens: string[] = []
-
-	const len = value.length
-	let a = -1
-	for (let i = 0; i < len; i++) {
-		const char = value.charCodeAt(i)
-		if (isCharSpace(char)) {
-			if (a !== -1) {
-				tokens.push(value.slice(a, i))
-				a = -1
-			}
-			continue
-		}
-
-		if (a === -1) {
-			a = i
-		}
-
-		if (char === 91) {
-			const r = findRightBracket({ text: value, brackets: SQUARE_BRACKETS, comments: true, start: i })
-			if (r == undefined) {
-				tokens.push(value.slice(a))
-				break
-			}
-
-			i = r
-		}
-	}
-
-	if (a !== -1) {
-		tokens.push(value.slice(a))
-	}
-
-	return tokens.join(" ")
-}
+const styleVarName = "_tw"
 
 export const emotion: Plugin = ({ types: t, buildStyle }) => {
 	const hideTwAttribute = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test"
@@ -88,7 +48,8 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 		state.added.push(importStyled)
 	}
 
-	function addStyle(t: typeof import("babel__core").types, state: ProgramState, value: string, path: NodePath) {
+	function addStyle(state: ProgramState, value: string, path: NodePath) {
+		const { types: t, parser } = state
 		if (styleIndex === 0) {
 			if (!state.cssLocalName) {
 				state.cssLocalName = "css"
@@ -101,7 +62,7 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 			)
 		}
 
-		value = normalize(value)
+		value = normalize(parser.createProgram(value))
 		let member = state.styles.get(value)
 		if (!member) {
 			// $__tw[<index>]
@@ -129,7 +90,6 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 		 * <div tw="bg-black" /> ==> <div css={$__tw[<index>]} />
 		 */
 		JSXOpeningElement(path, state) {
-			const t = state.types
 			const attrs = path.get("attributes")
 
 			let tw: TwAttribute | undefined
@@ -203,7 +163,7 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 			}
 
 			if (css == null) {
-				const member = addStyle(t, state, tw.value, tw.path)
+				const member = addStyle(state, tw.value, tw.path)
 				// <div css={$__tw[<index>]} />
 				tw.path.insertAfter(t.jsxAttribute(t.jsxIdentifier("css"), t.jsxExpressionContainer(member)))
 				if (hideTwAttribute) {
@@ -216,7 +176,7 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 			// css={...}
 			if (value.isJSXExpressionContainer()) {
 				const expression = value.get("expression")
-				const member = addStyle(t, state, tw.value, tw.path)
+				const member = addStyle(state, tw.value, tw.path)
 				// css={[...]}
 				if (expression.isArrayExpression()) {
 					const elements = expression.get("elements")
@@ -280,7 +240,7 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 		/**
 		 * tw(<element>)`` ==> styled(<element>)($__tw[<index>])
 		 * tw.element`` ==> styled.element($__tw[<index>])
-		 * tx`` => css({...})
+		 * tw`` => css({...})
 		 */
 		TaggedTemplateExpression(path, state) {
 			if (!state.thirdParty?.styled) {
@@ -316,13 +276,17 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 			if (state.twIdentifiers["tw"].get(tagName)) {
 				const quasi = getFirstQuasi(path)
 				if (quasi) {
-					if (tag.isCallExpression()) {
+					if (tag.isIdentifier()) {
+						const value = quasi.node.value.cooked ?? quasi.node.value.raw
+						const member = addStyle(state, value, quasi)
+						path.replaceWith(member)
+					} else if (tag.isCallExpression()) {
 						if (!state.styledLocalName) {
 							addImportStyled(state)
 						}
 						const args = tag.get("arguments")
 						const value = quasi.node.value.cooked ?? quasi.node.value.raw
-						const member = addStyle(t, state, value, quasi)
+						const member = addStyle(state, value, quasi)
 						const expr = t.callExpression(
 							t.callExpression(
 								t.identifier(state.styledLocalName),
@@ -338,7 +302,7 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 								addImportStyled(state)
 							}
 							const value = quasi.node.value.cooked ?? quasi.node.value.raw
-							const member = addStyle(t, state, value, quasi)
+							const member = addStyle(state, value, quasi)
 							const expr = t.callExpression(
 								t.memberExpression(
 									t.identifier(state.styledLocalName),
@@ -348,16 +312,6 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 							)
 							path.replaceWith(expr)
 						}
-					}
-				}
-				skip = true
-			} else if (state.twIdentifiers["tx"].get(tagName)) {
-				const quasi = getFirstQuasi(path)
-				if (quasi) {
-					if (tag.isIdentifier()) {
-						const value = quasi.node.value.cooked ?? quasi.node.value.raw
-						const member = addStyle(t, state, value, quasi)
-						path.replaceWith(member)
 					}
 				}
 				skip = true

@@ -1,6 +1,23 @@
 import { css } from "@emotion/react"
-const __tw = {}
-__tw[0] = css({
+const _tw = {}
+_tw[0] = css({
+	"& > :not([hidden]) ~ :not([hidden])": {
+		borderColor: "#000",
+	},
+})
+_tw[1] = css({
+	display: "flex",
+	alignItems: "center",
+	fontWeight: "700",
+	fontSize: "1.125rem",
+	lineHeight: "1.75rem",
+	"&::after": {
+		"--tw-content": "''",
+		content: "var(--tw-content)",
+		color: "#22d3ee",
+	},
+})
+_tw[2] = css({
 	borderTopWidth: "4px",
 	borderBottomWidth: "4px",
 	borderColor: "#818cf8",
@@ -11,97 +28,38 @@ __tw[0] = css({
 		justifyContent: "space-around",
 	},
 })
-__tw[1] = css({
+_tw[3] = css({
 	display: "flex",
 	justifyContent: "center",
 	marginLeft: "auto",
 	marginRight: "auto",
 })
-__tw[2] = css({
+_tw[4] = css({
+	backgroundColor: "#ef4444",
+})
+_tw[5] = css({
+	color: "#374151",
+})
+_tw[6] = css({
+	backgroundColor: "#f3f4f6",
+})
+_tw[7] = css({
 	"&:active, &:first-of-type": {
 		backgroundColor: "#fca5a5",
 	},
 })
-__tw[3] = css({})
+_tw[8] = css({})
+_tw[9] = css({
+	color: "#000",
+})
+_tw[10] = css({
+	backgroundColor: "#fff",
+})
 import styled from "@emotion/styled"
-__tw[4] = css({
+_tw[11] = css({
 	display: "none",
 })
 const globalStyles = {
-	"*, ::before, ::after": {
-		"--tw-border-spacing-x": "0",
-		"--tw-border-spacing-y": "0",
-		"--tw-ring-inset": "var(--tw-empty,/**/ /**/)",
-		"--tw-ring-offset-shadow": "0 0 #0000",
-		"--tw-ring-shadow": "0 0 #0000",
-		"--tw-ring-offset-width": "0px",
-		"--tw-ring-offset-color": "#fff",
-		"--tw-ring-color": "rgb(59 130 246 / 0.5)",
-		"--tw-blur": "var(--tw-empty,/**/ /**/)",
-		"--tw-brightness": "var(--tw-empty,/**/ /**/)",
-		"--tw-contrast": "var(--tw-empty,/**/ /**/)",
-		"--tw-grayscale": "var(--tw-empty,/**/ /**/)",
-		"--tw-hue-rotate": "var(--tw-empty,/**/ /**/)",
-		"--tw-invert": "var(--tw-empty,/**/ /**/)",
-		"--tw-saturate": "var(--tw-empty,/**/ /**/)",
-		"--tw-sepia": "var(--tw-empty,/**/ /**/)",
-		"--tw-drop-shadow": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-brightness": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-contrast": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-grayscale": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-hue-rotate": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-invert": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-opacity": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-saturate": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-sepia": "var(--tw-empty,/**/ /**/)",
-		"--tw-ordinal": "var(--tw-empty,/**/ /**/)",
-		"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-		"--tw-numeric-figure": "var(--tw-empty,/**/ /**/)",
-		"--tw-numeric-spacing": "var(--tw-empty,/**/ /**/)",
-		"--tw-numeric-fraction": "var(--tw-empty,/**/ /**/)",
-		"--tw-scroll-snap-strictness": "proximity",
-		"--tw-pan-x": "var(--tw-empty,/**/ /**/)",
-		"--tw-pan-y": "var(--tw-empty,/**/ /**/)",
-		"--tw-pinch-zoom": "var(--tw-empty,/**/ /**/)",
-	},
-	"::backdrop": {
-		"--tw-border-spacing-x": "0",
-		"--tw-border-spacing-y": "0",
-		"--tw-ring-inset": "var(--tw-empty,/**/ /**/)",
-		"--tw-ring-offset-shadow": "0 0 #0000",
-		"--tw-ring-shadow": "0 0 #0000",
-		"--tw-ring-offset-width": "0px",
-		"--tw-ring-offset-color": "#fff",
-		"--tw-ring-color": "rgb(59 130 246 / 0.5)",
-		"--tw-blur": "var(--tw-empty,/**/ /**/)",
-		"--tw-brightness": "var(--tw-empty,/**/ /**/)",
-		"--tw-contrast": "var(--tw-empty,/**/ /**/)",
-		"--tw-grayscale": "var(--tw-empty,/**/ /**/)",
-		"--tw-hue-rotate": "var(--tw-empty,/**/ /**/)",
-		"--tw-invert": "var(--tw-empty,/**/ /**/)",
-		"--tw-saturate": "var(--tw-empty,/**/ /**/)",
-		"--tw-sepia": "var(--tw-empty,/**/ /**/)",
-		"--tw-drop-shadow": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-blur": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-brightness": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-contrast": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-grayscale": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-hue-rotate": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-invert": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-opacity": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-saturate": "var(--tw-empty,/**/ /**/)",
-		"--tw-backdrop-sepia": "var(--tw-empty,/**/ /**/)",
-		"--tw-ordinal": "var(--tw-empty,/**/ /**/)",
-		"--tw-slashed-zero": "var(--tw-empty,/**/ /**/)",
-		"--tw-numeric-figure": "var(--tw-empty,/**/ /**/)",
-		"--tw-numeric-spacing": "var(--tw-empty,/**/ /**/)",
-		"--tw-numeric-fraction": "var(--tw-empty,/**/ /**/)",
-		"--tw-scroll-snap-strictness": "proximity",
-		"--tw-pan-x": "var(--tw-empty,/**/ /**/)",
-		"--tw-pan-y": "var(--tw-empty,/**/ /**/)",
-		"--tw-pinch-zoom": "var(--tw-empty,/**/ /**/)",
-	},
 	"*": {
 		boxSizing: "border-box",
 		borderWidth: "0",
@@ -237,6 +195,9 @@ const globalStyles = {
 		margin: "0",
 		padding: "0",
 	},
+	dialog: {
+		padding: "0",
+	},
 	textarea: {
 		resize: "vertical",
 	},
@@ -263,22 +224,8 @@ const globalStyles = {
 	},
 }
 globalStyles
-;({
-	"& > :not([hidden]) ~ :not([hidden])": {
-		borderColor: "#000",
-	},
-})
-;({
-	display: "flex",
-	alignItems: "center",
-	fontWeight: "700",
-	fontSize: "1.125rem",
-	lineHeight: "1.75rem",
-	"&::after": {
-		color: "#22d3ee",
-		content: "var(--tw-content)",
-	},
-})
+_tw[0]
+_tw[1]
 e => ({
 	"@media (hover: hover) and (pointer: fine)": {
 		"&:hover": e,
@@ -286,48 +233,31 @@ e => ({
 	"&:focus": e,
 })
 export function Header(props) {
-	return <h1 css={__tw[0]} {...props} />
+	return <h1 css={_tw[2]} {...props} />
 }
 export function A() {
 	return (
 		<div
 			css={[
-				__tw[1],
+				_tw[3],
 				(e => ({
 					"@media (min-width: 768px)": e,
 				}))({
 					borderTopWidth: "1px",
-					...{
-						backgroundColor: "#ef4444",
-					},
+					..._tw[4],
 				}),
 			]}
 		>
-			<span
-				css={[
-					{
-						color: "#374151",
-					},
-					{
-						backgroundColor: "#f3f4f6",
-					},
-				]}
-			>
-				{"rgb(59 130 246 / 30%)"}
-			</span>
-			<Header css={__tw[2]}>Header</Header>
-			<div css={__tw[3]}>Empty</div>
+			<span css={[_tw[5], _tw[6]]}>{"rgb(59 130 246 / 30%)"}</span>
+			<Header css={_tw[7]}>Header</Header>
+			<div css={_tw[8]}>Empty</div>
 		</div>
 	)
 }
 const style = {
-	a: {
-		color: "#000",
-	},
-	b: {
-		backgroundColor: "#fff",
-	},
+	a: _tw[9],
+	b: _tw[10],
 }
 const Styled1 = styled(Header)(style.a, style.b)
-const Styled2 = styled.input(__tw[4])
-const Styled3 = styled("input")(__tw[4])
+const Styled2 = styled.input(_tw[11])
+const Styled3 = styled("input")(_tw[11])

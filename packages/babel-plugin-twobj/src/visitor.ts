@@ -1,7 +1,7 @@
 import type { BabelFile, NodePath, PluginPass, Visitor } from "@babel/core"
 import babel from "@babel/types"
 import { createContext, resolveConfig, type CSSProperties, type ParseError } from "twobj"
-import { NodeType } from "twobj/parser"
+import { NodeType, createParser } from "twobj/parser"
 import { basePlugin, createProgramState, isKeyword, mypackage } from "./base"
 import * as plugins from "./plugins"
 import type { ProgramState, ThirdParty } from "./types"
@@ -29,7 +29,9 @@ export function visitor({
 	throwError: boolean
 	thirdParty?: ThirdParty
 }): Visitor<PluginPass> {
-	const context = createContext(resolveConfig(config), { throwError })
+	const conf = resolveConfig(config)
+	const context = createContext(conf, { throwError })
+	const parser = createParser(conf.separator)
 
 	const thirdPartyPlugin = getThirdPartyPlugin(babel.types, thirdParty)
 
@@ -37,6 +39,7 @@ export function visitor({
 		Program(program) {
 			const state = createProgramState({
 				types: babel.types,
+				parser,
 				thirdParty,
 				file: this.file,
 				program,

@@ -3,6 +3,8 @@ import babel from "@babel/types"
 import { Context } from "twobj"
 import { Keyword } from "./base"
 
+export type Parser = ReturnType<typeof import("twobj/parser").createParser>
+
 export interface PluginOptions {
 	tailwindConfig?: unknown
 	throwError?: boolean
@@ -29,6 +31,7 @@ export interface ImportDeclaration {
 
 export interface ProgramState {
 	types: typeof import("babel__core").types
+	parser: Parser
 	thirdParty?: ThirdParty
 	file: BabelFile
 	styles: Map<string, babel.MemberExpression>
