@@ -2146,6 +2146,7 @@ interface Context extends UserPluginOptions {
 	arbitraryVariants: Set<string>
 	arbitraryUtilities: Map<string, Set<ValueType | "any">>
 	features: Set<string>
+	fromProgram(program: Program): CSSProperties
 	/** Transfrom tailwind declarations to css object. */
 	css(strings: string): CSSProperties
 	css(strings: TemplateStringsArray): CSSProperties

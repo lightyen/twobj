@@ -182,6 +182,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		variantMap: variantSpecCollection,
 		arbitraryVariants: arbitraryVariantCollection,
 		arbitraryUtilities: arbitraryUtilityCollection,
+		fromProgram,
 		css,
 		wrap,
 		resolveUtility,
@@ -734,18 +735,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return [result.css, result.spec]
 	}
 
-	function css(strings: string, options?: Options): CSSProperties
-	function css(strings: TemplateStringsArray, options?: Options): CSSProperties
-	function css(strings: string | TemplateStringsArray, options: Options): CSSProperties {
-		let value = ""
-		if (typeof strings !== "string") {
-			value = strings[0] as string
-		} else {
-			value = strings
-		}
-
+	function fromProgram(program: nodes.Program, options?: Options): CSSProperties {
 		const importantSelector: string = typeof config.important === "string" ? config.important : ""
-		const program = parser.createProgram(value)
 		const result = process(program.expressions, {
 			important: false,
 			importantRootStyle: !!importantSelector,
@@ -769,6 +760,20 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			}
 		}
 		return rootStyle
+	}
+
+	function css(strings: string, options?: Options): CSSProperties
+	function css(strings: TemplateStringsArray, options?: Options): CSSProperties
+	function css(strings: string | TemplateStringsArray, options?: Options): CSSProperties {
+		let value = ""
+		if (typeof strings !== "string") {
+			value = strings ? (strings[0] as string) : ""
+		} else {
+			value = strings
+		}
+
+		const program = parser.createProgram(value)
+		return fromProgram(program, options)
 	}
 
 	function process(

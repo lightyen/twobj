@@ -23,6 +23,8 @@ export interface Context extends UserPluginOptions {
 	arbitraryUtilities: Map<string, Set<ValueType | "any">>
 	features: Set<string>
 
+	fromProgram(program: parser.Program): CSSProperties
+
 	/** Transfrom tailwind declarations to css object. */
 	css(strings: string): CSSProperties
 	css(strings: TemplateStringsArray): CSSProperties
