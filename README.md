@@ -7,10 +7,6 @@ Convert tailwind declarations to a style object
 
 [![Latest Version][npm:latest:badge]][npm:latest]
 
-## Demo
-
-- [CodeSandbox](https://codesandbox.io/s/tailwind-and-css-in-js-twobj-6txkjh)
-
 ## Differ from tailwindcss
 
 - Reject [underscore](https://tailwindcss.com/docs/content#using-spaces-and-underscores)
@@ -47,13 +43,15 @@ bg-gray-300/51 text-white/82% border-4 border-cyan-200/[0.52]
 - Arbitrary value:
 
 ```txt
-bg-[rgb(202 101 220)]    // utility
-tab-[abc]:bg-black     // variant
-[inset: 0 30px 10rem 0]  // css property
+bg-[rgb(202 101 220)]      // utility
+tab-[abc]:bg-black         // variant
+[inset: 0 30px 10rem 0]    // css property
 [.group:active &]:bg-black // css selector
 ```
 
 - Group utilites:
+
+`(<expr> ...)`
 
 ```txt
 (text-gray-800 bg-blue-50)
@@ -65,9 +63,7 @@ lg:(
 
 - Group variants:
 
-```txt
-(<variants without utilities>):bg-black
-```
+`(<variants without utilities>):<expr>`
 
 ```txt
 (hover: focus:):bg-black
