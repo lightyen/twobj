@@ -17,7 +17,7 @@ export const preflight: CSSProperties = {
 		...box,
 		"--tw-content": "''",
 	},
-	html: {
+	"html,:host": {
 		lineHeight: "1.5",
 		WebkitTextSizeAdjust: "100%",
 		MozTabSize: "4",
@@ -25,6 +25,7 @@ export const preflight: CSSProperties = {
 		fontFamily: `theme('fontFamily.sans', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji")`,
 		fontFeatureSettings: `theme('fontFamily.sans.1.fontFeatureSettings', normal)`,
 		fontVariationSettings: `theme('fontFamily.sans.1.fontVariationSettings', normal)`,
+		WebkitTapHighlightColor: "transparent",
 	},
 	body: { margin: "0", lineHeight: "inherit" },
 	hr: { height: "0", color: "inherit", borderTopWidth: "1px" },
@@ -34,6 +35,8 @@ export const preflight: CSSProperties = {
 	"b,strong": { fontWeight: "bolder" },
 	"code,kbd,samp,pre": {
 		fontFamily: `theme('fontFamily.mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)`,
+		fontFeatureSettings: "theme('fontFamily.mono.1.fontFeatureSettings', normal)",
+		fontVariationSettings: "theme('fontFamily.mono.1.fontVariationSettings', normal)",
 		fontSize: "1em",
 	},
 	small: { fontSize: "80%" },
@@ -53,14 +56,17 @@ export const preflight: CSSProperties = {
 	"button,input,optgroup,select,textarea": {
 		fontFamily: "inherit",
 		fontSize: "100%",
+		fontFeatureSettings: "inherit",
+		fontVariationSettings: "inherit",
 		fontWeight: "inherit",
 		lineHeight: "inherit",
+		letterSpacing: "inherit",
 		color: "inherit",
 		margin: "0",
 		padding: "0",
 	},
 	"button,select": { textTransform: "none" },
-	"button,[type='button'],[type='reset'],[type='submit']": {
+	"button,input:where([type='button']),input:where([type='reset']),input:where([type='submit'])": {
 		WebkitAppearance: "button",
 		backgroundColor: "transparent",
 		backgroundImage: "none",

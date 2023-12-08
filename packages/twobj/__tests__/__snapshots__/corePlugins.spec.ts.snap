@@ -75,6 +75,7 @@ exports[`preflight 1`] = `
     "fontSize": "100%",
     "fontVariationSettings": "inherit",
     "fontWeight": "inherit",
+    "letterSpacing": "inherit",
     "lineHeight": "inherit",
     "margin": "0",
     "padding": "0",
