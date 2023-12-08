@@ -1,5 +1,6 @@
 import type { ResolvedConfigJS } from "../types"
-import * as css from "./css"
+import { isColorFunction, parseColor } from "./color"
+import { unwrapCssFunction } from "./css"
 import * as nodes from "./nodes"
 import { ThemePathNode } from "./nodes"
 import { dlv, findRightBracket, isCharSpace, splitAtTopLevelOnly } from "./util"
@@ -367,16 +368,16 @@ export function renderThemeValue(target: unknown, opacity?: string): string {
 		}
 
 		if (opacity) {
-			const color = css.parseColor(target)
-			if (color && css.isOpacityFunction(color.fn)) {
+			const color = parseColor(target)
+			if (color && isColorFunction(color.fn)) {
 				const { fn, params } = color
 				return fn + "(" + params.slice(0, 3).join(" ") + " / " + opacity + ")"
 			}
 
-			const result = css.unwrapCssFunction(target)
+			const result = unwrapCssFunction(target)
 			if (result) {
 				const { fn, params } = result
-				if (css.isOpacityFunction(fn)) {
+				if (isColorFunction(fn)) {
 					return fn + "(" + params + " / " + opacity + ")"
 				}
 				// prefer rgb()
@@ -407,16 +408,16 @@ export function resolveThemeValue(target: unknown, opacity?: string): unknown {
 		}
 
 		if (opacity) {
-			const color = css.parseColor(target)
-			if (color && css.isOpacityFunction(color.fn)) {
+			const color = parseColor(target)
+			if (color && isColorFunction(color.fn)) {
 				const { fn, params } = color
 				return fn + "(" + params.slice(0, 3).join(" ") + " / " + opacity + ")"
 			}
 
-			const result = css.unwrapCssFunction(target)
+			const result = unwrapCssFunction(target)
 			if (result) {
 				const { fn, params } = result
-				if (css.isOpacityFunction(fn)) {
+				if (isColorFunction(fn)) {
 					return fn + "(" + params + " / " + opacity + ")"
 				}
 				// prefer rgb()
