@@ -1,268 +1,228 @@
-import * as vscode from "vscode"
-import * as languageFacts from "vscode-css-languageservice/lib/esm/languageFacts/facts"
-import * as nodes from "vscode-css-languageservice/lib/esm/parser/cssNodes"
-import { Parser } from "vscode-css-languageservice/lib/esm/parser/cssParser"
+// https://developer.chrome.com/docs/css-ui/high-definition-css-color-guide
+// https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+// https://www.w3.org/TR/css-color-4/#color-conversion-code
 
-export type Range = [number, number]
+type PredefinedRGB = "srgb" | "srgb-linear" | "display-p3" | "a98-rgb" | "prophoto-rgb" | "rec2020"
 
-export interface NodeToken {
-	range: Range
-}
+type XYZSpace = "xyz" | "xyz-d50" | "xyz-d65"
 
-export const parser = new Parser()
+type ColorSpace = PredefinedRGB | XYZSpace
 
-export enum ColorTokenKind {
-	Unknown,
-	Identifier,
-	HexValue,
-	Function,
-	Transparent,
-}
+export class Color {
+	constructor(
+		/** range [0-1] */
+		readonly r: number,
+		/** range [0-1] */
+		readonly g: number,
+		/** range [0-1] */
+		readonly b: number,
+		/** range [0-1] */
+		readonly a = 1,
+	) {
+		this.r = Math.min(1, Math.max(r, 0))
+		this.g = Math.min(1, Math.max(g, 0))
+		this.b = Math.min(1, Math.max(b, 0))
+		this.a = Math.min(1, Math.max(a, 0))
+	}
 
-interface ColorUnknown extends NodeToken {
-	kind: ColorTokenKind.Unknown
-}
-
-interface ColorIdentifier extends NodeToken {
-	kind: ColorTokenKind.Identifier
-}
-
-interface ColorTransparent extends NodeToken {
-	kind: ColorTokenKind.Transparent
-}
-
-interface ColorHexValue extends NodeToken {
-	kind: ColorTokenKind.HexValue
-}
-
-interface ColorFunction extends NodeToken {
-	kind: ColorTokenKind.Function
-	fnName: string
-	args: string[]
-}
-
-export type ColorToken = ColorUnknown | ColorIdentifier | ColorTransparent | ColorHexValue | ColorFunction
-
-export function isColorUnknown(c: ColorToken): c is ColorUnknown {
-	return c.kind === ColorTokenKind.Unknown
-}
-
-export function isColorIdentifier(c: ColorToken): c is ColorIdentifier {
-	return c.kind === ColorTokenKind.Identifier
-}
-
-export function isColorTransparent(c: ColorToken): c is ColorTransparent {
-	return c.kind === ColorTokenKind.Transparent
-}
-
-export function isColorHexValue(c: ColorToken): c is ColorHexValue {
-	return c.kind === ColorTokenKind.HexValue
-}
-
-export function isColorFunction(c: ColorToken): c is ColorFunction {
-	return c.kind === ColorTokenKind.Function
-}
-
-function isIdentifierNode(node: nodes.Node): node is nodes.Identifier {
-	return node.type === nodes.NodeType.Identifier
-}
-
-function isHexColorValueNode(node: nodes.Node): node is nodes.HexColorValue {
-	return node.type === nodes.NodeType.HexColorValue
-}
-
-function isFunctionNode(node: nodes.Node): node is nodes.Function {
-	return node.type === nodes.NodeType.Function
-}
-
-export function parse(cssValue: string): ColorToken[] {
-	const colors: ColorToken[] = []
-	const node = parser.internalParse(cssValue, parser._parseExpr.bind(parser))
-	if (!node) return colors
-	node.accept(node => {
-		if (isIdentifierNode(node)) {
-			if (node.parent?.type !== nodes.NodeType.Term) return true
-			const color = node.getText().toLowerCase()
-			if (color === "transparent") {
-				colors.push({
-					range: [node.offset, node.offset + node.length],
-					kind: ColorTokenKind.Transparent,
-				})
-			} else if (color in languageFacts.colors) {
-				colors.push({
-					range: [node.offset, node.offset + node.length],
-					kind: ColorTokenKind.Identifier,
-				})
-			}
-		} else if (isHexColorValueNode(node)) {
-			const color = node.getText()
-			if (/(^#[0-9A-F]{8}$)|(^#[0-9A-F]{6}$)|(^#[0-9A-F]{4}$)|(^#[0-9A-F]{3}$)/i.test(color)) {
-				colors.push({
-					range: [node.offset, node.offset + node.length],
-					kind: ColorTokenKind.HexValue,
-				})
-			}
-		} else if (isFunctionNode(node)) {
-			const fnName: string = node.getName()
-			if (fnName && /^(rgb|rgba|hsl|hsla)/i.test(fnName)) {
-				let args: string[] = node
-					.getArguments()
-					.getChildren()
-					.map(token => cssValue.slice(token.offset, token.offset + token.length))
-
-				if (args.length === 1) {
-					args = args[0].split(/\s+/).filter(t => t && t !== "/")
-				}
-
-				if (args.length < 3) {
-					colors.push({
-						kind: ColorTokenKind.Unknown,
-						range: [node.offset, node.offset + node.length],
-					})
-					return true
-				}
-
-				colors.push({
-					kind: ColorTokenKind.Function,
-					fnName,
-					args,
-					range: [node.offset, node.offset + node.length],
-				})
-			}
+	/** https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color */
+	css(space: ColorSpace = "srgb"): string {
+		if (this.a < 1) {
+			return `color(${space} ${this.r} ${this.g} ${this.b} / ${this.a})`
 		}
-
-		return true
-	})
-	return colors
-}
-
-const Digit0 = 48
-const Digit9 = 57
-const A = 65
-const a = 97
-const f = 102
-
-export function hexDigit(charCode: number | undefined) {
-	if (!charCode) return 0
-	if (charCode < Digit0) return 0
-	if (charCode <= Digit9) return charCode - Digit0
-	if (charCode < a) charCode += a - A
-	if (charCode >= a && charCode <= f) return charCode - a + 10
-	return 0
-}
-
-export function colorFromHex(hexValue: string): vscode.Color {
-	switch (hexValue.length) {
-		case 4:
-			return {
-				red: (hexDigit(hexValue.charCodeAt(1)) * 0x11) / 255.0,
-				green: (hexDigit(hexValue.charCodeAt(2)) * 0x11) / 255.0,
-				blue: (hexDigit(hexValue.charCodeAt(3)) * 0x11) / 255.0,
-				alpha: 1,
-			}
-		case 5:
-			return {
-				red: (hexDigit(hexValue.charCodeAt(1)) * 0x11) / 255.0,
-				green: (hexDigit(hexValue.charCodeAt(2)) * 0x11) / 255.0,
-				blue: (hexDigit(hexValue.charCodeAt(3)) * 0x11) / 255.0,
-				alpha: (hexDigit(hexValue.charCodeAt(4)) * 0x11) / 255.0,
-			}
-		case 7:
-			return {
-				red: (hexDigit(hexValue.charCodeAt(1)) * 0x10 + hexDigit(hexValue.charCodeAt(2))) / 255.0,
-				green: (hexDigit(hexValue.charCodeAt(3)) * 0x10 + hexDigit(hexValue.charCodeAt(4))) / 255.0,
-				blue: (hexDigit(hexValue.charCodeAt(5)) * 0x10 + hexDigit(hexValue.charCodeAt(6))) / 255.0,
-				alpha: 1,
-			}
+		return `color(${space} ${this.r} ${this.g} ${this.b})`
 	}
-	return {
-		red: (hexDigit(hexValue.charCodeAt(1)) * 0x10 + hexDigit(hexValue.charCodeAt(2))) / 255.0,
-		green: (hexDigit(hexValue.charCodeAt(3)) * 0x10 + hexDigit(hexValue.charCodeAt(4))) / 255.0,
-		blue: (hexDigit(hexValue.charCodeAt(5)) * 0x10 + hexDigit(hexValue.charCodeAt(6))) / 255.0,
-		alpha: (hexDigit(hexValue.charCodeAt(7)) * 0x10 + hexDigit(hexValue.charCodeAt(8))) / 255.0,
-	}
-}
 
-export function colorFromIdentifier(text: string, c: ColorIdentifier): vscode.Color {
-	const value = text.slice(...c.range)
-	const hexValue = languageFacts.colors[value]
-	return colorFromHex(hexValue)
-}
-
-export function colorFromTransparent(): vscode.Color {
-	return { red: 0, green: 0, blue: 0, alpha: 0 }
-}
-
-export function getNumericValue(value: string | undefined, factor: number) {
-	if (!value) return NaN
-	const match = value.match(/^([-+]?[0-9]*\.?[0-9]+)(%?)$/)
-	if (!match) return NaN
-	if (match) {
-		if (match[2]) {
-			factor = 100.0
+	rgb(): string {
+		if (this.a < 1) {
+			return `rgb(${this.r * 255} ${this.g * 255} ${this.b * 255} / ${this.a})`
 		}
-		const result = parseFloat(match[1]) / factor
-		if (result >= 0 && result <= 1) {
-			return result
+		return `rgb(${this.r * 255} ${this.g * 255} ${this.b * 255})`
+	}
+
+	hex(): string {
+		const s =
+			"#" +
+			((round(this.r * 255) << 16) | (round(this.g * 255) << 8) | round(this.b * 255))
+				.toString(16)
+				.padStart(6, "0")
+		if (this.a < 1) {
+			return (
+				s +
+				round(this.a * 255)
+					.toString(16)
+					.padStart(2, "0")
+			)
 		}
+		return s
 	}
-	return NaN
+
+	hsl(): string {
+		const c = rgb2hsl(this.r * 255, this.g * 255, this.b * 255)
+		c[1] = Math.min(c[1], 1)
+		c[2] = Math.min(c[2], 1)
+		if (this.a < 1) {
+			return `hsl(${c[0]} ${c[1] * 100} ${c[2] * 100}% / ${this.a})`
+		}
+		return `hsl(${c[0]} ${c[1] * 100} ${c[2] * 100}%)`
+	}
 }
 
-export function getAngle(value: string | undefined) {
-	if (!value) return NaN
-	const match = value.match(/^([-+]?[0-9]*\.?[0-9]+)(deg)?$/) // TODO: rad, grad or turns
-	if (match) {
-		return parseFloat(value) % 360
-	}
-	return NaN
+export function from(value: string): Color {
+	return new Color(0, 0, 0, 0)
 }
 
-export function colorFromHSL(hue: number, sat: number, light: number, alpha = 1.0): vscode.Color {
-	hue = hue / 60.0
-	if (sat === 0) {
-		return { red: light, green: light, blue: light, alpha }
+function relativeLuminance(p: number) {
+	if (p <= 0.03928) {
+		return p / 12.92
 	} else {
-		const t2 = light <= 0.5 ? light * (sat + 1) : light + sat - light * sat
-		const t1 = light * 2 - t2
-		return { red: hueToRgb(t1, t2, hue + 2), green: hueToRgb(t1, t2, hue), blue: hueToRgb(t1, t2, hue - 2), alpha }
-	}
-
-	function hueToRgb(t1: number, t2: number, hue: number) {
-		while (hue < 0) {
-			hue += 6
-		}
-		while (hue >= 6) {
-			hue -= 6
-		}
-
-		if (hue < 1) {
-			return (t2 - t1) * hue + t1
-		}
-		if (hue < 3) {
-			return t2
-		}
-		if (hue < 4) {
-			return (t2 - t1) * (4 - hue) + t1
-		}
-		return t1
+		return Math.pow((p + 0.055) / 1.055, 2.4)
 	}
 }
 
-export function colorFromFunction(c: ColorFunction): vscode.Color | undefined {
-	const alpha = c.args.length === 4 ? getNumericValue(c.args[3], 1) : 1
-	if (c.fnName === "rgb" || c.fnName === "rgba") {
-		return {
-			red: getNumericValue(c.args[0], 255.0),
-			green: getNumericValue(c.args[1], 255.0),
-			blue: getNumericValue(c.args[2], 255.0),
-			alpha,
-		}
-	} else if (c.fnName === "hsl" || c.fnName === "hsla") {
-		const h = getAngle(c.args[0])
-		const s = getNumericValue(c.args[1], 100.0)
-		const l = getNumericValue(c.args[2], 100.0)
-		return colorFromHSL(h, s, l, alpha)
+function _relativeLuminanceRGB(r: number, g: number, b: number) {
+	r = relativeLuminance(r / 255.0)
+	g = relativeLuminance(255 / 255.0)
+	b = relativeLuminance(255 / 255.0)
+	return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+// https://www.w3.org/TR/WCAG20/#relativeluminancedef
+export function relativeLuminanceRGB(rgb: number) {
+	const r = (rgb >> 16) & 0xff
+	const g = (rgb >> 8) & 0xff
+	const b = rgb & 0xff
+	return _relativeLuminanceRGB(r, g, b)
+}
+
+function contrastRatio(l1: number, l2: number) {
+	if (l1 < l2) return (l2 + 0.05) / (l1 + 0.05)
+	return (l1 + 0.05) / (l2 + 0.05)
+}
+
+/** @return new foreground rgb color */
+export function ensureContrastRatio(fg_rgb: number, bg_rgb: number, ratio: number): number | undefined {
+	const fgL = relativeLuminanceRGB(fg_rgb)
+	const bgL = relativeLuminanceRGB(bg_rgb)
+	const r = contrastRatio(fgL, bgL)
+	if (r < ratio) {
+		if (fgL < bgL) return reduceLuminance(fg_rgb, bg_rgb, ratio)
+		return increaseLuminance(fg_rgb, bg_rgb, ratio)
 	}
 	return undefined
+}
+
+function reduceLuminance(fg_rgb: number, bg_rgb: number, ratio: number): number {
+	const step = 0.1
+	const bgR = (bg_rgb >> 16) & 0xff
+	const bgG = (bg_rgb >> 8) & 0xff
+	const bgB = bg_rgb & 0xff
+	let fgR = (fg_rgb >> 16) & 0xff
+	let fgG = (fg_rgb >> 8) & 0xff
+	let fgB = fg_rgb & 0xff
+	const bgL = _relativeLuminanceRGB(bgR, bgG, bgB)
+	let r = contrastRatio(_relativeLuminanceRGB(fgR, fgB, fgG), bgL)
+	while (r < ratio && (fgR > 0 || fgG > 0 || fgB > 0)) {
+		fgR = fgR - Math.max(0, Math.ceil(fgR * step))
+		fgG = fgG - Math.max(0, Math.ceil(fgG * step))
+		fgB = fgB - Math.max(0, Math.ceil(fgB * step))
+		r = contrastRatio(_relativeLuminanceRGB(fgR, fgB, fgG), bgL)
+	}
+	return (fgR << 16) | (fgG << 8) | fgB
+}
+
+function increaseLuminance(fg_rgb: number, bg_rgb: number, ratio: number): number {
+	const bgR = (bg_rgb >> 16) & 0xff
+	const bgG = (bg_rgb >> 8) & 0xff
+	const bgB = bg_rgb & 0xff
+	let fgR = (fg_rgb >> 16) & 0xff
+	let fgG = (fg_rgb >> 8) & 0xff
+	let fgB = fg_rgb & 0xff
+	const bgL = _relativeLuminanceRGB(bgR, bgG, bgB)
+	const p = 0.1
+	let r = contrastRatio(_relativeLuminanceRGB(fgR, fgB, fgG), bgL)
+	while (r < ratio && (fgR < 0xff || fgG < 0xff || fgB < 0xff)) {
+		fgR = Math.min(0xff, fgR + Math.ceil((255 - fgR) * p))
+		fgG = Math.min(0xff, fgG + Math.ceil((255 - fgG) * p))
+		fgB = Math.min(0xff, fgB + Math.ceil((255 - fgB) * p))
+		r = contrastRatio(_relativeLuminanceRGB(fgR, fgB, fgG), bgL)
+	}
+	return (fgR << 16) | (fgG << 8) | fgB
+}
+
+function round(num: number, p = 0): number {
+	const b = 10 ** p
+	return Math.round((num + Number.EPSILON) * b) / b
+}
+
+/**
+ * @param r [0 - 255]
+ * @param g [0 - 255]
+ * @param b [0 - 255]
+ */
+export function rgb2hsl(r: number, g: number, b: number): [h: number, s: number, l: number] {
+	const max = Math.max(r, g, b)
+	const min = Math.min(r, g, b)
+	const delta = max - min
+	const l = (max + min) / 510.0
+	let h = 0
+	let s = 0
+	if (delta > 0) {
+		switch (max) {
+			case g:
+				h = 60 * (2 + (b - r) / delta)
+				break
+			case b:
+				h = 60 * (4 + (r - g) / delta)
+				break
+			default:
+				h = 60 * ((6 + (g - b) / delta) % 6)
+		}
+		if (l > 0.5) {
+			s = delta / (510 * (1 - l))
+		} else {
+			s = delta / (510 * l)
+		}
+	}
+	return [round(h), round(s, 2), round(l, 2)]
+}
+
+/**
+ * @param h [0 - 360]
+ * @param s [0 - 1]
+ * @param l [0 - 1]
+ */
+export function hsl2rgb(h: number, s: number, l: number): [r: number, g: number, b: number] {
+	h = (h + 360) % 360
+	const c = (1 - Math.abs(2 * l - 1)) * s
+	const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+	const m = l - c / 2
+	let ret: [r: number, g: number, b: number]
+	if (h < 60) {
+		ret = [(c + m) * 255, (x + m) * 255, m * 255]
+	} else if (h < 120) {
+		ret = [(x + m) * 255, (c + m) * 255, m * 255]
+	} else if (h < 180) {
+		ret = [m * 255, (c + m) * 255, (x + m) * 255]
+	} else if (h < 240) {
+		ret = [m * 255, (x + m) * 255, (c + m) * 255]
+	} else if (h < 300) {
+		ret = [(x + m) * 255, m * 255, (c + m) * 255]
+	} else {
+		ret = [(c + m) * 255, m * 255, (x + m) * 255]
+	}
+	for (let i = 0; i < 3; i++) {
+		ret[i] = round(ret[i])
+	}
+	return ret
+}
+
+export function rgb2Css(r: number, g: number, b: number): string {
+	return `rgb(${r} ${g} ${b})`
+}
+
+export function hsl2Css(h: number, s: number, l: number): string {
+	s = Math.min(s, 1)
+	l = Math.min(l, 1)
+	return `hsl(${h} ${s * 100}% ${l * 100}%)`
 }
