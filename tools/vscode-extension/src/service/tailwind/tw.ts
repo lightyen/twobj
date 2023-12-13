@@ -9,8 +9,8 @@ import * as prettier from "prettier/standalone"
 import type { CSSProperties, ResolvedConfigJS, ValueType } from "twobj"
 import { createContext } from "twobj"
 import * as parser from "twobj/parser"
-import { isColorFunction, isColorHexValue, isColorIdentifier, parse as parseColors } from "~/common/color"
 import { defaultLogger as console } from "~/common/logger"
+import { isColorFunction, isColorHexValue, isColorIdentifier, parse as parseColors } from "~/common/vscode-color"
 
 async function beautify(root: Root, tabSize: number) {
 	const text = root.toString()
