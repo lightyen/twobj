@@ -3,7 +3,7 @@
   "editor.snippetSuggestions": "none",
   "javascript.suggestionActions.enabled": false,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+    "source.organizeImports": "explicit"
   },
   "search.exclude": {
     "**/*.spec.ts.snap": true
