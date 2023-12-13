@@ -316,7 +316,7 @@ export function getColorClassesFrom(utilities: Map<string, LookupSpec | StaticSp
 			if (isCSSValue(value)) {
 				if (typeof value === "string") {
 					const color = parser.parseColor(value)
-					if (color && parser.isOpacityFunction(color.fn)) {
+					if (color && parser.isColorFunction(color.fn)) {
 						colors.push(value)
 					} else if (colorProps.has(prop)) {
 						colors.push(value)

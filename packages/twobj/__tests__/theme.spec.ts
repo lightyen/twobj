@@ -10,6 +10,7 @@ test("access tailwind config theme", async () => {
 						foreground: "hsl(var(--primary-foreground))",
 					},
 					str: "rgb(var(--color) / <alpha-value>)",
+					rec: "color(var(--color) / <alpha-value>)",
 					fn({ opacityValue }) {
 						return `rgb(var(--color) / ${opacityValue})`
 					},
@@ -62,6 +63,7 @@ test("access tailwind config theme", async () => {
 	expect(theme`colors.str`).toEqual("rgb(var(--color) / 1)")
 	expect(theme`colors.str / 0.3`).toEqual("rgb(var(--color) / 0.3)")
 	expect(theme`colors.str / 24%`).toEqual("rgb(var(--color) / 24%)")
+	expect(theme`colors.rec / 24%`).toEqual("color(var(--color) / 24%)")
 	expect(theme`colors.fn`).toEqual("rgb(var(--color) / 1)")
 	expect(theme`colors.fn / 0.3`).toEqual("rgb(var(--color) / 0.3)")
 	expect(theme`colors.fn / 24%`).toEqual("rgb(var(--color) / 24%)")

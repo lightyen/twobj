@@ -4,7 +4,7 @@ import type { AtRule, Root, Rule } from "postcss"
 import postcss from "postcss"
 import postcssJs from "postcss-js"
 import type { Plugin } from "prettier"
-import cssPrettier from "prettier/plugins/postcss"
+import * as cssPrettier from "prettier/plugins/postcss"
 import * as prettier from "prettier/standalone"
 import type { CSSProperties, ResolvedConfigJS, ValueType } from "twobj"
 import { createContext } from "twobj"
@@ -378,7 +378,7 @@ export async function createTwContext(config: ResolvedConfigJS) {
 
 			const { fn, params } = color
 
-			const retValue = fn + "(" + params.slice(0, 3).join(" ") + ")"
+			const retValue = fn + "(" + params.join(" ") + ")"
 
 			const c = culori.parse(retValue)
 			if (c) {
@@ -398,7 +398,7 @@ export async function createTwContext(config: ResolvedConfigJS) {
 		}
 
 		const { fn, params } = color
-		const retValue = fn + "(" + params.slice(0, 3).join(" ") + ")"
+		const retValue = fn + "(" + params.join(" ") + ")"
 		const c = culori.parse(retValue)
 		if (c) {
 			return culori.formatHex(c)
