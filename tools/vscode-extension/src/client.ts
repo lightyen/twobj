@@ -212,7 +212,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 		const codeActionProvider: vscode.CodeActionProvider = {
 			async provideCodeActions(document, range, context, token) {
 				let actions: vscode.CodeAction[] = []
-				if (!settings.enabled) actions
+				if (!settings.enabled) return actions
 				const diagnostics = diagnosticCollection.get(document.uri)
 				if (!diagnostics) return actions
 				diagnostics.forEach(item => {

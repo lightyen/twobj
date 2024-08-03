@@ -378,7 +378,7 @@ const variantCompletion: CompletionFeature = (
 	}
 
 	let items: ICompletionItem[] = []
-	const [screens, darkmode, placeholder, restVariants] = state.tw.variants
+	const [screens, darkmode, placeholder, restVariants, arbitraryVariants] = state.tw.variants
 	items = items
 		.concat(
 			screens.map((value, index) => ({
@@ -426,6 +426,19 @@ const variantCompletion: CompletionFeature = (
 					title: "Suggest",
 					command: "editor.action.triggerSuggest",
 				},
+			})),
+		)
+		.concat(
+			arbitraryVariants.map(value => ({
+				label: value + "-[]" + state.separator,
+				sortText: "~~~~" + value,
+				kind: vscode.CompletionItemKind.Method,
+				data: { type: "variant" },
+				command: {
+					title: "Suggest",
+					command: "editor.action.triggerSuggest",
+				},
+				insertText: new vscode.SnippetString(value + "-[$1]:"),
 			})),
 		)
 

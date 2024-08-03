@@ -96,6 +96,7 @@ export function requireModule(moduleName: string, options: string | requireModul
 
 	const __module = new Module(filename)
 	__module.paths = paths
+	/* eslint-disable @typescript-eslint/no-require-imports */
 	if (process.env.NODE_ENV === "test") return require(moduleName)
 	return __module.require(moduleName)
 }
