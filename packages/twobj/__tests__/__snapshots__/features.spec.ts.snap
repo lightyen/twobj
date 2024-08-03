@@ -11166,7 +11166,7 @@ exports[`snapshots: backdrop-blur-md 1`] = `
 
 exports[`snapshots: backdrop-blur-none 1`] = `
 {
-  "--tw-backdrop-blur": "blur(0)",
+  "--tw-backdrop-blur": " ",
   "--tw-backdrop-brightness": "initial",
   "--tw-backdrop-contrast": "initial",
   "--tw-backdrop-grayscale": "initial",
@@ -14391,7 +14391,7 @@ exports[`snapshots: blur-md 1`] = `
 
 exports[`snapshots: blur-none 1`] = `
 {
-  "--tw-blur": "blur(0)",
+  "--tw-blur": " ",
   "--tw-brightness": "initial",
   "--tw-contrast": "initial",
   "--tw-drop-shadow": "initial",

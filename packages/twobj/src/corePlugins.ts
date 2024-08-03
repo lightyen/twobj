@@ -1215,7 +1215,7 @@ export const classPlugins: ClassPlugins = {
 				blur(value) {
 					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
-						"--tw-blur": `blur(${value})`,
+						"--tw-blur": String(value) === "" ? " " : `blur(${value})`,
 						filter: cssFilterValue,
 					}
 				},
@@ -1425,7 +1425,7 @@ export const classPlugins: ClassPlugins = {
 				"backdrop-blur"(value) {
 					if (!isCSSValue(value)) return {} as PlainCSSProperties
 					return {
-						"--tw-backdrop-blur": `blur(${value})`,
+						"--tw-backdrop-blur": String(value) === "" ? " " : `blur(${value})`,
 						backdropFilter: cssBackdropFilterValue,
 					}
 				},
