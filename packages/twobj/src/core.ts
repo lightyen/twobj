@@ -195,6 +195,18 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		getUtilities() {
 			return getClassListFrom(utilitySpecCollection)
 		},
+		getArbitraryUtilities() {
+			const c = new Set<string>()
+			for (const [key, specs] of utilitySpecCollection) {
+				for (const spec of toArray(specs)) {
+					const result: string[] = []
+					if (spec.type === "lookup") {
+						c.add(key)
+					}
+				}
+			}
+			return c
+		},
 		getVariants() {
 			const c = new Set<string>()
 			for (const [variantName, spec] of variantSpecCollection) {
@@ -213,6 +225,17 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 				} else if (spec.type === "lookup") {
 					for (const val of Object.keys(spec.values)) {
 						c.add(variantName + "-" + val)
+					}
+				}
+			}
+			return c
+		},
+		getArbitraryVariants() {
+			const c = new Set<string>()
+			for (const [variantName, spec] of variantSpecCollection) {
+				for (const s of toArray(spec)) {
+					if (s.type === "lookup") {
+						c.add(variantName)
 					}
 				}
 			}

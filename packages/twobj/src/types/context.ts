@@ -51,8 +51,14 @@ export interface Context extends UserPluginOptions {
 	/** List all utilities. */
 	getUtilities(): Set<string>
 
+	/** List all arbitrary utilities. */
+	getArbitraryUtilities(): Set<string>
+
 	/** List all variants. */
 	getVariants(): Set<string>
+
+	/** List all arbitrary variants. */
+	getArbitraryVariants(): Set<string>
 
 	/** List all color utilities. */
 	getColorUtilities(): Map<string, string[]>
