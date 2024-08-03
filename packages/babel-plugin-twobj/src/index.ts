@@ -48,8 +48,12 @@ function findThirdParty(): ThirdParty | undefined {
 		if (styled && isModule(styled)) {
 			payload.styled = styled
 		}
-		if (className && isModule(className)) {
-			payload.className = className
+		if (className) {
+			for (const v of ([] as string[]).concat(className)) {
+				if (isModule(v)) {
+					payload.className = v
+				}
+			}
 		}
 		if (payload.cssProp || payload.styled || payload.className) {
 			return payload

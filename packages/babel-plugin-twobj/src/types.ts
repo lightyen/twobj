@@ -55,6 +55,6 @@ export interface Plugin {
 	manifest: {
 		cssProp?: string
 		styled?: string
-		className?: string
+		className?: string | string[]
 	}
 }

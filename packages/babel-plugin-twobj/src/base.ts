@@ -163,16 +163,28 @@ export function createProgramState(args: {
 
 	if (thirdParty?.plugin) {
 		for (const { source, variables, defaultId } of imports) {
-			if (source === thirdParty.plugin.manifest.className) {
-				for (const { imported, local } of variables) {
-					if (imported === "css") {
-						cssLocalName = local
+			if (thirdParty.plugin.manifest.className) {
+				for (const className of ([] as string[]).concat(thirdParty.plugin.manifest.className)) {
+					let found = false
+					if (source === className) {
+						for (const { imported, local } of variables) {
+							if (imported === "css") {
+								cssLocalName = local
+								found = true
+								break
+							}
+						}
+					}
+					if (found) {
 						break
 					}
 				}
-			} else if (source === thirdParty.plugin.manifest.styled) {
-				if (defaultId) {
-					styledLocalName = defaultId
+			}
+			if (thirdParty.plugin.manifest.styled) {
+				if (source === thirdParty.plugin.manifest.styled) {
+					if (defaultId) {
+						styledLocalName = defaultId
+					}
 				}
 			}
 		}
