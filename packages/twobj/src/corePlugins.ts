@@ -2540,8 +2540,8 @@ export const variantPlugins: VariantPlugins = {
 	}),
 
 	directionVariants: plugin("directionVariants", ({ addVariant }) => {
-		addVariant("ltr", ':is([dir="ltr"] &)')
-		addVariant("rtl", ':is([dir="rtl"] &)')
+		addVariant("ltr", '&:where([dir="ltr"], [dir="ltr"] *)')
+		addVariant("rtl", '&:where([dir="rtl"], [dir="rtl"] *)')
 	}),
 
 	reducedMotionVariants: plugin("reducedMotionVariants", ({ addVariant }) => {
