@@ -90,7 +90,9 @@ exports[`preflight 1`] = `
   },
   "code,kbd,samp,pre": {
     "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace",
+    "fontFeatureSettings": "normal",
     "fontSize": "1em",
+    "fontVariationSettings": "normal",
   },
   "dialog": {
     "padding": "0",
@@ -108,10 +110,11 @@ exports[`preflight 1`] = `
     "color": "inherit",
     "height": "0",
   },
-  "html": {
+  "html,:host": {
     "MozTabSize": "4",
+    "WebkitTapHighlightColor": "transparent",
     "WebkitTextSizeAdjust": "100%",
-    "fontFamily": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"",
+    "fontFamily": "ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"",
     "fontFeatureSettings": "normal",
     "fontVariationSettings": "normal",
     "lineHeight": "1.5",

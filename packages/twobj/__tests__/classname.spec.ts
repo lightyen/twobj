@@ -195,10 +195,10 @@ test("fontFamily", async () => {
 		}),
 	)
 	expect(ctx.css`font-sans`).toEqual({
-		fontFamily: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+		fontFamily: `ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
 	})
 	expect(ctx.css`font-inter`).toEqual({
-		fontFamily: `Inter var, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+		fontFamily: `Inter var, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
 		fontFeatureSettings: `"case", "ss01", "ss02", "ss03"`,
 	})
 
@@ -219,7 +219,7 @@ test("fontFamily", async () => {
 		fontFeatureSettings: `"cv11"`,
 	})
 	expect(ctx.css`font-inter`).toEqual({
-		fontFamily: `Inter var, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+		fontFamily: `Inter var, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
 		fontFeatureSettings: `"case", "ss01", "ss02", "ss03"`,
 	})
 })
@@ -244,7 +244,7 @@ test("margin", async () => {
 })
 
 test("maxWidth", async () => {
-	expect(tw`max-w-0`).toEqual({ maxWidth: "0rem" })
+	expect(tw`max-w-0`).toEqual({ maxWidth: "0px" })
 	expect(tw`max-w-fit`).toEqual({ maxWidth: "fit-content" })
 	expect(tw`max-w-full`).toEqual({ maxWidth: "100%" })
 	expect(tw`max-w-xl`).toEqual({ maxWidth: "36rem" })

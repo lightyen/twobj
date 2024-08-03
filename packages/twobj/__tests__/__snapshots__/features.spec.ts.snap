@@ -10996,6 +10996,12 @@ exports[`snapshots: antialiased 1`] = `
 }
 `;
 
+exports[`snapshots: appearance-auto 1`] = `
+{
+  "appearance": "auto",
+}
+`;
+
 exports[`snapshots: appearance-none 1`] = `
 {
   "appearance": "none",
@@ -11686,6 +11692,21 @@ exports[`snapshots: backdrop-opacity-10 1`] = `
 }
 `;
 
+exports[`snapshots: backdrop-opacity-15 1`] = `
+{
+  "--tw-backdrop-blur": "initial",
+  "--tw-backdrop-brightness": "initial",
+  "--tw-backdrop-contrast": "initial",
+  "--tw-backdrop-grayscale": "initial",
+  "--tw-backdrop-hue": "initial",
+  "--tw-backdrop-invert": "initial",
+  "--tw-backdrop-opacity": "opacity(0.15)",
+  "--tw-backdrop-saturate": "initial",
+  "--tw-backdrop-sepia": "initial",
+  "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
+}
+`;
+
 exports[`snapshots: backdrop-opacity-20 1`] = `
 {
   "--tw-backdrop-blur": "initial",
@@ -11731,6 +11752,21 @@ exports[`snapshots: backdrop-opacity-30 1`] = `
 }
 `;
 
+exports[`snapshots: backdrop-opacity-35 1`] = `
+{
+  "--tw-backdrop-blur": "initial",
+  "--tw-backdrop-brightness": "initial",
+  "--tw-backdrop-contrast": "initial",
+  "--tw-backdrop-grayscale": "initial",
+  "--tw-backdrop-hue": "initial",
+  "--tw-backdrop-invert": "initial",
+  "--tw-backdrop-opacity": "opacity(0.35)",
+  "--tw-backdrop-saturate": "initial",
+  "--tw-backdrop-sepia": "initial",
+  "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
+}
+`;
+
 exports[`snapshots: backdrop-opacity-40 1`] = `
 {
   "--tw-backdrop-blur": "initial",
@@ -11740,6 +11776,21 @@ exports[`snapshots: backdrop-opacity-40 1`] = `
   "--tw-backdrop-hue": "initial",
   "--tw-backdrop-invert": "initial",
   "--tw-backdrop-opacity": "opacity(0.4)",
+  "--tw-backdrop-saturate": "initial",
+  "--tw-backdrop-sepia": "initial",
+  "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
+}
+`;
+
+exports[`snapshots: backdrop-opacity-45 1`] = `
+{
+  "--tw-backdrop-blur": "initial",
+  "--tw-backdrop-brightness": "initial",
+  "--tw-backdrop-contrast": "initial",
+  "--tw-backdrop-grayscale": "initial",
+  "--tw-backdrop-hue": "initial",
+  "--tw-backdrop-invert": "initial",
+  "--tw-backdrop-opacity": "opacity(0.45)",
   "--tw-backdrop-saturate": "initial",
   "--tw-backdrop-sepia": "initial",
   "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
@@ -11761,6 +11812,21 @@ exports[`snapshots: backdrop-opacity-50 1`] = `
 }
 `;
 
+exports[`snapshots: backdrop-opacity-55 1`] = `
+{
+  "--tw-backdrop-blur": "initial",
+  "--tw-backdrop-brightness": "initial",
+  "--tw-backdrop-contrast": "initial",
+  "--tw-backdrop-grayscale": "initial",
+  "--tw-backdrop-hue": "initial",
+  "--tw-backdrop-invert": "initial",
+  "--tw-backdrop-opacity": "opacity(0.55)",
+  "--tw-backdrop-saturate": "initial",
+  "--tw-backdrop-sepia": "initial",
+  "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
+}
+`;
+
 exports[`snapshots: backdrop-opacity-60 1`] = `
 {
   "--tw-backdrop-blur": "initial",
@@ -11770,6 +11836,21 @@ exports[`snapshots: backdrop-opacity-60 1`] = `
   "--tw-backdrop-hue": "initial",
   "--tw-backdrop-invert": "initial",
   "--tw-backdrop-opacity": "opacity(0.6)",
+  "--tw-backdrop-saturate": "initial",
+  "--tw-backdrop-sepia": "initial",
+  "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
+}
+`;
+
+exports[`snapshots: backdrop-opacity-65 1`] = `
+{
+  "--tw-backdrop-blur": "initial",
+  "--tw-backdrop-brightness": "initial",
+  "--tw-backdrop-contrast": "initial",
+  "--tw-backdrop-grayscale": "initial",
+  "--tw-backdrop-hue": "initial",
+  "--tw-backdrop-invert": "initial",
+  "--tw-backdrop-opacity": "opacity(0.65)",
   "--tw-backdrop-saturate": "initial",
   "--tw-backdrop-sepia": "initial",
   "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
@@ -11815,6 +11896,21 @@ exports[`snapshots: backdrop-opacity-80 1`] = `
   "--tw-backdrop-hue": "initial",
   "--tw-backdrop-invert": "initial",
   "--tw-backdrop-opacity": "opacity(0.8)",
+  "--tw-backdrop-saturate": "initial",
+  "--tw-backdrop-sepia": "initial",
+  "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
+}
+`;
+
+exports[`snapshots: backdrop-opacity-85 1`] = `
+{
+  "--tw-backdrop-blur": "initial",
+  "--tw-backdrop-brightness": "initial",
+  "--tw-backdrop-contrast": "initial",
+  "--tw-backdrop-grayscale": "initial",
+  "--tw-backdrop-hue": "initial",
+  "--tw-backdrop-invert": "initial",
+  "--tw-backdrop-opacity": "opacity(0.85)",
   "--tw-backdrop-saturate": "initial",
   "--tw-backdrop-sepia": "initial",
   "backdropFilter": "var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)",
@@ -31436,6 +31532,12 @@ exports[`snapshots: clear-both 1`] = `
 }
 `;
 
+exports[`snapshots: clear-end 1`] = `
+{
+  "clear": "inline-end",
+}
+`;
+
 exports[`snapshots: clear-left 1`] = `
 {
   "clear": "left",
@@ -31451,6 +31553,12 @@ exports[`snapshots: clear-none 1`] = `
 exports[`snapshots: clear-right 1`] = `
 {
   "clear": "right",
+}
+`;
+
+exports[`snapshots: clear-start 1`] = `
+{
+  "clear": "inline-start",
 }
 `;
 
@@ -38057,6 +38165,12 @@ exports[`snapshots: flex-wrap-reverse 1`] = `
 }
 `;
 
+exports[`snapshots: float-end 1`] = `
+{
+  "float": "inline-end",
+}
+`;
+
 exports[`snapshots: float-left 1`] = `
 {
   "float": "left",
@@ -38072,6 +38186,12 @@ exports[`snapshots: float-none 1`] = `
 exports[`snapshots: float-right 1`] = `
 {
   "float": "right",
+}
+`;
+
+exports[`snapshots: float-start 1`] = `
+{
+  "float": "inline-start",
 }
 `;
 
@@ -38131,7 +38251,7 @@ exports[`snapshots: font-normal 1`] = `
 
 exports[`snapshots: font-sans 1`] = `
 {
-  "fontFamily": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"",
+  "fontFamily": "ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"",
 }
 `;
 
@@ -38150,6 +38270,18 @@ exports[`snapshots: font-serif 1`] = `
 exports[`snapshots: font-thin 1`] = `
 {
   "fontWeight": "100",
+}
+`;
+
+exports[`snapshots: forced-color-adjust-auto 1`] = `
+{
+  "forcedColorAdjust": "auto",
+}
+`;
+
+exports[`snapshots: forced-color-adjust-none 1`] = `
+{
+  "forcedColorAdjust": "none",
 }
 `;
 
@@ -40505,6 +40637,12 @@ exports[`snapshots: grid-cols-none 1`] = `
 }
 `;
 
+exports[`snapshots: grid-cols-subgrid 1`] = `
+{
+  "gridTemplateColumns": "subgrid",
+}
+`;
+
 exports[`snapshots: grid-flow-col 1`] = `
 {
   "gridAutoFlow": "column",
@@ -40571,9 +40709,51 @@ exports[`snapshots: grid-rows-6 1`] = `
 }
 `;
 
+exports[`snapshots: grid-rows-7 1`] = `
+{
+  "gridTemplateRows": "repeat(7, minmax(0, 1fr))",
+}
+`;
+
+exports[`snapshots: grid-rows-8 1`] = `
+{
+  "gridTemplateRows": "repeat(8, minmax(0, 1fr))",
+}
+`;
+
+exports[`snapshots: grid-rows-9 1`] = `
+{
+  "gridTemplateRows": "repeat(9, minmax(0, 1fr))",
+}
+`;
+
+exports[`snapshots: grid-rows-10 1`] = `
+{
+  "gridTemplateRows": "repeat(10, minmax(0, 1fr))",
+}
+`;
+
+exports[`snapshots: grid-rows-11 1`] = `
+{
+  "gridTemplateRows": "repeat(11, minmax(0, 1fr))",
+}
+`;
+
+exports[`snapshots: grid-rows-12 1`] = `
+{
+  "gridTemplateRows": "repeat(12, minmax(0, 1fr))",
+}
+`;
+
 exports[`snapshots: grid-rows-none 1`] = `
 {
   "gridTemplateRows": "none",
+}
+`;
+
+exports[`snapshots: grid-rows-subgrid 1`] = `
+{
+  "gridTemplateRows": "subgrid",
 }
 `;
 
@@ -40889,6 +41069,12 @@ exports[`snapshots: h-auto 1`] = `
 }
 `;
 
+exports[`snapshots: h-dvh 1`] = `
+{
+  "height": "100dvh",
+}
+`;
+
 exports[`snapshots: h-fit 1`] = `
 {
   "height": "fit-content",
@@ -40898,6 +41084,12 @@ exports[`snapshots: h-fit 1`] = `
 exports[`snapshots: h-full 1`] = `
 {
   "height": "100%",
+}
+`;
+
+exports[`snapshots: h-lvh 1`] = `
+{
+  "height": "100lvh",
 }
 `;
 
@@ -40922,6 +41114,12 @@ exports[`snapshots: h-px 1`] = `
 exports[`snapshots: h-screen 1`] = `
 {
   "height": "100vh",
+}
+`;
+
+exports[`snapshots: h-svh 1`] = `
+{
+  "height": "100svh",
 }
 `;
 
@@ -43221,6 +43419,12 @@ exports[`snapshots: max-h-96 1`] = `
 }
 `;
 
+exports[`snapshots: max-h-dvh 1`] = `
+{
+  "maxHeight": "100dvh",
+}
+`;
+
 exports[`snapshots: max-h-fit 1`] = `
 {
   "maxHeight": "fit-content",
@@ -43230,6 +43434,12 @@ exports[`snapshots: max-h-fit 1`] = `
 exports[`snapshots: max-h-full 1`] = `
 {
   "maxHeight": "100%",
+}
+`;
+
+exports[`snapshots: max-h-lvh 1`] = `
+{
+  "maxHeight": "100lvh",
 }
 `;
 
@@ -43263,9 +43473,45 @@ exports[`snapshots: max-h-screen 1`] = `
 }
 `;
 
+exports[`snapshots: max-h-svh 1`] = `
+{
+  "maxHeight": "100svh",
+}
+`;
+
 exports[`snapshots: max-w-0 1`] = `
 {
-  "maxWidth": "0rem",
+  "maxWidth": "0px",
+}
+`;
+
+exports[`snapshots: max-w-0.5 1`] = `
+{
+  "maxWidth": "0.125rem",
+}
+`;
+
+exports[`snapshots: max-w-1 1`] = `
+{
+  "maxWidth": "0.25rem",
+}
+`;
+
+exports[`snapshots: max-w-1.5 1`] = `
+{
+  "maxWidth": "0.375rem",
+}
+`;
+
+exports[`snapshots: max-w-2 1`] = `
+{
+  "maxWidth": "0.5rem",
+}
+`;
+
+exports[`snapshots: max-w-2.5 1`] = `
+{
+  "maxWidth": "0.625rem",
 }
 `;
 
@@ -43275,9 +43521,27 @@ exports[`snapshots: max-w-2xl 1`] = `
 }
 `;
 
+exports[`snapshots: max-w-3 1`] = `
+{
+  "maxWidth": "0.75rem",
+}
+`;
+
+exports[`snapshots: max-w-3.5 1`] = `
+{
+  "maxWidth": "0.875rem",
+}
+`;
+
 exports[`snapshots: max-w-3xl 1`] = `
 {
   "maxWidth": "48rem",
+}
+`;
+
+exports[`snapshots: max-w-4 1`] = `
+{
+  "maxWidth": "1rem",
 }
 `;
 
@@ -43287,9 +43551,21 @@ exports[`snapshots: max-w-4xl 1`] = `
 }
 `;
 
+exports[`snapshots: max-w-5 1`] = `
+{
+  "maxWidth": "1.25rem",
+}
+`;
+
 exports[`snapshots: max-w-5xl 1`] = `
 {
   "maxWidth": "64rem",
+}
+`;
+
+exports[`snapshots: max-w-6 1`] = `
+{
+  "maxWidth": "1.5rem",
 }
 `;
 
@@ -43299,9 +43575,147 @@ exports[`snapshots: max-w-6xl 1`] = `
 }
 `;
 
+exports[`snapshots: max-w-7 1`] = `
+{
+  "maxWidth": "1.75rem",
+}
+`;
+
 exports[`snapshots: max-w-7xl 1`] = `
 {
   "maxWidth": "80rem",
+}
+`;
+
+exports[`snapshots: max-w-8 1`] = `
+{
+  "maxWidth": "2rem",
+}
+`;
+
+exports[`snapshots: max-w-9 1`] = `
+{
+  "maxWidth": "2.25rem",
+}
+`;
+
+exports[`snapshots: max-w-10 1`] = `
+{
+  "maxWidth": "2.5rem",
+}
+`;
+
+exports[`snapshots: max-w-11 1`] = `
+{
+  "maxWidth": "2.75rem",
+}
+`;
+
+exports[`snapshots: max-w-12 1`] = `
+{
+  "maxWidth": "3rem",
+}
+`;
+
+exports[`snapshots: max-w-14 1`] = `
+{
+  "maxWidth": "3.5rem",
+}
+`;
+
+exports[`snapshots: max-w-16 1`] = `
+{
+  "maxWidth": "4rem",
+}
+`;
+
+exports[`snapshots: max-w-20 1`] = `
+{
+  "maxWidth": "5rem",
+}
+`;
+
+exports[`snapshots: max-w-24 1`] = `
+{
+  "maxWidth": "6rem",
+}
+`;
+
+exports[`snapshots: max-w-28 1`] = `
+{
+  "maxWidth": "7rem",
+}
+`;
+
+exports[`snapshots: max-w-32 1`] = `
+{
+  "maxWidth": "8rem",
+}
+`;
+
+exports[`snapshots: max-w-36 1`] = `
+{
+  "maxWidth": "9rem",
+}
+`;
+
+exports[`snapshots: max-w-40 1`] = `
+{
+  "maxWidth": "10rem",
+}
+`;
+
+exports[`snapshots: max-w-44 1`] = `
+{
+  "maxWidth": "11rem",
+}
+`;
+
+exports[`snapshots: max-w-48 1`] = `
+{
+  "maxWidth": "12rem",
+}
+`;
+
+exports[`snapshots: max-w-52 1`] = `
+{
+  "maxWidth": "13rem",
+}
+`;
+
+exports[`snapshots: max-w-56 1`] = `
+{
+  "maxWidth": "14rem",
+}
+`;
+
+exports[`snapshots: max-w-60 1`] = `
+{
+  "maxWidth": "15rem",
+}
+`;
+
+exports[`snapshots: max-w-64 1`] = `
+{
+  "maxWidth": "16rem",
+}
+`;
+
+exports[`snapshots: max-w-72 1`] = `
+{
+  "maxWidth": "18rem",
+}
+`;
+
+exports[`snapshots: max-w-80 1`] = `
+{
+  "maxWidth": "20rem",
+}
+`;
+
+exports[`snapshots: max-w-96 1`] = `
+{
+  "maxWidth": "24rem",
 }
 `;
 
@@ -43350,6 +43764,12 @@ exports[`snapshots: max-w-none 1`] = `
 exports[`snapshots: max-w-prose 1`] = `
 {
   "maxWidth": "65ch",
+}
+`;
+
+exports[`snapshots: max-w-px 1`] = `
+{
+  "maxWidth": "1px",
 }
 `;
 
@@ -43839,6 +44259,210 @@ exports[`snapshots: min-h-0 1`] = `
 }
 `;
 
+exports[`snapshots: min-h-0.5 1`] = `
+{
+  "minHeight": "0.125rem",
+}
+`;
+
+exports[`snapshots: min-h-1 1`] = `
+{
+  "minHeight": "0.25rem",
+}
+`;
+
+exports[`snapshots: min-h-1.5 1`] = `
+{
+  "minHeight": "0.375rem",
+}
+`;
+
+exports[`snapshots: min-h-2 1`] = `
+{
+  "minHeight": "0.5rem",
+}
+`;
+
+exports[`snapshots: min-h-2.5 1`] = `
+{
+  "minHeight": "0.625rem",
+}
+`;
+
+exports[`snapshots: min-h-3 1`] = `
+{
+  "minHeight": "0.75rem",
+}
+`;
+
+exports[`snapshots: min-h-3.5 1`] = `
+{
+  "minHeight": "0.875rem",
+}
+`;
+
+exports[`snapshots: min-h-4 1`] = `
+{
+  "minHeight": "1rem",
+}
+`;
+
+exports[`snapshots: min-h-5 1`] = `
+{
+  "minHeight": "1.25rem",
+}
+`;
+
+exports[`snapshots: min-h-6 1`] = `
+{
+  "minHeight": "1.5rem",
+}
+`;
+
+exports[`snapshots: min-h-7 1`] = `
+{
+  "minHeight": "1.75rem",
+}
+`;
+
+exports[`snapshots: min-h-8 1`] = `
+{
+  "minHeight": "2rem",
+}
+`;
+
+exports[`snapshots: min-h-9 1`] = `
+{
+  "minHeight": "2.25rem",
+}
+`;
+
+exports[`snapshots: min-h-10 1`] = `
+{
+  "minHeight": "2.5rem",
+}
+`;
+
+exports[`snapshots: min-h-11 1`] = `
+{
+  "minHeight": "2.75rem",
+}
+`;
+
+exports[`snapshots: min-h-12 1`] = `
+{
+  "minHeight": "3rem",
+}
+`;
+
+exports[`snapshots: min-h-14 1`] = `
+{
+  "minHeight": "3.5rem",
+}
+`;
+
+exports[`snapshots: min-h-16 1`] = `
+{
+  "minHeight": "4rem",
+}
+`;
+
+exports[`snapshots: min-h-20 1`] = `
+{
+  "minHeight": "5rem",
+}
+`;
+
+exports[`snapshots: min-h-24 1`] = `
+{
+  "minHeight": "6rem",
+}
+`;
+
+exports[`snapshots: min-h-28 1`] = `
+{
+  "minHeight": "7rem",
+}
+`;
+
+exports[`snapshots: min-h-32 1`] = `
+{
+  "minHeight": "8rem",
+}
+`;
+
+exports[`snapshots: min-h-36 1`] = `
+{
+  "minHeight": "9rem",
+}
+`;
+
+exports[`snapshots: min-h-40 1`] = `
+{
+  "minHeight": "10rem",
+}
+`;
+
+exports[`snapshots: min-h-44 1`] = `
+{
+  "minHeight": "11rem",
+}
+`;
+
+exports[`snapshots: min-h-48 1`] = `
+{
+  "minHeight": "12rem",
+}
+`;
+
+exports[`snapshots: min-h-52 1`] = `
+{
+  "minHeight": "13rem",
+}
+`;
+
+exports[`snapshots: min-h-56 1`] = `
+{
+  "minHeight": "14rem",
+}
+`;
+
+exports[`snapshots: min-h-60 1`] = `
+{
+  "minHeight": "15rem",
+}
+`;
+
+exports[`snapshots: min-h-64 1`] = `
+{
+  "minHeight": "16rem",
+}
+`;
+
+exports[`snapshots: min-h-72 1`] = `
+{
+  "minHeight": "18rem",
+}
+`;
+
+exports[`snapshots: min-h-80 1`] = `
+{
+  "minHeight": "20rem",
+}
+`;
+
+exports[`snapshots: min-h-96 1`] = `
+{
+  "minHeight": "24rem",
+}
+`;
+
+exports[`snapshots: min-h-dvh 1`] = `
+{
+  "minHeight": "100dvh",
+}
+`;
+
 exports[`snapshots: min-h-fit 1`] = `
 {
   "minHeight": "fit-content",
@@ -43848,6 +44472,12 @@ exports[`snapshots: min-h-fit 1`] = `
 exports[`snapshots: min-h-full 1`] = `
 {
   "minHeight": "100%",
+}
+`;
+
+exports[`snapshots: min-h-lvh 1`] = `
+{
+  "minHeight": "100lvh",
 }
 `;
 
@@ -43863,15 +44493,225 @@ exports[`snapshots: min-h-min 1`] = `
 }
 `;
 
+exports[`snapshots: min-h-px 1`] = `
+{
+  "minHeight": "1px",
+}
+`;
+
 exports[`snapshots: min-h-screen 1`] = `
 {
   "minHeight": "100vh",
 }
 `;
 
+exports[`snapshots: min-h-svh 1`] = `
+{
+  "minHeight": "100svh",
+}
+`;
+
 exports[`snapshots: min-w-0 1`] = `
 {
   "minWidth": "0px",
+}
+`;
+
+exports[`snapshots: min-w-0.5 1`] = `
+{
+  "minWidth": "0.125rem",
+}
+`;
+
+exports[`snapshots: min-w-1 1`] = `
+{
+  "minWidth": "0.25rem",
+}
+`;
+
+exports[`snapshots: min-w-1.5 1`] = `
+{
+  "minWidth": "0.375rem",
+}
+`;
+
+exports[`snapshots: min-w-2 1`] = `
+{
+  "minWidth": "0.5rem",
+}
+`;
+
+exports[`snapshots: min-w-2.5 1`] = `
+{
+  "minWidth": "0.625rem",
+}
+`;
+
+exports[`snapshots: min-w-3 1`] = `
+{
+  "minWidth": "0.75rem",
+}
+`;
+
+exports[`snapshots: min-w-3.5 1`] = `
+{
+  "minWidth": "0.875rem",
+}
+`;
+
+exports[`snapshots: min-w-4 1`] = `
+{
+  "minWidth": "1rem",
+}
+`;
+
+exports[`snapshots: min-w-5 1`] = `
+{
+  "minWidth": "1.25rem",
+}
+`;
+
+exports[`snapshots: min-w-6 1`] = `
+{
+  "minWidth": "1.5rem",
+}
+`;
+
+exports[`snapshots: min-w-7 1`] = `
+{
+  "minWidth": "1.75rem",
+}
+`;
+
+exports[`snapshots: min-w-8 1`] = `
+{
+  "minWidth": "2rem",
+}
+`;
+
+exports[`snapshots: min-w-9 1`] = `
+{
+  "minWidth": "2.25rem",
+}
+`;
+
+exports[`snapshots: min-w-10 1`] = `
+{
+  "minWidth": "2.5rem",
+}
+`;
+
+exports[`snapshots: min-w-11 1`] = `
+{
+  "minWidth": "2.75rem",
+}
+`;
+
+exports[`snapshots: min-w-12 1`] = `
+{
+  "minWidth": "3rem",
+}
+`;
+
+exports[`snapshots: min-w-14 1`] = `
+{
+  "minWidth": "3.5rem",
+}
+`;
+
+exports[`snapshots: min-w-16 1`] = `
+{
+  "minWidth": "4rem",
+}
+`;
+
+exports[`snapshots: min-w-20 1`] = `
+{
+  "minWidth": "5rem",
+}
+`;
+
+exports[`snapshots: min-w-24 1`] = `
+{
+  "minWidth": "6rem",
+}
+`;
+
+exports[`snapshots: min-w-28 1`] = `
+{
+  "minWidth": "7rem",
+}
+`;
+
+exports[`snapshots: min-w-32 1`] = `
+{
+  "minWidth": "8rem",
+}
+`;
+
+exports[`snapshots: min-w-36 1`] = `
+{
+  "minWidth": "9rem",
+}
+`;
+
+exports[`snapshots: min-w-40 1`] = `
+{
+  "minWidth": "10rem",
+}
+`;
+
+exports[`snapshots: min-w-44 1`] = `
+{
+  "minWidth": "11rem",
+}
+`;
+
+exports[`snapshots: min-w-48 1`] = `
+{
+  "minWidth": "12rem",
+}
+`;
+
+exports[`snapshots: min-w-52 1`] = `
+{
+  "minWidth": "13rem",
+}
+`;
+
+exports[`snapshots: min-w-56 1`] = `
+{
+  "minWidth": "14rem",
+}
+`;
+
+exports[`snapshots: min-w-60 1`] = `
+{
+  "minWidth": "15rem",
+}
+`;
+
+exports[`snapshots: min-w-64 1`] = `
+{
+  "minWidth": "16rem",
+}
+`;
+
+exports[`snapshots: min-w-72 1`] = `
+{
+  "minWidth": "18rem",
+}
+`;
+
+exports[`snapshots: min-w-80 1`] = `
+{
+  "minWidth": "20rem",
+}
+`;
+
+exports[`snapshots: min-w-96 1`] = `
+{
+  "minWidth": "24rem",
 }
 `;
 
@@ -43896,6 +44736,12 @@ exports[`snapshots: min-w-max 1`] = `
 exports[`snapshots: min-w-min 1`] = `
 {
   "minWidth": "min-content",
+}
+`;
+
+exports[`snapshots: min-w-px 1`] = `
+{
+  "minWidth": "1px",
 }
 `;
 
@@ -45524,6 +46370,12 @@ exports[`snapshots: opacity-10 1`] = `
 }
 `;
 
+exports[`snapshots: opacity-15 1`] = `
+{
+  "opacity": "0.15",
+}
+`;
+
 exports[`snapshots: opacity-20 1`] = `
 {
   "opacity": "0.2",
@@ -45542,9 +46394,21 @@ exports[`snapshots: opacity-30 1`] = `
 }
 `;
 
+exports[`snapshots: opacity-35 1`] = `
+{
+  "opacity": "0.35",
+}
+`;
+
 exports[`snapshots: opacity-40 1`] = `
 {
   "opacity": "0.4",
+}
+`;
+
+exports[`snapshots: opacity-45 1`] = `
+{
+  "opacity": "0.45",
 }
 `;
 
@@ -45554,9 +46418,21 @@ exports[`snapshots: opacity-50 1`] = `
 }
 `;
 
+exports[`snapshots: opacity-55 1`] = `
+{
+  "opacity": "0.55",
+}
+`;
+
 exports[`snapshots: opacity-60 1`] = `
 {
   "opacity": "0.6",
+}
+`;
+
+exports[`snapshots: opacity-65 1`] = `
+{
+  "opacity": "0.65",
 }
 `;
 
@@ -45575,6 +46451,12 @@ exports[`snapshots: opacity-75 1`] = `
 exports[`snapshots: opacity-80 1`] = `
 {
   "opacity": "0.8",
+}
+`;
+
+exports[`snapshots: opacity-85 1`] = `
+{
+  "opacity": "0.85",
 }
 `;
 
@@ -55936,6 +56818,42 @@ exports[`snapshots: row-end-7 1`] = `
 }
 `;
 
+exports[`snapshots: row-end-8 1`] = `
+{
+  "gridRowEnd": "8",
+}
+`;
+
+exports[`snapshots: row-end-9 1`] = `
+{
+  "gridRowEnd": "9",
+}
+`;
+
+exports[`snapshots: row-end-10 1`] = `
+{
+  "gridRowEnd": "10",
+}
+`;
+
+exports[`snapshots: row-end-11 1`] = `
+{
+  "gridRowEnd": "11",
+}
+`;
+
+exports[`snapshots: row-end-12 1`] = `
+{
+  "gridRowEnd": "12",
+}
+`;
+
+exports[`snapshots: row-end-13 1`] = `
+{
+  "gridRowEnd": "13",
+}
+`;
+
 exports[`snapshots: row-end-auto 1`] = `
 {
   "gridRowEnd": "auto",
@@ -55975,6 +56893,42 @@ exports[`snapshots: row-span-5 1`] = `
 exports[`snapshots: row-span-6 1`] = `
 {
   "gridRow": "span 6 / span 6",
+}
+`;
+
+exports[`snapshots: row-span-7 1`] = `
+{
+  "gridRow": "span 7 / span 7",
+}
+`;
+
+exports[`snapshots: row-span-8 1`] = `
+{
+  "gridRow": "span 8 / span 8",
+}
+`;
+
+exports[`snapshots: row-span-9 1`] = `
+{
+  "gridRow": "span 9 / span 9",
+}
+`;
+
+exports[`snapshots: row-span-10 1`] = `
+{
+  "gridRow": "span 10 / span 10",
+}
+`;
+
+exports[`snapshots: row-span-11 1`] = `
+{
+  "gridRow": "span 11 / span 11",
+}
+`;
+
+exports[`snapshots: row-span-12 1`] = `
+{
+  "gridRow": "span 12 / span 12",
 }
 `;
 
@@ -56023,6 +56977,42 @@ exports[`snapshots: row-start-6 1`] = `
 exports[`snapshots: row-start-7 1`] = `
 {
   "gridRowStart": "7",
+}
+`;
+
+exports[`snapshots: row-start-8 1`] = `
+{
+  "gridRowStart": "8",
+}
+`;
+
+exports[`snapshots: row-start-9 1`] = `
+{
+  "gridRowStart": "9",
+}
+`;
+
+exports[`snapshots: row-start-10 1`] = `
+{
+  "gridRowStart": "10",
+}
+`;
+
+exports[`snapshots: row-start-11 1`] = `
+{
+  "gridRowStart": "11",
+}
+`;
+
+exports[`snapshots: row-start-12 1`] = `
+{
+  "gridRowStart": "12",
+}
+`;
+
+exports[`snapshots: row-start-13 1`] = `
+{
+  "gridRowStart": "13",
 }
 `;
 
@@ -62124,6 +63114,468 @@ exports[`snapshots: shrink-0 1`] = `
 }
 `;
 
+exports[`snapshots: size-0 1`] = `
+{
+  "height": "0px",
+  "width": "0px",
+}
+`;
+
+exports[`snapshots: size-0.5 1`] = `
+{
+  "height": "0.125rem",
+  "width": "0.125rem",
+}
+`;
+
+exports[`snapshots: size-1 1`] = `
+{
+  "height": "0.25rem",
+  "width": "0.25rem",
+}
+`;
+
+exports[`snapshots: size-1.5 1`] = `
+{
+  "height": "0.375rem",
+  "width": "0.375rem",
+}
+`;
+
+exports[`snapshots: size-1/2 1`] = `
+{
+  "height": "50%",
+  "width": "50%",
+}
+`;
+
+exports[`snapshots: size-1/3 1`] = `
+{
+  "height": "33.333333%",
+  "width": "33.333333%",
+}
+`;
+
+exports[`snapshots: size-1/4 1`] = `
+{
+  "height": "25%",
+  "width": "25%",
+}
+`;
+
+exports[`snapshots: size-1/5 1`] = `
+{
+  "height": "20%",
+  "width": "20%",
+}
+`;
+
+exports[`snapshots: size-1/6 1`] = `
+{
+  "height": "16.666667%",
+  "width": "16.666667%",
+}
+`;
+
+exports[`snapshots: size-1/12 1`] = `
+{
+  "height": "8.333333%",
+  "width": "8.333333%",
+}
+`;
+
+exports[`snapshots: size-2 1`] = `
+{
+  "height": "0.5rem",
+  "width": "0.5rem",
+}
+`;
+
+exports[`snapshots: size-2.5 1`] = `
+{
+  "height": "0.625rem",
+  "width": "0.625rem",
+}
+`;
+
+exports[`snapshots: size-2/3 1`] = `
+{
+  "height": "66.666667%",
+  "width": "66.666667%",
+}
+`;
+
+exports[`snapshots: size-2/4 1`] = `
+{
+  "height": "50%",
+  "width": "50%",
+}
+`;
+
+exports[`snapshots: size-2/5 1`] = `
+{
+  "height": "40%",
+  "width": "40%",
+}
+`;
+
+exports[`snapshots: size-2/6 1`] = `
+{
+  "height": "33.333333%",
+  "width": "33.333333%",
+}
+`;
+
+exports[`snapshots: size-2/12 1`] = `
+{
+  "height": "16.666667%",
+  "width": "16.666667%",
+}
+`;
+
+exports[`snapshots: size-3 1`] = `
+{
+  "height": "0.75rem",
+  "width": "0.75rem",
+}
+`;
+
+exports[`snapshots: size-3.5 1`] = `
+{
+  "height": "0.875rem",
+  "width": "0.875rem",
+}
+`;
+
+exports[`snapshots: size-3/4 1`] = `
+{
+  "height": "75%",
+  "width": "75%",
+}
+`;
+
+exports[`snapshots: size-3/5 1`] = `
+{
+  "height": "60%",
+  "width": "60%",
+}
+`;
+
+exports[`snapshots: size-3/6 1`] = `
+{
+  "height": "50%",
+  "width": "50%",
+}
+`;
+
+exports[`snapshots: size-3/12 1`] = `
+{
+  "height": "25%",
+  "width": "25%",
+}
+`;
+
+exports[`snapshots: size-4 1`] = `
+{
+  "height": "1rem",
+  "width": "1rem",
+}
+`;
+
+exports[`snapshots: size-4/5 1`] = `
+{
+  "height": "80%",
+  "width": "80%",
+}
+`;
+
+exports[`snapshots: size-4/6 1`] = `
+{
+  "height": "66.666667%",
+  "width": "66.666667%",
+}
+`;
+
+exports[`snapshots: size-4/12 1`] = `
+{
+  "height": "33.333333%",
+  "width": "33.333333%",
+}
+`;
+
+exports[`snapshots: size-5 1`] = `
+{
+  "height": "1.25rem",
+  "width": "1.25rem",
+}
+`;
+
+exports[`snapshots: size-5/6 1`] = `
+{
+  "height": "83.333333%",
+  "width": "83.333333%",
+}
+`;
+
+exports[`snapshots: size-5/12 1`] = `
+{
+  "height": "41.666667%",
+  "width": "41.666667%",
+}
+`;
+
+exports[`snapshots: size-6 1`] = `
+{
+  "height": "1.5rem",
+  "width": "1.5rem",
+}
+`;
+
+exports[`snapshots: size-6/12 1`] = `
+{
+  "height": "50%",
+  "width": "50%",
+}
+`;
+
+exports[`snapshots: size-7 1`] = `
+{
+  "height": "1.75rem",
+  "width": "1.75rem",
+}
+`;
+
+exports[`snapshots: size-7/12 1`] = `
+{
+  "height": "58.333333%",
+  "width": "58.333333%",
+}
+`;
+
+exports[`snapshots: size-8 1`] = `
+{
+  "height": "2rem",
+  "width": "2rem",
+}
+`;
+
+exports[`snapshots: size-8/12 1`] = `
+{
+  "height": "66.666667%",
+  "width": "66.666667%",
+}
+`;
+
+exports[`snapshots: size-9 1`] = `
+{
+  "height": "2.25rem",
+  "width": "2.25rem",
+}
+`;
+
+exports[`snapshots: size-9/12 1`] = `
+{
+  "height": "75%",
+  "width": "75%",
+}
+`;
+
+exports[`snapshots: size-10 1`] = `
+{
+  "height": "2.5rem",
+  "width": "2.5rem",
+}
+`;
+
+exports[`snapshots: size-10/12 1`] = `
+{
+  "height": "83.333333%",
+  "width": "83.333333%",
+}
+`;
+
+exports[`snapshots: size-11 1`] = `
+{
+  "height": "2.75rem",
+  "width": "2.75rem",
+}
+`;
+
+exports[`snapshots: size-11/12 1`] = `
+{
+  "height": "91.666667%",
+  "width": "91.666667%",
+}
+`;
+
+exports[`snapshots: size-12 1`] = `
+{
+  "height": "3rem",
+  "width": "3rem",
+}
+`;
+
+exports[`snapshots: size-14 1`] = `
+{
+  "height": "3.5rem",
+  "width": "3.5rem",
+}
+`;
+
+exports[`snapshots: size-16 1`] = `
+{
+  "height": "4rem",
+  "width": "4rem",
+}
+`;
+
+exports[`snapshots: size-20 1`] = `
+{
+  "height": "5rem",
+  "width": "5rem",
+}
+`;
+
+exports[`snapshots: size-24 1`] = `
+{
+  "height": "6rem",
+  "width": "6rem",
+}
+`;
+
+exports[`snapshots: size-28 1`] = `
+{
+  "height": "7rem",
+  "width": "7rem",
+}
+`;
+
+exports[`snapshots: size-32 1`] = `
+{
+  "height": "8rem",
+  "width": "8rem",
+}
+`;
+
+exports[`snapshots: size-36 1`] = `
+{
+  "height": "9rem",
+  "width": "9rem",
+}
+`;
+
+exports[`snapshots: size-40 1`] = `
+{
+  "height": "10rem",
+  "width": "10rem",
+}
+`;
+
+exports[`snapshots: size-44 1`] = `
+{
+  "height": "11rem",
+  "width": "11rem",
+}
+`;
+
+exports[`snapshots: size-48 1`] = `
+{
+  "height": "12rem",
+  "width": "12rem",
+}
+`;
+
+exports[`snapshots: size-52 1`] = `
+{
+  "height": "13rem",
+  "width": "13rem",
+}
+`;
+
+exports[`snapshots: size-56 1`] = `
+{
+  "height": "14rem",
+  "width": "14rem",
+}
+`;
+
+exports[`snapshots: size-60 1`] = `
+{
+  "height": "15rem",
+  "width": "15rem",
+}
+`;
+
+exports[`snapshots: size-64 1`] = `
+{
+  "height": "16rem",
+  "width": "16rem",
+}
+`;
+
+exports[`snapshots: size-72 1`] = `
+{
+  "height": "18rem",
+  "width": "18rem",
+}
+`;
+
+exports[`snapshots: size-80 1`] = `
+{
+  "height": "20rem",
+  "width": "20rem",
+}
+`;
+
+exports[`snapshots: size-96 1`] = `
+{
+  "height": "24rem",
+  "width": "24rem",
+}
+`;
+
+exports[`snapshots: size-auto 1`] = `
+{
+  "height": "auto",
+  "width": "auto",
+}
+`;
+
+exports[`snapshots: size-fit 1`] = `
+{
+  "height": "fit-content",
+  "width": "fit-content",
+}
+`;
+
+exports[`snapshots: size-full 1`] = `
+{
+  "height": "100%",
+  "width": "100%",
+}
+`;
+
+exports[`snapshots: size-max 1`] = `
+{
+  "height": "max-content",
+  "width": "max-content",
+}
+`;
+
+exports[`snapshots: size-min 1`] = `
+{
+  "height": "min-content",
+  "width": "min-content",
+}
+`;
+
+exports[`snapshots: size-px 1`] = `
+{
+  "height": "1px",
+  "width": "1px",
+}
+`;
+
 exports[`snapshots: skew-x-0 1`] = `
 {
   "--tw-rotate": "initial",
@@ -65160,6 +66612,12 @@ exports[`snapshots: text-amber-950 1`] = `
 }
 `;
 
+exports[`snapshots: text-balance 1`] = `
+{
+  "textWrap": "balance",
+}
+`;
+
 exports[`snapshots: text-base 1`] = `
 {
   "fontSize": "1rem",
@@ -65822,6 +67280,12 @@ exports[`snapshots: text-neutral-950 1`] = `
 }
 `;
 
+exports[`snapshots: text-nowrap 1`] = `
+{
+  "textWrap": "nowrap",
+}
+`;
+
 exports[`snapshots: text-orange-50 1`] = `
 {
   "color": "#fff7ed",
@@ -65951,6 +67415,12 @@ exports[`snapshots: text-pink-900 1`] = `
 exports[`snapshots: text-pink-950 1`] = `
 {
   "color": "#500724",
+}
+`;
+
+exports[`snapshots: text-pretty 1`] = `
+{
+  "textWrap": "pretty",
 }
 `;
 
@@ -66510,6 +67980,12 @@ exports[`snapshots: text-violet-950 1`] = `
 exports[`snapshots: text-white 1`] = `
 {
   "color": "#fff",
+}
+`;
+
+exports[`snapshots: text-wrap 1`] = `
+{
+  "textWrap": "wrap",
 }
 `;
 
@@ -71859,6 +73335,12 @@ exports[`snapshots: w-auto 1`] = `
 }
 `;
 
+exports[`snapshots: w-dvw 1`] = `
+{
+  "width": "100dvw",
+}
+`;
+
 exports[`snapshots: w-fit 1`] = `
 {
   "width": "fit-content",
@@ -71868,6 +73350,12 @@ exports[`snapshots: w-fit 1`] = `
 exports[`snapshots: w-full 1`] = `
 {
   "width": "100%",
+}
+`;
+
+exports[`snapshots: w-lvw 1`] = `
+{
+  "width": "100lvw",
 }
 `;
 
@@ -71892,6 +73380,12 @@ exports[`snapshots: w-px 1`] = `
 exports[`snapshots: w-screen 1`] = `
 {
   "width": "100vw",
+}
+`;
+
+exports[`snapshots: w-svw 1`] = `
+{
+  "width": "100svw",
 }
 `;
 

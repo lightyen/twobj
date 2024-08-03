@@ -80,15 +80,16 @@ const globalStyles = {
 		borderColor: "#e5e7eb",
 		"--tw-content": "''",
 	},
-	html: {
+	"html,:host": {
 		lineHeight: "1.5",
 		WebkitTextSizeAdjust: "100%",
 		MozTabSize: "4",
 		tabSize: "4",
 		fontFamily:
-			'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+			'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
 		fontFeatureSettings: "normal",
 		fontVariationSettings: "normal",
+		WebkitTapHighlightColor: "transparent",
 	},
 	body: {
 		margin: "0",
@@ -115,6 +116,8 @@ const globalStyles = {
 	},
 	"code,kbd,samp,pre": {
 		fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+		fontFeatureSettings: "normal",
+		fontVariationSettings: "normal",
 		fontSize: "1em",
 	},
 	small: {
