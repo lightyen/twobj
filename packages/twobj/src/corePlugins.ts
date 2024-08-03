@@ -307,16 +307,20 @@ export const classPlugins: ClassPlugins = {
 	gridColumn: createUtilityPlugin("gridColumn", [["col", "gridColumn"]], theme => ({ values: theme.gridColumn })),
 	gridColumnStart: createUtilityPlugin("gridColumnStart", [["col-start", "gridColumnStart"]], theme => ({
 		values: theme.gridColumnStart,
+		supportsNegativeValues: true,
 	})),
 	gridColumnEnd: createUtilityPlugin("gridColumnEnd", [["col-end", "gridColumnEnd"]], theme => ({
 		values: theme.gridColumnEnd,
+		supportsNegativeValues: true,
 	})),
 	gridRow: createUtilityPlugin("gridRow", [["row", "gridRow"]], theme => ({ values: theme.gridRow })),
 	gridRowStart: createUtilityPlugin("gridRowStart", [["row-start", "gridRowStart"]], theme => ({
 		values: theme.gridRowStart,
+		supportsNegativeValues: true,
 	})),
 	gridRowEnd: createUtilityPlugin("gridRowEnd", [["row-end", "gridRowEnd"]], theme => ({
 		values: theme.gridRowEnd,
+		supportsNegativeValues: true,
 	})),
 	margin: createUtilityPlugin(
 		"margin",

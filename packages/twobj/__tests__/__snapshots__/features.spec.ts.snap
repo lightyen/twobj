@@ -348,6 +348,162 @@ exports[`snapshots: -bottom-px 1`] = `
 }
 `;
 
+exports[`snapshots: -col-end-1 1`] = `
+{
+  "gridColumnEnd": "-1",
+}
+`;
+
+exports[`snapshots: -col-end-2 1`] = `
+{
+  "gridColumnEnd": "-2",
+}
+`;
+
+exports[`snapshots: -col-end-3 1`] = `
+{
+  "gridColumnEnd": "-3",
+}
+`;
+
+exports[`snapshots: -col-end-4 1`] = `
+{
+  "gridColumnEnd": "-4",
+}
+`;
+
+exports[`snapshots: -col-end-5 1`] = `
+{
+  "gridColumnEnd": "-5",
+}
+`;
+
+exports[`snapshots: -col-end-6 1`] = `
+{
+  "gridColumnEnd": "-6",
+}
+`;
+
+exports[`snapshots: -col-end-7 1`] = `
+{
+  "gridColumnEnd": "-7",
+}
+`;
+
+exports[`snapshots: -col-end-8 1`] = `
+{
+  "gridColumnEnd": "-8",
+}
+`;
+
+exports[`snapshots: -col-end-9 1`] = `
+{
+  "gridColumnEnd": "-9",
+}
+`;
+
+exports[`snapshots: -col-end-10 1`] = `
+{
+  "gridColumnEnd": "-10",
+}
+`;
+
+exports[`snapshots: -col-end-11 1`] = `
+{
+  "gridColumnEnd": "-11",
+}
+`;
+
+exports[`snapshots: -col-end-12 1`] = `
+{
+  "gridColumnEnd": "-12",
+}
+`;
+
+exports[`snapshots: -col-end-13 1`] = `
+{
+  "gridColumnEnd": "-13",
+}
+`;
+
+exports[`snapshots: -col-start-1 1`] = `
+{
+  "gridColumnStart": "-1",
+}
+`;
+
+exports[`snapshots: -col-start-2 1`] = `
+{
+  "gridColumnStart": "-2",
+}
+`;
+
+exports[`snapshots: -col-start-3 1`] = `
+{
+  "gridColumnStart": "-3",
+}
+`;
+
+exports[`snapshots: -col-start-4 1`] = `
+{
+  "gridColumnStart": "-4",
+}
+`;
+
+exports[`snapshots: -col-start-5 1`] = `
+{
+  "gridColumnStart": "-5",
+}
+`;
+
+exports[`snapshots: -col-start-6 1`] = `
+{
+  "gridColumnStart": "-6",
+}
+`;
+
+exports[`snapshots: -col-start-7 1`] = `
+{
+  "gridColumnStart": "-7",
+}
+`;
+
+exports[`snapshots: -col-start-8 1`] = `
+{
+  "gridColumnStart": "-8",
+}
+`;
+
+exports[`snapshots: -col-start-9 1`] = `
+{
+  "gridColumnStart": "-9",
+}
+`;
+
+exports[`snapshots: -col-start-10 1`] = `
+{
+  "gridColumnStart": "-10",
+}
+`;
+
+exports[`snapshots: -col-start-11 1`] = `
+{
+  "gridColumnStart": "-11",
+}
+`;
+
+exports[`snapshots: -col-start-12 1`] = `
+{
+  "gridColumnStart": "-12",
+}
+`;
+
+exports[`snapshots: -col-start-13 1`] = `
+{
+  "gridColumnStart": "-13",
+}
+`;
+
 exports[`snapshots: -end-0 1`] = `
 {
   "insetInlineEnd": "-0px",
@@ -4444,6 +4600,162 @@ exports[`snapshots: -rotate-180 1`] = `
   "--tw-translate-x": "initial",
   "--tw-translate-y": "initial",
   "transform": "var(--tw-transfrom-translate, translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
+}
+`;
+
+exports[`snapshots: -row-end-1 1`] = `
+{
+  "gridRowEnd": "-1",
+}
+`;
+
+exports[`snapshots: -row-end-2 1`] = `
+{
+  "gridRowEnd": "-2",
+}
+`;
+
+exports[`snapshots: -row-end-3 1`] = `
+{
+  "gridRowEnd": "-3",
+}
+`;
+
+exports[`snapshots: -row-end-4 1`] = `
+{
+  "gridRowEnd": "-4",
+}
+`;
+
+exports[`snapshots: -row-end-5 1`] = `
+{
+  "gridRowEnd": "-5",
+}
+`;
+
+exports[`snapshots: -row-end-6 1`] = `
+{
+  "gridRowEnd": "-6",
+}
+`;
+
+exports[`snapshots: -row-end-7 1`] = `
+{
+  "gridRowEnd": "-7",
+}
+`;
+
+exports[`snapshots: -row-end-8 1`] = `
+{
+  "gridRowEnd": "-8",
+}
+`;
+
+exports[`snapshots: -row-end-9 1`] = `
+{
+  "gridRowEnd": "-9",
+}
+`;
+
+exports[`snapshots: -row-end-10 1`] = `
+{
+  "gridRowEnd": "-10",
+}
+`;
+
+exports[`snapshots: -row-end-11 1`] = `
+{
+  "gridRowEnd": "-11",
+}
+`;
+
+exports[`snapshots: -row-end-12 1`] = `
+{
+  "gridRowEnd": "-12",
+}
+`;
+
+exports[`snapshots: -row-end-13 1`] = `
+{
+  "gridRowEnd": "-13",
+}
+`;
+
+exports[`snapshots: -row-start-1 1`] = `
+{
+  "gridRowStart": "-1",
+}
+`;
+
+exports[`snapshots: -row-start-2 1`] = `
+{
+  "gridRowStart": "-2",
+}
+`;
+
+exports[`snapshots: -row-start-3 1`] = `
+{
+  "gridRowStart": "-3",
+}
+`;
+
+exports[`snapshots: -row-start-4 1`] = `
+{
+  "gridRowStart": "-4",
+}
+`;
+
+exports[`snapshots: -row-start-5 1`] = `
+{
+  "gridRowStart": "-5",
+}
+`;
+
+exports[`snapshots: -row-start-6 1`] = `
+{
+  "gridRowStart": "-6",
+}
+`;
+
+exports[`snapshots: -row-start-7 1`] = `
+{
+  "gridRowStart": "-7",
+}
+`;
+
+exports[`snapshots: -row-start-8 1`] = `
+{
+  "gridRowStart": "-8",
+}
+`;
+
+exports[`snapshots: -row-start-9 1`] = `
+{
+  "gridRowStart": "-9",
+}
+`;
+
+exports[`snapshots: -row-start-10 1`] = `
+{
+  "gridRowStart": "-10",
+}
+`;
+
+exports[`snapshots: -row-start-11 1`] = `
+{
+  "gridRowStart": "-11",
+}
+`;
+
+exports[`snapshots: -row-start-12 1`] = `
+{
+  "gridRowStart": "-12",
+}
+`;
+
+exports[`snapshots: -row-start-13 1`] = `
+{
+  "gridRowStart": "-13",
 }
 `;
 
