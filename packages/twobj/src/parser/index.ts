@@ -1,5 +1,6 @@
 export * from "./angle"
 export * from "./charCode"
+export * from "./color"
 export * from "./css"
 export * from "./length"
 export * from "./nodes"

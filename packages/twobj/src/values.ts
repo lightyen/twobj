@@ -343,8 +343,12 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 
 	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
 		const color = parser.parseColor(value)
-		const canAlpha = color != undefined && parser.isOpacityFunction(color.fn)
-
+		const canAlpha = color != undefined && parser.isColorFunction(color.fn)
+		if (opacity == undefined) {
+			if (color?.kind === "color") {
+				opacity = color.opacity
+			}
+		}
 		if (opacity == undefined) {
 			if (canAlpha) {
 				return value
@@ -352,7 +356,7 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 			if (unambiguous) {
 				return value
 			}
-			if (value === "transparent" || value === "currentColor" || value === "none") {
+			if (parser.isColorKeyword(value)) {
 				return value
 			}
 			return undefined
@@ -368,7 +372,10 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 		}
 
 		if (color.params.every(v => typeof v === "string")) {
-			return color.fn + "(" + color.params.slice(0, 3).join(" ") + opacityValue + ")"
+			if (color.fn === "color") {
+				return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
+			}
+			return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
 		}
 
 		if (color.params.length === 1 && parser.isParamObject(color.params[0]) && color.params[0].fn === "var") {
@@ -377,10 +384,9 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 
 		return forceRGB(value, opacityValue)
 
-		// prefer sRGB
 		function forceRGB(value: string, opacityValue?: string) {
 			const result = parser.unwrapCssFunction(value)
-			if (result && parser.isOpacityFunction(result.fn)) {
+			if (result && parser.isColorFunction(result.fn)) {
 				return "rgb(" + result.params + opacityValue + ")"
 			}
 			if (opacityValue == undefined) {

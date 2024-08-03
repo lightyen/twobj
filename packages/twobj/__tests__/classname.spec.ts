@@ -45,7 +45,7 @@ test("stroke", async () => {
 	expect(tw`stroke-[#121029]`).toEqual({ stroke: "#121029" })
 	expect(tw`stroke-none`).toEqual({ stroke: "none" })
 	expect(tw`stroke-[rgb(209 218 229 / 0.5)]`).toEqual({ stroke: "rgb(209 218 229 / 0.5)" })
-	expect(tw`stroke-[rgba(209, 218, 229, 0.5)]`).toEqual({ stroke: "rgba(209, 218, 229, 0.5)" })
+	expect(tw`stroke-[rgba(209, 218, 229, 0.5)]`).toEqual({ stroke: "rgba(209 218 229 / 0.5)" })
 })
 
 test("backgroundColor", async () => {
@@ -53,6 +53,7 @@ test("backgroundColor", async () => {
 	expect(tw`bg-[#444]`).toEqual({ backgroundColor: "#444" })
 	expect(tw`bg-black/31`).toEqual({ backgroundColor: "rgb(0 0 0 / 0.31)" })
 	expect(tw`bg-[#444]/31`).toEqual({ backgroundColor: "rgb(68 68 68 / 0.31)" })
+	expect(tw`bg-[color(rec2020 1 1 0)]`).toEqual({ backgroundColor: "color(rec2020 1 1 0)" })
 	expect(tw`bg-[rgb(var(--color))]`).toEqual({ backgroundColor: "rgb(var(--color))" })
 	expect(tw`bg-[rgb(var(--color))]/68`).toEqual({ backgroundColor: "rgb(var(--color) / 0.68)" })
 	expect(tw`bg-[var(--color)]`).toEqual({})

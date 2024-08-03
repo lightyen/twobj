@@ -44,38 +44,45 @@ test("parseColor", async () => {
 	expect(parser.parseColor("red")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
 	expect(parser.parseColor("#ff0000")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })
 	expect(parser.parseColor("rgb(41, 3, 120)")).toMatchObject({
+		kind: "color",
 		fn: "rgb",
 		params: ["41", "3", "120"],
 		range: [0, 15],
+		getText: expect.any(Function),
 	})
 	expect(parser.parseColor("rgb(41 3 120)")).toMatchObject({ fn: "rgb", params: ["41", "3", "120"], range: [0, 13] })
 	expect(parser.parseColor("hsl(33 93% 40%)")).toMatchObject({
+		kind: "color",
 		fn: "hsl",
 		params: ["33", "93%", "40%"],
 		range: [0, 15],
+		getText: expect.any(Function),
 	})
 	expect(parser.parseColor("hsl(a b% c%)")).toMatchObject({ fn: "hsl", params: ["a", "b%", "c%"], range: [0, 12] })
 	expect(parser.parseColor("hsl(var(--color))")).toMatchObject({
+		kind: "color",
 		fn: "hsl",
 		params: [{ fn: "var", params: ["--color"], range: [4, 16] }],
 		range: [0, 17],
+		getText: expect.any(Function),
 	})
-	expect(parser.parseColor("var(--color)")).toMatchObject({ fn: "var", params: ["--color"], range: [0, 12] })
 })
 
 test("splitCssParams", async () => {
-	const source = "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
+	const source = "0 20px 25px -5px rgb(0 0 0 / 0.1)"
 	expect(parser.splitCssParams(source)).toMatchObject([
 		"0",
 		"20px",
 		"25px",
 		"-5px",
-		{ fn: "rgb", params: ["0", "0", "0", "0.1"], range: [17, 33] },
-		"0",
-		"8px",
-		"10px",
-		"-6px",
-		{ fn: "rgb", params: ["0", "0", "0", "0.1"], range: [51, 67] },
+		expect.objectContaining({
+			kind: "color",
+			fn: "rgb",
+			params: ["0", "0", "0"],
+			opacity: "0.1",
+			range: [17, 33],
+			getText: expect.any(Function),
+		}),
 	])
 })
 

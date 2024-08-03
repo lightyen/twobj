@@ -110,24 +110,24 @@ test("shadow value", async () => {
 		parseBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 , 0.1), unknown, 0 4px 6px -4px rgb(0 0 0 / 0.2)"),
 	).toMatchObject([
 		{
-			color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [17, 35] },
+			color: { kind: "color", fn: "rgb", params: ["0", "0", "0"], opacity: "0.1", range: [17, 35] },
 			value: "0 10px 15px -3px var(--tw-shadow-color, rgb(0, 0 ,0 , 0.1))",
 		},
 		"unknown",
 		{
-			color: { fn: "rgb", params: ["0", "0", "0", "0.2"], range: [61, 77] },
+			color: { kind: "color", fn: "rgb", params: ["0", "0", "0"], opacity: "0.2", range: [61, 77] },
 			value: "0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.2))",
 		},
 	])
 	expect(parseBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 , 0.1),, 0 4px 6px -4px rgb(0 0 0 / 0.1)")).toMatchObject(
 		[
 			{
-				color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [17, 35] },
+				color: { kind: "color", fn: "rgb", params: ["0", "0", "0"], opacity: "0.1", range: [17, 35] },
 				value: "0 10px 15px -3px var(--tw-shadow-color, rgb(0, 0 ,0 , 0.1))",
 			},
 			"",
 			{
-				color: { fn: "rgb", params: ["0", "0", "0", "0.1"], range: [53, 69] },
+				color: { kind: "color", fn: "rgb", params: ["0", "0", "0"], opacity: "0.1", range: [53, 69] },
 				value: "0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.1))",
 			},
 		],

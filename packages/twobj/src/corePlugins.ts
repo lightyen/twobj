@@ -33,14 +33,14 @@ function withAlphaValue(value: Primitive | ColorValueFunc, opacityValue: string)
 	}
 	opacityValue = " / " + opacityValue
 	const color = parser.parseColor(String(value))
-	const canAlpha = color != undefined && parser.isOpacityFunction(color.fn)
+	const canAlpha = color != undefined && parser.isColorFunction(color.fn)
 	if (canAlpha) {
 		if (color.params.every(v => typeof v === "string")) {
-			return color.fn + "(" + color.params.slice(0, 3).join(" ") + opacityValue + ")"
+			return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
 		}
 	}
 	const result = parser.unwrapCssFunction(String(value))
-	if (result && parser.isOpacityFunction(result.fn)) {
+	if (result && parser.isColorFunction(result.fn)) {
 		return "rgb(" + result.params + opacityValue + ")"
 	}
 	return "rgb(" + String(value) + opacityValue + ")"
