@@ -22,8 +22,8 @@ interface CorePluginFeatures {
 	backgroundBlendMode: boolean
 	backgroundClip: boolean
 	backgroundColor: boolean
-	backgroundImage: boolean
 	backgroundGradient: boolean
+	backgroundImage: boolean
 	backgroundOrigin: boolean
 	backgroundPosition: boolean
 	backgroundRepeat: boolean
@@ -32,8 +32,8 @@ interface CorePluginFeatures {
 	borderCollapse: boolean
 	borderColor: boolean
 	borderRadius: boolean
-	borderStyle: boolean
 	borderSpacing: boolean
+	borderStyle: boolean
 	borderWidth: boolean
 	boxDecorationBreak: boolean
 	boxShadow: boolean
@@ -71,6 +71,7 @@ interface CorePluginFeatures {
 	fontStyle: boolean
 	fontVariantNumeric: boolean
 	fontWeight: boolean
+	forcedColorAdjust: boolean
 	gap: boolean
 	gradientColorStops: boolean
 	grayscale: boolean
@@ -97,8 +98,8 @@ interface CorePluginFeatures {
 	letterSpacing: boolean
 	lineClamp: boolean
 	lineHeight: boolean
-	listStylePosition: boolean
 	listStyleImage: boolean
+	listStylePosition: boolean
 	listStyleType: boolean
 	margin: boolean
 	maxHeight: boolean
@@ -138,6 +139,7 @@ interface CorePluginFeatures {
 	scrollSnapStop: boolean
 	scrollSnapType: boolean
 	sepia: boolean
+	size: boolean
 	skew: boolean
 	space: boolean
 	stroke: boolean
@@ -153,6 +155,7 @@ interface CorePluginFeatures {
 	textOverflow: boolean
 	textTransform: boolean
 	textUnderlineOffset: boolean
+	textWrap: boolean
 	touchAction: boolean
 	transform: boolean
 	transformOrigin: boolean
@@ -1144,6 +1147,12 @@ interface Theme {
 		"span-4": "span 4 / span 4"
 		"span-5": "span 5 / span 5"
 		"span-6": "span 6 / span 6"
+		"span-7": "span 7 / span 7"
+		"span-8": "span 8 / span 8"
+		"span-9": "span 9 / span 9"
+		"span-10": "span 10 / span 10"
+		"span-11": "span 11 / span 11"
+		"span-12": "span 12 / span 12"
 		"span-full": "1 / -1"
 	}>
 	/** Utilities for controlling how elements are sized and placed across grid rows.
@@ -1159,6 +1168,12 @@ interface Theme {
 		5: "5"
 		6: "6"
 		7: "7"
+		8: "8"
+		9: "9"
+		10: "10"
+		11: "11"
+		12: "12"
+		13: "13"
 	}>
 	/** Utilities for controlling how elements are sized and placed across grid rows.
 	 *
@@ -1173,6 +1188,12 @@ interface Theme {
 		5: "5"
 		6: "6"
 		7: "7"
+		8: "8"
+		9: "9"
+		10: "10"
+		11: "11"
+		12: "12"
+		13: "13"
 	}>
 	/** Utilities for specifying the columns in a grid layout.
 	 *
@@ -1205,6 +1226,12 @@ interface Theme {
 		4: "repeat(4, minmax(0, 1fr))"
 		5: "repeat(5, minmax(0, 1fr))"
 		6: "repeat(6, minmax(0, 1fr))"
+		7: "repeat(7, minmax(0, 1fr))"
+		8: "repeat(8, minmax(0, 1fr))"
+		9: "repeat(9, minmax(0, 1fr))"
+		10: "repeat(10, minmax(0, 1fr))"
+		11: "repeat(11, minmax(0, 1fr))"
+		12: "repeat(12, minmax(0, 1fr))"
 	}>
 	/** Utilities for setting the height of an element.
 	 *
@@ -1370,49 +1397,49 @@ interface Theme {
 	 *
 	 * {@link https://tailwindcss.com/docs/max-width Reference}
 	 */
-	maxWidth?: CoreThemeObject<{
-		none: "none"
-		0: "0rem"
-		xs: "20rem"
-		sm: "24rem"
-		md: "28rem"
-		lg: "32rem"
-		xl: "36rem"
-		"2xl": "42rem"
-		"3xl": "48rem"
-		"4xl": "56rem"
-		"5xl": "64rem"
-		"6xl": "72rem"
-		"7xl": "80rem"
-		full: "100%"
-		min: "min-content"
-		max: "max-content"
-		fit: "fit-content"
-		prose: "65ch"
-	}>
+	maxWidth?: Theme["spacing"] &
+		CoreThemeObject<{
+			none: "none"
+			xs: "20rem"
+			sm: "24rem"
+			md: "28rem"
+			lg: "32rem"
+			xl: "36rem"
+			"2xl": "42rem"
+			"3xl": "48rem"
+			"4xl": "56rem"
+			"5xl": "64rem"
+			"6xl": "72rem"
+			"7xl": "80rem"
+			full: "100%"
+			min: "min-content"
+			max: "max-content"
+			fit: "fit-content"
+			prose: "65ch"
+		}>
 	/** Utilities for setting the minimum height of an element.
 	 *
 	 * {@link https://tailwindcss.com/docs/min-height Reference}
 	 */
-	minHeight?: CoreThemeObject<{
-		0: "0px"
-		full: "100%"
-		screen: "100vh"
-		min: "min-content"
-		max: "max-content"
-		fit: "fit-content"
-	}>
+	minHeight?: Theme["spacing"] &
+		CoreThemeObject<{
+			full: "100%"
+			screen: "100vh"
+			min: "min-content"
+			max: "max-content"
+			fit: "fit-content"
+		}>
 	/** Utilities for setting the minimum width of an element.
 	 *
 	 * {@link https://tailwindcss.com/docs/min-width Reference}
 	 */
-	minWidth?: CoreThemeObject<{
-		0: "0px"
-		full: "100%"
-		min: "min-content"
-		max: "max-content"
-		fit: "fit-content"
-	}>
+	minWidth?: Theme["spacing"] &
+		CoreThemeObject<{
+			full: "100%"
+			min: "min-content"
+			max: "max-content"
+			fit: "fit-content"
+		}>
 	/** Utilities for controlling how a replaced element's content should be positioned within its container.
 	 *
 	 * {@link https://tailwindcss.com/docs/object-position Reference}
@@ -1436,15 +1463,21 @@ interface Theme {
 		0: "0"
 		5: "0.05"
 		10: "0.1"
+		15: "0.15"
 		20: "0.2"
 		25: "0.25"
 		30: "0.3"
+		35: "0.35"
 		40: "0.4"
+		45: "0.45"
 		50: "0.5"
+		55: "0.55"
 		60: "0.6"
+		65: "0.65"
 		70: "0.7"
 		75: "0.75"
 		80: "0.8"
+		85: "0.85"
 		90: "0.9"
 		95: "0.95"
 		100: "1"
@@ -1778,6 +1811,39 @@ interface Theme {
 			"3/4": "75%"
 			full: "100%"
 		}>
+	size?: Theme["spacing"] &
+		CoreThemeObject<{
+			"1/2": "50%"
+			"1/3": "33.333333%"
+			"2/3": "66.666667%"
+			"1/4": "25%"
+			"2/4": "50%"
+			"3/4": "75%"
+			"1/5": "20%"
+			"2/5": "40%"
+			"3/5": "60%"
+			"4/5": "80%"
+			"1/6": "16.666667%"
+			"2/6": "33.333333%"
+			"3/6": "50%"
+			"4/6": "66.666667%"
+			"5/6": "83.333333%"
+			"1/12": "8.333333%"
+			"2/12": "16.666667%"
+			"3/12": "25%"
+			"4/12": "33.333333%"
+			"5/12": "41.666667%"
+			"6/12": "50%"
+			"7/12": "58.333333%"
+			"8/12": "66.666667%"
+			"9/12": "75%"
+			"10/12": "83.333333%"
+			"11/12": "91.666667%"
+			full: "100%"
+			min: "min-content"
+			max: "max-content"
+			fit: "fit-content"
+		}>
 	/** Utilities for setting the width of an element.
 	 *
 	 * {@link https://tailwindcss.com/docs/width Reference}
@@ -1918,6 +1984,7 @@ interface ResolvedTheme extends ResolvedCustomTheme {
 	gridRowEnd: ResolvedThemeObject
 	gridTemplateColumns: ResolvedThemeObject
 	gridTemplateRows: ResolvedThemeObject
+	size: ResolvedThemeObject
 	height: ResolvedThemeObject
 	inset: ResolvedThemeObject
 	keyframes: ResolvedThemeObject<CSSProperties> & ConfigObject
@@ -2108,11 +2175,18 @@ interface ConfigJS extends StrictConfigJS, ConfigObject {}
 interface PresetFunction {
 	(): ConfigJS
 }
+type DarkModeTupleA = [mode: "class", selector?: string]
+type DarkModeTupleB = [mode: "selector", selector?: string]
+type DarkModeTupleC = [
+	mode: "variant",
+	selector?: string | (() => string | string[]) | Array<string | (() => string | string[])>,
+]
+type DarkModeTuple = DarkModeTupleA | DarkModeTupleB | DarkModeTupleC
 interface StrictConfigJS {
 	presets?: (ConfigJS | PresetFunction)[]
 	theme?: Theme & CustomTheme & ConfigObject
 	plugins?: Plugin[]
-	darkMode?: "media" | "class" | ["class", string]
+	darkMode?: "media" | "class" | "selector" | DarkModeTuple
 	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures> | boolean
 	separator?: string
 	prefix?: string
@@ -2124,7 +2198,7 @@ interface StrictResolvedConfigJS {
 	separator: string
 	prefix: string
 	important: boolean
-	darkMode: "media" | "class" | ["class", string]
+	darkMode: "media" | "class" | "selector" | DarkModeTuple
 	plugins: (UserPluginObject | UserPluginFunction | UserPluginFunctionWithOption)[]
 	theme: ResolvedTheme & ConfigObject
 }
