@@ -9,11 +9,20 @@ export interface PresetFunction {
 	(): ConfigJS
 }
 
+type DarkModeTupleA = [mode: "class", selector?: string]
+type DarkModeTupleB = [mode: "selector", selector?: string]
+type DarkModeTupleC = [
+	mode: "variant",
+	selector?: string | (() => string | string[]) | Array<string | (() => string | string[])>,
+]
+
+type DarkModeTuple = DarkModeTupleA | DarkModeTupleB | DarkModeTupleC
+
 export interface StrictConfigJS {
 	presets?: (ConfigJS | PresetFunction)[]
 	theme?: Theme & CustomTheme & ConfigObject
 	plugins?: Plugin[]
-	darkMode?: "media" | "class" | ["class", string]
+	darkMode?: "media" | "class" | "selector" | DarkModeTuple
 	corePlugins?: Partial<CorePluginFeatures> | Array<keyof CorePluginFeatures> | boolean
 	separator?: string
 	prefix?: string
@@ -27,7 +36,7 @@ export interface StrictResolvedConfigJS {
 	separator: string
 	prefix: string
 	important: boolean
-	darkMode: "media" | "class" | ["class", string]
+	darkMode: "media" | "class" | "selector" | DarkModeTuple
 	plugins: (UserPluginObject | UserPluginFunction | UserPluginFunctionWithOption)[]
 	theme: ResolvedTheme & ConfigObject
 }

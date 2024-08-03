@@ -2334,20 +2334,45 @@ type VariantPlugins = {
 
 export const variantPlugins: VariantPlugins = {
 	darkVariants: plugin("darkVariants", ({ configObject, addVariant }) => {
-		if (configObject.darkMode === "class") {
-			addVariant("dark", ":is(.dark &)")
+		const { darkMode } = configObject
+		if (darkMode === "media") {
+			addVariant("dark", "@media (prefers-color-scheme: dark)")
 			return
 		}
 
-		if (Array.isArray(configObject.darkMode)) {
-			const [mode, className = ".dark"] = configObject.darkMode
-			if (mode === "class") {
-				addVariant("dark", `:is(${className} &)`)
-				return
+		if (typeof darkMode === "string") {
+			const selector = ".dark"
+			switch (darkMode) {
+				case "class":
+					addVariant("dark", `:is(${selector} &)`)
+					return
+				case "selector":
+					addVariant("dark", `&:where(${selector}, ${selector} *)`)
+					return
+				default:
+					return
 			}
 		}
 
-		addVariant("dark", "@media (prefers-color-scheme: dark)")
+		switch (darkMode[0]) {
+			case "class": {
+				const selector = darkMode[1] ?? ".dark"
+				addVariant("dark", `:is(${selector} &)`)
+				return
+			}
+			case "selector": {
+				const selector = darkMode[1] ?? ".dark"
+				addVariant("dark", `&:where(${selector}, ${selector} *)`)
+				return
+			}
+			case "variant": {
+				const selector = darkMode[1] ?? ".dark"
+				addVariant("dark", selector)
+				return
+			}
+			default:
+				return
+		}
 	}),
 
 	/**
