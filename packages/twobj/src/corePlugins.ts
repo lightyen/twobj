@@ -336,6 +336,7 @@ export const classPlugins: ClassPlugins = {
 	aspectRatio: createUtilityPlugin("aspectRatio", [["aspect", "aspectRatio"]], theme => ({
 		values: theme.aspectRatio,
 	})),
+	size: createUtilityPlugin("size", [["size", ["width", "height"]]], theme => ({ values: theme.size })),
 	height: createUtilityPlugin("height", [["h", "height"]], theme => ({ values: theme.height })),
 	maxHeight: createUtilityPlugin("maxHeight", [["max-h", "maxHeight"]], theme => ({ values: theme.maxHeight })),
 	minHeight: createUtilityPlugin("minHeight", [["min-h", "minHeight"]], theme => ({ values: theme.minHeight })),
@@ -841,7 +842,6 @@ export const classPlugins: ClassPlugins = {
 			values: theme.content,
 		}),
 	),
-
 	fontSize: plugin("fontSize", ({ matchUtilities, themeObject }) => {
 		interface Template {
 			fontSize?: CSSValue
@@ -1740,6 +1740,7 @@ export const classPlugins: ClassPlugins = {
 	appearance: plugin("appearance", ({ addUtilities }) => {
 		addUtilities({
 			".appearance-none": { appearance: "none" },
+			".appearance-auto": { appearance: "auto" },
 		})
 	}),
 	display: plugin("display", ({ addUtilities }) => {
@@ -1936,14 +1937,6 @@ export const classPlugins: ClassPlugins = {
 			".break-inside-avoid-column": { breakInside: "avoid-column" },
 		})
 	}),
-	clear: plugin("clear", ({ addUtilities }) => {
-		addUtilities({
-			".clear-left": { clear: "left" },
-			".clear-right": { clear: "right" },
-			".clear-both": { clear: "both" },
-			".clear-none": { clear: "none" },
-		})
-	}),
 	divideStyle: plugin("divideStyle", ({ addUtilities }) => {
 		addUtilities({
 			".divide-solid > :not([hidden]) ~ :not([hidden])": { borderStyle: "solid" },
@@ -1970,9 +1963,21 @@ export const classPlugins: ClassPlugins = {
 	}),
 	float: plugin("float", ({ addUtilities }) => {
 		addUtilities({
+			".float-start": { float: "inline-start" },
+			".float-end": { float: "inline-end" },
 			".float-right": { float: "right" },
 			".float-left": { float: "left" },
 			".float-none": { float: "none" },
+		})
+	}),
+	clear: plugin("clear", ({ addUtilities }) => {
+		addUtilities({
+			".clear-start": { clear: "inline-start" },
+			".clear-end": { clear: "inline-end" },
+			".clear-left": { clear: "left" },
+			".clear-right": { clear: "right" },
+			".clear-both": { clear: "both" },
+			".clear-none": { clear: "none" },
 		})
 	}),
 	fontSmoothing: plugin("fontSmoothing", ({ addUtilities }) => {
@@ -2299,12 +2304,26 @@ export const classPlugins: ClassPlugins = {
 			".whitespace-break-spaces": { whiteSpace: "break-spaces" },
 		})
 	}),
+	textWrap: plugin("textWrap", ({ addUtilities }) => {
+		addUtilities({
+			".text-wrap": { "text-wrap": "wrap" },
+			".text-nowrap": { "text-wrap": "nowrap" },
+			".text-balance": { "text-wrap": "balance" },
+			".text-pretty": { "text-wrap": "pretty" },
+		})
+	}),
 	wordBreak: plugin("wordBreak", ({ addUtilities }) => {
 		addUtilities({
 			".break-normal": { overflowWrap: "normal", wordBreak: "normal" },
 			".break-words": { overflowWrap: "break-word" },
 			".break-all": { wordBreak: "break-all" },
 			".break-keep": { wordBreak: "keep-all" },
+		})
+	}),
+	forcedColorAdjust: plugin("forcedColorAdjust", ({ addUtilities }) => {
+		addUtilities({
+			".forced-color-adjust-auto": { "forced-color-adjust": "auto" },
+			".forced-color-adjust-none": { "forced-color-adjust": "none" },
 		})
 	}),
 }
@@ -2518,6 +2537,9 @@ export const variantPlugins: VariantPlugins = {
 		addVariant("contrast-more", "@media (prefers-contrast: more)")
 		addVariant("contrast-less", "@media (prefers-contrast: less)")
 	}),
+	forcedColorsVariants: plugin("forcedColorsVariants", ({ addVariant }) => {
+		addVariant("forced-colors", "@media (forced-colors: active)")
+	}),
 	supportsVariants: plugin("supportsVariants", ({ matchVariant, themeObject }) => {
 		matchVariant(
 			"supports",
@@ -2595,6 +2617,41 @@ export const variantPlugins: VariantPlugins = {
 			},
 			{ values: themeObject.aria },
 		)
+	}),
+	hasVariants: plugin("hasVariants", ({ matchVariant }) => {
+		matchVariant("has", value => {
+			// string only
+			if (typeof value !== "string") {
+				value = ""
+			}
+			return `&:has(${value})`
+		})
+		matchVariant("group-has", (value, { modifier, wrapped }) => {
+			// string only
+			if (typeof value !== "string") {
+				value = ""
+			}
+			if (modifier) {
+				if (wrapped) {
+					return `.group\\/[${modifier}]:has(${value}) &`
+				}
+				return `.group\\/${modifier}:has(${value}) &`
+			}
+			return `.group:has(${value}) &`
+		})
+		matchVariant("peer-has", (value, { modifier, wrapped }) => {
+			// string only
+			if (typeof value !== "string") {
+				value = ""
+			}
+			if (modifier) {
+				if (wrapped) {
+					return `.peer\\/[${modifier}]:has(${value}) ~ &`
+				}
+				return `.peer\\/${modifier}:has(${value}) ~ &`
+			}
+			return `.peer:has(${value}) ~ &`
+		})
 	}),
 	dataVariants: plugin("dataVariants", ({ matchVariant, themeObject }) => {
 		matchVariant(

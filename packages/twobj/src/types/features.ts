@@ -22,8 +22,8 @@ export interface CorePluginFeatures {
 	backgroundBlendMode: boolean
 	backgroundClip: boolean
 	backgroundColor: boolean
-	backgroundImage: boolean
 	backgroundGradient: boolean
+	backgroundImage: boolean
 	backgroundOrigin: boolean
 	backgroundPosition: boolean
 	backgroundRepeat: boolean
@@ -32,8 +32,8 @@ export interface CorePluginFeatures {
 	borderCollapse: boolean
 	borderColor: boolean
 	borderRadius: boolean
-	borderStyle: boolean
 	borderSpacing: boolean
+	borderStyle: boolean
 	borderWidth: boolean
 	boxDecorationBreak: boolean
 	boxShadow: boolean
@@ -71,6 +71,7 @@ export interface CorePluginFeatures {
 	fontStyle: boolean
 	fontVariantNumeric: boolean
 	fontWeight: boolean
+	forcedColorAdjust: boolean
 	gap: boolean
 	gradientColorStops: boolean
 	grayscale: boolean
@@ -97,8 +98,8 @@ export interface CorePluginFeatures {
 	letterSpacing: boolean
 	lineClamp: boolean
 	lineHeight: boolean
-	listStylePosition: boolean
 	listStyleImage: boolean
+	listStylePosition: boolean
 	listStyleType: boolean
 	margin: boolean
 	maxHeight: boolean
@@ -138,6 +139,7 @@ export interface CorePluginFeatures {
 	scrollSnapStop: boolean
 	scrollSnapType: boolean
 	sepia: boolean
+	size: boolean
 	skew: boolean
 	space: boolean
 	stroke: boolean
@@ -153,6 +155,7 @@ export interface CorePluginFeatures {
 	textOverflow: boolean
 	textTransform: boolean
 	textUnderlineOffset: boolean
+	textWrap: boolean
 	touchAction: boolean
 	transform: boolean
 	transformOrigin: boolean
