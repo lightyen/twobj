@@ -44823,6 +44823,12 @@ exports[`snapshots: mix-blend-overlay 1`] = `
 }
 `;
 
+exports[`snapshots: mix-blend-plus-darker 1`] = `
+{
+  "mixBlendMode": "plus-darker",
+}
+`;
+
 exports[`snapshots: mix-blend-plus-lighter 1`] = `
 {
   "mixBlendMode": "plus-lighter",

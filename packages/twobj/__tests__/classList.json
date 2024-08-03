@@ -6784,6 +6784,7 @@
   "mix-blend-multiply",
   "mix-blend-normal",
   "mix-blend-overlay",
+  "mix-blend-plus-darker",
   "mix-blend-plus-lighter",
   "mix-blend-saturation",
   "mix-blend-screen",

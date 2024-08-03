@@ -2089,6 +2089,7 @@ export const classPlugins: ClassPlugins = {
 			".mix-blend-saturation": { mixBlendMode: "saturation" },
 			".mix-blend-color": { mixBlendMode: "color" },
 			".mix-blend-luminosity": { mixBlendMode: "luminosity" },
+			".mix-blend-plus-darker": { mixBlendMode: "plus-darker" },
 			".mix-blend-plus-lighter": { mixBlendMode: "plus-lighter" },
 		})
 	}),
