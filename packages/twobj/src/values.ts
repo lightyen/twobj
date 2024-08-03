@@ -424,7 +424,7 @@ const lineWidth: ValueTypeSpec<string | number | null | undefined> = (function (
 })()
 
 const absoluteSize: ValueTypeSpec<string | number | null | undefined> = (function () {
-	const keywords = ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large"]
+	const keywords = ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]
 	return {
 		type: "absolute-size",
 		isTag(tag) {
