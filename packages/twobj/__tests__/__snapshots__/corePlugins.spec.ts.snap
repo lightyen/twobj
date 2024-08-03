@@ -68,19 +68,21 @@ exports[`preflight 1`] = `
   "button,[role="button"]": {
     "cursor": "pointer",
   },
-  "button,[type='button'],[type='reset'],[type='submit']": {
-    "WebkitAppearance": "button",
-    "backgroundColor": "transparent",
-    "backgroundImage": "none",
-  },
   "button,input,optgroup,select,textarea": {
     "color": "inherit",
     "fontFamily": "inherit",
+    "fontFeatureSettings": "inherit",
     "fontSize": "100%",
+    "fontVariationSettings": "inherit",
     "fontWeight": "inherit",
     "lineHeight": "inherit",
     "margin": "0",
     "padding": "0",
+  },
+  "button,input:where([type='button']),input:where([type='reset']),input:where([type='submit'])": {
+    "WebkitAppearance": "button",
+    "backgroundColor": "transparent",
+    "backgroundImage": "none",
   },
   "button,select": {
     "textTransform": "none",

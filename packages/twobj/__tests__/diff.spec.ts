@@ -12,11 +12,11 @@ import { isCSSValue } from "../src/util"
 import { context } from "./context"
 
 test("diff tailwindcss", async () => {
-	const ctx = createContext(resolveConfig({} as Config))
+	const tailwindContext = createContext(resolveConfig({} as Config))
 
 	/** classnames */
 
-	const tailwind = ctx.getClassList().filter(classname => {
+	const tailwind: string[] = tailwindContext.getClassList().filter(classname => {
 		// Deprecated, replace with 'grow'
 		if (/flex-grow(-\d+)?$/.test(classname)) {
 			return false
@@ -32,6 +32,11 @@ test("diff tailwindcss", async () => {
 			return false
 		}
 
+		// Not supported
+		if (/^contain-/.test(classname)) {
+			return false
+		}
+
 		switch (classname) {
 			case "overflow-ellipsis": // Deprecated, replace with 'text-ellipsis'
 			case "decoration-slice": // Deprecated, replace with 'box-decoration-slice'
@@ -42,9 +47,9 @@ test("diff tailwindcss", async () => {
 		return true
 	})
 
-	const twobjSet = new Set(context.getUtilities())
+	const libSet = new Set(context.getUtilities())
 	const tailwindSet = new Set(tailwind)
-	for (const name of twobjSet) {
+	for (const name of libSet) {
 		if (/^bg-gradient/.test(name)) {
 			continue
 		}
@@ -54,25 +59,29 @@ test("diff tailwindcss", async () => {
 		if (/^bg-gradient/.test(name as string)) {
 			continue
 		}
-		expect(twobjSet).toContain(name)
+		expect(libSet).toContain(name)
 	}
 
 	/** variants */
 
-	const s2 = new Set<string>()
-	ctx.getVariants().forEach(v => {
+	const tailwindVariants = new Set<string>()
+	tailwindContext.getVariants().forEach(v => {
 		if (v.isArbitrary) {
 			for (const value of v.values) {
-				s2.add(v.name + "-" + value)
+				tailwindVariants.add(v.name + "-" + value)
 			}
 		} else {
-			s2.add(v.name)
+			// Not supported
+			if (v.name === "*") {
+				return
+			}
+			tailwindVariants.add(v.name)
 		}
 	})
 
-	const s3 = context.getVariants()
-	for (const s of s2) {
-		expect(s3).toContain(s)
+	const libVariants = context.getVariants()
+	for (const s of tailwindVariants) {
+		expect(libVariants).toContain(s)
 	}
 
 	const colors = context.getColorUtilities()
@@ -157,7 +166,7 @@ test("diff tailwindcss", async () => {
 	}
 
 	function render(classname: string) {
-		const items = generateRules([classname], ctx).sort(([a], [b]) => {
+		const items = generateRules([classname], tailwindContext).sort(([a], [b]) => {
 			if (a < b) {
 				return -1
 			} else if (a > b) {
@@ -168,7 +177,7 @@ test("diff tailwindcss", async () => {
 		})
 
 		const root = postcss.root({ nodes: items.map(([, rule]) => rule) })
-		expandApplyAtRules(ctx)(root)
+		expandApplyAtRules(tailwindContext)(root)
 
 		root.walkAtRules("defaults", rule => {
 			rule.remove()
