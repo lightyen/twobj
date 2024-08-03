@@ -47,8 +47,9 @@ test("diff tailwindcss", async () => {
 		return true
 	})
 
-	const libSet = new Set(context.getUtilities())
+	const libSet = context.getUtilities()
 	const tailwindSet = new Set(tailwind)
+
 	for (const name of libSet) {
 		if (/^bg-gradient/.test(name)) {
 			continue
@@ -64,24 +65,32 @@ test("diff tailwindcss", async () => {
 
 	/** variants */
 
+	const libVariants = context.getVariants()
+	const libArbitraryVariants = context.getArbitraryVariants()
+
 	const tailwindVariants = new Set<string>()
+	const tailwindArbitraryVariants = new Set<string>()
+
 	tailwindContext.getVariants().forEach(v => {
-		if (v.isArbitrary) {
-			for (const value of v.values) {
-				tailwindVariants.add(v.name + "-" + value)
-			}
-		} else {
-			// Not supported
-			if (v.name === "*") {
-				return
-			}
-			tailwindVariants.add(v.name)
+		if (v.name === "*") {
+			return
 		}
+		if (!v.isArbitrary) {
+			tailwindVariants.add(v.name)
+			return
+		}
+		for (const value of v.values) {
+			tailwindVariants.add(v.name + "-" + value)
+		}
+		tailwindArbitraryVariants.add(v.name)
 	})
 
-	const libVariants = context.getVariants()
-	for (const s of tailwindVariants) {
-		expect(libVariants).toContain(s)
+	for (const v of tailwindVariants) {
+		expect(libVariants).toContain(v)
+	}
+
+	for (const v of tailwindArbitraryVariants) {
+		expect(libArbitraryVariants).toContain(v)
 	}
 
 	const colors = context.getColorUtilities()
