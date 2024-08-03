@@ -2462,7 +2462,7 @@ export const variantPlugins: VariantPlugins = {
 				if (fields.length !== 2) {
 					return ""
 				}
-				return `@media (min-width: ${fields[0]}) and (max-width: ${fields[1]})`
+				return `@media (min-width: ${fields[0].value}) and (max-width: ${fields[1].value})`
 			},
 			{ values },
 		)
