@@ -383,5 +383,5 @@ export const emotion: Plugin = ({ types: t, buildStyle }) => {
 	}
 }
 emotion.id = "emotion"
-emotion.lookup = ["@emotion/styled", "@emotion/react"]
-emotion.manifest = { cssProp: "@emotion/babel-plugin", styled: "@emotion/styled", className: "@emotion/react" }
+emotion.lookup = ["@emotion/styled", "@emotion/react", "@emotion/css"]
+emotion.manifest = { cssProp: "@emotion/babel-plugin", styled: "@emotion/styled", className: ["@emotion/react", "@emotion/css"] }

@@ -55,8 +55,12 @@ async function findThirdParty(): Promise<ThirdParty | undefined> {
 				}
 			})(),
 			(async () => {
-				if (className && (await isModule(className))) {
-					payload.className = className
+				if (className) {
+					for (const v of ([] as string[]).concat(className)) {
+						if (await isModule(v)) {
+							payload.className = v
+						}
+					}
 				}
 			})(),
 		])
