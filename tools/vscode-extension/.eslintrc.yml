@@ -31,13 +31,6 @@ rules:
   "@typescript-eslint/array-type":
     - off
   "@typescript-eslint/no-var-requires": warn
-  "@typescript-eslint/member-delimiter-style":
-    - error
-    - multiline:
-        delimiter: none
-      singleline:
-        delimiter: semi
-        requireLast: false
   "@typescript-eslint/explicit-module-boundary-types": off
 
 env:

@@ -718,6 +718,7 @@ function isLoose(state: TailwindLoader, label: string, decls: Map<string, string
 
 function isLooseProperty(prop: string) {
 	if (/\b(?:top|right|bottom|left)\b/.test(prop)) return true
+	if (/\b(?:width|height)\b/.test(prop)) return true
 	if (prop.startsWith("--")) return true
 	return false
 }

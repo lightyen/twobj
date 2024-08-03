@@ -5,7 +5,7 @@ import ForkTsCheckerPlugin from "fork-ts-checker-webpack-plugin"
 import path from "path"
 import TerserPlugin from "terser-webpack-plugin"
 import TsPathsResolvePlugin from "ts-paths-resolve-plugin"
-import { Compiler, Configuration, DefinePlugin, ExternalsPlugin, ProvidePlugin } from "webpack"
+import { Compiler, Configuration, DefinePlugin, ExternalsPlugin } from "webpack"
 
 class ExternalsVendorPlugin {
 	externals: Record<string, string>
@@ -91,9 +91,6 @@ const configExtension: Configuration = {
 		},
 	},
 	plugins: [
-		new ProvidePlugin({
-			process: "process/browser",
-		}),
 		new TsPathsResolvePlugin({ tsConfigPath: path.resolve(clientWorkspaceFolder, "tsconfig.json") }),
 		new ForkTsCheckerPlugin({
 			typescript: {

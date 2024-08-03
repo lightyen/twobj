@@ -49,7 +49,7 @@ function comment(node: Root): void {
 	return
 
 	function addComment(node: AtRule | Rule) {
-		if (node.nodes.every(n => n.type === "decl")) {
+		if (node.nodes && node.nodes.every(n => n.type === "decl")) {
 			node.prepend(postcss.comment({ text: "..." }))
 			return
 		}
@@ -135,7 +135,13 @@ export async function createTwContext(config: ResolvedConfigJS) {
 
 	const variantSet = context.getVariants()
 
-	const variants: [string[], string[], string[], string[]] = [screens, [], [], []]
+	const variants: [string[], string[], string[], string[], string[]] = [
+		screens,
+		[],
+		[],
+		[],
+		Array.from(context.getArbitraryVariants()),
+	]
 	for (const k of variantSet) {
 		switch (k) {
 			case "dark":
