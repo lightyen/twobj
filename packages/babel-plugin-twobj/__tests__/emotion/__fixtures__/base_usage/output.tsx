@@ -143,8 +143,11 @@ const globalStyles = {
 	"button,input,optgroup,select,textarea": {
 		fontFamily: "inherit",
 		fontSize: "100%",
+		fontFeatureSettings: "inherit",
+		fontVariationSettings: "inherit",
 		fontWeight: "inherit",
 		lineHeight: "inherit",
+		letterSpacing: "inherit",
 		color: "inherit",
 		margin: "0",
 		padding: "0",
@@ -152,7 +155,7 @@ const globalStyles = {
 	"button,select": {
 		textTransform: "none",
 	},
-	"button,[type='button'],[type='reset'],[type='submit']": {
+	"button,input:where([type='button']),input:where([type='reset']),input:where([type='submit'])": {
 		WebkitAppearance: "button",
 		backgroundColor: "transparent",
 		backgroundImage: "none",

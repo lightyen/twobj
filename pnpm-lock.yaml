@@ -108,8 +108,8 @@ importers:
         specifier: 18.2.0
         version: 18.2.0
       twobj:
-        specifier: 2.5.6
-        version: 2.5.6
+        specifier: 2.6.0-next.0
+        version: 2.6.0-next.0
 
   packages/twobj:
     devDependencies:
@@ -4745,6 +4745,9 @@ packages:
 
   twobj@2.5.6:
     resolution: {integrity: sha512-u+hamSUCArfSC0m0BYYEYHBmLlBjqaXypKWN+hE/nFmNGU/lNNTTS/vHC1jFCzvlQbeb0KJID8OHF1WmEe7vBA==}
+
+  twobj@2.6.0-next.0:
+    resolution: {integrity: sha512-ZrfpHOzfHzAWDFWQOagKe7tk1A5oThfWnyMHqiAy9ClwoYAS/lDIaGI8hKKJvdvi0v5ayLJ+P7DVXxK/X4M2Yw==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -10097,6 +10100,8 @@ snapshots:
   tunnel@0.0.6: {}
 
   twobj@2.5.6: {}
+
+  twobj@2.6.0-next.0: {}
 
   type-check@0.4.0:
     dependencies:
