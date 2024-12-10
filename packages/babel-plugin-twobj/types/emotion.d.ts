@@ -1,8 +1,7 @@
 import { CSSObject, Interpolation, PropsOf, SerializedStyles, Theme } from "@emotion/react"
 import { CSSInterpolation } from "@emotion/serialize"
-import { StyledComponent, StyledOptions } from "@emotion/styled"
-import { FilteringStyledOptions } from "@emotion/styled/types/base"
-import {} from "react"
+import { FilteringStyledOptions, StyledComponent, StyledOptions } from "@emotion/styled"
+import { } from "react"
 
 declare module "react" {
 	interface Attributes {
@@ -136,15 +135,15 @@ declare module "twobj" {
 		 * @example tw('div')<Props>(props => ({ width: props.width }))
 		 */
 		<
-			Tag extends keyof JSX.IntrinsicElements,
-			ForwardedProps extends keyof JSX.IntrinsicElements[Tag] & string = keyof JSX.IntrinsicElements[Tag] &
+			Tag extends keyof React.JSX.IntrinsicElements,
+			ForwardedProps extends keyof React.JSX.IntrinsicElements[Tag] & string = keyof React.JSX.IntrinsicElements[Tag] &
 				string,
 		>(
 			tag: Tag,
-			options: FilteringStyledOptions<JSX.IntrinsicElements[Tag], ForwardedProps>,
+			options: FilteringStyledOptions<React.JSX.IntrinsicElements[Tag], ForwardedProps>,
 		): CreateStyledComponent<
 			{ theme?: Theme; as?: React.ElementType },
-			Pick<JSX.IntrinsicElements[Tag], ForwardedProps>
+			Pick<React.JSX.IntrinsicElements[Tag], ForwardedProps>
 		>
 
 		/**
@@ -156,19 +155,19 @@ declare module "twobj" {
 		 * @example tw('div')`w-full`
 		 * @example tw('div')<Props>(props => ({ width: props.width }))
 		 */
-		<Tag extends keyof JSX.IntrinsicElements>(
+		<Tag extends keyof React.JSX.IntrinsicElements>(
 			tag: Tag,
-			options?: StyledOptions<JSX.IntrinsicElements[Tag]>,
-		): CreateStyledComponent<{ theme?: Theme; as?: React.ElementType }, JSX.IntrinsicElements[Tag]>
+			options?: StyledOptions<React.JSX.IntrinsicElements[Tag]>,
+		): CreateStyledComponent<{ theme?: Theme; as?: React.ElementType }, React.JSX.IntrinsicElements[Tag]>
 	}
 
 	export type StyledTags = {
-		[Tag in keyof JSX.IntrinsicElements]: CreateStyledComponent<
+		[Tag in keyof React.JSX.IntrinsicElements]: CreateStyledComponent<
 			{
 				theme?: Theme
 				as?: React.ElementType
 			},
-			JSX.IntrinsicElements[Tag]
+			React.JSX.IntrinsicElements[Tag]
 		>
 	}
 
