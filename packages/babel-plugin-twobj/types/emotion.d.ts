@@ -1,7 +1,7 @@
 import { CSSObject, Interpolation, PropsOf, SerializedStyles, Theme } from "@emotion/react"
 import { CSSInterpolation } from "@emotion/serialize"
 import { FilteringStyledOptions, StyledComponent, StyledOptions } from "@emotion/styled"
-import { } from "react"
+import {} from "react"
 
 declare module "react" {
 	interface Attributes {
@@ -136,8 +136,8 @@ declare module "twobj" {
 		 */
 		<
 			Tag extends keyof React.JSX.IntrinsicElements,
-			ForwardedProps extends keyof React.JSX.IntrinsicElements[Tag] & string = keyof React.JSX.IntrinsicElements[Tag] &
-				string,
+			ForwardedProps extends keyof React.JSX.IntrinsicElements[Tag] &
+				string = keyof React.JSX.IntrinsicElements[Tag] & string,
 		>(
 			tag: Tag,
 			options: FilteringStyledOptions<React.JSX.IntrinsicElements[Tag], ForwardedProps>,
