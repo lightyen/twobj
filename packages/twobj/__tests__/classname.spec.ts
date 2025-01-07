@@ -32,6 +32,7 @@ test("flexGrow", async () => {
 test("fill", async () => {
 	expect(tw`fill-red-500`).toEqual({ fill: "#ef4444" })
 	expect(tw`fill-[#121029]`).toEqual({ fill: "#121029" })
+	expect(tw`fill-[#12102980]`).toEqual({ fill: "#12102980" })
 	expect(tw`fill-[url(#helloworld)]`).toEqual({ fill: "url(#helloworld)" })
 	expect(tw`fill-none`).toEqual({ fill: "none" })
 	expect(tw`fill-[rgb(var(--color))]`).toEqual({ fill: "rgb(var(--color))" })
@@ -131,6 +132,10 @@ test("textColor", async () => {
 	expect(tw`text-white/12`).toEqual({ color: "rgb(255 255 255 / 0.12)" })
 	expect(tw`text-white/12%`).toEqual({ color: "rgb(255 255 255 / 0.12)" })
 	expect(tw`text-[white]`).toEqual({ color: "white" })
+	expect(tw`text-[#fff]`).toEqual({ color: "#fff" })
+	expect(tw`text-[#fff8]`).toEqual({ color: "#fff8" })
+	expect(tw`text-[#fff]/20`).toEqual({ color: "rgb(255 255 255 / 0.2)" })
+	expect(tw`text-[#fff8]/30`).toEqual({ color: "rgb(255 255 255 / 0.3)" })
 	expect(tw`text-[rgb(33 33 139)]`).toEqual({ color: "rgb(33 33 139)" })
 	expect(tw`text-[rgb(var(--color))]`).toEqual({ color: "rgb(var(--color))" })
 	expect(tw`text-[rgb(var(--color))]/35`).toEqual({ color: "rgb(var(--color) / 0.35)" })

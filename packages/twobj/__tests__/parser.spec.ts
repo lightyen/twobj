@@ -43,6 +43,12 @@ test("normalizeSelector", async () => {
 test("parseColor", async () => {
 	expect(parser.parseColor("red")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
 	expect(parser.parseColor("#ff0000")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })
+	expect(parser.parseColor("#ff000080")).toMatchObject({
+		fn: "rgb",
+		params: ["255", "0", "0"],
+		range: [0, 9],
+		opacity: "0.5019607843137255",
+	})
 	expect(parser.parseColor("rgb(41, 3, 120)")).toMatchObject({
 		kind: "color",
 		fn: "rgb",
@@ -51,6 +57,12 @@ test("parseColor", async () => {
 		getText: expect.any(Function),
 	})
 	expect(parser.parseColor("rgb(41 3 120)")).toMatchObject({ fn: "rgb", params: ["41", "3", "120"], range: [0, 13] })
+	expect(parser.parseColor("rgb(41 3 120 / 0.4)")).toMatchObject({
+		fn: "rgb",
+		params: ["41", "3", "120"],
+		range: [0, 19],
+		opacity: "0.4",
+	})
 	expect(parser.parseColor("hsl(33 93% 40%)")).toMatchObject({
 		kind: "color",
 		fn: "hsl",

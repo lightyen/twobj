@@ -344,6 +344,11 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
 		const color = parser.parseColor(value)
 		const canAlpha = color != undefined && parser.isColorFunction(color.fn)
+		if (color?.kind === "color" && color.hex) {
+			if (opacity == undefined) {
+				return value
+			}
+		}
 		if (opacity == undefined) {
 			if (color?.kind === "color") {
 				opacity = color.opacity
@@ -372,7 +377,7 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 		}
 
 		if (color.params.every(v => typeof v === "string")) {
-			if (color.fn === "color") {
+			if (color.kind === "color") {
 				return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
 			}
 			return color.fn + "(" + color.params.join(" ") + opacityValue + ")"

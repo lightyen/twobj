@@ -17,6 +17,7 @@ export interface ParamColor {
 	params: Param[]
 	opacity?: string
 	normalized?: boolean
+	hex?: boolean
 }
 
 export type Param = string | ParamFunction | ParamColor

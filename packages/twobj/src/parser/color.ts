@@ -324,6 +324,7 @@ export function parseHexColor(css: string): ParamColor | undefined {
 		const color: ParamColor = {
 			kind: "color",
 			fn: "rgb",
+			hex: true,
 			params: [r.toString(), g.toString(), b.toString()],
 			range: [match.index, match.index + text.length],
 			getText() {
@@ -331,8 +332,7 @@ export function parseHexColor(css: string): ParamColor | undefined {
 			},
 		}
 		if (a) {
-			color.opacity = String(parseInt(a) / 255)
-			color.params.push(color.opacity)
+			color.opacity = String(parseInt(a, 16) / 255)
 		}
 		return color
 	}
@@ -345,6 +345,7 @@ export function parseHexColor(css: string): ParamColor | undefined {
 		const color: ParamColor = {
 			kind: "color",
 			fn: "rgb",
+			hex: true,
 			params: [r.toString(), g.toString(), b.toString()],
 			range: [match.index, match.index + text.length],
 			getText() {
@@ -352,8 +353,7 @@ export function parseHexColor(css: string): ParamColor | undefined {
 			},
 		}
 		if (A) {
-			color.opacity = String(parseInt(A + A) / 255)
-			color.params.push(color.opacity)
+			color.opacity = String(parseInt(A + A, 16) / 255)
 		}
 		return color
 	}
