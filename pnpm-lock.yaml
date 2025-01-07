@@ -249,8 +249,8 @@ importers:
         specifier: 5.9.2
         version: 5.9.2(typescript@5.5.4)(webpack@5.93.0)
       twobj:
-        specifier: 2.6.0
-        version: 2.6.0
+        specifier: 2.6.1
+        version: 2.6.1
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -4730,6 +4730,9 @@ packages:
 
   twobj@2.6.0:
     resolution: {integrity: sha512-N6jMa0pSBgNO7NBKg1qwmqJuKMeSgdqdWlmuX2rClmfHLnFFHIfnb7OrF6TN88qUnHnmcsGVhGLn364vLlFelw==}
+
+  twobj@2.6.1:
+    resolution: {integrity: sha512-Ll6muH+Qxfb64hJOlByGAqAL2Apxn75sMPjsR8fUeXwRpV09KIzC9RME2AzVOZZl2nbLol6IwcF/kBU/F04sSg==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -10064,6 +10067,8 @@ snapshots:
   tunnel@0.0.6: {}
 
   twobj@2.6.0: {}
+
+  twobj@2.6.1: {}
 
   type-check@0.4.0:
     dependencies:
