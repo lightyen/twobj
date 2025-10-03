@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-twobj",
-  "version": "2.4.2",
+  "version": "2.4.4",
   "homepage": "https://github.com/lightyen/twobj/tree/main/packages/babel-plugin-twobj",
   "author": {
     "name": "lightyen",
@@ -13,6 +13,12 @@
     ".": {
       "require": "./index.js",
       "import": "./index.mjs"
+    },
+    "./types/*": {
+      "types": "./types/*"
+    },
+    "./types/emotion": {
+      "types": "./types/emotion.d.ts"
     }
   },
   "scripts": {
