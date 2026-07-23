@@ -103,7 +103,7 @@ test("color", () => {
 	expect(__types.color.handleValue("rgb(10 22 66/0.5)")).not.toBeUndefined()
 	expect(__types.color.handleValue("rgba(10 22 66 / 0.5)")).not.toBeUndefined()
 	expect(__types.color.handleValue("hsk(10 22 66 / 0.5)")).toBeUndefined()
-	expect(__types.color.handleValue("var(--color)")).toBeUndefined()
+	expect(__types.color.handleValue("var(--color)")).toBe("var(--color)")
 	expect(__types.color.handleValue("center")).toBeUndefined()
 })
 
@@ -198,6 +198,6 @@ test("family-name", async () => {
 })
 
 test("color opacity", async () => {
-	expect(tw`caret-[#fef2f2]/20`).toEqual({ caretColor: "rgb(254 242 242 / 0.2)" })
-	expect(tw`fill-[#fef2f2]/40`).toEqual({ fill: "rgb(254 242 242 / 0.4)" })
+	expect(tw`caret-[#fef2f2]/20`).toEqual({ caretColor: "color-mix(in srgb, rgb(254 242 242) 20%, transparent)" })
+	expect(tw`fill-[#fef2f2]/40`).toEqual({ fill: "color-mix(in srgb, rgb(254 242 242) 40%, transparent)" })
 })

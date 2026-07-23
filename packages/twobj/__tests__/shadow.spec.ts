@@ -59,7 +59,7 @@ test("boxShadow", async () => {
 		"--tw-ring-inset": "initial",
 		"--tw-ring-offset-shadow": "initial",
 		"--tw-ring-shadow": "initial",
-		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, #ef4444)",
+		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, oklch(63.7% 0.237 25.331))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
@@ -71,7 +71,7 @@ test("boxShadow", async () => {
 		"--tw-ring-inset": "initial",
 		"--tw-ring-offset-shadow": "initial",
 		"--tw-ring-shadow": "initial",
-		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, rgb(239 68 68 / 50%))",
+		"--tw-shadow-colored": "10px 10px 5px var(--tw-shadow-color, oklch(63.7% 0.237 25.331 / 50%))",
 		"--tw-shadow": "var(--tw-shadow-colored)",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
@@ -100,9 +100,13 @@ test("boxShadow array value", async () => {
 })
 
 test("boxShadowColor", async () => {
-	expect(tw`shadow-red-500`).toEqual({ "--tw-shadow-color": "#ef4444" })
-	expect(tw`shadow-red-500/[0.3]`).toEqual({ "--tw-shadow-color": "rgb(239 68 68 / 0.3)" })
-	expect(tw`shadow-[#ef4444]/[0.3]`).toEqual({ "--tw-shadow-color": "rgb(239 68 68 / 0.3)" })
+	expect(tw`shadow-red-500`).toEqual({ "--tw-shadow-color": "oklch(63.7% 0.237 25.331)" })
+	expect(tw`shadow-red-500/[0.3]`).toEqual({
+		"--tw-shadow-color": "color-mix(in oklab, oklch(63.7% 0.237 25.331) 30%, transparent)",
+	})
+	expect(tw`shadow-[#ef4444]/[0.3]`).toEqual({
+		"--tw-shadow-color": "color-mix(in srgb, rgb(239 68 68) 30%, transparent)",
+	})
 })
 
 test("shadow value", async () => {
@@ -144,7 +148,7 @@ test("ring", async () => {
 		"--tw-ring-offset-shadow":
 			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
 		"--tw-ring-shadow":
-			"var(--tw-ring-inset,) 0 0 0 calc(3px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, rgb(59 130 246 / 0.5))",
+			"var(--tw-ring-inset,) 0 0 0 calc(3px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, color-mix(in oklab, oklch(62.3% 0.214 259.815) 50%, transparent))",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
@@ -157,7 +161,7 @@ test("ring", async () => {
 		"--tw-ring-offset-shadow":
 			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
 		"--tw-ring-shadow":
-			"var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, rgb(59 130 246 / 0.5))",
+			"var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, color-mix(in oklab, oklch(62.3% 0.214 259.815) 50%, transparent))",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
@@ -170,7 +174,7 @@ test("ring", async () => {
 		"--tw-ring-offset-shadow":
 			"var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color, #fff)",
 		"--tw-ring-shadow":
-			"var(--tw-ring-inset,) 0 0 0 calc(3.7px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, rgb(59 130 246 / 0.5))",
+			"var(--tw-ring-inset,) 0 0 0 calc(3.7px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, color-mix(in oklab, oklch(62.3% 0.214 259.815) 50%, transparent))",
 		boxShadow:
 			"var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000)",
 	})
@@ -179,5 +183,7 @@ test("ring", async () => {
 test("ringColor", async () => {
 	expect(tw`ring-black`).toEqual({ "--tw-ring-color": "#000" })
 	expect(tw`ring-[hsl(210 55% 55%)]`).toEqual({ "--tw-ring-color": "hsl(210 55% 55%)" })
-	expect(tw`ring-[hsl(210 55% 55%)]/[0.38]`).toEqual({ "--tw-ring-color": "hsl(210 55% 55% / 0.38)" })
+	expect(tw`ring-[hsl(210 55% 55%)]/[0.38]`).toEqual({
+		"--tw-ring-color": "color-mix(in srgb, hsl(210 55% 55%) 38%, transparent)",
+	})
 })

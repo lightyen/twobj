@@ -29,7 +29,7 @@ test("expandAtRules", async () => {
 		backgroundColor: "#000",
 		color: "#fff",
 		"@media (min-width: 768px)": {
-			backgroundColor: "#facc15",
+			backgroundColor: "oklch(85.2% 0.199 91.936)",
 		},
 	})
 })

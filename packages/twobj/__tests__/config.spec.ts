@@ -91,6 +91,6 @@ test("raw screen value", async () => {
 			},
 		}),
 	)
-	expect(ctx.css("ar-1/10:text-blue-500")).toEqual({ "@media (min-aspect-ratio: 1/10)": { color: "#3b82f6" } })
-	expect(ctx.css("ar-1_10:text-blue-500")).toEqual({ "@media (min-aspect-ratio: 1/10)": { color: "#3b82f6" } })
+	expect(ctx.css("ar-1/10:text-blue-500")).toEqual({ "@media (min-aspect-ratio: 1/10)": { color: "oklch(62.3% 0.214 259.815)" } })
+	expect(ctx.css("ar-1_10:text-blue-500")).toEqual({ "@media (min-aspect-ratio: 1/10)": { color: "oklch(62.3% 0.214 259.815)" } })
 })

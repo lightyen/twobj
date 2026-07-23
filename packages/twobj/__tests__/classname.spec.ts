@@ -30,19 +30,19 @@ test("flexGrow", async () => {
 })
 
 test("fill", async () => {
-	expect(tw`fill-red-500`).toEqual({ fill: "#ef4444" })
+	expect(tw`fill-red-500`).toEqual({ fill: "oklch(63.7% 0.237 25.331)" })
 	expect(tw`fill-[#121029]`).toEqual({ fill: "#121029" })
 	expect(tw`fill-[#12102980]`).toEqual({ fill: "#12102980" })
 	expect(tw`fill-[url(#helloworld)]`).toEqual({ fill: "url(#helloworld)" })
 	expect(tw`fill-none`).toEqual({ fill: "none" })
 	expect(tw`fill-[rgb(var(--color))]`).toEqual({ fill: "rgb(var(--color))" })
-	expect(tw`fill-[rgb(var(--color))]/20`).toEqual({ fill: "rgb(var(--color) / 0.2)" })
+	expect(tw`fill-[rgb(var(--color))]/20`).toEqual({ fill: "color-mix(in srgb, rgb(var(--color)) 20%, transparent)" })
 	expect(tw`fill-[var(--color)]`).toEqual({ fill: "var(--color)" })
-	expect(tw`fill-[var(--color)]/10`).toEqual({ fill: "rgb(var(--color) / 0.1)" })
+	expect(tw`fill-[var(--color)]/10`).toEqual({ fill: "color-mix(in oklab, var(--color) 10%, transparent)" })
 })
 
 test("stroke", async () => {
-	expect(tw`stroke-red-500`).toEqual({ stroke: "#ef4444" })
+	expect(tw`stroke-red-500`).toEqual({ stroke: "oklch(63.7% 0.237 25.331)" })
 	expect(tw`stroke-[#121029]`).toEqual({ stroke: "#121029" })
 	expect(tw`stroke-none`).toEqual({ stroke: "none" })
 	expect(tw`stroke-[rgb(209 218 229 / 0.5)]`).toEqual({ stroke: "rgb(209 218 229 / 0.5)" })
@@ -52,21 +52,27 @@ test("stroke", async () => {
 test("backgroundColor", async () => {
 	expect(tw`bg-black`).toEqual({ backgroundColor: "#000" })
 	expect(tw`bg-[#444]`).toEqual({ backgroundColor: "#444" })
-	expect(tw`bg-black/31`).toEqual({ backgroundColor: "rgb(0 0 0 / 0.31)" })
-	expect(tw`bg-[#444]/31`).toEqual({ backgroundColor: "rgb(68 68 68 / 0.31)" })
+	expect(tw`bg-black/31`).toEqual({ backgroundColor: "color-mix(in srgb, rgb(0 0 0) 31%, transparent)" })
+	expect(tw`bg-[#444]/31`).toEqual({ backgroundColor: "color-mix(in srgb, rgb(68 68 68) 31%, transparent)" })
 	expect(tw`bg-[color(rec2020 1 1 0)]`).toEqual({ backgroundColor: "color(rec2020 1 1 0)" })
 	expect(tw`bg-[rgb(var(--color))]`).toEqual({ backgroundColor: "rgb(var(--color))" })
-	expect(tw`bg-[rgb(var(--color))]/68`).toEqual({ backgroundColor: "rgb(var(--color) / 0.68)" })
-	expect(tw`bg-[var(--color)]`).toEqual({})
-	expect(tw`bg-[var(--color)]/33`).toEqual({})
+	expect(tw`bg-[rgb(var(--color))]/68`).toEqual({
+		backgroundColor: "color-mix(in srgb, rgb(var(--color)) 68%, transparent)",
+	})
+	expect(tw`bg-[var(--color)]`).toEqual({ backgroundColor: "var(--color)" })
+	expect(tw`bg-[var(--color)]/33`).toEqual({ backgroundColor: "color-mix(in oklab, var(--color) 33%, transparent)" })
 	expect(tw`bg-[color:var(--color)]`).toEqual({ backgroundColor: "var(--color)" })
-	expect(tw`bg-[color:var(--color)]/30`).toEqual({ backgroundColor: "rgb(var(--color) / 0.3)" })
-	expect(tw`bg-red-500`).toEqual({ backgroundColor: "#ef4444" })
-	expect(tw`bg-red-500/50`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
-	expect(tw`bg-red-500/50%`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
-	expect(tw`bg-[theme(colors.red.500)]`).toEqual({ backgroundColor: "#ef4444" })
-	expect(tw`bg-[theme(colors.red.500)]/50`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
-	expect(tw`bg-[theme(colors.red.500 / 0.5)]`).toEqual({ backgroundColor: "rgb(239 68 68 / 0.5)" })
+	expect(tw`bg-[color:var(--color)]/30`).toEqual({
+		backgroundColor: "color-mix(in oklab, var(--color) 30%, transparent)",
+	})
+	expect(tw`bg-red-500`).toEqual({ backgroundColor: "oklch(63.7% 0.237 25.331)" })
+	expect(tw`bg-red-500/50`).toEqual({ backgroundColor: "color-mix(in oklab, oklch(63.7% 0.237 25.331) 50%, transparent)" })
+	expect(tw`bg-red-500/50%`).toEqual({ backgroundColor: "color-mix(in oklab, oklch(63.7% 0.237 25.331) 50%, transparent)" })
+	expect(tw`bg-[theme(colors.red.500)]`).toEqual({ backgroundColor: "oklch(63.7% 0.237 25.331)" })
+	expect(tw`bg-[theme(colors.red.500)]/50`).toEqual({
+		backgroundColor: "color-mix(in oklab, oklch(63.7% 0.237 25.331) 50%, transparent)",
+	})
+	expect(tw`bg-[theme(colors.red.500 / 0.5)]`).toEqual({ backgroundColor: "oklch(63.7% 0.237 25.331 / 0.5)" })
 })
 
 test("backgroundImage", async () => {
@@ -129,24 +135,28 @@ test("backgroundSize", async () => {
 
 test("textColor", async () => {
 	expect(tw`text-white`).toEqual({ color: "#fff" })
-	expect(tw`text-white/12`).toEqual({ color: "rgb(255 255 255 / 0.12)" })
-	expect(tw`text-white/12%`).toEqual({ color: "rgb(255 255 255 / 0.12)" })
+	expect(tw`text-white/12`).toEqual({ color: "color-mix(in srgb, rgb(255 255 255) 12%, transparent)" })
+	expect(tw`text-white/12%`).toEqual({ color: "color-mix(in srgb, rgb(255 255 255) 12%, transparent)" })
 	expect(tw`text-[white]`).toEqual({ color: "white" })
 	expect(tw`text-[#fff]`).toEqual({ color: "#fff" })
 	expect(tw`text-[#fff8]`).toEqual({ color: "#fff8" })
-	expect(tw`text-[#fff]/20`).toEqual({ color: "rgb(255 255 255 / 0.2)" })
-	expect(tw`text-[#fff8]/30`).toEqual({ color: "rgb(255 255 255 / 0.3)" })
+	expect(tw`text-[#fff]/20`).toEqual({ color: "color-mix(in srgb, rgb(255 255 255) 20%, transparent)" })
+	expect(tw`text-[#fff8]/30`).toEqual({ color: "color-mix(in srgb, rgb(255 255 255) 30%, transparent)" })
 	expect(tw`text-[rgb(33 33 139)]`).toEqual({ color: "rgb(33 33 139)" })
 	expect(tw`text-[rgb(var(--color))]`).toEqual({ color: "rgb(var(--color))" })
-	expect(tw`text-[rgb(var(--color))]/35`).toEqual({ color: "rgb(var(--color) / 0.35)" })
-	expect(tw`text-[rgb(var(--color))]/[40%]`).toEqual({ color: "rgb(var(--color) / 40%)" })
-	expect(tw`text-[var(--color)]`).toEqual({})
-	expect(tw`text-[var(--color)]/33`).toEqual({})
+	expect(tw`text-[rgb(var(--color))]/35`).toEqual({ color: "color-mix(in srgb, rgb(var(--color)) 35%, transparent)" })
+	expect(tw`text-[rgb(var(--color))]/[40%]`).toEqual({
+		color: "color-mix(in srgb, rgb(var(--color)) 40%, transparent)",
+	})
+	expect(tw`text-[var(--color)]`).toEqual({ color: "var(--color)" })
+	expect(tw`text-[var(--color)]/33`).toEqual({ color: "color-mix(in oklab, var(--color) 33%, transparent)" })
 	expect(tw`text-[color:var(--color)]`).toEqual({ color: "var(--color)" })
-	expect(tw`text-[color:var(--color)]/33`).toEqual({ color: "rgb(var(--color) / 0.33)" })
-	expect(tw`text-[theme(colors.red.500)]`).toEqual({ color: "#ef4444" })
-	expect(tw`text-[theme(colors.red.500)]/50`).toEqual({ color: "rgb(239 68 68 / 0.5)" })
-	expect(tw`text-[theme(colors.red.500 / 0.5)]`).toEqual({ color: "rgb(239 68 68 / 0.5)" })
+	expect(tw`text-[color:var(--color)]/33`).toEqual({ color: "color-mix(in oklab, var(--color) 33%, transparent)" })
+	expect(tw`text-[theme(colors.red.500)]`).toEqual({ color: "oklch(63.7% 0.237 25.331)" })
+	expect(tw`text-[theme(colors.red.500)]/50`).toEqual({
+		color: "color-mix(in oklab, oklch(63.7% 0.237 25.331) 50%, transparent)",
+	})
+	expect(tw`text-[theme(colors.red.500 / 0.5)]`).toEqual({ color: "oklch(63.7% 0.237 25.331 / 0.5)" })
 })
 
 test("fontSize", async () => {

@@ -31,19 +31,17 @@ function withAlphaValue(value: Primitive | ColorValueFunc, opacityValue: string)
 	if (!opacityValue) {
 		return String(value)
 	}
-	opacityValue = " / " + opacityValue
-	const color = parser.parseColor(String(value))
+	const s = String(value)
+	const color = parser.parseColor(s)
 	const canAlpha = color != undefined && parser.isColorFunction(color.fn)
-	if (canAlpha) {
-		if (color.params.every(v => typeof v === "string")) {
-			return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
-		}
+	if (canAlpha && color.params.every(v => typeof v === "string")) {
+		return parser.colorMix(color.fn + "(" + color.params.join(" ") + ")", opacityValue)
 	}
-	const result = parser.unwrapCssFunction(String(value))
+	const result = parser.unwrapCssFunction(s)
 	if (result && parser.isColorFunction(result.fn)) {
-		return "rgb(" + result.params + opacityValue + ")"
+		return parser.colorMix(result.fn + "(" + result.params + ")", opacityValue)
 	}
-	return "rgb(" + String(value) + opacityValue + ")"
+	return parser.colorMix(s, opacityValue)
 }
 
 type ClassPlugins = {

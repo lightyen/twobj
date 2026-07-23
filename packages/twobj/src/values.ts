@@ -344,17 +344,15 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 	function parseColorValue(value: string, unambiguous: boolean, opacity?: string): string | undefined {
 		const color = parser.parseColor(value)
 		const canAlpha = color != undefined && parser.isColorFunction(color.fn)
+		const internalOpacity = color?.kind === "color" ? color.opacity : undefined
+
 		if (color?.kind === "color" && color.hex) {
 			if (opacity == undefined) {
 				return value
 			}
 		}
-		if (opacity == undefined) {
-			if (color?.kind === "color") {
-				opacity = color.opacity
-			}
-		}
-		if (opacity == undefined) {
+
+		if (opacity == undefined && internalOpacity == undefined) {
 			if (canAlpha) {
 				return value
 			}
@@ -364,38 +362,51 @@ const color: ValueTypeSpec<ConfigValue | ColorValueFunc | null | undefined> = (f
 			if (parser.isColorKeyword(value)) {
 				return value
 			}
+			if (value.startsWith("var(")) {
+				return value
+			}
 			return undefined
 		}
 
-		const opacityValue = " / " + opacity
+		if (opacity == undefined && internalOpacity != undefined) {
+			if (canAlpha && color.params.every(v => typeof v === "string")) {
+				return color.fn + "(" + color.params.join(" ") + " / " + internalOpacity + ")"
+			}
+			return colorMixLegacy(value)
+		}
+
+		const effectiveOpacity = opacity!
 
 		if (!canAlpha) {
-			if (unambiguous) {
-				return forceRGB(value, opacityValue)
-			}
-			return undefined
+			return colorMixWithValue(value, effectiveOpacity)
 		}
 
 		if (color.params.every(v => typeof v === "string")) {
-			if (color.kind === "color") {
-				return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
-			}
-			return color.fn + "(" + color.params.join(" ") + opacityValue + ")"
+			return parser.colorMix(color.fn + "(" + color.params.join(" ") + ")", effectiveOpacity)
 		}
 
 		if (color.params.length === 1 && parser.isParamObject(color.params[0]) && color.params[0].fn === "var") {
-			return color.fn + "(" + color.params[0].getText() + opacityValue + ")"
+			return parser.colorMix(color.fn + "(" + color.params[0].getText() + ")", effectiveOpacity)
 		}
 
-		return forceRGB(value, opacityValue)
+		return colorMixWithValue(value, effectiveOpacity)
 
-		function forceRGB(value: string, opacityValue?: string) {
+		function colorMixWithValue(value: string, opacity: string): string {
 			const result = parser.unwrapCssFunction(value)
 			if (result && parser.isColorFunction(result.fn)) {
-				return "rgb(" + result.params + opacityValue + ")"
+				return parser.colorMix(result.fn + "(" + result.params + ")", opacity)
 			}
-			if (opacityValue == undefined) {
-				return "rgb(" + value + ")"
+			return parser.colorMix(value, opacity)
+		}
+
+		function colorMixLegacy(value: string): string {
+			const opacityValue = " / " + internalOpacity!
+			const result = parser.unwrapCssFunction(value)
+			if (result && parser.isColorFunction(result.fn)) {
+				if (parser.isHDRColorFunction(result.fn)) {
+					return result.fn + "(" + result.params + opacityValue + ")"
+				}
+				return "rgb(" + result.params + opacityValue + ")"
 			}
 			return "rgb(" + value + opacityValue + ")"
 		}

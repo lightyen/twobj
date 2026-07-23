@@ -10,7 +10,7 @@ test("style objects are immutable", async () => {
 		color: "#000",
 		borderColor: "#000",
 		borderWidth: "2px",
-		backgroundColor: "#f3f4f6",
+		backgroundColor: "oklch(96.7% 0.003 264.542)",
 	})
 	expect(ctx.css("sm:divide-black")).toEqual({
 		"@media (min-width: 640px)": { "& > :not([hidden]) ~ :not([hidden])": { borderColor: "#000" } },

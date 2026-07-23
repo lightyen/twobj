@@ -9,6 +9,7 @@ test("access tailwind config theme", async () => {
 						DEFAULT: "hsl(var(--primary))",
 						foreground: "hsl(var(--primary-foreground))",
 					},
+					secondary: "var(--secondary)",
 					str: "rgb(var(--color) / <alpha-value>)",
 					rec: "color(var(--color) / <alpha-value>)",
 					fn({ opacityValue }) {
@@ -51,15 +52,19 @@ test("access tailwind config theme", async () => {
 
 	expect(theme`colors.primary.DEFAULT`).toEqual("hsl(var(--primary))")
 	expect(tw`bg-primary`).toEqual({ backgroundColor: "hsl(var(--primary))" })
-	expect(tw`bg-primary/90`).toEqual({ backgroundColor: "hsl(var(--primary) / 0.9)" })
+	expect(tw`bg-primary/90`).toEqual({ backgroundColor: "color-mix(in srgb, hsl(var(--primary)) 90%, transparent)" })
+	expect(tw`bg-secondary`).toEqual({ backgroundColor: "var(--secondary)" })
+	expect(tw`bg-secondary/90`).toEqual({ backgroundColor: "color-mix(in oklab, var(--secondary) 90%, transparent)" })
 	expect(tw`bg-primary-foreground`).toEqual({ backgroundColor: "hsl(var(--primary-foreground))" })
-	expect(tw`bg-primary-foreground/90`).toEqual({ backgroundColor: "hsl(var(--primary-foreground) / 0.9)" })
+	expect(tw`bg-primary-foreground/90`).toEqual({
+		backgroundColor: "color-mix(in srgb, hsl(var(--primary-foreground)) 90%, transparent)",
+	})
 	expect(tw`bg-bar`).toEqual({ backgroundColor: "rgb(var(--color))" })
-	expect(tw`bg-bar/10`).toEqual({ backgroundColor: "rgb(var(--color) / 0.1)" })
+	expect(tw`bg-bar/10`).toEqual({ backgroundColor: "color-mix(in srgb, rgb(var(--color)) 10%, transparent)" })
 	expect(tw`accent-var`).toEqual({ accentColor: "var(--color)" })
-	expect(tw`accent-var/10`).toEqual({ accentColor: "rgb(var(--color) / 0.1)" })
+	expect(tw`accent-var/10`).toEqual({ accentColor: "color-mix(in oklab, var(--color) 10%, transparent)" })
 	expect(tw`bg-var`).toEqual({ backgroundColor: "var(--color)" })
-	expect(tw`bg-var/10`).toEqual({ backgroundColor: "var(--color)" })
+	expect(tw`bg-var/10`).toEqual({ backgroundColor: "color-mix(in oklab, var(--color) 10%, transparent)" })
 	expect(theme`colors.str`).toEqual("rgb(var(--color) / 1)")
 	expect(theme`colors.str / 0.3`).toEqual("rgb(var(--color) / 0.3)")
 	expect(theme`colors.str / 24%`).toEqual("rgb(var(--color) / 24%)")

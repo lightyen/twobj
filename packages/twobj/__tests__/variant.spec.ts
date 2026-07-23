@@ -125,7 +125,7 @@ test("before and after", async () => {
 		"@media (min-width: 640px)": {
 			"@media (hover: hover) and (pointer: fine)": {
 				"&:hover": {
-					color: "#ec4899",
+					color: "oklch(65.6% 0.241 354.308)",
 					"&::before": {
 						"--tw-content": "none",
 						backgroundColor: "#000",

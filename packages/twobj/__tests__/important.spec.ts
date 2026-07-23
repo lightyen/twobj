@@ -6,10 +6,10 @@ test("important", async () => {
 	expect(tw`!text-black text-white`).toEqual({ color: "#000 !important" })
 	expect(tw`(text-black)! text-white`).toEqual({ color: "#000 !important" })
 	expect(tw`!(text-black)`).toEqual({ color: "#000 !important" })
-	expect(tw`text-[#000]/30!`).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
-	expect(tw`!text-[#000]/30`).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
-	expect(tw`(text-[#000]/30)!`).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
-	expect(tw`!(text-[#000]/30)`).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
+	expect(tw`text-[#000]/30!`).toEqual({ color: "color-mix(in srgb, rgb(0 0 0) 30%, transparent) !important" })
+	expect(tw`!text-[#000]/30`).toEqual({ color: "color-mix(in srgb, rgb(0 0 0) 30%, transparent) !important" })
+	expect(tw`(text-[#000]/30)!`).toEqual({ color: "color-mix(in srgb, rgb(0 0 0) 30%, transparent) !important" })
+	expect(tw`!(text-[#000]/30)`).toEqual({ color: "color-mix(in srgb, rgb(0 0 0) 30%, transparent) !important" })
 	expect(tw`[color: #000]!`).toEqual({ color: "#000 !important" })
 	expect(tw`![color: #000]`).toEqual({ color: "#000 !important" })
 	expect(tw`([color: #000])!`).toEqual({ color: "#000 !important" })
@@ -17,7 +17,7 @@ test("important", async () => {
 
 	let ctx = createContext(resolveConfig({ important: true }))
 	expect(ctx.css("(text-black)")).toEqual({ color: "#000 !important" })
-	expect(ctx.css("text-[#000]/30")).toEqual({ color: "rgb(0 0 0 / 0.3) !important" })
+	expect(ctx.css("text-[#000]/30")).toEqual({ color: "color-mix(in srgb, rgb(0 0 0) 30%, transparent) !important" })
 	expect(ctx.css("[color: #000]")).toEqual({ color: "#000 !important" })
 
 	ctx = createContext(resolveConfig({ important: "#app" }))
@@ -30,7 +30,9 @@ test("important", async () => {
 			},
 		},
 	})
-	expect(ctx.css("text-[#000]/30")).toEqual({ "#app &": { color: "rgb(0 0 0 / 0.3)" } })
+	expect(ctx.css("text-[#000]/30")).toEqual({
+		"#app &": { color: "color-mix(in srgb, rgb(0 0 0) 30%, transparent)" },
+	})
 	expect(ctx.css("[color: #000]")).toEqual({ "#app &": { color: "#000" } })
 	expect(ctx.css("[color: #000]!")).toEqual({ "#app &": { color: "#000 !important" } })
 })

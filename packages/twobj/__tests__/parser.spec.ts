@@ -120,39 +120,39 @@ test("separator", async () => {
 	{
 		const ctx = createContext(resolveConfig({ separator: "|" }))
 		expect(ctx.css("in-range|text-black/10")).toEqual({
-			"&:in-range": { color: "rgb(0 0 0 / 0.1)" },
+			"&:in-range": { color: "color-mix(in srgb, rgb(0 0 0) 10%, transparent)" },
 		})
 		expect(ctx.css("in-range|text-[rgb(202 202 202)]")).toEqual({
 			"&:in-range": { color: "rgb(202 202 202)" },
 		})
 		expect(ctx.css("in-range|!text-[rgb(202 202 202)]/[30%]")).toEqual({
-			"&:in-range": { color: "rgb(202 202 202 / 30%) !important" },
+			"&:in-range": { color: "color-mix(in srgb, rgb(202 202 202) 30%, transparent) !important" },
 		})
 	}
 
 	{
 		const ctx = createContext(resolveConfig({ separator: "👎" }))
 		expect(ctx.css("in-range👎text-black/10")).toEqual({
-			"&:in-range": { color: "rgb(0 0 0 / 0.1)" },
+			"&:in-range": { color: "color-mix(in srgb, rgb(0 0 0) 10%, transparent)" },
 		})
 		expect(ctx.css("in-range👎text-[rgb(202 202 202)]")).toEqual({
 			"&:in-range": { color: "rgb(202 202 202)" },
 		})
 		expect(ctx.css("in-range👎!text-[rgb(202 202 202)]/[30%]")).toEqual({
-			"&:in-range": { color: "rgb(202 202 202 / 30%) !important" },
+			"&:in-range": { color: "color-mix(in srgb, rgb(202 202 202) 30%, transparent) !important" },
 		})
 	}
 
 	{
 		const ctx = createContext(resolveConfig({ separator: "||" }))
 		expect(ctx.css("in-range||text-black/10")).toEqual({
-			"&:in-range": { color: "rgb(0 0 0 / 0.1)" },
+			"&:in-range": { color: "color-mix(in srgb, rgb(0 0 0) 10%, transparent)" },
 		})
 		expect(ctx.css("in-range||text-[rgb(202 202 202)]")).toEqual({
 			"&:in-range": { color: "rgb(202 202 202)" },
 		})
 		expect(ctx.css("in-range||!text-[rgb(202 202 202)]/[30%]")).toEqual({
-			"&:in-range": { color: "rgb(202 202 202 / 30%) !important" },
+			"&:in-range": { color: "color-mix(in srgb, rgb(202 202 202) 30%, transparent) !important" },
 		})
 	}
 })

@@ -3,7 +3,7 @@
 exports[`preflight 1`] = `
 {
   "*": {
-    "borderColor": "#e5e7eb",
+    "borderColor": "oklch(92.8% 0.006 264.531)",
     "borderStyle": "solid",
     "borderWidth": "0",
     "boxSizing": "border-box",
@@ -26,14 +26,14 @@ exports[`preflight 1`] = `
   },
   "::after": {
     "--tw-content": "''",
-    "borderColor": "#e5e7eb",
+    "borderColor": "oklch(92.8% 0.006 264.531)",
     "borderStyle": "solid",
     "borderWidth": "0",
     "boxSizing": "border-box",
   },
   "::before": {
     "--tw-content": "''",
-    "borderColor": "#e5e7eb",
+    "borderColor": "oklch(92.8% 0.006 264.531)",
     "borderStyle": "solid",
     "borderWidth": "0",
     "boxSizing": "border-box",
@@ -129,7 +129,7 @@ exports[`preflight 1`] = `
     "maxWidth": "100%",
   },
   "input::placeholder,textarea::placeholder": {
-    "color": "#9ca3af",
+    "color": "oklch(70.7% 0.022 261.325)",
     "opacity": "1",
   },
   "legend": {

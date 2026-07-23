@@ -153,48 +153,113 @@ const namedColors: Record<string, string> = {
 	yellowgreen: "#9acd32",
 }
 
-type PredefinedRGB = "srgb" | "srgb-linear" | "display-p3" | "a98-rgb" | "prophoto-rgb" | "rec2020"
-type XYZSpace = "xyz" | "xyz-d50" | "xyz-d65"
-type ColorSpace = PredefinedRGB | XYZSpace
+export type PredefinedRGB = "srgb" | "srgb-linear" | "display-p3" | "a98-rgb" | "prophoto-rgb" | "rec2020"
+export type XYZSpace = "xyz" | "xyz-d50" | "xyz-d65"
+export type HDRColorSpace = PredefinedRGB | XYZSpace | "oklch" | "oklab" | "lch" | "lab" | "hwb"
 
 export class Color {
-	// /** 0 - 1 */
-	// r: number
-	// /** 0 - 1 */
-	// g: number
-	// /** 0 - 1 */
-	// b: number
-	// /** 0 - 1 */
-	// a: number
+	readonly channels: readonly number[]
+	readonly alpha: number
+	readonly colorSpace: HDRColorSpace
 
 	constructor(
-		/** 0 - 1 */
-		readonly r: number,
-		/** 0 - 1 */
-		readonly g: number,
-		/** 0 - 1 */
-		readonly b: number,
-		/** 0 - 1 */
-		readonly a = 1,
+		channels: readonly number[],
+		alpha = 1,
+		colorSpace: HDRColorSpace = "srgb",
 	) {
-		this.r = Math.min(1, Math.max(r, 0))
-		this.g = Math.min(1, Math.max(g, 0))
-		this.b = Math.min(1, Math.max(b, 0))
-		this.a = Math.min(1, Math.max(a, 0))
+		if (colorSpace === "srgb") {
+			this.channels = channels.map(c => Math.min(1, Math.max(c, 0)))
+			this.alpha = Math.min(1, Math.max(alpha, 0))
+		} else {
+			this.channels = channels
+			this.alpha = alpha
+		}
+		this.colorSpace = colorSpace
 	}
 
-	/** https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color */
-	css(space: ColorSpace = "srgb"): string {
-		if (this.a < 1) {
-			return `color(${space} ${this.r} ${this.g} ${this.b} / ${this.a})`
+	get r(): number {
+		return this.channels[0] ?? 0
+	}
+	get g(): number {
+		return this.channels[1] ?? 0
+	}
+	get b(): number {
+		return this.channels[2] ?? 0
+	}
+	get a(): number {
+		return this.alpha
+	}
+
+	static rgb(r: number, g: number, b: number, a = 1): Color {
+		return new Color(
+			[Math.min(1, Math.max(r, 0)), Math.min(1, Math.max(g, 0)), Math.min(1, Math.max(b, 0))],
+			Math.min(1, Math.max(a, 0)),
+			"srgb",
+		)
+	}
+
+	static oklch(l: number, c: number, h: number, a = 1): Color {
+		return new Color([l, c, h], a, "oklch")
+	}
+
+	static oklab(l: number, a: number, b: number, alpha = 1): Color {
+		return new Color([l, a, b], alpha, "oklab")
+	}
+
+	/** https://developer.mozilla.org/en-US/docs/Web/CSS/color_value */
+	css(): string {
+		switch (this.colorSpace) {
+			case "oklch":
+			case "oklab":
+			case "lch":
+			case "lab":
+			case "hwb": {
+				const ch = this.channels.join(" ")
+				if (this.alpha < 1) {
+					return `${this.colorSpace}(${ch} / ${this.alpha})`
+				}
+				return `${this.colorSpace}(${ch})`
+			}
+			default: {
+				const ch = this.channels.join(" ")
+				if (this.alpha < 1) {
+					return `color(${this.colorSpace} ${ch} / ${this.alpha})`
+				}
+				return `color(${this.colorSpace} ${ch})`
+			}
 		}
-		return `color(${space} ${this.r} ${this.g} ${this.b})`
 	}
 }
 
 export type ColorFunction = "rgb" | "rgba" | "hsl" | "hsla" | "hwb" | "lch" | "lab" | "oklab" | "oklch" | "color"
 
 const colorFunctions = new Set(["rgb", "rgba", "hsl", "hsla", "hwb", "lch", "lab", "oklab", "oklch", "color"])
+
+const hdrColorFunctions = new Set(["oklch", "oklab", "lch", "lab", "hwb", "color"])
+
+export function isHDRColorFunction(fn: string): boolean {
+	return hdrColorFunctions.has(fn.toLowerCase())
+}
+
+const srgbColorFunctions = new Set(["rgb", "rgba", "hsl", "hsla"])
+
+function isSRGBColorFunction(fn: string): boolean {
+	return srgbColorFunctions.has(fn.toLowerCase())
+}
+
+/** Tailwind v4 style: apply opacity via color-mix() */
+export function colorMix(color: string, opacity: string): string {
+	let num = parseFloat(opacity)
+	if (Number.isNaN(num)) return color
+	if (opacity.includes("%")) {
+		num /= 100
+	}
+	const pct = Math.round(Math.min(1, Math.max(0, num)) * 100)
+	const trimmed = color.trim()
+	const isSRGB = /^#/.test(trimmed) || isSRGBColorFunction(trimmed.split("(")[0])
+	const space = isSRGB ? "srgb" : "oklab"
+	return `color-mix(in ${space}, ${trimmed} ${pct}%, transparent)`
+}
 
 export function isColorFunction(fn: string) {
 	return colorFunctions.has(fn.toLowerCase())

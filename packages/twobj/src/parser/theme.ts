@@ -383,6 +383,7 @@ export function renderThemeValue(target: unknown, opacity?: string): string {
 				// prefer rgb()
 				return "rgb(" + target + " / " + opacity + ")"
 			}
+			return "rgb(" + target + " / " + opacity + ")"
 		}
 	}
 
@@ -420,9 +421,9 @@ export function resolveThemeValue(target: unknown, opacity?: string): unknown {
 				if (isColorFunction(fn)) {
 					return fn + "(" + params + " / " + opacity + ")"
 				}
-				// prefer rgb()
 				return "rgb(" + target + " / " + opacity + ")"
 			}
+			return "rgb(" + target + " / " + opacity + ")"
 		}
 	}
 
