@@ -8,7 +8,6 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "node",
     "target": "es2021"
   }
 }

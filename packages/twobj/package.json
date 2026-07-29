@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "test": "vitest",
+    "test": "vitest --run",
     "compile": "del index.* parser config *.d.ts **/*.d.ts && tsdown",
     "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
     "build": "npm run compile && npm run format",
