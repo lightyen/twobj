@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { context, tw } from "./context"
 
 test("plugin name", async () => {

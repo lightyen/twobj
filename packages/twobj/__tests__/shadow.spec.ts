@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 import { parseBoxShadowValues } from "../src/parser"
 import { tw } from "./context"

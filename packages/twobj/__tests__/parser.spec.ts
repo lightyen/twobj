@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 import * as parser from "../src/parser"
 import { createParser } from "../src/parser"

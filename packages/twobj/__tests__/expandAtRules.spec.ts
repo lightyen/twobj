@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { resolveConfig } from "../src"
 import { createContext } from "../src/core"
 

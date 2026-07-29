@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { flattenColorPalette, merge } from "../src/util"
 
 test("merge object", async () => {

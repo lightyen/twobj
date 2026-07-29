@@ -3,9 +3,9 @@ packages:
   - "examples/*"
   - "tools/*"
 allowBuilds:
-  '@playwright/browser-chromium': true
-  '@swc/core': true
-  '@vscode/vsce-sign': true
+  "@playwright/browser-chromium": false
+  "@swc/core": true
+  "@vscode/vsce-sign": true
   core-js: true
   esbuild: true
   keytar: true

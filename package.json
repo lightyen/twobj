@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "doit": "pnpm update --interactive --latest",
-    "test": "jest",
+    "test": "vitest",
     "build-core": "cd ./packages/twobj && npm run build",
     "build-babel-plugin": "cd ./packages/babel-plugin-twobj && npm run build",
     "build": "npm run build-core && npm run build-babel-plugin"
@@ -22,7 +22,9 @@
     "postcss-js": "4.0.1",
     "prettier": "3.3.3",
     "ts-jest": "29.2.4",
+    "tsdown": "0.22.14",
     "tsup": "8.2.4",
-    "typescript": "5.5.4"
+    "typescript": "^6",
+    "vitest": "4.1.10"
   }
 }

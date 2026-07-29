@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import checkListArray from "./classList.json"
 import { context } from "./context"
 

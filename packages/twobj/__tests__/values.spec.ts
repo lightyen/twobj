@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { __types } from "../src/values"
 import { tw } from "./context"
 

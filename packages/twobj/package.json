@@ -1,6 +1,6 @@
 {
   "name": "twobj",
-  "version": "2.6.1",
+  "version": "3.0.0",
   "homepage": "https://github.com/lightyen/twobj",
   "author": {
     "name": "lightyen",
@@ -11,28 +11,24 @@
   },
   "exports": {
     ".": {
-      "require": "./index.js",
-      "import": "./index.mjs",
-      "types": "./index.d.ts"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     },
     "./parser": {
-      "require": "./parser/index.js",
       "import": "./parser/index.mjs",
-      "types": "./parser/index.d.ts"
+      "types": "./parser/index.d.mts"
     }
   },
   "scripts": {
-    "doit": "pnpm update --interactive --latest",
-    "compile": "del index.* parser config *.d.ts **/*.d.ts && tsup",
+    "test": "vitest",
+    "compile": "del index.* parser config *.d.ts **/*.d.ts && tsdown",
     "format": "prettier --config ../../.prettierrc.yml --write *.*ts **/*.*ts",
     "build": "npm run compile && npm run format",
     "prepack": "npm run build"
   },
   "files": [
     "parser",
-    "index.js",
-    "index.mjs",
-    "*.d.ts"
+    "dist"
   ],
   "devDependencies": {
     "@types/cssesc": "3.0.2",

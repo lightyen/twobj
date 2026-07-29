@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { tw } from "./context"
 
 test("arbitrary selector", async () => {

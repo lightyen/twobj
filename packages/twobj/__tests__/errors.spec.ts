@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 
 test("throw errors", async () => {

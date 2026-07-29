@@ -1,3 +1,4 @@
+import { expect, test } from "vitest"
 import { tw, wrap } from "./context"
 
 test("wrap function", async () => {

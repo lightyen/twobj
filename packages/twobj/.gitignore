@@ -3,3 +3,4 @@ node_modules
 /parser
 /config
 **/*.d.ts
+dist
