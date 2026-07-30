@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
-    "types": ["@types/node", "@types/jest"],
+    "types": ["node"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "strictNullChecks": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "target": "es2021"
+    "module": "preserve",
+    "target": "esnext",
+    "jsx": "preserve",
+    "lib": ["esnext"]
   }
 }

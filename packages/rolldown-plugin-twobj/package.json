@@ -1,0 +1,45 @@
+{
+  "name": "rolldown-plugin-twobj",
+  "version": "0.0.3",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs"
+    },
+    "./types/*": {
+      "types": "./types/*"
+    }
+  },
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "test": "vitest --run"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "twobj": ">= 2.5.6"
+  },
+  "dependencies": {
+    "rolldown-string": "0.3.1"
+  },
+  "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@rolldown/plugin-emotion": "0.1.5",
+    "@types/react": "19.2.17",
+    "@vitejs/plugin-react": "6.0.4",
+    "eslint": "10.3.0",
+    "oxc-unshadowed-visitor": "0.1.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-is": "19.2.8",
+    "rolldown": "1.2.1",
+    "tinyglobby": "0.2.17",
+    "twobj": "2.6.1"
+  }
+}
