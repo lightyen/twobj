@@ -37,7 +37,7 @@ describe("fixtures", () => {
 
 async function transform(code: string, options: TwobjPluginOptions, filename = "virtual:entry.tsx"): Promise<string> {
 	// Use extension from original filename for virtual entry to ensure correct parsing
-	const ext = filename.match(/\.[jt]sx?$/)?.[0] ?? ".ts"
+	const ext = (/\.[jt]sx?$/.exec(filename))?.[0] ?? ".ts"
 	const virtualEntry = `virtual:entry${ext}`
 
 	const build = await rolldown({

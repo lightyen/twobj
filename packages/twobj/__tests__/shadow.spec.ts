@@ -3,7 +3,7 @@ import { createContext, resolveConfig } from "../src"
 import { parseBoxShadowValues } from "../src/parser"
 import { tw } from "./context"
 
-test("boxShadow", async () => {
+test("boxShadow", () => {
 	expect(tw`shadow`).toEqual({
 		"--tw-ring-offset-color": "initial",
 		"--tw-ring-offset-width": "initial",
@@ -79,7 +79,7 @@ test("boxShadow", async () => {
 	})
 })
 
-test("boxShadow array value", async () => {
+test("boxShadow array value", () => {
 	const ctx = createContext(
 		resolveConfig({
 			theme: { boxShadow: { DEFAULT: ["0 1px 3px 0 rgb(0 0 0 / 0.3)", "0 1px 2px -1px rgb(0 0 0 / 0.3)"] } },
@@ -100,7 +100,7 @@ test("boxShadow array value", async () => {
 	})
 })
 
-test("boxShadowColor", async () => {
+test("boxShadowColor", () => {
 	expect(tw`shadow-red-500`).toEqual({ "--tw-shadow-color": "oklch(63.7% 0.237 25.331)" })
 	expect(tw`shadow-red-500/[0.3]`).toEqual({
 		"--tw-shadow-color": "color-mix(in oklab, oklch(63.7% 0.237 25.331) 30%, transparent)",
@@ -110,7 +110,7 @@ test("boxShadowColor", async () => {
 	})
 })
 
-test("shadow value", async () => {
+test("shadow value", () => {
 	expect(
 		parseBoxShadowValues("0 10px 15px -3px rgb(0, 0 ,0 , 0.1), unknown, 0 4px 6px -4px rgb(0 0 0 / 0.2)"),
 	).toMatchObject([
@@ -139,7 +139,7 @@ test("shadow value", async () => {
 	)
 })
 
-test("ring", async () => {
+test("ring", () => {
 	expect(tw`ring`).toEqual({
 		"--tw-ring-offset-color": "initial",
 		"--tw-ring-offset-width": "initial",
@@ -181,7 +181,7 @@ test("ring", async () => {
 	})
 })
 
-test("ringColor", async () => {
+test("ringColor", () => {
 	expect(tw`ring-black`).toEqual({ "--tw-ring-color": "#000" })
 	expect(tw`ring-[hsl(210 55% 55%)]`).toEqual({ "--tw-ring-color": "hsl(210 55% 55%)" })
 	expect(tw`ring-[hsl(210 55% 55%)]/[0.38]`).toEqual({

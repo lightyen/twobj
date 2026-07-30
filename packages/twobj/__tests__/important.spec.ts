@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 import { tw } from "./context"
 
-test("important", async () => {
+test("important", () => {
 	expect(tw`text-black! text-white`).toEqual({ color: "#000 !important" })
 	expect(tw`!text-black text-white`).toEqual({ color: "#000 !important" })
 	expect(tw`(text-black)! text-white`).toEqual({ color: "#000 !important" })

@@ -10,7 +10,6 @@ import type {
 	CSSProperties,
 	CSSValue,
 	MatchOption,
-	PlainCSSProperties,
 	Primitive,
 	StrictResolvedConfigJS,
 	UnnamedPlugin,
@@ -901,7 +900,7 @@ export const classPlugins: ClassPlugins = {
 					if (value === "none") {
 						return {
 							transitionProperty: "none",
-						} as CSSProperties
+						}
 					}
 					return {
 						transitionProperty: value,
@@ -999,7 +998,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				ring(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-ring-offset-shadow": ringOffsetShadowValue,
 						"--tw-ring-shadow": ringShadowValue(value),
@@ -1082,7 +1081,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"space-x"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
@@ -1092,7 +1091,7 @@ export const classPlugins: ClassPlugins = {
 					}
 				},
 				"space-y"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					const val = value == "0" ? "0px" : value
 					return {
 						"& > :not([hidden]) ~ :not([hidden])": {
@@ -1215,7 +1214,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				blur(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-blur": String(value) === "" ? " " : `blur(${value})`,
 						filter: cssFilterValue,
@@ -1237,7 +1236,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				brightness(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-brightness": `brightness(${value})`,
 						filter: cssFilterValue,
@@ -1260,7 +1259,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				contrast(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-contrast": `contrast(${value})`,
 						filter: cssFilterValue,
@@ -1283,7 +1282,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				grayscale(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-grayscale": `grayscale(${value})`,
 						filter: cssFilterValue,
@@ -1306,7 +1305,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"hue-rotate"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-hue-rotate": `hue-rotate(${value})`,
 						filter: cssFilterValue,
@@ -1329,7 +1328,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				invert(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-invert": `invert(${value})`,
 						filter: cssFilterValue,
@@ -1352,7 +1351,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				saturate(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-saturate": `saturate(${value})`,
 						filter: cssFilterValue,
@@ -1375,7 +1374,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				sepia(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-sepia": `sepia(${value})`,
 						filter: cssFilterValue,
@@ -1425,7 +1424,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-blur"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-blur": String(value) === "" ? " " : `blur(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1447,7 +1446,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-brightness"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-brightness": `brightness(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1470,7 +1469,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-contrast"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-contrast": `contrast(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1493,7 +1492,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-grayscale"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-grayscale": `grayscale(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1516,7 +1515,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-hue-rotate"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-hue-rotate": `hue-rotate(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1539,7 +1538,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-invert"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-invert": `invert(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1562,7 +1561,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-saturate"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-saturate": `saturate(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1585,7 +1584,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-sepia"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-sepia": `sepia(${value})`,
 						backdropFilter: cssBackdropFilterValue,
@@ -1608,7 +1607,7 @@ export const classPlugins: ClassPlugins = {
 		matchUtilities(
 			{
 				"backdrop-opacity"(value) {
-					if (!isCSSValue(value)) return {} as PlainCSSProperties
+					if (!isCSSValue(value)) return {}
 					return {
 						"--tw-backdrop-opacity": `opacity(${value})`,
 						backdropFilter: cssBackdropFilterValue,

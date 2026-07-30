@@ -2,11 +2,11 @@ import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 import { ConfigJS } from "../src/types"
 
-test("defaultConfig", async () => {
+test("defaultConfig", () => {
 	expect(resolveConfig()).toMatchSnapshot()
 })
 
-test("resolveConfig", async () => {
+test("resolveConfig", () => {
 	const resolved1 = resolveConfig({})
 	const resolved2 = resolveConfig(resolved1)
 	const resolved3 = resolveConfig(resolved2)
@@ -14,7 +14,7 @@ test("resolveConfig", async () => {
 	expect(resolved2).toEqual(resolved3)
 })
 
-test("resolveConfig undefined", async () => {
+test("resolveConfig undefined", () => {
 	const resolved1 = resolveConfig(undefined)
 	const resolved2 = resolveConfig(resolved1)
 	const resolved3 = resolveConfig(resolved2)
@@ -22,13 +22,13 @@ test("resolveConfig undefined", async () => {
 	expect(resolved2).toEqual(resolved3)
 })
 
-test("overwrite defaultConfig", async () => {
+test("overwrite defaultConfig", () => {
 	const data: ConfigJS = { darkMode: "class", prefix: "tw-", separator: "||", important: "#app" }
 	const resolved = resolveConfig(data)
 	expect(resolved).toMatchObject(data)
 })
 
-test("extend", async () => {
+test("extend", () => {
 	const ctx = createContext(resolveConfig({ theme: { extend: { colors: { foo: "#fff" } } } }))
 	expect(ctx.css("text-white")).toEqual({ color: "#fff" })
 	expect(ctx.css("text-foo")).toEqual({ color: "#fff" })
@@ -61,7 +61,7 @@ test("does not duplicate extended configs every time resolveConfig is called", (
 	expect(foo?.bar?.baz).toMatchObject([{ color: "red" }, { color: "blue" }])
 })
 
-test("overwrite default colors", async () => {
+test("overwrite default colors", () => {
 	let ctx = createContext(resolveConfig({ theme: { extend: { colors: { blue: "#fff", green: undefined } } } }))
 	expect(ctx.css("text-blue")).toEqual({ color: "#fff" })
 	expect(ctx.css("text-blue-100")).toEqual({})
@@ -79,7 +79,7 @@ test("overwrite default colors", async () => {
 	expect(ctx.css("text-blue-100")).toEqual({})
 })
 
-test("raw screen value", async () => {
+test("raw screen value", () => {
 	const ctx = createContext(
 		resolveConfig({
 			theme: {

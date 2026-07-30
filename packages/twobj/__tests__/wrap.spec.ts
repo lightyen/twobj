@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { tw, wrap } from "./context"
 
-test("wrap function", async () => {
+test("wrap function", () => {
 	expect(wrap`hover:`({ color: "black" })).toEqual({
 		"@media (hover: hover) and (pointer: fine)": {
 			"&:hover": { color: "black" },

@@ -98,8 +98,8 @@ export default function twobjPlugin(options: TwobjPluginOptions = {}): Plugin {
 		// @ts-expect-error Vite-specific property
 		enforce: "pre",
 
-		// @ts-expect-error Vite-specific hook
-		configResolved(config) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		configResolved(config: any) {
 			isDev = !config.isProduction
 		},
 

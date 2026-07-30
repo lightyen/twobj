@@ -1,3 +1,3 @@
-declare var VSCODE_NLS_CONFIG: string
-declare var __COMMIT_HASH__: string
-declare var __VSCODE_WEB__: boolean
+declare let VSCODE_NLS_CONFIG: string
+declare let __COMMIT_HASH__: string
+declare let __VSCODE_WEB__: boolean

@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 
-test("preflight", async () => {
+test("preflight", () => {
 	expect(
 		createContext(
 			resolveConfig({
@@ -17,7 +17,7 @@ test("preflight", async () => {
 	expect(createContext(resolveConfig({})).globalStyles).toMatchObject({})
 })
 
-test("addDefaults", async () => {
+test("addDefaults", () => {
 	expect(
 		createContext(
 			resolveConfig({
@@ -43,7 +43,7 @@ test("addDefaults", async () => {
 	})
 })
 
-test("disable corePlugins", async () => {
+test("disable corePlugins", () => {
 	const ctx = createContext(
 		resolveConfig({
 			corePlugins: {
@@ -55,7 +55,7 @@ test("disable corePlugins", async () => {
 	expect(ctx.css("bg-auto")).toEqual({ backgroundSize: "auto" })
 })
 
-test("disable all corePlugins", async () => {
+test("disable all corePlugins", () => {
 	let ctx = createContext(
 		resolveConfig({
 			corePlugins: [],
@@ -73,7 +73,7 @@ test("disable all corePlugins", async () => {
 	expect(ctx.css("bg-auto")).toEqual({})
 })
 
-test("addVariant", async () => {
+test("addVariant", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -91,7 +91,7 @@ test("addVariant", async () => {
 	})
 })
 
-test("matchVariant", async () => {
+test("matchVariant", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [

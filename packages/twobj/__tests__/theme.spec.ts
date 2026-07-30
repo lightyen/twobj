@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 
-test("access tailwind config theme", async () => {
+test("access tailwind config theme", () => {
 	const ctx = createContext(
 		resolveConfig({
 			theme: {
@@ -32,9 +32,9 @@ test("access tailwind config theme", async () => {
 	)
 
 	function theme(strings: TemplateStringsArray | string): unknown {
-		let value = ""
+		let value: string
 		if (typeof strings !== "string") {
-			value = strings[0] as string
+			value = strings[0]
 		} else {
 			value = strings
 		}
@@ -42,9 +42,9 @@ test("access tailwind config theme", async () => {
 	}
 
 	function tw(strings: TemplateStringsArray | string): unknown {
-		let value = ""
+		let value: string
 		if (typeof strings !== "string") {
-			value = strings[0] as string
+			value = strings[0]
 		} else {
 			value = strings
 		}

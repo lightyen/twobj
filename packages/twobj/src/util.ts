@@ -72,10 +72,12 @@ export function applyImportant(css: CSSProperties): CSSProperties {
 		return Object.fromEntries(
 			Object.entries(css).map(arr => {
 				const [, value] = arr
-				if (typeof value === "string" && value.includes(IMPORTANT)) {
-					return arr
+				if (typeof value === "string") {
+					if (value.includes(IMPORTANT)) {
+						return arr
+					}
+					arr[1] = `${value} ${IMPORTANT}`
 				}
-				arr[1] = `${value} ${IMPORTANT}`
 				return arr
 			}),
 		)
@@ -146,7 +148,7 @@ export function merge(target: CSSProperties, ...sources: CSSProperties[string][]
 }
 
 export function flattenColorPalette(colors: Palette = {}): {
-	[color: string | string]: Exclude<ColorValue, CustomPalette>
+	[color: string]: Exclude<ColorValue, CustomPalette>
 } {
 	return Object.fromEntries(__flatten(colors))
 	function __flatten(colors: Palette = {}) {
@@ -177,7 +179,7 @@ export function excludeDefaultPalette(palette: ReturnType<typeof flattenColorPal
 export function opacityToFloat(value: string): number {
 	if (!value) return NaN
 
-	const dot = value.indexOf(".") !== -1
+	const dot = value.includes(".")
 	let percent = false
 	if (value.endsWith("%")) {
 		value = value.slice(0, -1)
@@ -357,8 +359,8 @@ export function getClassListFrom(
 					}
 				}
 			}
-			for (let i = 0; i < result.length; i++) {
-				ret.add(result[i])
+			for (const r of result) {
+				ret.add(r)
 			}
 		}
 	}

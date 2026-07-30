@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 
-test("style objects are immutable", async () => {
+test("style objects are immutable", () => {
 	const ctx = createContext(resolveConfig())
 	expect(ctx.css("sm:(flex py-32)")).toEqual({
 		"@media (min-width: 640px)": { display: "flex", paddingTop: "8rem", paddingBottom: "8rem" },

@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { context } from "./context"
 import variantList from "./variants.json"
 
-test("variantList", async () => {
+test("variantList", () => {
 	const variantListSet = context.getVariants()
 	const originSet = new Set<string>(variantList)
 

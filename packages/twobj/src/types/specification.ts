@@ -17,7 +17,7 @@ export interface Func {
 	(...args: any): any
 }
 
-/// TailwindConfig
+// / TailwindConfig
 
 export type ConfigValue = Func | Primitive
 

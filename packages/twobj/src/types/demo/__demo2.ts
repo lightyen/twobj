@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ConfigJS, CSSProperties, CSSValue } from ".."
 import { defaultColors } from "../../defaultColors"
 import { plugin } from "../../plugin"

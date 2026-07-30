@@ -3,14 +3,14 @@ import { createContext, resolveConfig } from "../src"
 import * as parser from "../src/parser"
 import { createParser } from "../src/parser"
 
-test("getUnitFromNumberFunction", async () => {
+test("getUnitFromNumberFunction", () => {
 	expect(parser.getUnitFromNumberFunction("bottom 0px center")).toBeUndefined()
 	expect(parser.getUnitFromNumberFunction("min(0, 300)")).toBeNull()
 	expect(parser.getUnitFromNumberFunction("min(0px, 200rem)")).toEqual("px")
 	expect(parser.getUnitFromNumberFunction("min(0rem, 200px)")).toEqual("rem")
 })
 
-test("splitAtTopLevelOnly", async () => {
+test("splitAtTopLevelOnly", () => {
 	expect(parser.splitAtTopLevelOnly("bottom 0px center")).toMatchSnapshot()
 	expect(parser.splitAtTopLevelOnly("min(0, 300)")).toMatchSnapshot()
 	expect(parser.splitAtTopLevelOnly("min(0px, 200rem)")).toMatchSnapshot()
@@ -25,7 +25,7 @@ test("splitAtTopLevelOnly", async () => {
 	])
 })
 
-test("normalizeSelector", async () => {
+test("normalizeSelector", () => {
 	expect(parser.normalizeSelector("&:hover")).toEqual("&:hover")
 	expect(parser.normalizeSelector(":hover")).toEqual("&:hover")
 	expect(parser.normalizeSelector("svg")).toEqual("& svg")
@@ -41,7 +41,7 @@ test("normalizeSelector", async () => {
 	expect(parser.normalizeSelector("")).toEqual("&")
 })
 
-test("parseColor", async () => {
+test("parseColor", () => {
 	expect(parser.parseColor("red")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 3] })
 	expect(parser.parseColor("#ff0000")).toMatchObject({ fn: "rgb", params: ["255", "0", "0"], range: [0, 7] })
 	expect(parser.parseColor("#ff000080")).toMatchObject({
@@ -81,7 +81,7 @@ test("parseColor", async () => {
 	})
 })
 
-test("splitCssParams", async () => {
+test("splitCssParams", () => {
 	const source = "0 20px 25px -5px rgb(0 0 0 / 0.1)"
 	expect(parser.splitCssParams(source)).toMatchObject([
 		"0",
@@ -99,7 +99,7 @@ test("splitCssParams", async () => {
 	])
 })
 
-test("tokenize", async () => {
+test("tokenize", () => {
 	const parser = createParser()
 	expect(parser.tokenize("bg-black")).toEqual(["bg-black"])
 	expect(parser.tokenize("bg-black   text-black")).toEqual(["bg-black", "text-black"])
@@ -117,7 +117,7 @@ test("tokenize", async () => {
 	expect(parser.tokenize("h-1/3d")).toEqual(["h-1/3d"])
 })
 
-test("separator", async () => {
+test("separator", () => {
 	{
 		const ctx = createContext(resolveConfig({ separator: "|" }))
 		expect(ctx.css("in-range|text-black/10")).toEqual({
@@ -158,7 +158,7 @@ test("separator", async () => {
 	}
 })
 
-test("parse the group of variants", async () => {
+test("parse the group of variants", () => {
 	const code1 = `!(variant1: variant2:(variant3:
 		// comment
 		variant4:) unknown [unknown: value]):!bg-black`

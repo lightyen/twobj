@@ -1,12 +1,12 @@
 {
-  "editor.formatOnSave": true,
-  "editor.snippetSuggestions": "none",
-  "javascript.suggestionActions.enabled": false,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },
+  "editor.formatOnSave": true,
+  "editor.snippetSuggestions": "none",
+  "js/ts.suggestionActions.enabled": false,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "search.exclude": {
     "**/*.spec.ts.snap": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  }
 }

@@ -195,7 +195,7 @@ export function colorFromTransparent(): vscode.Color {
 
 export function getNumericValue(value: string | undefined, factor: number) {
 	if (!value) return NaN
-	const match = value.match(/^([-+]?[0-9]*\.?[0-9]+)(%?)$/)
+	const match = /^([-+]?[0-9]*\.?[0-9]+)(%?)$/.exec(value)
 	if (!match) return NaN
 	if (match) {
 		if (match[2]) {
@@ -211,7 +211,7 @@ export function getNumericValue(value: string | undefined, factor: number) {
 
 export function getAngle(value: string | undefined) {
 	if (!value) return NaN
-	const match = value.match(/^([-+]?[0-9]*\.?[0-9]+)(deg)?$/) // TODO: rad, grad or turns
+	const match = /^([-+]?[0-9]*\.?[0-9]+)(deg)?$/.exec(value) // TODO: rad, grad or turns
 	if (match) {
 		return parseFloat(value) % 360
 	}

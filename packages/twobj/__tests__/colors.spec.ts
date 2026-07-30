@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { tw } from "./context"
 
-test("color-function", async () => {
+test("color-function", () => {
 	expect(tw`bg-[rgb(1 2 3 / 0.1)]`).toEqual({ backgroundColor: "rgb(1 2 3 / 0.1)" })
 
 	expect(tw`bg-[rgb(var(--color))]`).toEqual({ backgroundColor: "rgb(var(--color))" })

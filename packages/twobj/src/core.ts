@@ -110,7 +110,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		config: legacyConfig,
 		theme: resolveTheme,
 		e: escapeCss,
-		variants(corePlugin) {
+		variants(_corePlugin) {
 			return []
 		},
 		corePlugins(feature: keyof CorePluginFeatures): boolean {
@@ -199,7 +199,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			const c = new Set<string>()
 			for (const [key, specs] of utilitySpecCollection) {
 				for (const spec of toArray(specs)) {
-					const result: string[] = []
 					if (spec.type === "lookup") {
 						c.add(key)
 					}
@@ -404,8 +403,8 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 
 	function matchVariant<T>(
 		variantName: string,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		render: (value: T, options: { modifier?: string; wrapped?: boolean }) => string | string[],
+
+		render: (value: string | T, options: { modifier?: string; wrapped?: boolean }) => string | string[],
 		{
 			values = {},
 			filterDefault = false,
@@ -423,7 +422,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			post,
 			filterDefault,
 			represent(restIndex, node) {
-				return representVariant({ restIndex, node, filterDefault, values, render, post })
+				return representVariant<T>({ restIndex, node, filterDefault, values, render, post })
 			},
 		})
 		arbitraryVariantCollection.add(variantName)
@@ -788,9 +787,9 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 	function css(strings: string, options?: Options): CSSProperties
 	function css(strings: TemplateStringsArray, options?: Options): CSSProperties
 	function css(strings: string | TemplateStringsArray, options?: Options): CSSProperties {
-		let value = ""
+		let value: string
 		if (typeof strings !== "string") {
-			value = strings ? (strings[0] as string) : ""
+			value = strings ? strings[0] : ""
 		} else {
 			value = strings
 		}
@@ -1004,12 +1003,11 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 		return createVariant([node.selector.text])
 	}
 
-	function unknownVariant(node: nodes.UnknownVariant) {
-		let variant: Variant | undefined
+	function unknownVariant(node: nodes.UnknownVariant): Variant | undefined {
 		if (validate) {
 			throw createParseError(node, "Not supported.")
 		}
-		return variant
+		return undefined
 	}
 
 	function variant(
@@ -1077,7 +1075,6 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			if (c.type === "lookup") {
 				const css = c.represent(restIndex, node, negative)
 				if (css) {
-					c.supportsNegativeValues
 					return { css: css, spec: c }
 				}
 			} else {
@@ -1128,7 +1125,7 @@ export function createContext(config: ResolvedConfigJS, { throwError = false }: 
 			return ret
 		}
 
-		if (text[0] === "-") {
+		if (text.startsWith("-")) {
 			ret.negative = true
 			text = text.slice(1)
 		}

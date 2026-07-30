@@ -44,7 +44,7 @@ export const provideColorPresentations: vscode.DocumentColorProvider["provideCol
 	{ document, range },
 ) => {
 	const result: vscode.ColorPresentation[] = []
-	const level4 = document.getText(range).indexOf(",") === -1
+	const level4 = !document.getText(range).includes(",")
 	const red256 = Math.round(color.red * 255),
 		green256 = Math.round(color.green * 255),
 		blue256 = Math.round(color.blue * 255)

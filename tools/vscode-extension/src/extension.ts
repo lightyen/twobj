@@ -16,7 +16,7 @@ function createWorkspacesHandler() {
 	/** all opened workspaces, including not activated */
 	let workspaceFolders: vscode.WorkspaceFolder[] = []
 	/** all activated intances */
-	const clients: Map<string, Awaited<ReturnType<typeof workspaceClient>>> = new Map()
+	const clients = new Map<string, Awaited<ReturnType<typeof workspaceClient>>>()
 	return {
 		clients,
 		initialize,
@@ -77,7 +77,7 @@ function createWorkspacesHandler() {
 		})
 		function toString(folder: vscode.WorkspaceFolder) {
 			let result = folder.uri.toString()
-			if (result.charAt(result.length - 1) !== "/") {
+			if (!result.endsWith("/")) {
 				result = result + "/"
 			}
 			return result

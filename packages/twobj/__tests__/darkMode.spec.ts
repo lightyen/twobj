@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 
-test("darkMode0", async () => {
+test("darkMode0", () => {
 	const ctx0 = createContext(resolveConfig())
 	const ctx1 = createContext(resolveConfig({ darkMode: "class" }))
 	const ctx2 = createContext(resolveConfig({ darkMode: ["class", ".test-dark"] }))
@@ -23,7 +23,7 @@ test("darkMode0", async () => {
 	})
 })
 
-test("darkMode1", async () => {
+test("darkMode1", () => {
 	const ctx1 = createContext(resolveConfig({ darkMode: "selector" }))
 	const ctx2 = createContext(resolveConfig({ darkMode: ["selector", ".test-dark"] }))
 
@@ -39,7 +39,7 @@ test("darkMode1", async () => {
 	})
 })
 
-test("darkMode2", async () => {
+test("darkMode2", () => {
 	const ctx0 = createContext(resolveConfig({ darkMode: ["variant", ".test-dark"] }))
 	const ctx1 = createContext(resolveConfig({ darkMode: ["variant", ".test-dark &"] }))
 	const ctx2 = createContext(resolveConfig({ darkMode: ["variant", () => ":is([abc])"] }))

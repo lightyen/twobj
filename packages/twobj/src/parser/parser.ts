@@ -408,7 +408,7 @@ export function createParser(separator = ":") {
 				// aaa-[..]/mmm\s
 				const a = ar_rb + 2
 				let modifier: nodes.Modifier | undefined
-				let term = a
+				let term: number
 
 				if (source.charCodeAt(a) === SQUARE_BRACKETS[0]) {
 					// tooltip-[foo]/[..]:mb-2

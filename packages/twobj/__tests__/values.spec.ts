@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { __types } from "../src/values"
 import { tw } from "./context"
 
-test("number", async () => {
+test("number", () => {
 	expect(__types.number.handleValue("0")).not.toBeUndefined()
 	expect(__types.number.handleValue("1")).not.toBeUndefined()
 	expect(__types.number.handleValue("0.3")).not.toBeUndefined()
@@ -28,7 +28,7 @@ test("number", async () => {
 	expect(__types.number.handleValue("rgba(209, 218, 229, 0.5)")).toBeUndefined()
 })
 
-test("length", async () => {
+test("length", () => {
 	expect(__types.length.handleValue("0")).not.toBeUndefined()
 	expect(__types.length.handleValue("0px")).not.toBeUndefined()
 	expect(__types.length.handleValue("0.3rem")).not.toBeUndefined()
@@ -48,7 +48,7 @@ test("length", async () => {
 	expect(__types.length.handleValue("10%", { negative: true })).toBeUndefined()
 })
 
-test("percentage", async () => {
+test("percentage", () => {
 	expect(__types.percentage.handleValue("0")).not.toBeUndefined()
 	expect(__types.percentage.handleValue("0%")).not.toBeUndefined()
 	expect(__types.percentage.handleValue("0px")).toBeUndefined()
@@ -70,7 +70,7 @@ test("percentage", async () => {
 	)
 })
 
-test("angle", async () => {
+test("angle", () => {
 	expect(__types.angle.handleValue("0")).not.toBeUndefined()
 	expect(__types.angle.handleValue("0deg")).not.toBeUndefined()
 	expect(__types.angle.handleValue("10reg")).toBeUndefined()
@@ -108,7 +108,7 @@ test("color", () => {
 	expect(__types.color.handleValue("center")).toBeUndefined()
 })
 
-test("background position", async () => {
+test("background position", () => {
 	expect(__types["background-position"].handleValue("center")).not.toBeUndefined()
 	expect(__types["background-position"].handleValue("left")).not.toBeUndefined()
 	expect(__types["background-position"].handleValue("25% 75%")).not.toBeUndefined()
@@ -121,7 +121,7 @@ test("background position", async () => {
 	expect(__types["background-position"].handleValue("10% top right")).toBeUndefined()
 })
 
-test("background size", async () => {
+test("background size", () => {
 	expect(__types["background-size"].handleValue("auto auto")).not.toBeUndefined()
 	expect(__types["background-size"].handleValue("calc(10px + 12%)")).not.toBeUndefined()
 	expect(
@@ -131,7 +131,7 @@ test("background size", async () => {
 	expect(__types["background-size"].handleValue("any")).toBeUndefined()
 })
 
-test("url", async () => {
+test("url", () => {
 	expect(
 		__types.url.handleValue("url(https://interactive-examples.mdn.mozilla.net/media/examples/lizard.png)"),
 	).not.toBeUndefined()
@@ -142,7 +142,7 @@ test("url", async () => {
 	).toBeUndefined()
 })
 
-test("background image", async () => {
+test("background image", () => {
 	expect(__types.image.handleValue("image(aaaaa)")).not.toBeUndefined()
 	expect(__types.image.handleValue("element(xxxx")).not.toBeUndefined()
 	expect(
@@ -165,40 +165,40 @@ test("background image", async () => {
 	).not.toBeUndefined()
 })
 
-test("line-width", async () => {
+test("line-width", () => {
 	expect(__types["line-width"].handleValue("thick")).not.toBeUndefined()
 	expect(__types["line-width"].handleValue("thin")).not.toBeUndefined()
 	expect(__types["line-width"].handleValue("smaller")).toBeUndefined()
 	expect(__types["line-width"].handleValue("medium")).not.toBeUndefined()
 })
 
-test("relative-size", async () => {
+test("relative-size", () => {
 	expect(__types["relative-size"].handleValue("larger")).not.toBeUndefined()
 	expect(__types["relative-size"].handleValue("smaller")).not.toBeUndefined()
 	expect(__types["relative-size"].handleValue("medium")).toBeUndefined()
 	expect(__types["relative-size"].handleValue("thin")).toBeUndefined()
 })
 
-test("absolute-size", async () => {
+test("absolute-size", () => {
 	expect(__types["absolute-size"].handleValue("xx-small")).not.toBeUndefined()
 	expect(__types["absolute-size"].handleValue("xx-large")).not.toBeUndefined()
 	expect(__types["absolute-size"].handleValue("thin")).toBeUndefined()
 	expect(__types["absolute-size"].handleValue("medium")).not.toBeUndefined()
 })
 
-test("generic-name", async () => {
+test("generic-name", () => {
 	expect(__types["generic-name"].handleValue("monospace")).not.toBeUndefined()
 	expect(__types["generic-name"].handleValue("sans-serif")).not.toBeUndefined()
 	expect(__types["generic-name"].handleValue("consola")).toBeUndefined()
 })
 
-test("family-name", async () => {
+test("family-name", () => {
 	expect(__types["family-name"].handleValue("monospace, abc, def")).not.toBeUndefined()
 	expect(__types["family-name"].handleValue("sans-serif")).not.toBeUndefined()
 	expect(__types["family-name"].handleValue("123")).toBeUndefined()
 })
 
-test("color opacity", async () => {
+test("color opacity", () => {
 	expect(tw`caret-[#fef2f2]/20`).toEqual({ caretColor: "color-mix(in srgb, rgb(254 242 242) 20%, transparent)" })
 	expect(tw`fill-[#fef2f2]/40`).toEqual({ fill: "color-mix(in srgb, rgb(254 242 242) 40%, transparent)" })
 })

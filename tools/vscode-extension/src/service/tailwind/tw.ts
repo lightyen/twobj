@@ -29,7 +29,7 @@ async function beautify(root: Root, tabSize: number) {
 	function format(code: string) {
 		return prettier.format(code, {
 			parser: "scss",
-			plugins: [cssPrettier as unknown as Plugin],
+			plugins: [cssPrettier],
 			useTabs: false,
 			tabWidth: tabSize,
 		})
@@ -49,7 +49,7 @@ function comment(node: Root): void {
 	return
 
 	function addComment(node: AtRule | Rule) {
-		if (node.nodes && node.nodes.every(n => n.type === "decl")) {
+		if (node.nodes?.every(n => n.type === "decl")) {
 			node.prepend(postcss.comment({ text: "..." }))
 			return
 		}
@@ -64,7 +64,7 @@ function comment(node: Root): void {
 	}
 }
 
-export type ColorDesc = {
+export interface ColorDesc {
 	color?: string
 	backgroundColor?: string
 	borderColor?: string
@@ -151,15 +151,15 @@ export async function createTwContext(config: ResolvedConfigJS) {
 				variants[2].push(k)
 				break
 			default:
-				if (screens.indexOf(k) === -1) {
+				if (!screens.includes(k)) {
 					variants[3].push(k)
 				}
 				break
 		}
 	}
 
-	const decorationColors: Map<string, ColorDesc> = new Map()
-	const completionColors: Map<string, string | undefined> = new Map()
+	const decorationColors = new Map<string, ColorDesc>()
+	const completionColors = new Map<string, string | undefined>()
 	for (const [key, values] of context.getColorUtilities().entries()) {
 		const result = getDecorationColor(values)
 		if (result) {
@@ -170,7 +170,7 @@ export async function createTwContext(config: ResolvedConfigJS) {
 		}
 	}
 
-	const declsCache: Map<string, ReturnType<typeof renderDecls>> = new Map()
+	const declsCache = new Map<string, ReturnType<typeof renderDecls>>()
 
 	const utilitySet = context.getUtilities()
 
@@ -415,7 +415,7 @@ export async function createTwContext(config: ResolvedConfigJS) {
 
 	function screenSorter(a: string, b: string) {
 		function getWidth(value: string) {
-			const match = value.match(/@media\s+\(.*width:\s*(\d+)px/)
+			const match = /@media\s+\(.*width:\s*(\d+)px/.exec(value)
 			if (match != null) {
 				const [, px] = match
 				return Number(px)
@@ -435,7 +435,7 @@ export async function createTwContext(config: ResolvedConfigJS) {
 			return cached
 		}
 
-		const decls: Map<string, string[]> = new Map()
+		const decls = new Map<string, string[]>()
 
 		const { root, css } = render(classname)
 		const scope = renderScope(css)

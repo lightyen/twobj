@@ -7,10 +7,6 @@ declare module "vscode-css-languageservice/lib/esm/services/cssValidation" {
 		private settings?
 		constructor(cssDataManager: CSSDataManager)
 		configure(settings?: LanguageSettings): void
-		doValidation(
-			document: TextDocument,
-			stylesheet: nodes.Stylesheet,
-			settings?: LanguageSettings | undefined,
-		): Diagnostic[]
+		doValidation(document: TextDocument, stylesheet: nodes.Stylesheet, settings?: LanguageSettings): Diagnostic[]
 	}
 }

@@ -256,7 +256,7 @@ export function colorMix(color: string, opacity: string): string {
 	}
 	const pct = Math.round(Math.min(1, Math.max(0, num)) * 100)
 	const trimmed = color.trim()
-	const isSRGB = /^#/.test(trimmed) || isSRGBColorFunction(trimmed.split("(")[0])
+	const isSRGB = trimmed.startsWith("#") || isSRGBColorFunction(trimmed.split("(")[0])
 	const space = isSRGB ? "srgb" : "oklab"
 	return `color-mix(in ${space}, ${trimmed} ${pct}%, transparent)`
 }
@@ -330,14 +330,14 @@ export function normalizeParamColor(p: ParamColor): boolean {
 	}
 
 	// ex: 3 /0.5
-	if (last[0] === "/") {
+	if (last.startsWith("/")) {
 		p.opacity = last.slice(1)
 		p.params = p.params.slice(0, p.params.length - 1)
 		return p.params.length >= 3
 	}
 
 	// ex: 3/ 0.5
-	if (before[before.length - 1] === "/") {
+	if (before.endsWith("/")) {
 		p.opacity = last
 		p.params[p.params.length - 2] = before.slice(0, -1)
 		p.params = p.params.slice(0, p.params.length - 1)
@@ -356,9 +356,9 @@ export function normalizeParamColor(p: ParamColor): boolean {
 		// support legacy syntax
 		const slash = p.params.some(v => {
 			if (isParamObject(v)) {
-				return v.getText().indexOf("/") !== -1
+				return v.getText().includes("/")
 			}
-			return v.indexOf("/") !== -1
+			return v.includes("/")
 		})
 		if (slash) {
 			return false

@@ -1,4 +1,5 @@
-import { ConfigJS, ConfigObject, FontSizeValueExtension } from ".."
+/* eslint-disable */
+import { ConfigJS, ConfigObject } from ".."
 import { defaultConfig } from "../../defaultConfig"
 import { resolveConfig } from "../../resolveConfig"
 
@@ -40,5 +41,5 @@ resolveConfig({
 	],
 })
 
-const v: ConfigObject = {} as FontSizeValueExtension
+const v: ConfigObject = {}
 v

@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { flattenColorPalette, merge } from "../src/util"
 
-test("merge object", async () => {
+test("merge object", () => {
 	const a = { a: { b: { c: 24 } } }
 	const b = { a: { b: { d: "he" } } }
 	const result = merge(a, b)
@@ -15,7 +15,7 @@ test("merge object", async () => {
 	})
 })
 
-test("flattenColorPalette", async () => {
+test("flattenColorPalette", () => {
 	expect(
 		flattenColorPalette({
 			abc: {

@@ -43,9 +43,12 @@ export const pseudoVariants: Array<[variantName: string, desc: string]> = [
 	"active",
 	"enabled",
 	"disabled",
-].map<[string, string]>((variant: string | [string, string]) =>
-	Array.isArray(variant) ? variant : [variant, `&:${variant}`],
-)
+].map(variant => {
+	if (Array.isArray(variant)) {
+		return variant as [string, string]
+	}
+	return [variant, `&:${variant}`]
+})
 
 interface LookupResult {
 	key?: string
@@ -120,7 +123,7 @@ export function lookupVariantValues(
 	return ret
 }
 
-export function representVariant({
+export function representVariant<T = unknown>({
 	restIndex,
 	node,
 	values,
@@ -130,8 +133,8 @@ export function representVariant({
 }: {
 	restIndex: number
 	node: parser.SimpleVariant | parser.ArbitraryVariant | parser.UnknownVariant
-	values: Record<string, unknown>
-	render: VariantRender
+	values: Record<string, T>
+	render: VariantRender<T>
 	filterDefault: boolean
 	post?: Variant | undefined
 }) {

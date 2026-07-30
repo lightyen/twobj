@@ -39,9 +39,8 @@ function parse_theme_fn(source: string, [start = 0, end = source.length] = []) {
 		let valueEnd = end
 		const params = splitAtTopLevelOnly(source.slice(start, valueEnd), false)
 		if (params.length > 1) {
-			const [first, ...rest] = params.map(v => v.value)
+			const [first] = params.map(v => v.value)
 			if (first.length !== valueEnd - start) {
-				defaultValue = rest.join(",").trim()
 				valueEnd = start + first.length
 			}
 		}
@@ -165,7 +164,7 @@ export function renderThemeFunc(config: ResolvedConfigJS, source: string): strin
 
 	for (const node of parse_theme(source)) {
 		const [value, opacity] = theme(config, node.value.path)
-		const val = value !== undefined ? renderThemeValue(value, opacity) : node.defaultValue ?? ""
+		const val = value !== undefined ? renderThemeValue(value, opacity) : (node.defaultValue ?? "")
 		ret += source.slice(start, node.start) + val
 		start = node.end
 	}
@@ -213,7 +212,7 @@ export function resolveThemeNoDefault(
 	}
 
 	target = resolve(config.theme, node.path, false)
-	return target !== undefined ? resolveThemeValue(target, opacity) : defaultValue ?? ""
+	return target !== undefined ? resolveThemeValue(target, opacity) : (defaultValue ?? "")
 }
 
 /**
@@ -253,7 +252,6 @@ export function theme(
 	if (ret.opacity) {
 		value = resolve(config.theme, ret.path, useDefault)
 		opacity = ret.opacity
-		path = ret.path
 	}
 	return [value, opacity]
 }

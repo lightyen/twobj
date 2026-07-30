@@ -12,7 +12,7 @@ import { CSSProperties } from "../src/types"
 import { isCSSValue } from "../src/util"
 import { context } from "./context"
 
-test("diff tailwindcss", async () => {
+test("diff tailwindcss", () => {
 	const tailwindContext = createContext(resolveConfig({} as Config))
 
 	/** classnames */
@@ -34,7 +34,7 @@ test("diff tailwindcss", async () => {
 		}
 
 		// Not supported
-		if (/^contain-/.test(classname)) {
+		if (classname.startsWith("contain-")) {
 			return false
 		}
 
@@ -52,13 +52,13 @@ test("diff tailwindcss", async () => {
 	const tailwindSet = new Set(tailwind)
 
 	for (const name of libSet) {
-		if (/^bg-gradient/.test(name)) {
+		if (name.startsWith("bg-gradient")) {
 			continue
 		}
 		expect(tailwindSet).toContain(name)
 	}
 	for (const name of tailwindSet) {
-		if (/^bg-gradient/.test(name as string)) {
+		if (name.startsWith("bg-gradient")) {
 			continue
 		}
 		expect(libSet).toContain(name)
@@ -96,7 +96,7 @@ test("diff tailwindcss", async () => {
 
 	const colors = context.getColorUtilities()
 	for (const c of tailwind.filter(classname => {
-		if (classname[0] === "-") return false
+		if (classname.startsWith("-")) return false
 		if (classname.startsWith("float")) return false
 		if (classname.startsWith("transform")) return false
 		if (classname.startsWith("translate")) return false

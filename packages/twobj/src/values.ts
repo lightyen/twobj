@@ -434,7 +434,7 @@ const lineWidth: ValueTypeSpec<string | number | null | undefined> = (function (
 			if (values.length === 0) {
 				return unambiguous ? "" : undefined
 			}
-			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
+			return values.every(() => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -460,7 +460,7 @@ const absoluteSize: ValueTypeSpec<string | number | null | undefined> = (functio
 			if (values.length === 0) {
 				return unambiguous ? "" : undefined
 			}
-			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
+			return values.every(() => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -500,7 +500,7 @@ const genericName: ValueTypeSpec<string | number | null | undefined> = (function
 			if (values.length === 0) {
 				return unambiguous ? "" : undefined
 			}
-			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
+			return values.every(() => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()
@@ -554,7 +554,7 @@ const relativeSize: ValueTypeSpec<string | number | null | undefined> = (functio
 			if (values.length === 0) {
 				return unambiguous ? "" : undefined
 			}
-			return values.every(v => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
+			return values.every(() => keywords.findIndex(u => value.endsWith(u)) !== -1) ? value : undefined
 		},
 	}
 })()

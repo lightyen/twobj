@@ -38,7 +38,7 @@ declare module "vscode-css-languageservice/lib/esm/services/cssCompletion" {
 			position: Position,
 			styleSheet: nodes.Stylesheet,
 			documentContext: DocumentContext,
-			completionSettings?: CompletionSettings | undefined,
+			completionSettings?: CompletionSettings  ,
 		): Promise<CompletionList>
 		doComplete(
 			document: TextDocument,

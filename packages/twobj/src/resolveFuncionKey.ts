@@ -28,7 +28,7 @@ export function resolveFunctionKeys(themeObject: ConfigObject): ConfigObject {
 		for (let i = 0; i < paths.length; i++) {
 			const path = paths[i].value
 			if (isObject(target) && Object.prototype.hasOwnProperty.call(target, path)) {
-				target = (target as ConfigObject)[path]
+				target = target[path]
 			} else {
 				const result = parser.tryOpacity(paths)
 				if (!result.opacity) {

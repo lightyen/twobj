@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
 	ConfigFunction,
 	CorePlugin,
@@ -11,7 +10,7 @@ import type {
 } from "./types"
 
 /** Create a tailwind plugin. */
-export const plugin: CreatePlugin = (first: string | UnnamedPlugin, second?: unknown, third?: unknown) => {
+export const plugin: CreatePlugin = (first: string | UnnamedPlugin, second?: unknown, _third?: unknown) => {
 	// prevent plugin name to be minified
 	if (typeof first === "string") {
 		Object.defineProperty(second, "name", { value: first, writable: false })

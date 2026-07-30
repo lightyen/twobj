@@ -11,7 +11,7 @@ export function getReferenceLinks(keyword: string) {
 	const links: Reference[] = []
 	if (typeof originUrl === "string") {
 		const last = /[\w-.]+$/
-		const match = originUrl.match(last)
+		const match = last.exec(originUrl)
 		links.push({ name: match?.[0] || "", url: originUrl })
 	}
 	return links

@@ -164,7 +164,7 @@ export default async function hover(
 					if (target.type === parser.NodeType.SimpleVariant) {
 						const variant = target.key.text
 						if (options.references) {
-							const isScreens = state.tw.screens.indexOf(variant) === -1
+							const isScreens = !state.tw.screens.includes(variant)
 							const desc = isScreens ? getDescription(variant) : getDescription("screens")
 							if (typeof desc === "string" && desc) {
 								header.appendMarkdown(desc + "\n")

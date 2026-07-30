@@ -95,7 +95,7 @@ export function createColorProvider(tw: TwContext, separator: string) {
 
 				// render
 				for (const [key, ranges] of cate) {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					 
 					editor.setDecorations(colors.get(key)!, ranges)
 				}
 			}
@@ -227,7 +227,7 @@ export function createColorProvider(tw: TwContext, separator: string) {
 		if (out === "transparent") return out
 		const color = culori.parse(out)
 		if (!color) return undefined
-		if (out.match(/^\d/) != null) return undefined
+		if ((/^\d/.exec(out)) != null) return undefined
 		color.alpha = 1
 		return culori.formatRgb(color)
 	}

@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { context } from "./context"
 
-test("consider to remove unambiguous utilities's type because of useless", async () => {
+test("consider to remove unambiguous utilities's type because of useless", () => {
 	const result: [string, string][] = []
 	for (const [key, types] of context.arbitraryUtilities) {
 		const t = Array.from(types.keys())

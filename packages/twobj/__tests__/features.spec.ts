@@ -177,11 +177,11 @@ const features = [
 	"zIndex",
 ]
 
-test("features", async () => {
+test("features", () => {
 	expect(features.sort()).toEqual(Array.from(context.features).sort())
 })
 
-it("snapshots", async () => {
+it("snapshots", () => {
 	const list = context.getUtilities()
 	list.forEach(classname => {
 		expect(context.css(classname)).toMatchSnapshot(classname)

@@ -1,14 +1,14 @@
 import { expect, test } from "vitest"
 import { context, tw } from "./context"
 
-test("plugin name", async () => {
+test("plugin name", () => {
 	expect(context.resolveVariant("group-hover:")[1]?.pluginName).toEqual("pseudoClassVariants")
 	expect(context.resolveVariant("group-hover/xxx:")[1]?.pluginName).toEqual("pseudoClassVariants")
 	expect(context.resolveVariant("group-hover/[xxx]:")[1]?.pluginName).toEqual("pseudoClassVariants")
 	expect(context.resolveVariant("group-[xxx]:")[1]?.pluginName).toEqual("pseudoClassVariants")
 })
 
-test("hover", async () => {
+test("hover", () => {
 	expect(tw`hover:bg-black`).toEqual({
 		"@media (hover: hover) and (pointer: fine)": {
 			"&:hover": {
@@ -18,7 +18,7 @@ test("hover", async () => {
 	})
 })
 
-test("marker", async () => {
+test("marker", () => {
 	expect(tw`marker:bg-black`).toEqual({
 		"& *::marker, &::marker": {
 			backgroundColor: "#000",
@@ -26,7 +26,7 @@ test("marker", async () => {
 	})
 })
 
-test("open", async () => {
+test("open", () => {
 	expect(tw`open:bg-black`).toEqual({
 		"&[open]": {
 			backgroundColor: "#000",
@@ -34,7 +34,7 @@ test("open", async () => {
 	})
 })
 
-test("first-of-type", async () => {
+test("first-of-type", () => {
 	expect(tw`first-of-type:bg-black`).toEqual({
 		"&:first-of-type": {
 			backgroundColor: "#000",
@@ -42,7 +42,7 @@ test("first-of-type", async () => {
 	})
 })
 
-test("indeterminate", async () => {
+test("indeterminate", () => {
 	expect(tw`indeterminate:bg-black`).toEqual({
 		"&:indeterminate": {
 			backgroundColor: "#000",
@@ -50,7 +50,7 @@ test("indeterminate", async () => {
 	})
 })
 
-test("before and after", async () => {
+test("before and after", () => {
 	expect(tw`before:bg-black`).toEqual({
 		"&::before": {
 			"--tw-content": "''",
@@ -139,7 +139,7 @@ test("before and after", async () => {
 	})
 })
 
-test("screens", async () => {
+test("screens", () => {
 	expect(tw`@xl:bg-black`).toEqual({
 		"@media (min-width: 1280px) and (max-width: 1535.98px)": {
 			backgroundColor: "#000",
@@ -152,7 +152,7 @@ test("screens", async () => {
 	})
 })
 
-test("supports", async () => {
+test("supports", () => {
 	expect(tw`supports-[display: grid]:bg-black`).toEqual({
 		"@supports (display: grid)": {
 			backgroundColor: "#000",
@@ -165,7 +165,7 @@ test("supports", async () => {
 	})
 })
 
-test("group", async () => {
+test("group", () => {
 	expect(tw`group-invalid:block`).toEqual({
 		".group:invalid &": {
 			display: "block",
@@ -188,7 +188,7 @@ test("group", async () => {
 	})
 })
 
-test("peer", async () => {
+test("peer", () => {
 	expect(tw`peer-invalid:block`).toEqual({
 		".peer:invalid ~ &": {
 			display: "block",

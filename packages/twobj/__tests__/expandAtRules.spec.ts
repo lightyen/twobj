@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { resolveConfig } from "../src"
 import { createContext } from "../src/core"
 
-test("expandAtRules", async () => {
+test("expandAtRules", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [

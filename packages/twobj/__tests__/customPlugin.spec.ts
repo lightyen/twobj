@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 import { createTw } from "./context"
 
-test("addBase", async () => {
+test("addBase", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -29,7 +29,7 @@ test("addBase", async () => {
 	})
 })
 
-test("addUtilities with object", async () => {
+test("addUtilities with object", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -64,7 +64,7 @@ test("addUtilities with object", async () => {
 	})
 })
 
-test("addUtilities with array", async () => {
+test("addUtilities with array", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -101,7 +101,7 @@ test("addUtilities with array", async () => {
 	})
 })
 
-test("addVariant and addUtilities", async () => {
+test("addVariant and addUtilities", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -130,7 +130,7 @@ test("addVariant and addUtilities", async () => {
 	})
 })
 
-test("addComponents", async () => {
+test("addComponents", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -163,7 +163,7 @@ test("addComponents", async () => {
 	})
 })
 
-test("addComponents with media queries", async () => {
+test("addComponents with media queries", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -208,7 +208,7 @@ test("addComponents with media queries", async () => {
 	})
 })
 
-test("addComponents with nested rules", async () => {
+test("addComponents with nested rules", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -263,7 +263,7 @@ test("addComponents with nested rules", async () => {
 	})
 })
 
-test("escaped selectors", async () => {
+test("escaped selectors", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -284,7 +284,7 @@ test("escaped selectors", async () => {
 	})
 })
 
-test("addVariant", async () => {
+test("addVariant", () => {
 	const ctx = createContext(
 		resolveConfig({
 			plugins: [
@@ -348,7 +348,7 @@ test("addVariant", async () => {
 	})
 })
 
-test("matchUtilities", async () => {
+test("matchUtilities", () => {
 	const ctx = createContext(
 		resolveConfig({
 			corePlugins: { preflight: false },
@@ -391,7 +391,7 @@ test("matchUtilities", async () => {
 	expect(ctx.css("test-1/[bar]")).toEqual({ color: "one_bar" })
 })
 
-test("matchVariant", async () => {
+test("matchVariant", () => {
 	const ctx = createContext(
 		resolveConfig({
 			corePlugins: { preflight: false },

@@ -135,7 +135,7 @@ export function splitCssParams(s: string, [start = 0, end = s.length] = []): Par
 
 			regexp.lastIndex = rb + 1
 		} else if (token) {
-			const mm = w.indexOf(",") !== -1
+			const mm = w.includes(",")
 			if (!comma || mm) {
 				tokens.push(token)
 			} else {

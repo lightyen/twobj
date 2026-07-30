@@ -287,7 +287,7 @@ const classnameCompletion: CompletionFeature = (
 	const items = state.provideClassCompletionList()
 
 	const endChar = text.slice(end, end + 1)
-	const insertSpace = text.slice(start, end) !== "!" && endChar !== "" && endChar.match(/[\s)]/) == null
+	const insertSpace = text.slice(start, end) !== "!" && endChar !== "" && (/[\s)]/.exec(endChar)) == null
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
 		for (const item of items) callback(item)
 	}
@@ -451,7 +451,7 @@ const variantCompletion: CompletionFeature = (
 	}
 
 	const next = text.slice(end, end + 1)
-	const insertSpace = next != "" && next.match(/[\s)]/) == null
+	const insertSpace = next != "" && (/[\s)]/.exec(next)) == null
 
 	if (preferVariantWithParentheses) {
 		if (nextCharacter !== 40) {
@@ -697,7 +697,7 @@ const arbitraryPropertyCompletion: CompletionFeature = (
 
 	const { start, end } = target
 	const endChar = text.slice(end, end + 1)
-	const insertSpace = text.slice(start, end) !== "!" && endChar !== "" && endChar.match(/[\s)]/) == null
+	const insertSpace = text.slice(start, end) !== "!" && endChar !== "" && (/[\s)]/.exec(endChar)) == null
 	const transfrom = (callback: (item: ICompletionItem) => void) => {
 		for (const item of items) callback(item)
 	}
@@ -780,7 +780,7 @@ function themeCompletion(
 				}
 
 				const color = culori.parse(valueString)
-				if (color && valueString.match(/^\d/) == null) {
+				if (color && (/^\d/.exec(valueString)) == null) {
 					item.kind = vscode.CompletionItemKind.Color
 					item.documentation = culori.formatHex(color)
 				} else {
@@ -793,7 +793,7 @@ function themeCompletion(
 
 		if (hit) {
 			const { start: a, end: b } = hit
-			if (label.match(/[.]/)) {
+			if (/[.]/.exec(label)) {
 				item.insertText = `[${label}]`
 				item.filterText = item.insertText
 				if (text.charCodeAt(a) === 46) item.filterText = "." + item.insertText
@@ -812,7 +812,7 @@ function themeCompletion(
 
 	function formatCandidates(value: string) {
 		const reg = /^[-0-9/.]+$/
-		const match = value.match(reg)
+		const match = reg.exec(value)
 		if (!match) return value
 		value = match[0]
 		const isNegtive = value.charCodeAt(0) === 45

@@ -26,3 +26,5 @@ minimumReleaseAgeExclude:
   - '@rolldown/binding-win32-arm64-msvc@1.2.1'
   - '@rolldown/binding-win32-x64-msvc@1.2.1'
   - rolldown@1.2.1
+  - '@vitejs/plugin-react@6.0.5'
+  - '@types/react@19.2.18'

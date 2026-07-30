@@ -124,8 +124,8 @@ function requireModuleFromCode(
 	filename: string,
 	host: ts.ModuleResolutionHost,
 	deps: string[],
-	pnp?: PnpApi | undefined,
-	mappings?: Mappings | undefined,
+	pnp?: PnpApi  ,
+	mappings?: Mappings  ,
 	base = path.dirname(filename),
 ) {
 	deps.push(filename)

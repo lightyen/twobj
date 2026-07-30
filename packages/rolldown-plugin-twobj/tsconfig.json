@@ -1,4 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "types": ["./types/emotion.d.ts"]
+  "compilerOptions": {
+    "types": ["./types/emotion.d.ts"]
+  }
 }

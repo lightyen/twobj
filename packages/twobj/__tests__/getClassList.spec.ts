@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import checkListArray from "./classList.json"
 import { context } from "./context"
 
-test("classList", async () => {
+test("classList", () => {
 	const twobjSet = context.getUtilities()
 	const checkList = new Set<string>(checkListArray)
 

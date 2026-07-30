@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { createContext, defaultConfig, resolveConfig } from "../src"
 import { tw } from "./context"
 
-test("content", async () => {
+test("content", () => {
 	expect(tw`content`).toEqual({})
 
 	expect(tw`content-none`).toEqual({
@@ -16,21 +16,21 @@ test("content", async () => {
 	})
 })
 
-test("display", async () => {
+test("display", () => {
 	expect(tw`flex`).toEqual({ display: "flex" })
 })
 
-test("flex", async () => {
+test("flex", () => {
 	expect(tw`flex-auto`).toEqual({ flex: "1 1 auto" })
 	expect(tw`flex-[1 1]`).toEqual({ flex: "1 1" })
 })
 
-test("flexGrow", async () => {
+test("flexGrow", () => {
 	expect(tw`flex-grow`).toEqual({})
 	expect(tw`grow`).toEqual({ flexGrow: "1" })
 })
 
-test("fill", async () => {
+test("fill", () => {
 	expect(tw`fill-red-500`).toEqual({ fill: "oklch(63.7% 0.237 25.331)" })
 	expect(tw`fill-[#121029]`).toEqual({ fill: "#121029" })
 	expect(tw`fill-[#12102980]`).toEqual({ fill: "#12102980" })
@@ -42,7 +42,7 @@ test("fill", async () => {
 	expect(tw`fill-[var(--color)]/10`).toEqual({ fill: "color-mix(in oklab, var(--color) 10%, transparent)" })
 })
 
-test("stroke", async () => {
+test("stroke", () => {
 	expect(tw`stroke-red-500`).toEqual({ stroke: "oklch(63.7% 0.237 25.331)" })
 	expect(tw`stroke-[#121029]`).toEqual({ stroke: "#121029" })
 	expect(tw`stroke-none`).toEqual({ stroke: "none" })
@@ -50,7 +50,7 @@ test("stroke", async () => {
 	expect(tw`stroke-[rgba(209, 218, 229, 0.5)]`).toEqual({ stroke: "rgba(209 218 229 / 0.5)" })
 })
 
-test("backgroundColor", async () => {
+test("backgroundColor", () => {
 	expect(tw`bg-black`).toEqual({ backgroundColor: "#000" })
 	expect(tw`bg-[#444]`).toEqual({ backgroundColor: "#444" })
 	expect(tw`bg-black/31`).toEqual({ backgroundColor: "color-mix(in srgb, rgb(0 0 0) 31%, transparent)" })
@@ -80,7 +80,7 @@ test("backgroundColor", async () => {
 	expect(tw`bg-[theme(colors.red.500 / 0.5)]`).toEqual({ backgroundColor: "oklch(63.7% 0.237 25.331 / 0.5)" })
 })
 
-test("backgroundImage", async () => {
+test("backgroundImage", () => {
 	expect(tw`bg-none`).toEqual({
 		backgroundImage: "none",
 	})
@@ -98,7 +98,7 @@ test("backgroundImage", async () => {
 	})
 })
 
-test("backgroundGradient", async () => {
+test("backgroundGradient", () => {
 	expect(tw`bg-gradient-to-tr`).toEqual({
 		"--tw-gradient-from-position": "initial",
 		"--tw-gradient-via-position": "initial",
@@ -111,7 +111,7 @@ test("backgroundGradient", async () => {
 	})
 })
 
-test("backgroundPosition", async () => {
+test("backgroundPosition", () => {
 	expect(tw`bg-top`).toEqual({ backgroundPosition: "top" })
 	expect(tw`bg-right-bottom`).toEqual({ backgroundPosition: "right bottom" })
 	expect(tw`bg-[background-position:25% 75%]`).toEqual({ backgroundPosition: "25% 75%" })
@@ -125,7 +125,7 @@ test("backgroundPosition", async () => {
 	expect(tw`bg-[25% 75%]`).toEqual({})
 })
 
-test("backgroundSize", async () => {
+test("backgroundSize", () => {
 	expect(tw`bg-auto`).toEqual({ backgroundSize: "auto" })
 	expect(tw`bg-contain`).toEqual({ backgroundSize: "contain" })
 	expect(tw`bg-cover`).toEqual({ backgroundSize: "cover" })
@@ -138,7 +138,7 @@ test("backgroundSize", async () => {
 	expect(tw`bg-[auto 100%]`).toEqual({ backgroundSize: "auto 100%" })
 })
 
-test("textColor", async () => {
+test("textColor", () => {
 	expect(tw`text-white`).toEqual({ color: "#fff" })
 	expect(tw`text-white/12`).toEqual({ color: "color-mix(in srgb, rgb(255 255 255) 12%, transparent)" })
 	expect(tw`text-white/12%`).toEqual({ color: "color-mix(in srgb, rgb(255 255 255) 12%, transparent)" })
@@ -164,7 +164,7 @@ test("textColor", async () => {
 	expect(tw`text-[theme(colors.red.500 / 0.5)]`).toEqual({ color: "oklch(63.7% 0.237 25.331 / 0.5)" })
 })
 
-test("fontSize", async () => {
+test("fontSize", () => {
 	const ctx = createContext(
 		resolveConfig({
 			theme: {
@@ -177,7 +177,7 @@ test("fontSize", async () => {
 	expect(ctx.css`text-custom`).toEqual({ fontSize: "5rem", fontWeight: 900, letterSpacing: "5px", lineHeight: 1.2 })
 })
 
-test("fontFamily", async () => {
+test("fontFamily", () => {
 	let ctx = createContext(
 		resolveConfig({
 			theme: {
@@ -245,13 +245,13 @@ test("fontFamily", async () => {
 	})
 })
 
-test("float", async () => {
+test("float", () => {
 	expect(tw`float-left`).toEqual({ float: "left" })
 	expect(tw`float-right`).toEqual({ float: "right" })
 	expect(tw`float-none`).toEqual({ float: "none" })
 })
 
-test("margin", async () => {
+test("margin", () => {
 	expect(tw`my-0`).toEqual({ marginTop: "0px", marginBottom: "0px" })
 	expect(tw`mx-0`).toEqual({ marginLeft: "0px", marginRight: "0px" })
 	expect(tw`mx-1`).toEqual({ marginLeft: "0.25rem", marginRight: "0.25rem" })
@@ -264,7 +264,7 @@ test("margin", async () => {
 	})
 })
 
-test("maxWidth", async () => {
+test("maxWidth", () => {
 	expect(tw`max-w-0`).toEqual({ maxWidth: "0px" })
 	expect(tw`max-w-fit`).toEqual({ maxWidth: "fit-content" })
 	expect(tw`max-w-full`).toEqual({ maxWidth: "100%" })
@@ -272,7 +272,7 @@ test("maxWidth", async () => {
 	expect(tw`max-w-screen-xl`).toEqual({ maxWidth: "1280px" })
 })
 
-test("container", async () => {
+test("container", () => {
 	let ctx = createContext(
 		resolveConfig({
 			theme: {
@@ -339,7 +339,7 @@ test("container", async () => {
 	})
 })
 
-test("outlineWidth", async () => {
+test("outlineWidth", () => {
 	expect(tw`outline-0`).toEqual({ outlineWidth: "0px" })
 	expect(tw`outline-[11px]`).toEqual({ outlineWidth: "11px" })
 	expect(tw`outline-[thick]`).toEqual({ outlineWidth: "thick" })

@@ -20,7 +20,7 @@ declare module "vscode-css-languageservice/lib/esm/services/cssHover" {
 			document: TextDocument,
 			position: Position,
 			stylesheet: nodes.Stylesheet,
-			settings?: HoverSettings | undefined,
+			settings?: HoverSettings  ,
 		): Hover | null
 		private convertContents
 		private doesSupportMarkdown

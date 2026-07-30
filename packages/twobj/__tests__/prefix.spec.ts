@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { createContext, resolveConfig } from "../src"
 
-test("prefix", async () => {
+test("prefix", () => {
 	let ctx = createContext(resolveConfig({ prefix: "xt-" }))
 	expect(ctx.css("(text-black)")).toEqual({})
 	expect(ctx.css("(xt-text-black)")).toEqual({ color: "#000" })

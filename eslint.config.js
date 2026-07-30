@@ -4,7 +4,17 @@ import tseslint from "typescript-eslint"
 
 export default defineConfig(
 	{
-		ignores: ["eslint.config.js", "src/typings", "dist", "tests"],
+		ignores: [
+			"eslint.config.js",
+			"**/dist",
+			"**/*.js",
+			"**/*.cjs",
+			"**/*.mjs",
+			"**/*.mts",
+			"**/fixtures",
+			"**/vscode-extension",
+			"**/babel-plugin-twobj",
+		],
 	},
 	eslint.configs.recommended,
 	tseslint.configs.recommended,
@@ -18,6 +28,7 @@ export default defineConfig(
 					allowEmptyCatch: true,
 				},
 			],
+			"no-useless-assignment": "warn",
 			"no-extra-bind": "error",
 			"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
 			"no-var": "error",
@@ -31,7 +42,8 @@ export default defineConfig(
 		languageOptions: {
 			parser: tseslint.parser,
 			parserOptions: {
-				project: true,
+				projectService: true,
+				tsconfigRootDir: import.meta.dirname,
 			},
 		},
 		rules: {
@@ -41,11 +53,12 @@ export default defineConfig(
 			"@typescript-eslint/explicit-function-return-type": "off",
 			"@typescript-eslint/explicit-module-boundary-types": "off",
 			"@typescript-eslint/no-empty-function": "warn",
-			"@typescript-eslint/no-base-to-string": "off",
 			"@typescript-eslint/no-empty-interface": "off",
 			"@typescript-eslint/no-empty-object-type": "off",
 			"@typescript-eslint/no-explicit-any": "warn",
 			"@typescript-eslint/no-floating-promises": "off",
+			"@typescript-eslint/no-base-to-string": "off",
+			"@typescript-eslint/no-for-in-array": "off",
 			"@typescript-eslint/no-misused-promises": [
 				"warn",
 				{
@@ -58,6 +71,8 @@ export default defineConfig(
 			"@typescript-eslint/no-unsafe-call": "off",
 			"@typescript-eslint/no-unsafe-member-access": "off",
 			"@typescript-eslint/no-unsafe-return": "off",
+			"@typescript-eslint/restrict-template-expressions": "off",
+			"@typescript-eslint/no-unused-expressions": "warn",
 			"@typescript-eslint/no-unused-vars": [
 				"warn",
 				{

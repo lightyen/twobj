@@ -60,7 +60,7 @@ function normalizeExpression(node: nodes.Expression, ctx: Context): string {
 		case nodes.NodeType.UnknownClassname: {
 			const { important, key, closed, value, m } = node
 			const im = important ? "!" : ""
-			let v = ""
+			let v: string
 			if (closed) {
 				v = "[" + value.text.trim() + "]"
 			} else {
@@ -71,7 +71,7 @@ function normalizeExpression(node: nodes.Expression, ctx: Context): string {
 		case nodes.NodeType.ArbitraryProperty: {
 			const { important, decl, closed } = node
 			const im = important ? "!" : ""
-			let v = ""
+			let v: string
 			if (closed) {
 				v = "[" + decl.text.trim() + "]"
 			} else {
@@ -120,7 +120,7 @@ function normalizeVariant(node: nodes.Variant, ctx: Context): string {
 	}
 }
 
-function normalizeModifier(m?: nodes.Modifier | null | undefined): string {
+function normalizeModifier(m?: nodes.Modifier | null): string {
 	if (!m) {
 		return ""
 	}

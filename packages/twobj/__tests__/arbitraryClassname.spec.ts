@@ -11,7 +11,7 @@ test.each(Array.from(context.arbitraryUtilities.keys()))("%s-[]", key => {
 	}
 })
 
-test.each(Array.from(context.arbitraryUtilities.entries()))("%s-[xxx]", (key, type) => {
+test.each(Array.from(context.arbitraryUtilities.entries()))("%s-[xxx]", (key, _type) => {
 	if (s.has(key)) {
 		if (key === "font") {
 			expect(tw(`font-[xxx]`)).not.toEqual({})

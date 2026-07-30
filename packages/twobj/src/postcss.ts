@@ -40,9 +40,8 @@ function gobbleHex(str: string): [string, number] | undefined {
 	return [String.fromCodePoint(codePoint), hex.length + (spaceTerminated ? 1 : 0)]
 }
 
-const CONTAINS_ESCAPE = /\\/
 export function unescapeCss(str: string) {
-	const needToProcess = CONTAINS_ESCAPE.test(str)
+	const needToProcess = str.includes("\\")
 	if (!needToProcess) {
 		return str
 	}

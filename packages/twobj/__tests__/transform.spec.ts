@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { tw } from "./context"
 
-test("transform", async () => {
+test("transform", () => {
 	expect(tw`transform`).toEqual({
 		transform:
 			"var(--tw-transfrom-translate, translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1))",
@@ -40,7 +40,7 @@ test("transform", async () => {
 	})
 })
 
-test("rotate", async () => {
+test("rotate", () => {
 	expect(tw`rotate-45`).toEqual({
 		"--tw-translate-x": "initial",
 		"--tw-translate-y": "initial",

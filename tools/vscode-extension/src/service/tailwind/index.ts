@@ -112,7 +112,7 @@ export async function createTailwindLoader() {
 
 	function formatLabel(label: string) {
 		const reg = /([a-zA-Z-]+)([0-9/.]+)/
-		const match = label.match(reg)
+		const match = reg.exec(label)
 		if (!match) return label
 		let val = Number(match[2])
 		if (Number.isNaN(val)) val = calcFraction(match[2])

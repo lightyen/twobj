@@ -131,12 +131,11 @@ export function dlv(cur: any, paths: string[]): any {
 	if (cur == undefined) {
 		return undefined
 	}
-	for (let i = 0; i < paths.length; ++i) {
-		if (cur[paths[i]] == undefined) {
+	for (const path of paths) {
+		if (cur[path] == undefined) {
 			return undefined
-		} else {
-			cur = cur[paths[i]]
 		}
+		cur = cur[path]
 	}
 	return cur
 }
@@ -298,13 +297,12 @@ export function removeComments(
 /** Convert ":hover" to "&:hover" */
 export function normalizeSelector(selector: string): string {
 	const selectors = splitAtTopLevelOnly(selector)
-	const atRule = /^@/
 	selector = selectors
 		.map(({ value }) => {
-			if (atRule.test(value)) {
+			if (value.startsWith("@")) {
 				return value
 			}
-			if (value.indexOf("&") !== -1) {
+			if (value.includes("&")) {
 				return value
 			}
 			if (value.startsWith(":")) {

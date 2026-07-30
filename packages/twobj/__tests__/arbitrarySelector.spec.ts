@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import { tw } from "./context"
 
-test("arbitrary selector", async () => {
+test("arbitrary selector", () => {
 	expect(tw(`[.test]:block`)).toEqual({
 		"& .test": { display: "block" },
 	})
