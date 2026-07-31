@@ -10,16 +10,17 @@
   "repository": {
     "directory": "https://github.com/lightyen/twobj/tree/main/packages/twobj"
   },
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.mjs"
     },
     "./parser": {
+      "types": "./parser/index.d.ts",
       "require": "./parser/index.js",
-      "import": "./parser/index.mjs",
-      "types": "./parser/index.d.ts"
+      "import": "./parser/index.mjs"
     }
   },
   "scripts": {
