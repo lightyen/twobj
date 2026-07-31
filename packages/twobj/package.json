@@ -12,17 +12,19 @@
   },
   "exports": {
     ".": {
+      "require": "./dist/index.js",
       "import": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
+      "types": "./dist/index.d.ts"
     },
     "./parser": {
+      "require": "./parser/index.js",
       "import": "./parser/index.mjs",
-      "types": "./parser/index.d.mts"
+      "types": "./parser/index.d.ts"
     }
   },
   "scripts": {
     "test": "vitest --run",
-    "compile": "del index.* parser config *.d.ts **/*.d.ts && tsdown",
+    "compile": "tsdown",
     "format": "prettier --config ../../.prettierrc.json --write *.*ts **/*.*ts",
     "build": "npm run compile && npm run format",
     "prepack": "npm run build"
