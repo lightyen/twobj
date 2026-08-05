@@ -28,3 +28,4 @@ minimumReleaseAgeExclude:
   - rolldown@1.2.1
   - '@vitejs/plugin-react@6.0.5'
   - '@types/react@19.2.18'
+  - twobj@3.0.0-beta-2n5ffmx || 3.0.0-beta-6f5fb5a

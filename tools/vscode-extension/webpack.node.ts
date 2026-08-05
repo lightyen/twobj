@@ -1,6 +1,5 @@
 import { execSync } from "child_process"
 import { CleanWebpackPlugin } from "clean-webpack-plugin"
-import ESLintPlugin from "eslint-webpack-plugin"
 import ForkTsCheckerPlugin from "fork-ts-checker-webpack-plugin"
 import path from "path"
 import TerserPlugin from "terser-webpack-plugin"
@@ -91,7 +90,6 @@ const configExtension: Configuration = {
 			},
 		}),
 		new ExternalsVendorPlugin("vscode"),
-		new ESLintPlugin({ extensions: ["ts"] }),
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ["extension*"] }),
 		new DefinePlugin({
 			__COMMIT_HASH__: JSON.stringify(execSync("git rev-parse HEAD").toString().trim()),

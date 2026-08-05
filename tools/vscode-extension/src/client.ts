@@ -253,7 +253,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 			vscode.workspace.onDidChangeConfiguration(async event => {
 				console.trace(`onDidChangeConfiguration()`)
 				const workspaceConfiguration = vscode.workspace.getConfiguration("", ws)
-				const extSettings = workspaceConfiguration.get(SECTION_ID)!
+				const extSettings = workspaceConfiguration.get<Settings>(SECTION_ID)!
 
 				let needToUpdate = false
 				let needToRerenderColors = false
@@ -311,9 +311,7 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 					extSettings.colorDecorators = extSettings.colorDecorators ? "on" : "off"
 				}
 				if (extSettings.colorDecorators === "inherit") {
-					const editorColorDecorators = vscode.workspace
-						.getConfiguration("editor")
-						.get("colorDecorators")!
+					const editorColorDecorators = vscode.workspace.getConfiguration("editor").get("colorDecorators")!
 					extSettings.colorDecorators = editorColorDecorators ? "on" : "off"
 				}
 				if (settings.colorDecorators !== extSettings.colorDecorators) {
@@ -324,10 +322,8 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 				}
 
 				if (!extSettings.minimumContrastRatio) {
-					const minimumContrastRatio =
-						(vscode.workspace
-							.getConfiguration("terminal")
-							.get("integrated.minimumContrastRatio")!) ?? 4.5
+					const minimumContrastRatio: number =
+						vscode.workspace.getConfiguration("terminal").get("integrated.minimumContrastRatio")! ?? 4.5
 					extSettings.minimumContrastRatio = minimumContrastRatio
 				}
 				if (settings.minimumContrastRatio !== extSettings.minimumContrastRatio) {
@@ -441,8 +437,8 @@ export async function workspaceClient(context: vscode.ExtensionContext, ws: vsco
 				typeof activeTextEditor.options.tabSize === "string" ? defaultSize : activeTextEditor.options.tabSize
 		}
 		if (!tabSize) {
-			const s = workspaceConfiguration.get("editor.tabSize")
-			tabSize = typeof s === "string" ? defaultSize : s ?? defaultSize
+			const s: number | undefined = workspaceConfiguration.get("editor.tabSize")
+			tabSize = typeof s === "string" ? defaultSize : (s ?? defaultSize)
 		}
 		return tabSize
 	}
